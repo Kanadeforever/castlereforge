@@ -1,0 +1,32 @@
+v0.3.0-dev2 实机结论：TSA 仅排队，未发生首次提交
+
+【用户实机日志原文】
+AnytimeSave v0.3.0-dev2
+mode=TSA-enhanced-save + vanilla-safe-fallback
+tsf_schema=UNCHANGED
+startup: TSA path root = RPG.exe directory (absolute Unicode)
+startup: all enhanced-save hooks installed
+load: no matching TSA; vanilla TSF behavior only
+fallback: entry-level vanilla anchor frozen after 8 stable default-mode ticks
+gate: extended save allowed; selected=0 default=0 fallback=yes exact=fallback-only
+gate: extended save allowed; selected=0 default=0 fallback=yes exact=fallback-only
+save: TSF succeeded; TSA queued for delayed absolute-path commit
+
+【已确认】
+1. 原版 TSF Writer 成功。
+2. vanilla fallback 已建立，扩展存档门已经放行。
+3. TSA 任务成功进入 pending 队列。
+4. 日志在“已排队”后结束，没有 attempt=1、没有 CreateFileW/CRC 错误码、也没有成功行；实机目录中没有 .TSA。
+
+【不能从这份日志推出的结论】
+不能说 CreateFileW 已经失败，因为 dev2 根本没有留下“第 1 次提交已执行”的证据。
+
+【dev3 修复】
+原版 Writer 返回成功后，SaveWriterHook 立即调用 TryCommitPendingTsaWrite(true)。
+因此 dev3 至少会出现以下二者之一：
+- TSA 当场写入成功；
+- 第 1 次真实提交失败，并立即记录 Win32 错误码。
+若失败，pending 仍保留给 Map Tick、菜单许可入口和读档入口继续重试。
+
+【当前状态】
+该结果只作为 v0.3.0-dev2 失败历史保留；后续 v0.3.1 删除正式旁挂链，v0.3.1a 继续继承该决定。

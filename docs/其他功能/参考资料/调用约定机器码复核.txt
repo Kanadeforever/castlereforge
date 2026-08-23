@@ -1,0 +1,19 @@
+【v0.3.1a AnytimeSave.obj 调用约定 / 栈帧复核】
+
+[14](sec  6)(fl 0x00)(ty  20)(scl   2) (nx 0) 0x00000000 @SafeSaveGateHook@4
+[17](sec  7)(fl 0x00)(ty  20)(scl   2) (nx 0) 0x00000000 @SafeMapTickHook@8
+[23](sec  9)(fl 0x00)(ty  20)(scl   2) (nx 0) 0x00000000 @SafeSaveWriterHook@12
+[29](sec 11)(fl 0x00)(ty  20)(scl   2) (nx 0) 0x00000000 _DllMain@12
+
+符号解释：
+- @SafeSaveGateHook@4：fastcall，ECX=runtimeEntry。
+- @SafeMapTickHook@8：fastcall，ECX=sceneContainer，EDX 占位。
+- @SafeSaveWriterHook@12：fastcall，ECX/EDX + 1 个栈参数 path，匹配原 Writer CALL。
+- _DllMain@12：WinAPI/stdcall DLL 入口。
+
+最大观察 sub esp = 0x808 (2056) bytes。
+__chkstk：对象未解析中未出现。
+外部 CRT memcpy/memset：未出现；源码有本地 volatile 逐字节实现。
+正式 v0.3.1a 已删除 LoadReaderHook / WorldRestoreHook。
+
+结论：PASS

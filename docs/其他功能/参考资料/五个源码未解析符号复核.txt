@@ -1,0 +1,15 @@
+v0.3.2 五个源码构建/外部依赖复核
+================================
+
+严格交叉构建：4 个正式 ASI + AnytimeSaveProbe.asi 全部 PASS。
+编译参数：32 位 i686-pc-windows-msvc，/O2 /W4 /WX /GR- /GS- /Zl。
+链接：/NODEFAULTLIB，显式 DllMain 入口。
+
+最终五个 PE 均：
+- PE32 / i386
+- DLL 标志存在
+- AddressOfEntryPoint 非 0
+- 导入 DLL 只有 KERNEL32.dll
+
+BUGFix.cpp 因 /O2 可能生成 memcpy/memset 调用，源码已内置 volatile 逐字节最小实现，因此没有 CRT 外部依赖。
+BUGFix Clang Static Analyzer：0 diagnostic。

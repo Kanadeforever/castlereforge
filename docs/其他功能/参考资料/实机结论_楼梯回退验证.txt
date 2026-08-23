@@ -1,0 +1,27 @@
+v0.3.0-dev1 楼梯 vanilla fallback 实机结论
+日期：2026-08-19
+
+用户测试地点：磐沙堡楼梯区域（历史上随时存档可能形成坏档的类型）。
+
+日志：
+AnytimeSave v0.3.0-dev1
+mode=enhanced-save-sidecar + vanilla-safe-scene-mode-fallback
+tsf_schema=UNCHANGED
+startup: all enhanced-save hooks installed
+load: no matching YCS; vanilla TSF behavior only
+gate: extended save allowed; selected=1 default=0 fallback=yes
+save: TSF succeeded but YCS write failed; vanilla fallback remains usable
+load: no matching YCS; vanilla TSF behavior only
+
+用户实机观察：
+- 没有 YCS 文件；
+- 读档后不在保存时楼梯位置，而回到场景入口；
+- 该档可以继续游戏；
+- 此结果表明 vanilla fallback 已经实际避免了该楼梯存档损坏反例。
+
+注意：
+这只能证明 fallback 路线 PASS；不能证明 dev1 exact sidecar，因为旁挂根本没有写出。
+从 dev2 起旁挂正式改名 TSA。
+
+【当前状态】
+该 vanilla fallback PASS 是 v0.3.1a “安全回退存档稳定化版”的核心实机依据；v0.3.1a 不再依赖任何旁挂文件。

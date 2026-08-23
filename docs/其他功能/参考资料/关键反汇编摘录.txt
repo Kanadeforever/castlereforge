@@ -1,0 +1,432 @@
+【v0.3.1a 当前用途说明】
+正式 AnytimeSave 现在只 Hook：0x40CCC2、0x40B078、0x43B34C。
+下文保留的 Load/World Restore 反汇编仅作为“为什么原 TSF 会丢瞬态、为什么曾研究 TSA”的历史证据；v0.3.1a 不再 Hook Load/Restore。
+
+【当前 RPG.exe】
+SHA-256: 8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f
+路径: /mnt/data/exe_extract/RPG.exe
+
+
+【Map manager 构造：MapSCI byte0 -> scene_container+4】
+Disassembly of section .text:
+
+0040ac8d <.text+0x9c8d>:
+  40ac8d:	8b 45 00             	mov    eax,DWORD PTR [ebp+0x0]
+  40ac90:	33 db                	xor    ebx,ebx
+  40ac92:	33 ed                	xor    ebp,ebp
+  40ac94:	8d 0c 03             	lea    ecx,[ebx+eax*1]
+  40ac97:	57                   	push   edi
+  40ac98:	51                   	push   ecx
+  40ac99:	8b 4e 10             	mov    ecx,DWORD PTR [esi+0x10]
+  40ac9c:	03 cd                	add    ecx,ebp
+  40ac9e:	e8 dd e1 ff ff       	call   0x408e80
+  40aca3:	8b 46 0c             	mov    eax,DWORD PTR [esi+0xc]
+  40aca6:	80 3c 03 00          	cmp    BYTE PTR [ebx+eax*1],0x0
+  40acaa:	74 03                	je     0x40acaf
+  40acac:	89 7e 04             	mov    DWORD PTR [esi+0x4],edi
+  40acaf:	8b 0e                	mov    ecx,DWORD PTR [esi]
+  40acb1:	47                   	inc    edi
+  40acb2:	83 c5 38             	add    ebp,0x38
+  40acb5:	81 c3 73 04 00 00    	add    ebx,0x473
+  40acbb:	3b f9                	cmp    edi,ecx
+  40acbd:	7c d5                	jl     0x40ac94
+  40acbf:	8b                   	.byte 0x8b
+
+
+【EVE opcode 0x3D：脚本参数 -> scene_container+4】
+Disassembly of section .text:
+
+0040da50 <.text+0xca50>:
+  40da50:	56                   	push   esi
+  40da51:	8b f1                	mov    esi,ecx
+  40da53:	8b 46 04             	mov    eax,DWORD PTR [esi+0x4]
+  40da56:	89 46 08             	mov    DWORD PTR [esi+0x8],eax
+  40da59:	e8 42 d9 ff ff       	call   0x40b3a0
+  40da5e:	8b 4e 08             	mov    ecx,DWORD PTR [esi+0x8]
+  40da61:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
+  40da67:	33 d2                	xor    edx,edx
+  40da69:	56                   	push   esi
+  40da6a:	8a 51 04             	mov    dl,BYTE PTR [ecx+0x4]
+  40da6d:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+  40da70:	8b 15 10 f8 89 00    	mov    edx,DWORD PTR ds:0x89f810
+  40da76:	42                   	inc    edx
+  40da77:	c7 05 18 f8 89 00 00 	mov    DWORD PTR ds:0x89f818,0x0
+  40da7e:	00 00 00 
+  40da81:	89 15 10 f8 89 00    	mov    DWORD PTR ds:0x89f810,edx
+  40da87:	e8 c4 3a 04 00       	call   0x451550
+  40da8c:	83 c4 04             	add    esp,0x4
+  40da8f:	33 c0                	xor    eax,eax
+  40da91:	5e                   	pop    esi
+  40da92:	c3                   	ret
+
+
+【scene_container+4 消费者：index*0x38 选择 runtime entry】
+Disassembly of section .text:
+
+0040ae20 <.text+0x9e20>:
+  40ae20:	56                   	push   esi
+  40ae21:	8b f1                	mov    esi,ecx
+  40ae23:	8b 46 04             	mov    eax,DWORD PTR [esi+0x4]
+  40ae26:	8b 56 10             	mov    edx,DWORD PTR [esi+0x10]
+  40ae29:	8d 0c c5 00 00 00 00 	lea    ecx,[eax*8+0x0]
+  40ae30:	2b c8                	sub    ecx,eax
+  40ae32:	8d 0c ca             	lea    ecx,[edx+ecx*8]
+  40ae35:	e8 c6 e5 ff ff       	call   0x409400
+  40ae3a:	8b 4e 10             	mov    ecx,DWORD PTR [esi+0x10]
+  40ae3d:	e8 4e e6 ff ff       	call   0x409490
+  40ae42:	5e                   	pop    esi
+  40ae43:	c3                   	ret
+  40ae44:	90                   	nop
+  40ae45:	90                   	nop
+  40ae46:	90                   	nop
+  40ae47:	90                   	nop
+  40ae48:	90                   	nop
+  40ae49:	90                   	nop
+  40ae4a:	90                   	nop
+  40ae4b:	90                   	nop
+  40ae4c:	90                   	nop
+  40ae4d:	90                   	nop
+  40ae4e:	90                   	nop
+  40ae4f:	90                   	nop
+  40ae50:	8b 41 04             	mov    eax,DWORD PTR [ecx+0x4]
+  40ae53:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
+  40ae5a:	2b d0                	sub    edx,eax
+  40ae5c:	8b 41 10             	mov    eax,DWORD PTR [ecx+0x10]
+  40ae5f:	8d 04 d0             	lea    eax,[eax+edx*8]
+  40ae62:	c3                   	ret
+  40ae63:	90                   	nop
+  40ae64:	90                   	nop
+  40ae65:	90                   	nop
+  40ae66:	90                   	nop
+  40ae67:	90                   	nop
+  40ae68:	90                   	nop
+  40ae69:	90                   	nop
+  40ae6a:	90                   	nop
+  40ae6b:	90                   	nop
+  40ae6c:	90                   	nop
+  40ae6d:	90                   	nop
+  40ae6e:	90                   	nop
+  40ae6f:	90                   	nop
+  40ae70:	8b 41 10             	mov    eax,DWORD PTR [ecx+0x10]
+  40ae73:	c3                   	ret
+
+
+【World 分配并绑定全局 0x00978508】
+Disassembly of section .text:
+
+0044b060 <.text+0x4a060>:
+  44b060:	57                   	push   edi
+  44b061:	68 d8 27 00 00       	push   0x27d8
+  44b066:	e8 f4 65 00 00       	call   0x45165f
+  44b06b:	8b f8                	mov    edi,eax
+  44b06d:	b9 f6 09 00 00       	mov    ecx,0x9f6
+  44b072:	33 c0                	xor    eax,eax
+  44b074:	83 c4 04             	add    esp,0x4
+  44b077:	89 3d 08 85 97 00    	mov    DWORD PTR ds:0x978508,edi
+  44b07d:	f3 ab                	rep stos DWORD PTR es:[edi],eax
+  44b07f:	5f                   	pop    edi
+  44b080:	c3                   	ret
+  44b081:	90                   	nop
+  44b082:	90                   	nop
+  44b083:	90                   	nop
+  44b084:	90                   	nop
+  44b085:	90                   	nop
+  44b086:	90                   	nop
+  44b087:	90                   	nop
+  44b088:	90                   	nop
+  44b089:	90                   	nop
+  44b08a:	90                   	nop
+  44b08b:	90                   	nop
+  44b08c:	90                   	nop
+  44b08d:	90                   	nop
+  44b08e:	90                   	nop
+  44b08f:	90                   	nop
+
+
+【World Scene Descriptor 写入】
+Disassembly of section .text:
+
+0044b130 <.text+0x4a130>:
+  44b130:	56                   	push   esi
+  44b131:	8b 74 24 08          	mov    esi,DWORD PTR [esp+0x8]
+  44b135:	57                   	push   edi
+  44b136:	8b 3d 08 85 97 00    	mov    edi,DWORD PTR ds:0x978508
+  44b13c:	b9 0c 00 00 00       	mov    ecx,0xc
+  44b141:	f3 a5                	rep movs DWORD PTR es:[edi],DWORD PTR ds:[esi]
+  44b143:	66 a5                	movs   WORD PTR es:[edi],WORD PTR ds:[esi]
+  44b145:	5f                   	pop    edi
+  44b146:	5e                   	pop    esi
+  44b147:	c3                   	ret
+  44b148:	90                   	nop
+  44b149:	90                   	nop
+  44b14a:	90                   	nop
+  44b14b:	90                   	nop
+  44b14c:	90                   	nop
+  44b14d:	90                   	nop
+  44b14e:	90                   	nop
+  44b14f:	90                   	nop
+
+
+【World X/Y/state/actor index 写入】
+Disassembly of section .text:
+
+0044b150 <.text+0x4a150>:
+  44b150:	56                   	push   esi
+  44b151:	57                   	push   edi
+  44b152:	e8 b9 da fb ff       	call   0x408c10
+  44b157:	8b 0d 08 85 97 00    	mov    ecx,DWORD PTR ds:0x978508
+  44b15d:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+  44b160:	89 41 32             	mov    DWORD PTR [ecx+0x32],eax
+  44b163:	e8 a8 da fb ff       	call   0x408c10
+  44b168:	8b 15 08 85 97 00    	mov    edx,DWORD PTR ds:0x978508
+  44b16e:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+  44b171:	89 42 36             	mov    DWORD PTR [edx+0x36],eax
+  44b174:	e8 97 da fb ff       	call   0x408c10
+  44b179:	8b 15 08 85 97 00    	mov    edx,DWORD PTR ds:0x978508
+  44b17f:	33 c9                	xor    ecx,ecx
+  44b181:	8a 48 1a             	mov    cl,BYTE PTR [eax+0x1a]
+  44b184:	8b c1                	mov    eax,ecx
+  44b186:	89 42 3a             	mov    DWORD PTR [edx+0x3a],eax
+  44b189:	a1 08 85 97 00       	mov    eax,ds:0x978508
+  44b18e:	8b 0d f0 8b 46 00    	mov    ecx,DWORD PTR ds:0x468bf0
+  44b194:	89 48 3e             	mov    DWORD PTR [eax+0x3e],ecx
+  44b197:	8b 15 48 1c 8e 00    	mov    edx,DWORD PTR ds:0x8e1c48
+  44b19d:	a1 08 85 97 00       	mov    eax,ds:0x978508
+  44b1a2:	89 82 40 01 00 00    	mov    DWORD PTR [edx+0x140],eax
+  44b1a8:	8b 0d 48 1c 8e 00    	mov    ecx,DWORD PTR ds:0x8e1c48
+  44b1ae:	33 d2                	xor    edx,edx
+  44b1b0:	c7                   	.byte 0xc7
+  44b1b1:	81 3c 01 00 00 d8 27 	cmp    DWORD PTR [ecx+eax*1],0x27d80000
+
+
+【World Load：原版恢复 X/Y/state/actor index】
+Disassembly of section .text:
+
+0044b1f0 <.text+0x4a1f0>:
+  44b1f0:	6a ff                	push   0xffffffff
+  44b1f2:	68 7b ff 45 00       	push   0x45ff7b
+  44b1f7:	64 a1 00 00 00 00    	mov    eax,fs:0x0
+  44b1fd:	50                   	push   eax
+  44b1fe:	64 89 25 00 00 00 00 	mov    DWORD PTR fs:0x0,esp
+  44b205:	83 ec 68             	sub    esp,0x68
+  44b208:	a1 08 85 97 00       	mov    eax,ds:0x978508
+  44b20d:	56                   	push   esi
+  44b20e:	57                   	push   edi
+  44b20f:	8b 70 32             	mov    esi,DWORD PTR [eax+0x32]
+  44b212:	8b 78 36             	mov    edi,DWORD PTR [eax+0x36]
+  44b215:	8b 40 3e             	mov    eax,DWORD PTR [eax+0x3e]
+  44b218:	50                   	push   eax
+  44b219:	e8 12 da fb ff       	call   0x408c30
+  44b21e:	83 c4 04             	add    esp,0x4
+  44b221:	57                   	push   edi
+  44b222:	56                   	push   esi
+  44b223:	e8 e8 d9 fb ff       	call   0x408c10
+  44b228:	8b c8                	mov    ecx,eax
+  44b22a:	e8 d1 f4 fb ff       	call   0x40a700
+  44b22f:	e8 dc d9 fb ff       	call   0x408c10
+  44b234:	8b 15 08 85 97 00    	mov    edx,DWORD PTR ds:0x978508
+  44b23a:	8b 48 0c             	mov    ecx,DWORD PTR [eax+0xc]
+  44b23d:	81 e1 ff ff 00 ff    	and    ecx,0xff00ffff
+  44b243:	68 07 b2 01 00       	push   0x1b207
+  44b248:	8b 42 3a             	mov    eax,DWORD PTR [edx+0x3a]
+  44b24b:	68 07 b2 01 00       	push   0x1b207
+  44b250:	25 ff 00 00 00       	and    eax,0xff
+  44b255:	c1 e0 10             	shl    eax,0x10
+  44b258:	0b c1                	or     eax,ecx
+  44b25a:	50                   	push   eax
+  44b25b:	e8 b0 d9 fb ff       	call   0x408c10
+  44b260:	8b c8                	mov    ecx,eax
+  44b262:	e8 49 f0 fb ff       	call   0x40a2b0
+  44b267:	a1 08 85 97 00       	mov    eax,ds:0x978508
+  44b26c:	8d 4c 24 0c          	lea    ecx,[esp+0xc]
+
+
+【Save/Load wrapper CALL 点】
+Disassembly of section .text:
+
+0043b320 <.text+0x3a320>:
+  43b320:	8b 44 24 04          	mov    eax,DWORD PTR [esp+0x4]
+  43b324:	81 ec 2c 01 00 00    	sub    esp,0x12c
+  43b32a:	56                   	push   esi
+  43b32b:	8b f1                	mov    esi,ecx
+  43b32d:	50                   	push   eax
+  43b32e:	68 0c bb 46 00       	push   0x46bb0c
+  43b333:	8d 4c 24 0c          	lea    ecx,[esp+0xc]
+  43b337:	68 04 bb 46 00       	push   0x46bb04
+  43b33c:	51                   	push   ecx
+  43b33d:	e8 31 67 01 00       	call   0x451a73
+  43b342:	83 c4 10             	add    esp,0x10
+  43b345:	8d 54 24 04          	lea    edx,[esp+0x4]
+  43b349:	8b ce                	mov    ecx,esi
+  43b34b:	52                   	push   edx
+  43b34c:	e8 0f 00 00 00       	call   0x43b360
+  43b351:	5e                   	pop    esi
+  43b352:	81 c4 2c 01 00 00    	add    esp,0x12c
+  43b358:	c2 04 00             	ret    0x4
+  43b35b:	90                   	nop
+  43b35c:	90                   	nop
+  43b35d:	90                   	nop
+  43b35e:	90                   	nop
+  43b35f:	90                   	nop
+  43b360:	6a ff                	push   0xffffffff
+  43b362:	64 a1 00 00 00 00    	mov    eax,fs:0x0
+  43b368:	68 b9 f3 45 00       	push   0x45f3b9
+  43b36d:	50                   	push   eax
+  43b36e:	b8 e4 e1 00 00       	mov    eax,0xe1e4
+  43b373:	64 89 25 00 00 00 00 	mov    DWORD PTR fs:0x0,esp
+  43b37a:	e8 21 6e 01 00       	call   0x4521a0
+  43b37f:	8b 84 24 f4 e1 00 00 	mov    eax,DWORD PTR [esp+0xe1f4]
+  43b386:	53                   	push   ebx
+  43b387:	55                   	push   ebp
+  43b388:	56                   	push   esi
+  43b389:	57                   	push   edi
+  43b38a:	8b f9                	mov    edi,ecx
+  43b38c:	68 3c a4 46 00       	push   0x46a43c
+  43b391:	50                   	push   eax
+  43b392:	68 0c bb 46 00       	push   0x46bb0c
+  43b397:	8d 4c 24 20          	lea    ecx,[esp+0x20]
+  43b39b:	68 14 bb 46 00       	push   0x46bb14
+  43b3a0:	51                   	push   ecx
+  43b3a1:	b3 01                	mov    bl,0x1
+  43b3a3:	bd b1 e0 00 00       	mov    ebp,0xe0b1
+  43b3a8:	e8 c6 66 01 00       	call   0x451a73
+  43b3ad:	6a 14                	push   0x14
+  43b3af:	e8 ab 62 01 00       	call   0x45165f
+  43b3b4:	83 c4 18             	add    esp,0x18
+  43b3b7:	89 44 24 10          	mov    DWORD PTR [esp+0x10],eax
+  43b3bb:	33 f6                	xor    esi,esi
+  43b3bd:	3b c6                	cmp    eax,esi
+  43b3bf:	89 b4 24 fc e1 00 00 	mov    DWORD PTR [esp+0xe1fc],esi
+  43b3c6:	74 0b                	je     0x43b3d3
+  43b3c8:	6a 01                	push   0x1
+  43b3ca:	8b c8                	mov    ecx,eax
+  43b3cc:	e8 1f 63 00 00       	call   0x4416f0
+  43b3d1:	8b f0                	mov    esi,eax
+  43b3d3:	6a 00                	push   0x0
+  43b3d5:	8d 54 24 18          	lea    edx,[esp+0x18]
+  43b3d9:	6a 02                	push   0x2
+  43b3db:	52                   	push   edx
+  43b3dc:	8b ce                	mov    ecx,esi
+  43b3de:	c7 84 24 08 e2 00 00 	mov    DWORD PTR [esp+0xe208],0xffffffff
+  43b3e5:	ff ff ff ff 
+  43b3e9:	e8 d2 63 00 00       	call   0x4417c0
+  43b3ee:	84 c0                	test   al,al
+  43b3f0:	0f 84 a7 00 00 00    	je     0x43b49d
+  43b3f6:	8d 8c 24 6c 01 00 00 	lea    ecx,[esp+0x16c]
+  43b3fd:	e8 8e dc ff ff       	call   0x439090
+  43b402:	8d 8c 24 54 5f 00 00 	lea    ecx,[esp+0x5f54]
+  43b409:	e8 82 dc ff ff       	call   0x439090
+  43b40e:	8d 84 24 40 01 00 00 	lea    eax,[esp+0x140]
+  43b415:	8b cf                	mov    ecx,edi
+  43b417:	50                   	push   eax
+  43b418:	c7 84 24 00 e2 00 00 	mov    DWORD PTR [esp+0xe200],0x1
+  43b41f:	01 00 00 00 
+  43b423:	e8 a8 f8 ff ff       	call   0x43acd0
+  43b428:	8d 8c 24 40 01 00 00 	lea    ecx,[esp+0x140]
+  43b42f:	51                   	push   ecx
+  43b430:	68 b1 e0 00 00       	push   0xe0b1
+  43b435:	6a 00                	push   0x0
+  43b437:	8b ce                	mov    ecx,esi
+  43b439:	e8 72 66 00 00       	call   0x441ab0
+  43b43e:	8b 84 24 ed e1 00 00 	mov    eax,DWORD PTR [esp+0xe1ed]
+  43b445:	85 c0                	test   eax,eax
+  43b447:	7e 21                	jle    0x43b46a
+  43b449:	8b 97 40 01 00 00    	mov    edx,DWORD PTR [edi+0x140]
+  43b44f:	8b ce                	mov    ecx,esi
+  43b451:	52                   	push   edx
+  43b452:	50                   	push   eax
+  43b453:	68 b1 e0 00 00       	push   0xe0b1
+  43b458:	e8 53 66 00 00       	call   0x441ab0
+  43b45d:	8b 84 24 ed e1 00 00 	mov    eax,DWORD PTR [esp+0xe1ed]
+  43b464:	8d a8 b1 e0 00 00    	lea    ebp,[eax+0xe0b1]
+  43b46a:	8b 84 24 e9 e1 00 00 	mov    eax,DWORD PTR [esp+0xe1e9]
+  43b471:	85 c0                	test   eax,eax
+  43b473:	7e 14                	jle    0x43b489
+  43b475:	8b bf 48 01 00 00    	mov    edi,DWORD PTR [edi+0x148]
+  43b47b:	85 ff                	test   edi,edi
+  43b47d:	74 0a                	je     0x43b489
+  43b47f:	57                   	push   edi
+  43b480:	50                   	push   eax
+  43b481:	55                   	push   ebp
+  43b482:	8b ce                	mov    ecx,esi
+  43b484:	e8 27 66 00 00       	call   0x441ab0
+  43b489:	8b ce                	mov    ecx,esi
+  43b48b:	e8 70 65 00 00       	call   0x441a00
+  43b490:	c7 84 24 fc e1 00 00 	mov    DWORD PTR [esp+0xe1fc],0xffffffff
+  43b497:	ff ff ff ff 
+  43b49b:	eb 02                	jmp    0x43b49f
+  43b49d:	32 db                	xor    bl,bl
+  43b49f:	85 f6                	test   esi,esi
+  43b4a1:	74 10                	je     0x43b4b3
+  43b4a3:	8b ce                	mov    ecx,esi
+  43b4a5:	e8 66 62 00 00       	call   0x441710
+  43b4aa:	56                   	push   esi
+  43b4ab:	e8 a0 60 01 00       	call   0x451550
+  43b4b0:	83 c4 04             	add    esp,0x4
+  43b4b3:	8b 8c 24 f4 e1 00 00 	mov    ecx,DWORD PTR [esp+0xe1f4]
+  43b4ba:	5f                   	pop    edi
+  43b4bb:	5e                   	pop    esi
+  43b4bc:	8a c3                	mov    al,bl
+  43b4be:	5d                   	pop    ebp
+  43b4bf:	5b                   	pop    ebx
+  43b4c0:	64 89 0d 00 00 00 00 	mov    DWORD PTR fs:0x0,ecx
+  43b4c7:	81 c4 f0 e1 00 00    	add    esp,0xe1f0
+  43b4cd:	c2 04 00             	ret    0x4
+  43b4d0:	8b 44 24 04          	mov    eax,DWORD PTR [esp+0x4]
+  43b4d4:	81 ec 2c 01 00 00    	sub    esp,0x12c
+  43b4da:	56                   	push   esi
+  43b4db:	8b f1                	mov    esi,ecx
+  43b4dd:	50                   	push   eax
+  43b4de:	68 0c bb 46 00       	push   0x46bb0c
+  43b4e3:	8d 4c 24 0c          	lea    ecx,[esp+0xc]
+  43b4e7:	68 04 bb 46 00       	push   0x46bb04
+  43b4ec:	51                   	push   ecx
+  43b4ed:	e8 81 65 01 00       	call   0x451a73
+  43b4f2:	83 c4 10             	add    esp,0x10
+  43b4f5:	8d 54 24 04          	lea    edx,[esp+0x4]
+  43b4f9:	8b ce                	mov    ecx,esi
+  43b4fb:	52                   	push   edx
+  43b4fc:	e8 0f 00 00 00       	call   0x43b510
+  43b501:	5e                   	pop    esi
+  43b502:	81 c4 2c 01 00 00    	add    esp,0x12c
+  43b508:	c2 04 00             	ret    0x4
+  43b50b:	90                   	nop
+  43b50c:	90                   	nop
+  43b50d:	90                   	nop
+  43b50e:	90                   	nop
+  43b50f:	90                   	nop
+
+
+【结论】
+1. selected Map runtime index 的初始化者、运行时写入者、直接消费者均已在当前 EXE 闭合。
+2. 原版 World block 明确只保存 Scene Descriptor + actor X/Y/state/index + GameVar 等白名单；没有独立 selected index。
+3. v0.3.0-dev3 的 TSF fallback 只替换 World[0..0xC7]；TSA 精确恢复只在当前已闭合的 Scene Mode 类型启用。
+
+
+============================================================
+v0.3.2 BUGFix 合并 CrashFix test2
+============================================================
+
+0x004067A0 Legacy Background Controller updater:
+004067A0  8B 41 20              mov eax,[ecx+20h]
+004067A3  57                    push edi
+004067A4  85 C0                 test eax,eax
+004067A6  0F 8E ...             jle ...
+
+Route A：
+00409541  8B 4E 04              mov ecx,[esi+04h]
+00409544  6A 00                 push 0
+00409546  6A 00                 push 0
+00409548  E8 53 D2 FF FF        call 004067A0
+resume = 0040954D
+
+Route B：
+00409587  8B 4E 04              mov ecx,[esi+04h]
+0040958A  85 C9                 test ecx,ecx
+0040958C  74 09                 je 00409597
+0040958E  6A 00                 push 0
+00409590  6A 00                 push 0
+00409592  E8 09 D2 FF FF        call 004067A0
+resume = 00409597
+
+合并版仍只接管这两个已经静态确认的 caller，不用 VEH 吞异常，也不直接改公共 updater。

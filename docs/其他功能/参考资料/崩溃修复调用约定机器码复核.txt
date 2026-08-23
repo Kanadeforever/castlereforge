@@ -1,0 +1,82 @@
+v0.3.2 BUGFix / Crash 双路径调用约定机器码复核
+================================================
+
+目标：确认 stub 的 `push esi` 调用 __stdcall helper 后，由 helper 自己清理 4-byte 参数。
+
+Clang x86 object 反汇编中，ValidateRouteA 与 ValidateRouteB 均出现：
+
+    ret 0x4
+
+因此 helper 清栈契约成立。
+
+同时 BuildRouteStub 固定生成：
+
+    push esi
+    call helper
+    test eax,eax
+    jz skip
+    mov ecx,eax
+    push 0
+    push 0
+    call 0x004067A0
+    jmp resume
+  skip:
+    jmp resume
+
+摘录：
+
+00000000 <?ValidateRouteA@?A0xC247DF69@@YGPAXPAX@Z>:
+   0:	8b 4c 24 04          	mov    ecx,DWORD PTR [esp+0x4]
+   4:	ba 00 00 00 00       	mov    edx,0x0
+   9:	6a 00                	push   0x0
+   b:	e8 00 00 00 00       	call   10 <?ValidateRouteA@?A0xC247DF69@@YGPAXPAX@Z+0x10>
+  10:	83 c4 04             	add    esp,0x4
+  13:	c2 04 00             	ret    0x4
+
+Disassembly of section .text:
+
+00000000 <?ValidateRouteB@?A0xC247DF69@@YGPAXPAX@Z>:
+   0:	8b 4c 24 04          	mov    ecx,DWORD PTR [esp+0x4]
+   4:	ba 00 00 00 00       	mov    edx,0x0
+   9:	6a 01                	push   0x1
+   b:	e8 00 00 00 00       	call   10 <?ValidateRouteB@?A0xC247DF69@@YGPAXPAX@Z+0x10>
+  10:	83 c4 04             	add    esp,0x4
+  13:	c2 04 00             	ret    0x4
+
+   b:	e8 00 00 00 00       	call   10 <?ValidateRouteA@?A0xC247DF69@@YGPAXPAX@Z+0x10>
+  10:	83 c4 04             	add    esp,0x4
+  13:	c2 04 00             	ret    0x4
+
+Disassembly of section .text:
+
+00000000 <?ValidateRouteB@?A0xC247DF69@@YGPAXPAX@Z>:
+   0:	8b 4c 24 04          	mov    ecx,DWORD PTR [esp+0x4]
+   4:	ba 00 00 00 00       	mov    edx,0x0
+   9:	6a 01                	push   0x1
+   b:	e8 00 00 00 00       	call   10 <?ValidateRouteB@?A0xC247DF69@@YGPAXPAX@Z+0x10>
+  10:	83 c4 04             	add    esp,0x4
+  13:	c2 04 00             	ret    0x4
+
+Disassembly of section .text:
+
+00000000 <?Unsigned@ycrlog@@YAXK@Z>:
+   0:	55                   	push   ebp
+00000000 <?ValidateRouteB@?A0xC247DF69@@YGPAXPAX@Z>:
+   0:	8b 4c 24 04          	mov    ecx,DWORD PTR [esp+0x4]
+   4:	ba 00 00 00 00       	mov    edx,0x0
+   9:	6a 01                	push   0x1
+   b:	e8 00 00 00 00       	call   10 <?ValidateRouteB@?A0xC247DF69@@YGPAXPAX@Z+0x10>
+  10:	83 c4 04             	add    esp,0x4
+  13:	c2 04 00             	ret    0x4
+
+Disassembly of section .text:
+
+00000000 <?Unsigned@ycrlog@@YAXK@Z>:
+   0:	55                   	push   ebp
+   1:	53                   	push   ebx
+   2:	57                   	push   edi
+   3:	56                   	push   esi
+   4:	83 ec 14             	sub    esp,0x14
+   7:	8b 54 24 28          	mov    edx,DWORD PTR [esp+0x28]
+   b:	31 db                	xor    ebx,ebx
+   b:	e8 00 00 00 00       	call   10 <?ValidateRouteB@?A0xC247DF69@@YGPAXPAX@Z+0x10>
