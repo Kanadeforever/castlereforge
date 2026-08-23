@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》手柄操控模组 v0.3-refactor37 综合静态检查工具。
+《幽城幻剑录》手柄操控模组 v0.3-refactor39 综合静态检查工具。
 
 这个工具只使用 Python 标准库，不修改 RPG.exe，也不修改源码。
 它把这次重构最容易发生的“大回归”变成可以重复执行的机械检查：
@@ -17,7 +17,7 @@
 9. 检查 dev20 的 INI 对外键名仍然完整；
 10. 检查地图十字键只提供八方向步行，且松开后保留左摇杆既有全向走跑阈值；
 11. 检查统一 Shop Adapter 保留 refactor36 已实机通过的连续翻页、Y 信息窗与列标记；
-12. 检查 refactor37 的 Back常驻／地图RT临时鼠标优先级、LT原版resolver调查、防穿透与震动仲裁；
+12. 检查 refactor39 的 Back常驻／地图RT临时鼠标优先级、LT原版resolver调查、左杆连续方向轮盘选择、防穿透与震动仲裁；
 13. 检查 build.bat 逐个编译 29 个独立 .c（含 ControlModes 与 Investigation），并保留 x86、/W4 /WX、UTF-8、无 CRT 约束；
 14. 检查编译产物确实是 PE32 / i386 DLL；
 15. 检查源码文件名均为英文/ASCII，并给出注释覆盖率，帮助持续遵守“项目圣经”；
@@ -1425,9 +1425,9 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     lt_mode_pos = control_text.find("if (g_modes.mode == CONTROL_MODE_INVESTIGATION)")
     priority_order_ok = 0 <= back_pos < back_mode_pos < rt_mode_pos < lt_mode_pos
     if not mode_missing and not removed_mouse_paths and priority_order_ok:
-        result.ok("refactor37统一指针模式裁决", "Back常驻 > 地图RT临时 > 地图LT调查 > r36；新按沿、UI中断、释放屏障与实体鼠标无震动接管齐全")
+        result.ok("refactor39统一指针模式裁决", "Back常驻 > 地图RT临时 > 地图LT调查 > r36；新按沿、UI中断、释放屏障与实体鼠标无震动接管齐全")
     else:
-        result.fail("refactor37统一指针模式裁决", f"缺少={mode_missing}，Cursor旧解释残留={removed_mouse_paths}，优先级顺序={priority_order_ok}")
+        result.fail("refactor39统一指针模式裁决", f"缺少={mode_missing}，Cursor旧解释残留={removed_mouse_paths}，优先级顺序={priority_order_ok}")
 
     # 全局强度与每事件独立时长；模式回切优先级必须压住调查短震。
     rumble_required = [
@@ -1439,12 +1439,36 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "if (priority < g_pad.rumble_priority) return 0;", "CONTROL_RUMBLE_PRIORITY_MODE 2",
         "Runtime_Config()->investigation_rumble_ms, 1",
     ]
-    rumble_joined = runtime_text + pad_text + pad_header + control_text + read_utf8(src / "investigation.c")
+    investigation_rumble_text = read_utf8(src / "investigation.c")
+    rumble_joined = runtime_text + pad_text + pad_header + control_text + investigation_rumble_text
     rumble_missing = [token for token in rumble_required if token not in rumble_joined]
-    if not rumble_missing:
-        result.ok("refactor37全局震动强度与独立时长", "StrengthPercent全局；调查命中80ms、回手柄1000ms分别可调；高优先级模式反馈不被短震覆盖")
+
+    # refactor39 追加震动资格护栏：地图 hover 短震只能来自显式 LT 调查或 Back/RT 鼠标会话。
+    # 普通手柄导航也会拥有 controller_owner，所以如果把 Cursor_ControllerOwnsPointer() 当资格门，
+    # 隐藏鼠标刚好落在可互动对象上就会在走路/菜单导航时误震。这里把函数体去掉注释后检查，
+    # 既允许源码里保留详细“为什么不能这样做”的说明，又机械拒绝真实代码回退。
+    investigation_code_no_comments = re.sub(r"/\*.*?\*/|//[^\n]*", "", investigation_rumble_text, flags=re.S)
+    rumble_func_begin = investigation_code_no_comments.find("void Investigation_UpdateRumble(void)")
+    rumble_func_text = investigation_code_no_comments[rumble_func_begin:] if rumble_func_begin >= 0 else ""
+    hover_gate_required = ["Cursor_MouseModeActive()", "Cursor_InvestigationSessionActive()"]
+    hover_gate_missing = [token for token in hover_gate_required if token not in rumble_func_text]
+    hover_gate_forbidden = "Cursor_ControllerOwnsPointer()" in rumble_func_text
+
+    # 除 PadInput_Rumble 自己的实现外，业务层只允许两个调用源：
+    # 1) investigation.c 的可互动 hover 短震；2) control_modes.c 的真正激活普通手柄模式反馈。
+    business_rumble_callers = []
+    for c_file in sorted(src.glob("*.c")):
+        if c_file.name == "pad_input.c":
+            continue
+        code = re.sub(r"/\*.*?\*/|//[^\n]*", "", read_utf8(c_file), flags=re.S)
+        if "PadInput_Rumble(" in code:
+            business_rumble_callers.append(c_file.name)
+    rumble_callers_ok = business_rumble_callers == ["control_modes.c", "investigation.c"]
+
+    if not rumble_missing and not hover_gate_missing and not hover_gate_forbidden and rumble_callers_ok:
+        result.ok("refactor39震动资格与时长", "StrengthPercent全局；LT调查/Back/RT鼠标仅在首次hover新可互动对象时共用80ms短震；普通隐藏鼠标静默；真正激活普通手柄模式1000ms高优先级反馈")
     else:
-        result.fail("refactor37全局震动强度与独立时长", f"缺少={rumble_missing}")
+        result.fail("refactor39震动资格与时长", f"缺少={rumble_missing}，hover门缺少={hover_gate_missing}，错误controller_owner门={hover_gate_forbidden}，业务震动调用源={business_rumble_callers}")
 
     # refactor23 继续逐页 Adapter：r19 Shell 保持；state3/state4 已实机 PASS；state5 只做鼠标焦点隔离修复，并新增 state6 阵形独立 Adapter。
     # 状态页 state1 是只读页，r19 Shell 已覆盖其全部需求，因此不要求造一个空 state1 控制器。
@@ -1811,9 +1835,9 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         elif sha256(path).lower() != expected.lower():
             tome_scope_bad.append(name + "(SHA变化)")
     if tome_scope_bad:
-        result.fail("refactor37旧天书/SaveSlot冻结范围", ", ".join(tome_scope_bad))
+        result.fail("refactor39旧天书/SaveSlot冻结范围", ", ".join(tome_scope_bad))
     else:
-        result.ok("refactor37旧天书/SaveSlot冻结范围", "天书与共享SaveSlot 4/4 文件逐字节保持旧验收版本；Cursor仅按本轮授权改造")
+        result.ok("refactor39旧天书/SaveSlot冻结范围", "天书与共享SaveSlot 4/4 文件逐字节保持旧验收版本；Cursor仅按本轮授权改造")
 
     # R3 复合状态机被新需求明确删除，但可靠的 48ms Windows消息 + GetKeyState 双通道桥必须保留，
     # 供 RT 的 A/B 与 LT 的 A 共同复用。
@@ -1833,9 +1857,9 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "R3_LEFT_CLICK_PULSE_MS",
     ] if token in cursor_text]
     if not cursor_bridge_missing and not cursor_bridge_forbidden:
-        result.ok("refactor37共享可靠鼠标点击桥", "RT/LT共用48ms左右键脉冲；GetKeyState与mouse_event双通道保留；旧R3状态机已移除")
+        result.ok("refactor39共享可靠鼠标点击桥", "RT/LT共用48ms左右键脉冲；GetKeyState与mouse_event双通道保留；旧R3状态机已移除")
     else:
-        result.fail("refactor37共享可靠鼠标点击桥", f"缺少={cursor_bridge_missing}，旧R3残留={cursor_bridge_forbidden}")
+        result.fail("refactor39共享可靠鼠标点击桥", f"缺少={cursor_bridge_missing}，旧R3残留={cursor_bridge_forbidden}")
 
     # LT调查只观察原版resolver真值；模式进入、优先级和CaptureAll由ControlModes统一承担。
     investigation_text = read_utf8(src / "investigation.c") + read_utf8(src / "investigation.h")
@@ -1849,9 +1873,12 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "collision + 0x48u", "frame + 0x54u", "INVESTIGATION_SCREEN_WIDTH  640",
         "INVESTIGATION_SCREEN_HEIGHT 480", "INVESTIGATION_CANDIDATES    25",
         "g_snapshot_sequence", "before == after", "snapshot->serial == g_investigation.pending_snapshot_serial",
-        "inv_abs(cross) > dot", "investigation_snap_radius_pixels",
-        "Cursor_MoveInvestigationRightStick", "Cursor_PulseLeftClick", "Investigation_UpdateActive",
-        "PadInput_Rumble", "last_rumble_object",
+        "INVESTIGATION_DIRECTION_AXIS_DIVISOR", "INVESTIGATION_DIRECTION_HYSTERESIS_PERMILLE",
+        "wheel_origin_x", "wheel_origin_y", "left_selected_object", "left_manual_override", "left_failed_object",
+        "actor + 0x10u", "actor + 0x14u", "inv_direction_score",
+        "wanted_object != g_investigation.left_selected_object",
+        "investigation_snap_radius_pixels", "Cursor_MoveInvestigationRightStick",
+        "Cursor_PulseLeftClick", "Investigation_UpdateActive", "PadInput_Rumble", "last_rumble_object",
     ]
     investigation_joined = investigation_text + runtime_text + addresses_text + read_utf8(src / "platform.h")
     investigation_missing = [token for token in investigation_required if token not in investigation_joined]
@@ -1867,10 +1894,31 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     no_direct_trigger_policy = all(token not in investigation_text for token in [
         "PadInput_Down(PAD_LT)", "PadInput_Down(PAD_RT)", "InputRouter_Down(INPUT_SUBTYPE_PREV)",
     ])
-    if not investigation_missing and worker_order_ok and modal_movement_ok and protocol_gate_ok and no_direct_trigger_policy:
-        result.ok("refactor37 LT原版resolver调查", "原函数真值不变；640x480合格快照；左杆方向硬切；右杆低速短吸附；模式裁决与地图移动抑制分层")
+    # refactor39 的关键手感护栏：旧 left_stick_latched 与 R38 鼠标固定锚点都必须彻底消失；
+    # 轮盘中心必须来自当前角色屏幕坐标，并且方向裁决要先于旧 probe 推进，避免旧目标晚确认/误点击。
+    update_begin = investigation_text.find("int Investigation_UpdateActive(void)")
+    update_text = investigation_text[update_begin:] if update_begin >= 0 else ""
+    direction_pos = update_text.find("inv_left_stick_target(&snapshot")
+    progress_pos = update_text.find("inv_progress_probe(&snapshot);")
+    continuous_direction_order_ok = direction_pos >= 0 and progress_pos >= 0 and direction_pos < progress_pos
+    no_legacy_left_latch = "left_stick_latched" not in investigation_text
+    no_r38_mouse_anchor = all(token not in investigation_text for token in [
+        "left_anchor_valid", "left_anchor_x", "left_anchor_y",
+        "INVESTIGATION_DIRECTION_CONE_MULTIPLIER", "INVESTIGATION_DIRECTION_HYSTERESIS_PERCENT",
+    ])
+    actor_center_ok = all(token in investigation_text for token in [
+        "g_published_snapshot.wheel_origin_x", "g_published_snapshot.wheel_origin_y",
+        "actor + 0x10u", "actor + 0x14u", "snapshot->wheel_origin_x", "snapshot->wheel_origin_y",
+        "dot <= 0", "cross_squared / distance_squared",
+    ])
+    no_hard_forward_cone = "abs_cross > dot" not in investigation_text and "DIRECTION_CONE" not in investigation_text
+
+    if (not investigation_missing and worker_order_ok and modal_movement_ok and protocol_gate_ok and
+            no_direct_trigger_policy and continuous_direction_order_ok and no_legacy_left_latch and
+            no_r38_mouse_anchor and actor_center_ok and no_hard_forward_cone):
+        result.ok("refactor39 LT原版resolver调查", "原函数真值不变；640x480合格快照；角色实时屏幕位置为轮盘中心；前方180度无硬空白扇区；无对角偏差角度评分+约2~3度轻迟滞；新方向先于旧probe；右杆低速短吸附")
     else:
-        result.fail("refactor37 LT原版resolver调查", f"缺少={investigation_missing}，worker顺序={worker_order_ok}，移动抑制={modal_movement_ok}，协议门={protocol_gate_ok}，无私自扳机策略={no_direct_trigger_policy}")
+        result.fail("refactor39 LT原版resolver调查", f"缺少={investigation_missing}，worker顺序={worker_order_ok}，移动抑制={modal_movement_ok}，协议门={protocol_gate_ok}，无私自扳机策略={no_direct_trigger_policy}，连续方向先裁决={continuous_direction_order_ok}，旧latch已删除={no_legacy_left_latch}，R38鼠标锚点已删除={no_r38_mouse_anchor}，角色中心={actor_center_ok}，无硬扇区={no_hard_forward_cone}")
 
     # refactor14 起 CMD1/CMD2 技能/道具列表的 D-Pad 左右应复用原版分页 ButtonEvent。
     # refactor16 复核发现 r14/r15 的 Battle 业务代码虽然已经调用 INPUT_NAV_LEFT/RIGHT，
@@ -2865,15 +2913,15 @@ def check_artifact(root: Path, result: CheckResult) -> None:
         is_pe32 = magic == 0x010B
         is_dll = bool(characteristics & 0x2000)
         compiled_markers = [
-            b"refactor37",
-            "r36路由底座已启用".encode("utf-8"),
-            "RT临时鼠标".encode("utf-8"),
+            b"refactor39",
+            "r38震动边界实机PASS并冻结".encode("utf-8"),
             "LT调查".encode("utf-8"),
-            "全局震动强度".encode("utf-8"),
+            "角色中心连续方向轮盘".encode("utf-8"),
+            "隐藏鼠标误震修复保持冻结".encode("utf-8"),
         ]
         missing_markers = [marker.decode("utf-8") for marker in compiled_markers if marker not in data]
         if is_i386 and is_pe32 and is_dll and not missing_markers:
-            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + refactor37 Back/RT/LT模式与全局震动配置标记，SHA-256={sha256(asi)}")
+            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + refactor39 角色中心连续轮盘与r38震动边界冻结标记，SHA-256={sha256(asi)}")
         else:
             result.fail("ASI PE 结构/本轮编译标记", f"machine=0x{machine:04X}, magic=0x{magic:04X}, DLL={is_dll}，缺编译标记={missing_markers}")
     except Exception as exc:
@@ -2916,17 +2964,28 @@ def check_documents(root: Path, result: CheckResult) -> None:
     else:
         result.ok("独立接档文档集合", f"文档目录内 {len(required_docs)} 份现行说明均存在")
 
-    # 所有 Markdown 都属于“现行说明文档”，因此不允许再散落到根目录、源码、编译内容或证据目录。
+    # 通常所有说明 Markdown 都应集中在“文档/”。唯一例外是源码目录的 readme.md：
+    # 用户明确说明它是发布到 GitHub 时使用的仓库入口，因此必须保留 README/readme 这个
+    # GitHub 约定文件名，不能为了“文档中文名”规则把它改成中文。这里把这个例外写死，
+    # 这样既不会误报合法 GitHub README，也不会让其它英文说明文件借机散落到源码目录。
+    github_readme = root / "源码" / "readme.md"
+    if not github_readme.is_file():
+        result.fail("GitHub README 例外", "缺少 源码/readme.md；该文件允许保留英文名，但不能删除或改成其它散落 Markdown")
+    else:
+        result.ok("GitHub README 例外", "源码/readme.md 存在；按 GitHub 入口文档规则保留英文文件名")
+
     misplaced_markdown = []
     for path in root.rglob("*.md"):
+        if path.resolve() == github_readme.resolve():
+            continue
         try:
             path.relative_to(doc_dir)
         except ValueError:
             misplaced_markdown.append(str(path.relative_to(root)))
     if misplaced_markdown:
-        result.fail("文档集中到文档目录", "发现散落 Markdown：" + ", ".join(sorted(misplaced_markdown)))
+        result.fail("文档集中到文档目录", "除 GitHub README 外发现散落 Markdown：" + ", ".join(sorted(misplaced_markdown)))
     else:
-        result.ok("文档集中到文档目录", "所有 Markdown 均位于 文档/")
+        result.ok("文档集中到文档目录", "除 源码/readme.md 的 GitHub 例外外，其余 Markdown 均位于 文档/")
 
     # 最终“编译内容”只保留用户真正需要部署/配置的 ASI 与 INI。
     # 链接器临时生成的 .lib/.exp、旧版说明 TXT 等都不应该混进最终交付。
@@ -2956,13 +3015,13 @@ def check_documents(root: Path, result: CheckResult) -> None:
     # 用户明确要求从本版起不再内置逐版证据；旧证据树即使内容正确也不能继续塞进交付包。
     evidence_dir = root / "证据"
     if evidence_dir.exists():
-        result.fail("refactor37精简证据策略", "交付包仍包含 证据/；请删除逐版证据树，必要结论只合并进一份持续维护文档")
+        result.fail("refactor39精简证据策略", "交付包仍包含 证据/；请删除逐版证据树，必要结论只合并进一份持续维护文档")
     else:
-        result.ok("refactor37精简证据策略", "未内置逐版证据树；源码、现行文档与本检查器构成交接依据")
+        result.ok("refactor39精简证据策略", "未内置逐版证据树；源码、现行文档与本检查器构成交接依据")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 refactor37：校验Back常驻/地图RT临时鼠标、LT原版resolver调查、震动仲裁、29个独立C构建、文档与目标RPG.exe")
+    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 refactor39：校验Back常驻/地图RT临时鼠标、LT角色中心resolver连续轮盘、r38震动边界冻结、29个独立C构建、文档与目标RPG.exe")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent, help="包根目录；默认自动取工具目录的上一层")
     parser.add_argument("--exe", type=Path, help="可选：待验证的 RPG.exe。提供后先检查双样本 SHA 白名单，再执行既有冻结协议以及主 Interface state2～state8 页面协议；state3 治疗目标的 +0x768 短锚点与两处新 Event CALL、以及既有 state7/state8 协议也必须通过")
     args = parser.parse_args()

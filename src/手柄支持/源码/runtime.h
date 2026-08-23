@@ -32,7 +32,11 @@ typedef struct RuntimeConfig {
     u32 investigation_right_stick_sensitivity_percent;
     u32 investigation_snap_radius_pixels;
 
-    /* StrengthPercent 是全局强度；每一种提示各自拥有可单独调整的持续时间。 */
+    /*
+     * StrengthPercent 是全局强度。investigation_rumble_ms 虽保留历史字段名，实际服务于
+     * LT 调查和 Back/RT 鼠标模式共同的“碰到新可互动对象”短震；controller_mode_rumble_ms
+     * 只用于真正激活普通手柄模式的长反馈。普通隐藏鼠标没有震动资格。
+     */
     u32 rumble_strength_percent;
     u32 investigation_rumble_ms;
     u32 controller_mode_rumble_ms;

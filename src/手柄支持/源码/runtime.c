@@ -189,7 +189,7 @@ static int rt_cfg_int(const char* section, const char* key, int defv, int minv, 
 
 static void rt_load_config(void) {
     /*
-     * 绝大多数既有默认值继续沿用稳定基线。r37 只替换指针模式与震动配置：
+     * 绝大多数既有默认值继续沿用稳定基线。r38 只继续收口指针模式、LT 调查手感与震动边界：
      * 已移除业务的延时隐藏、修饰键精细档与摇杆按键长按配置不再读取。
      * 所有配置仍集中由 Runtime 读取，Cursor / Battle 等业务模块只拿已经裁剪过安全范围的结果。
      */
@@ -204,7 +204,11 @@ static void rt_load_config(void) {
         (u32)rt_cfg_int("Investigation", "RightStickSensitivityPercent", 8, 1, 100);
     g_cfg.investigation_snap_radius_pixels =
         (u32)rt_cfg_int("Investigation", "SnapRadiusPixels", 12, 1, 64);
-    /* 所有震动事件共享一个强度百分比；持续时间按事件拆开，便于逐项调手感。 */
+    /*
+     * 所有震动事件共享一个强度百分比；持续时间按事件拆开，便于逐项调手感。
+     * InvestigationHoverDurationMs 是历史键名：现在它表示“显式 LT 调查或 Back/RT 鼠标模式中，
+     * 指针首次碰到新的可互动对象”的共享短震时长，不允许普通隐藏鼠标使用。
+     */
     g_cfg.rumble_strength_percent =
         (u32)rt_cfg_int("Rumble", "StrengthPercent", 100, 0, 100);
     g_cfg.investigation_rumble_ms =
@@ -1437,7 +1441,7 @@ int Runtime_Initialize(HMODULE self_module) {
     rt_load_config();
     rt_open_log();
 
-    Runtime_Log("[启动] 幽城幻剑录手柄支持：v0.3-refactor37（基础功能完成版）");
+    Runtime_Log("[启动] 幽城幻剑录手柄支持：v0.3-refactor39（LT角色中心轮盘跟手修复候选版）");
     Runtime_Log("[启动] By Luminou with ChatGPT");
     Runtime_LogModule("ASI 插件", g_self_module, NULL);
 

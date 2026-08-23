@@ -158,7 +158,7 @@ static int plugin_install_all_hooks(void) {
      *
      * refactor28 的治疗目标选择以及更早的 Battle、主 Interface、标题/SaveSlot、剧情 A、SDL3 热切换全部按 PASS 基线冻结。
      */
-    Runtime_Log("[启动] refactor37：r36路由底座已启用；Back常驻鼠标；RT临时鼠标；LT调查；全局震动强度与各项独立时长。");
+    Runtime_Log("[启动] refactor39：Back常驻鼠标；RT临时鼠标；LT调查；LT调查为角色中心连续方向轮盘、无硬空白扇区与低迟滞选择。");
     return 1;
 }
 

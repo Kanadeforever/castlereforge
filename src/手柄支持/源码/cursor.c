@@ -1,4 +1,4 @@
-#include "cursor.h"
+﻿#include "cursor.h"
 #include "runtime.h"
 #include "game_addresses.h"
 #include "pad_input.h"
@@ -382,7 +382,7 @@ int Cursor_InstallHooks(void) {
     g_cursor.effective_visible = 1;
     g_cursor.visible_state_logged = -1;
     cursor_update_visibility();
-    Runtime_Log("[鼠标] refactor37：普通态右摇杆与R3复合点击保持删除；完整鼠标只由Back/地图RT显式会话启用。");
+    Runtime_Log("[鼠标] refactor39：普通态右摇杆与R3复合点击保持删除；完整鼠标只由Back/地图RT显式会话启用。");
     return 1;
 }
 

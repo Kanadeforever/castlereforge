@@ -42,6 +42,8 @@ if not exist "..\编译内容" mkdir "..\编译内容"
 if exist "_build" rmdir /s /q "_build"
 mkdir "_build"
 
+:: 出问题再恢复下面的行
+:: set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-void-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast"
 set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-void-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast"
 
 call :compile runtime.c runtime.obj || goto :fail
