@@ -1,0 +1,17 @@
+#include "resource.h"
+
+/*
+ * CastleModLoader.exe 的 Windows 资源脚本。
+ *
+ * “ICON”这一行做的事情不是运行时读取外部文件，而是在编译阶段把 RPG.ico 的图像数据直接写进 EXE 的 .rsrc 资源节。
+ * 所以最终用户只需要 CastleModLoader.exe，本程序运行时不会依赖旁边还放着一份 RPG.ico。
+ *
+ * 路径使用“..\\资源\\RPG.ico”，是因为 build.bat 会先进入“源码”目录再运行 rc.exe：
+ *   源码\launcher.rc
+ *   资源\RPG.ico
+ * 两个目录处于同一级，因此从“源码”向上一层后即可进入“资源”。
+ *
+ * IDI_RPG_ICON 定义在 resource.h 中，launcher_gui.c 也使用同一个 ID 调用 LoadIconW，
+ * 这样文件图标、标题栏图标和任务栏图标都来自用户提供的同一份 RPG.ico。
+ */
+IDI_RPG_ICON ICON "..\\资源\\RPG.ico"
