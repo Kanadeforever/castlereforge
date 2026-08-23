@@ -11,6 +11,7 @@ WiseTreeExtractor
 - 直接解析 PE overlay 中连续的 raw-DEFLATE 数据流；
 - 从 Wise 安装信息流中读取 Install File 记录；
 - 按 Windows 台湾 Big5 代码页 CP950 解码目标路径；
+- 读取 Wise Install File 记录中的 DOS/FAT 原始修改时间并写回文件；
 - 用文件大小 + CRC32 将安装目标路径与 payload 精确配对；
 - 重建 %MAINDIR% 下的完整目录树，因此不会发生 /X 模式的“全部落在 root”问题；
 - 同名文件位于不同目录时可以全部保留。
@@ -41,7 +42,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 
-VERSION = "1.0"
+VERSION = "1.1"
 PATH_ENCODING = "cp950"  # Windows 台湾 Big5（代码页 950）
 OUTPUT_SUFFIX = "_Extracted"
 REPORT_SUFFIX = "_extract_report.txt"
@@ -56,6 +57,7 @@ MAINDIR_MARKER = b"%MAINDIR%\\"
 # 路径前 4 字节是文件 CRC32。
 INSTALL_FILE_HEADER_DISTANCE = 44
 INSTALL_FILE_HEADER_MAGIC = b"\x00\x00\x80\x00"
+INSTALL_FILE_TIMESTAMP_DISTANCE = 32
 INSTALL_FILE_SIZE_DISTANCE = 28
 INSTALL_FILE_CRC_DISTANCE = 4
 
@@ -69,6 +71,9 @@ class FileRecord:
     relative_path: Path
     size: int
     crc32: int
+    dos_date: int
+    dos_time: int
+    modified_time: datetime
 
     @property
     def key(self) -> Tuple[int, int]:
@@ -138,6 +143,47 @@ def read_u32(data: bytes, offset: int) -> int:
     if offset < 0 or offset + 4 > len(data):
         raise ExtractError(f"读取 U32 越界：0x{offset:X}")
     return struct.unpack_from("<I", data, offset)[0]
+
+
+def decode_dos_datetime(date_word: int, time_word: int, context: str) -> datetime:
+    """
+    把 Wise Install File 记录中的 MS-DOS/FAT 日期时间转换为 datetime。
+
+    DOS 时间只有 2 秒精度，并且不携带时区；这正是 2001 年安装包中
+    保存的原始“文件修改时间”语义。解包时按当前 Windows 本地时区写回，
+    因而资源管理器中的“修改日期”与安装包记录保持同一墙钟时间。
+    """
+    year = 1980 + ((date_word >> 9) & 0x7F)
+    month = (date_word >> 5) & 0x0F
+    day = date_word & 0x1F
+    hour = (time_word >> 11) & 0x1F
+    minute = (time_word >> 5) & 0x3F
+    second = (time_word & 0x1F) * 2
+
+    try:
+        return datetime(year, month, day, hour, minute, second)
+    except ValueError as exc:
+        raise ExtractError(
+            f"无效的 Wise/DOS 文件时间：{context} "
+            f"date=0x{date_word:04X} time=0x{time_word:04X}"
+        ) from exc
+
+
+def apply_original_modified_time(path: Path, modified_time: datetime) -> None:
+    """
+    写回安装包中的原始修改时间。
+
+    DOS/FAT 时间没有时区，因此把记录值视为宿主 Windows 的本地墙钟时间。
+    不伪造 creation time：Wise 当前记录中确认存在的是文件修改时间。
+    """
+    try:
+        timestamp = modified_time.timestamp()
+        os.utime(path, (timestamp, timestamp))
+    except (OSError, OverflowError, ValueError) as exc:
+        raise ExtractError(
+            f"无法写回原始修改时间：{path} -> "
+            f"{modified_time:%Y-%m-%d %H:%M:%S}: {exc}"
+        ) from exc
 
 
 def find_pe_overlay(data: bytes) -> int:
@@ -383,6 +429,18 @@ def parse_install_file_records(script: bytes) -> List[FileRecord]:
         raw_path = script[off:end]
         decoded = decode_big5_path(raw_path, off)
         relative = make_safe_relative_path(decoded)
+        timestamp_off = off - INSTALL_FILE_TIMESTAMP_DISTANCE
+        if timestamp_off < 0:
+            continue
+
+        dos_date = read_u16(script, timestamp_off)
+        dos_time = read_u16(script, timestamp_off + 2)
+        modified_time = decode_dos_datetime(
+            dos_date,
+            dos_time,
+            decoded,
+        )
+
         size = read_u32(script, size_off)
         crc = read_u32(script, crc_off)
 
@@ -395,6 +453,9 @@ def parse_install_file_records(script: bytes) -> List[FileRecord]:
                 relative_path=relative,
                 size=size,
                 crc32=crc,
+                dos_date=dos_date,
+                dos_time=dos_time,
+                modified_time=modified_time,
             )
         )
 
@@ -544,13 +605,19 @@ def extract_installer(installer: Path) -> bool:
                 with open(dest, "wb") as fp:
                     fp.write(payload)
 
+                # 文件关闭后立即恢复 Wise 记录中的原始修改时间。
+                # 注意：这里恢复的是安装包中真实保存的 Last Modified；
+                # 不把解包时间留在文件上，也不虚构 creation time。
+                apply_original_modified_time(dest, rec.modified_time)
+
                 written_paths[path_key] = rec.key
                 written_count += 1
 
                 log(
                     report,
                     f"[{action}] {rec.relative_path}  "
-                    f"size={rec.size} CRC={rec.crc32:08X}"
+                    f"size={rec.size} CRC={rec.crc32:08X} "
+                    f"mtime={rec.modified_time:%Y-%m-%d %H:%M:%S}"
                 )
 
             log(report)
@@ -563,6 +630,8 @@ def extract_installer(installer: Path) -> bool:
             log(report, f"唯一输出路径：{len(written_paths)}")
             log(report, f"Big5/CP950 解码错误：0")
             log(report, "CRC/大小未匹配：0")
+            log(report, "原始修改时间恢复失败：0")
+            log(report, "时间戳来源：Wise Install File 记录中的 DOS/FAT date+time（2 秒精度）")
             log(report, f"输出：{output_dir}")
             log(report)
             log(report, "[成功] 已按 Wise 原安装目标重建 %MAINDIR% 目录树。")
