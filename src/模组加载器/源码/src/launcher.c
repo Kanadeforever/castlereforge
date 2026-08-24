@@ -565,7 +565,7 @@ static int create_and_prepare_game_(const WCHAR* game_exe, const WCHAR* game_dir
         CloseHandle(pi.hProcess);
         return 0;
     }
-    log_line_((const WCHAR*)L"[Pre-Loader] CastleLocaleBootstrap.dll 已排在启动装载图最前；CastleModCore.dll 紧随其后；两者由 dev5 兼容的 mods DLL 搜索环境定位；磁盘 RPG.exe 未修改。");
+    log_line_((const WCHAR*)L"[Pre-Loader] CastleLocaleBootstrap.dll 已排在启动装载图最前；CastleModCore.dll 紧随其后；两者通过显式 mods 相对路径加入启动装载图；磁盘 RPG.exe 未修改。");
 
     /*
      * 这是 Launcher 对 modloader.log 的最后一条写入。必须放在 ResumeThread 之前：
