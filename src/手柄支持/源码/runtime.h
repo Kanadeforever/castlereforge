@@ -26,15 +26,51 @@ typedef struct RuntimeConfig {
     int battle_shortcuts;
     int battle_remember_selection;
 
+    /*
+     * 是否交换“确定”和“取消”这两个语义所使用的物理面键。
+     *
+     * 0：Xbox位置布局，南键（Xbox A / PS X）=确定，东键（Xbox B / PS O）=取消。
+     * 1：PS传统布局，东键（PS O / Xbox B）=确定，南键（PS X / Xbox A）=取消。
+     *
+     * 这个开关只交换 INPUT_CONFIRM / INPUT_CANCEL 语义。确定始终驱动鼠标左键，取消
+     * 始终驱动鼠标右键，所以 Back/RT 鼠标模式也跟随交换。X、Y和 RB+ABXY 战斗
+     * 快捷键继续按固定物理位置处理，不受这个开关影响。
+     */
+    int swap_confirm_cancel;
+
     /* r37 指针速度：Back常驻与地图RT共用同一套双摇杆鼠标曲线。 */
     u32 mouse_mode_left_stick_sensitivity_percent;
     u32 mouse_mode_right_stick_sensitivity_percent;
+
+    /*
+     * 调查模式有两种“怎么进入、怎么确认”的用户选择。
+     *
+     * 0：默认的新方式。自由地图按住“确定键”进入调查；松开确定键时，如果原版已经
+     *    确认当前指针真的停在可互动目标上，就提交一次互动。按住时按“取消键”会取消。
+     * 1：R40 以前的方式。自由地图按住 LT 进入调查；调查中另按“确定键”才提交互动。
+     *
+     * 这里只保存从 INI 读到并裁剪为 0/1 的数字。到底哪颗键进入、何时退出，仍由
+     * ControlModes 统一裁决，Runtime 自己不读取手柄按钮。
+     */
+    int investigation_activation_mode;
+
+    /*
+     * 进入调查时是否自动选择离角色最近的可互动目标。
+     *
+     * 1：默认开启。调查会话刚建立时，复用R40已经实机通过的“距离从近到远”列表，
+     *    自动把第0项交给原版resolver/25点probe验证。
+     * 0：关闭。进入调查后保持R41行为，等玩家自己推左杆、按LB/RB或移动右杆。
+     *
+     * 这个值只决定“刚进入时是否自动提出一个候选”，不等于目标已经可互动，
+     * 更不会绕过resolver直接点击。
+     */
+    int investigation_auto_focus_nearest;
     u32 investigation_right_stick_sensitivity_percent;
     u32 investigation_snap_radius_pixels;
 
     /*
      * StrengthPercent 是全局强度。investigation_rumble_ms 虽保留历史字段名，实际服务于
-     * LT 调查和 Back/RT 鼠标模式共同的“碰到新可互动对象”短震；controller_mode_rumble_ms
+     * A/LT 调查和 Back/RT 鼠标模式共同的“碰到新可互动对象”短震；controller_mode_rumble_ms
      * 只用于真正激活普通手柄模式的长反馈。普通隐藏鼠标没有震动资格。
      */
     u32 rumble_strength_percent;
@@ -157,7 +193,7 @@ int Runtime_ShopProtocolOk(void);
 int Runtime_ShopItemInfoProtocolOk(void);
 /* 独立存档包装层的构造/绑定/Update 协议；失败只禁用存档点 Adapter。 */
 int Runtime_SavePointProtocolOk(void);
-/* LT 调查依赖的地图互动 resolver 和对象布局独立协议门。 */
+/* A/LT 调查共用的地图互动 resolver 和对象布局独立协议门。 */
 int Runtime_InvestigationProtocolOk(void);
 
 /*

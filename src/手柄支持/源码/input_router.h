@@ -7,7 +7,8 @@
  * input_router.h
  *
  * 这是本次重构新增的“语义层”。物理键只在 pad_input.c 出现；业务模块看到的是动作语义。
- * 例如 PAD_SOUTH 会先变成 INPUT_CONFIRM，之后 Battle/Save/Title 再决定如何实现“确认”。
+ * 例如默认布局的 PAD_SOUTH 会先变成 INPUT_CONFIRM，之后 Battle/Save/Title 再决定
+ * 如何实现“确认”；交换布局后 INPUT_CONFIRM 改由 PAD_EAST 产生，业务层不用逐页修改。
  *
  * 每个 Context 对动作有四种组合方式：
  * PASS     - 使用通用语义，不增加专属行为；
@@ -116,7 +117,17 @@ int InputRouter_Down(InputAction action);
 int InputRouter_Released(InputAction action);
 
 /*
- * 组合键也只在语义层组合：业务模块只说“RB语义 + A语义”，不再知道 SDL 的按钮编号。
+ * 模式层专用的原始语义读取：遵守 SwapConfirmCancel，但不受本tick consumed mask影响。
+ * 普通页面仍应使用上面的三个接口；只有ControlModes/Investigation这类必须维护物理按住
+ * 生命周期的底层状态机才使用 Raw 版本。
+ */
+int InputRouter_RawPressed(InputAction action);
+int InputRouter_RawDown(InputAction action);
+int InputRouter_RawReleased(InputAction action);
+
+/*
+ * 此组合接口当前专用于 RB+ABXY 战斗快捷键，刻意保持固定物理面键位置，
+ * 不跟随 SwapConfirmCancel。普通确认/取消业务不要通过这个接口读取。
  * 判定同时支持“先按住修饰键再按动作键”和“先按住动作键再按修饰键”两种自然手势。
  */
 int InputRouter_ChordPressed(InputAction modifier, InputAction action);

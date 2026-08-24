@@ -1,6 +1,6 @@
-@echo off
+﻿@echo off
 setlocal DisableDelayedExpansion
-chcp 65001 >nul
+"%SystemRoot%\System32\chcp.com" 65001 >nul
 
 set "VSDEV="
 
@@ -39,12 +39,22 @@ where clang-cl >nul 2>nul || goto :tool_fail
 where link >nul 2>nul || goto :tool_fail
 
 if not exist "..\编译内容" mkdir "..\编译内容"
+
+::
+:: “源码包”和“编译内容包”都必须能独立告诉接手者当前发生过什么。
+:: 仓库里的权威中文文档位于顶层 docs\手柄支持；这里先准备两个镜像目录：
+:: - ..\文档                 属于手柄源码包；
+:: - ..\编译内容\文档       属于可以直接交给测试者的编译内容包。
+:: 编译内容还携带最新检查器，所以另建 ..\编译内容\工具。
+:: mkdir 只在目录不存在时执行，不会删除用户已有文件。
+::
+if not exist "..\文档" mkdir "..\文档"
+if not exist "..\编译内容\文档" mkdir "..\编译内容\文档"
+if not exist "..\编译内容\工具" mkdir "..\编译内容\工具"
 if exist "_build" rmdir /s /q "_build"
 mkdir "_build"
 
-:: 出问题再恢复下面的行
-:: set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-void-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast"
-set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-void-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast"
+set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-void-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast"
 
 call :compile runtime.c runtime.obj || goto :fail
 call :compile pad_input.c pad_input.obj || goto :fail
@@ -77,7 +87,7 @@ call :compile battle.c battle.obj || goto :fail
 call :compile plugin.c plugin.obj || goto :fail
 
 echo [链接] Castle_PadSupport.asi
-link /nologo /dll /nodefaultlib /machine:x86 /entry:DllMain@12 ^
+link /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 ^
   "_build\runtime.obj" "_build\pad_input.obj" "_build\input_router.obj" "_build\movie_skip.obj" ^
   "_build\confirm_dialog.obj" "_build\dialogue_input.obj" ^
   "_build\cursor.obj" "_build\exploration.obj" "_build\investigation.obj" "_build\control_modes.obj" "_build\ui_bridge.obj" "_build\interface_shell.obj" "_build\interface_items.obj" "_build\interface_skills.obj" "_build\interface_equipment.obj" "_build\interface_inner_stats.obj" "_build\spatial_neighbor.obj" "_build\interface_formation.obj" "_build\interface_tome.obj" "_build\interface_options.obj" ^
@@ -86,12 +96,38 @@ link /nologo /dll /nodefaultlib /machine:x86 /entry:DllMain@12 ^
   /out:"..\编译内容\Castle_PadSupport.asi"
 if errorlevel 1 goto :fail
 
+::
+:: ASI 和 INI 必须成对进入编译内容。
+:: ASI 是程序本体；INI 告诉用户当前默认使用哪一种调查激活方式，并保存全部公开参数。
+:: 如果这里只生成 ASI、不复制 INI，用户即使拿到新代码也看不到 ActivationMode=0 的默认契约。
+:: copy 失败必须和编译失败一样中止，不能把缺配置的半套产物标成成功。
+::
+copy /y "Castle_PadSupport.ini" "..\编译内容\Castle_PadSupport.ini" >nul
+if errorlevel 1 goto :fail
+
+::
+:: 同步全部现行中文文档，而不是只复制本轮更新记录。
+:: 这样完整接档、架构、地址、失败方案、测试和工具说明不会出现“有的包是R41，
+:: 有的包还停在R40”的半同步状态。任一 copy 失败都中止构建。
+::
+copy /y "..\..\..\docs\手柄支持\*.md" "..\文档\" >nul
+if errorlevel 1 goto :fail
+copy /y "..\..\..\docs\手柄支持\*.md" "..\编译内容\文档\" >nul
+if errorlevel 1 goto :fail
+
+:: 最新稳定检查器和它的简体中文说明必须跟随编译内容包。
+copy /y "..\工具\refactor_check.py" "..\编译内容\工具\refactor_check.py" >nul
+if errorlevel 1 goto :fail
+copy /y "..\..\..\docs\手柄支持\工具详细说明.md" "..\编译内容\工具\工具详细说明.md" >nul
+if errorlevel 1 goto :fail
+
 del /q "..\编译内容\Castle_PadSupport.lib" 2>nul
 del /q "..\编译内容\Castle_PadSupport.exp" 2>nul
 rmdir /s /q "_build"
 
 echo.
 echo done
+echo [打包] ASI + INI + 全部中文文档 + 最新检查器已同步到编译内容。
 pause
 exit /b 0
 

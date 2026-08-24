@@ -1,22 +1,28 @@
-﻿> 当前权威版本：v0.3-refactor39（LT 角色中心连续轮盘跟手修复候选，2026-08-23）。实机基线为 v0.3-refactor38：普通隐藏鼠标误震已由用户确认修复并冻结；R38 的 LT 连续旋转比旧 latch 明显改善，但用户确认仍“不够跟手”，且摇杆转到某些方向时不能稳定选中该方向上的可互动目标。R39 只继续修 LT 方向几何与切换迟滞：轮盘中心改为当前角色屏幕位置，取消 R38 的 ±63.4° 硬候选锥，使用无水平/垂直/对角偏差的纯整数角度评分，并把迟滞收紧到约 2～3°。Back/RT/LT 优先级、原版 resolver/25 点验证、鼠标模式和 R38 已通过的震动边界全部冻结。下文任何更早“当前/候选”表述与本段冲突时均按历史记录处理。
+﻿> 当前权威版本：v0.3-refactor42（自动最近目标 + 确定/取消布局候选，2026-08-24）。实机稳定基线为 v0.3-refactor41：默认确定键按住/松开互动/取消键退出与 LT 兼容模式均已确认正常；R40目标轮盘及更早基线继续冻结。R42 新增两个默认开关：`Investigation.AutoFocusNearest=1` 在每次建立调查会话时复用R40距离第0项、肩键锁和resolver/25点probe自动尝试最近目标；`Controls.SwapConfirmCancel=0` 为南键确定/东键取消，设为1切换成东键（PS O）确定/南键（PS X）取消。确定/取消交换覆盖所有语义页面、调查激活和Back/RT鼠标左右键（确定=左键、取消=右键），但RB+ABXY战斗快捷键、X/Y专属功能等固定物理位置操作不变。用户补回的INI中文注释全部保留，新选项同样使用中文。PadInput、Cursor、RPG地址和业务UI冻结。下文更早“当前/候选”表述与本段冲突时按历史记录处理。
 
-# refactor39 构建与部署
+# refactor42 构建与部署
 
 - 架构仍为 Win32 / x86 / PE32 ASI，**29 个独立 C 编译单元**。
 - Windows 正式入口：`源码/build.bat`；x86 clang-cl/MSVC ABI；`/W4 /WX /utf-8 /GS- /Zl /nodefaultlib`。
-- 本轮没有新增 DLL、INI 键或第三方依赖；继续复用既有兼容 x86 `SDL3.dll`。
+- 本轮没有新增 DLL 或第三方依赖；在R41完整INI上新增 `Investigation.AutoFocusNearest=1` 与 `Controls.SwapConfirmCancel=0`。
 - 实机部署仍只替换 `Castle_PadSupport.asi` 与 `Castle_PadSupport.ini`；绝不覆盖 `RPG.exe`。
-- `源码/readme.md` 是 GitHub 入口，保留英文文件名；其它说明文档集中于 `文档/` 并使用简体中文文件名。
-- R39 编译内容仍保持 ASI+INI 白名单；OBJ/LIB/EXP/PYC、RPG.exe.org 和散装证据树都不得进入发布包。
-- 最终构建：29/29 C 单元以 x86 `/W4 /WX /nodefaultlib` 严格编译 PASS；两套全新对象目录用 `/timestamp:0` 链接出的 ASI 逐字节一致。`Castle_PadSupport.asi` 为 **181,248 bytes**，SHA-256 `a49a89c20fea24f2fe53ed048341e23734718e67b1a6ef7fde7b85803b1dc160`；INI SHA-256 `cb1999f3951a4584a350e5eaeedf0819d5b3ec3673a7bd8db164987a4af82121`；综合检查无 EXE **75 PASS / 0 FAIL**，带可信原版 Oracle **96 PASS / 0 FAIL**。
+- `源码/readme.md` 是面向 GitHub 的构建说明，允许保留英文名；`文档/` 不重复放构建说明，其余非代码文档全部使用简体中文名。
+- `build.bat` 会同时生成 ASI、复制完整默认 INI，并把全部现行中文文档、最新检查器和简体中文工具说明同步到源码包/编译内容包；任一复制失败都中止。
+- 用户补回的INI中文注释全部原样保留；新开关只在 `[Investigation]` 现有中文说明后追加两行中文解释和一个键。
+- Swap=0为Xbox位置（南确定/东取消），Swap=1为PS传统布局（东/O确定、南/X取消）；菜单、调查和鼠标左右键跟随语义，RB+ABXY快捷与X/Y固定物理功能不变。
+- 自动聚焦只在会话 `active:0→1` 的第一帧执行一次，并复用R40 `inv_select_shoulder_target(+1)`；关闭时不进入该分支。
+- 最终构建大小、ASI/INI哈希和PASS计数以本轮《文件校验清单》为准；机器PASS不冒充实机PASS。
 
 ## 本轮部署后优先实机验证
 
-1. 按住 LT 不松左杆，从任意方向慢速绕完整一圈；角色周围各方向目标应按摇杆方向连续、及时切换。
-2. 隐藏鼠标之前停在屏幕边缘、上一个互动目标或任意位置，都不应改变左杆“以角色为中心”的方向含义。
-3. 两个目标扇区边界允许极轻迟滞，但明显朝新目标转过去后必须迅速切换，不能继续粘旧目标。
-4. 同方向保持不能扫穿；旧 probe/pending click 仍必须在新方向出现时被取消。
-5. R38 已通过的普通隐藏鼠标不震只做回归；LT/Back/RT hover 新目标短震和手柄激活反馈保持。
+1. 默认 `AutoFocusNearest=1`：进入A模式或LT模式调查时立即尝试聚焦距离最近目标；原版确认后按既有规则短震。
+2. 进入时左杆仍偏置，最近目标不能下一帧被残留方向抢回；回中/明显转向后左杆接管。
+3. 自动目标之后连续LB/RB必须从它的距离位置继续；右杆移动立即人工接管。
+4. 没有目标、25点全部失败或透明中心时不点击、不空震、不循环重试每个tick。
+5. `AutoFocusNearest=0`：A/LT两种进入方式逐项恢复R41行为，等待玩家自己选择目标。
+6. `SwapConfirmCancel=1`：O/东键确定、X/南键取消；默认调查改为按住/松开确定语义键，取消语义键退出；菜单确认/取消和鼠标左右键同步交换。
+7. RB+南键攻击、RB+东键道具、RB+X/Y及其它固定物理功能在两种布局下完全一致。
+8. RT覆盖后恢复调查视为新会话，应按当前开关重新自动聚焦；R41双激活和所有旧业务快速回归。
 
 ---
 
@@ -183,4 +189,3 @@ python 工具/refactor_check.py --exe <RPG.exe>
 ## refactor26c 容器严格构建结果
 
 20 个 C 使用 clang-cl 17、`--target=i686-pc-windows-msvc`、`/O2 /GS- /Zl /W4 /WX /utf-8 /TC` 逐个编译通过；lld-link `/dll /nodefaultlib /machine:x86 /entry:DllMain@12` 链接通过，产物为 PE32/i386。正式用户可复现路线仍是本包 `源码/build.bat` 的 Windows MSVC x86。
-

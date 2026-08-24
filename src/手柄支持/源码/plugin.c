@@ -158,7 +158,12 @@ static int plugin_install_all_hooks(void) {
      *
      * refactor28 的治疗目标选择以及更早的 Battle、主 Interface、标题/SaveSlot、剧情 A、SDL3 热切换全部按 PASS 基线冻结。
      */
-    Runtime_Log("[启动] refactor39：Back常驻鼠标；RT临时鼠标；LT调查；LT调查为角色中心连续方向轮盘、无硬空白扇区与低迟滞选择。");
+    /*
+     * 这行不是装饰性的版本号：综合检查器会在最终 ASI 的只读字符串区寻找这些词，
+     * 用来拒绝“源码已经是R41，但编译内容仍误放R40旧二进制”的打包错误。
+     * 两种模式的数字含义也写进成品，现场只拿到日志时仍能判断用户到底应按 A 还是 LT。
+     */
+    Runtime_Log("[启动] refactor42：AutoFocusNearest=1默认自动最近目标、=0关闭；SwapConfirmCancel=0为Xbox确定布局、=1为PS O确定/X取消；确定=鼠标左键、取消=右键；RB+ABXY物理快捷不变。");
     return 1;
 }
 

@@ -17,17 +17,21 @@
 #include "ui_bridge.h"
 
 /*
- * 本模块是三种新手柄指针状态的唯一裁决者，Cursor 和 Investigation 都不能再自行读扳机决定模式。
+ * 本模块是三种手柄指针状态的唯一裁决者，Cursor 和 Investigation 都不能自己决定进入/退出模式。
  * 这样做不是为了多包一层，而是为了把以下互相冲突的边界放进同一个有限状态机：
  *
  * 1. Back 常驻鼠标在任何界面都能进入；再次 Back 总能退出。
  * 2. RT 临时鼠标只能由“自由地图中的新按下沿”建立，不能从菜单里带着一颗旧 RT 穿出来。
- * 3. LT 调查与 RT 共用同一道自由地图门；两者同时存在时 RT 覆盖 LT。
- * 4. RT 覆盖前已经处于调查，或 RT 期间新按下 LT，松开 RT 后都允许恢复调查。
- * 5. 临时态遇到新 UI 必须当帧结束，并锁住仍按着的扳机直到物理松开。
- * 6. A/B 的鼠标脉冲若尚未松开，退出任何指针态时都必须由 Cursor_ResetClicks 收尾。
- * 7. 实体鼠标接管不是“回到手柄”，所以结束插件会话但不播放模式切换震动。
- * 8. 只有 Back 常驻鼠标回到普通手柄才播放高优先级反馈；RT/LT 始终属于手柄子态。
+ * 3. 调查激活键由 INI 选择：0=按住A、松开确认（默认），1=按住LT、另按A确认（旧方式）。
+ * 4. 两种调查方式都和 RT 共用同一道自由地图门；RT 永远覆盖当前调查。
+ * 5. RT 覆盖前已经处于调查，或 RT 期间新按下当前配置的调查键，松开 RT 后都允许恢复调查。
+ * 6. 默认模式中按“取消键”会立刻取消，并锁住仍按着的“确定键”，直到确定键真实松开；
+ *    取消键先松开也不能重进。具体物理键由 SwapConfirmCancel 决定。
+ * 7. 临时态遇到新 UI 必须当帧结束，并锁住仍按着的 RT/LT/A/B，直到物理松开。
+ * 8. A/B 的鼠标脉冲若尚未松开，取消/接管指针态时必须由 Cursor_ResetClicks 收尾；
+ *    但默认模式“松开确定键”已经获准的左键脉冲不能被退出清理立即抹掉。
+ * 9. 实体鼠标接管不是“回到手柄”，所以结束插件会话但不播放模式切换震动。
+ * 10. 只有 Back 常驻鼠标回到普通手柄才播放高优先级反馈；RT/调查始终属于手柄子态。
  *
  * free-map 也不是某一个 owner 指针为空这么简单。它同时要求：
  * - 原版地图互动 resolver 仍在持续发布新快照；
@@ -97,12 +101,51 @@ static int control_any_mouse_ui_active(void) {
     return 0;
 }
 
-/* RT临时鼠标和LT调查严格共用这一道自由地图能力门。 */
+/* RT临时鼠标和两种调查激活方式严格共用这一道自由地图能力门。 */
 static int control_free_map_active(int ui_active) {
     if (ui_active) return 0;
     if (!Investigation_MapSnapshotReady()) return 0;
     if (*(volatile u32*)GLOBAL_MAP_ACTION_BUSY != 0u) return 0;
     return 1;
+}
+
+/*
+ * 下面五个小函数把“当前调查键到底是 A 还是 LT”集中翻译一次。
+ *
+ * 如果把同一段“ActivationMode=0时读取INPUT_CONFIRM，否则读取PAD_LT”散落在十几个分支里，
+ * 以后很容易只改到“进入”却忘了改“退出”或“RT后恢复”。集中以后，每个业务分支只问：
+ * “调查键刚按下了吗？”“还按着吗？”“是否被释放屏障锁住？”而不用再猜物理键。
+ */
+static int control_investigation_uses_hold_confirm(void) {
+    /* Runtime 已把 INI 数字裁剪为0或1；0就是默认“按住确定键”模式。 */
+    return Runtime_Config()->investigation_activation_mode == 0;
+}
+
+static int control_investigation_pressed(void) {
+    /* 按下沿只在 0→1 的第一帧成立，所以持续按住不会每8ms反复进入。 */
+    if (control_investigation_uses_hold_confirm()) return InputRouter_RawPressed(INPUT_CONFIRM);
+    return PadInput_Pressed(PAD_LT);
+}
+
+static int control_investigation_down(void) {
+    /* Down 表示物理键这一刻仍压着，用来决定会话是否继续以及RT松开后能否恢复。 */
+    if (control_investigation_uses_hold_confirm()) return InputRouter_RawDown(INPUT_CONFIRM);
+    return PadInput_Down(PAD_LT);
+}
+
+static int control_investigation_released(void) {
+    /* 只有默认模式使用“松开确定键即确认”；LT模式仍由调查中的独立确定键按下确认。 */
+    if (!control_investigation_uses_hold_confirm()) return 0;
+    return InputRouter_RawReleased(INPUT_CONFIRM);
+}
+
+static int control_investigation_inhibited(void) {
+    /*
+     * 取消键结束默认模式后复用 confirm_inhibit；旧LT模式继续复用 lt_inhibit。
+     * 屏障存在时，即使键还保持 Down，也不允许从短暂空白帧或新UI后自动重建会话。
+     */
+    if (control_investigation_uses_hold_confirm()) return g_modes.confirm_inhibit_until_release;
+    return g_modes.lt_inhibit_until_release;
 }
 
 static void control_consume_release_barriers(void) {
@@ -115,11 +158,11 @@ static void control_consume_release_barriers(void) {
         else g_modes.lt_inhibit_until_release = 0;
     }
     if (g_modes.confirm_inhibit_until_release) {
-        if (PadInput_Down(PAD_SOUTH)) InputRouter_Consume(INPUT_CONFIRM);
+        if (InputRouter_RawDown(INPUT_CONFIRM)) InputRouter_Consume(INPUT_CONFIRM);
         else g_modes.confirm_inhibit_until_release = 0;
     }
     if (g_modes.cancel_inhibit_until_release) {
-        if (PadInput_Down(PAD_EAST)) InputRouter_Consume(INPUT_CANCEL);
+        if (InputRouter_RawDown(INPUT_CANCEL)) InputRouter_Consume(INPUT_CANCEL);
         else g_modes.cancel_inhibit_until_release = 0;
     }
 }
@@ -127,8 +170,8 @@ static void control_consume_release_barriers(void) {
 static void control_arm_release_barriers(int block_rt, int block_lt) {
     if (block_rt && PadInput_Down(PAD_RT)) g_modes.rt_inhibit_until_release = 1;
     if (block_lt && PadInput_Down(PAD_LT)) g_modes.lt_inhibit_until_release = 1;
-    if (PadInput_Down(PAD_SOUTH)) g_modes.confirm_inhibit_until_release = 1;
-    if (PadInput_Down(PAD_EAST)) g_modes.cancel_inhibit_until_release = 1;
+    if (InputRouter_RawDown(INPUT_CONFIRM)) g_modes.confirm_inhibit_until_release = 1;
+    if (InputRouter_RawDown(INPUT_CANCEL)) g_modes.cancel_inhibit_until_release = 1;
 }
 
 static void control_rumble_controller_mode(void) {
@@ -182,32 +225,59 @@ static void control_enter_rt_mouse(int resume_investigation) {
 }
 
 static void control_enter_investigation(void) {
+    /* 调查不使用“完整鼠标模式”的双摇杆曲线，所以先明确关闭 MouseModeSession。 */
     Cursor_SetMouseModeSession(0);
+
+    /* 从这一行起，Exploration 会看到 BlocksMapMovement=真，左摇杆不再驱动角色走路。 */
     g_modes.mode = CONTROL_MODE_INVESTIGATION;
+
+    /* 新进入不是“等待RT恢复”的中间状态，旧恢复标志必须清零。 */
     g_modes.resume_investigation_after_rt = 0;
-    Runtime_Log("[模式] 自由地图LT调查已进入。");
+
+    /* 日志必须告诉测试者当前到底启用了哪一种 INI 方式，避免拿错操作表验收。 */
+    if (control_investigation_uses_hold_confirm()) {
+        Runtime_Log("[模式] 自由地图确定键按住调查已进入；松开确定键确认真实hover，取消键立即取消。");
+    } else {
+        Runtime_Log("[模式] 自由地图LT按住调查已进入；A沿既有方式确认。");
+    }
 }
 
 static int control_update_mouse_inputs(void) {
     int moved = Cursor_MoveMouseSticks();
 
-    if (PadInput_Pressed(PAD_SOUTH)) Cursor_PulseLeftClick();
-    if (PadInput_Pressed(PAD_EAST)) Cursor_PulseRightClick();
+    /*
+     * 鼠标模式也遵守确定/取消布局：确定语义永远产生左键，取消语义永远产生右键。
+     * 这与RB+ABXY快捷键不同；快捷键按固定物理位置，鼠标点击按语义布局。
+     */
+    if (InputRouter_RawPressed(INPUT_CONFIRM)) Cursor_PulseLeftClick();
+    if (InputRouter_RawPressed(INPUT_CANCEL)) Cursor_PulseRightClick();
     return moved;
 }
 
 void ControlModes_Initialize(void) {
+    /* DLL刚启动时一定从普通手柄态开始，不能继承任何旧内存里的模式数字。 */
     g_modes.mode = CONTROL_MODE_CONTROLLER;
+
+    /* 四条释放屏障都从“未锁住”开始；它们只会在真实退出/取消时按需武装。 */
     g_modes.rt_inhibit_until_release = 0;
     g_modes.lt_inhibit_until_release = 0;
     g_modes.confirm_inhibit_until_release = 0;
     g_modes.cancel_inhibit_until_release = 0;
+
+    /* 下面三项都是跨tick状态，也必须显式清零，不能依赖静态区碰巧为0。 */
     g_modes.resume_investigation_after_rt = 0;
     g_modes.back_mouse_saw_ui = 0;
     g_modes.ui_exit_tracking = 0;
     g_modes.ui_exit_start_tick = 0u;
+
+    /* 清掉 Cursor/Investigation 可能留下的会话和鼠标按键脉冲，建立干净起点。 */
     control_clear_pointer_sessions();
-    Runtime_Log("[模式] r36路由底座已启用：Back常驻鼠标 > 自由地图RT临时鼠标 > 自由地图LT调查 > r36原操作。");
+
+    if (control_investigation_uses_hold_confirm()) {
+        Runtime_Log("[模式] 路由已启用：Back常驻鼠标 > 自由地图RT临时鼠标 > 确定键按住调查 > 原手柄操作；ActivationMode=0。");
+    } else {
+        Runtime_Log("[模式] 路由已启用：Back常驻鼠标 > 自由地图RT临时鼠标 > LT按住调查 > 原手柄操作；ActivationMode=1。");
+    }
 }
 
 CursorTakeoverEvent ControlModes_Update(void) {
@@ -216,8 +286,11 @@ CursorTakeoverEvent ControlModes_Update(void) {
     int back_pressed;
     int rt_pressed;
     int rt_down;
-    int lt_pressed;
-    int lt_down;
+    int investigation_pressed;
+    int investigation_down;
+    int investigation_released;
+    int investigation_inhibited;
+    int cancel_pressed;
     int moved;
 
     if (!PadInput_GameForeground(NULL) || !PadInput_GamepadConnected()) {
@@ -236,8 +309,19 @@ CursorTakeoverEvent ControlModes_Update(void) {
     back_pressed = PadInput_Pressed(PAD_BACK);
     rt_pressed = PadInput_Pressed(PAD_RT);
     rt_down = PadInput_Down(PAD_RT);
-    lt_pressed = PadInput_Pressed(PAD_LT);
-    lt_down = PadInput_Down(PAD_LT);
+
+    /*
+     * 这一组值是同一物理采样帧的“调查键快照”。ActivationMode=0 时它们来自 A，
+     * ActivationMode=1 时来自 LT。后面的状态分支只使用这些语义值，保证进入、退出、
+     * RT覆盖恢复和释放屏障永远解释成同一颗配置键。
+     */
+    investigation_pressed = control_investigation_pressed();
+    investigation_down = control_investigation_down();
+    investigation_released = control_investigation_released();
+    investigation_inhibited = control_investigation_inhibited();
+
+    /* 取消语义只在默认调查本体中结束会话；在Back/RT鼠标模式里，它仍产生鼠标右键。 */
+    cancel_pressed = InputRouter_RawPressed(INPUT_CANCEL);
 
     /* Back在任何界面都是唯一常驻模式切换键，并且必须先于其余模式裁决。 */
     if (back_pressed) {
@@ -295,27 +379,49 @@ CursorTakeoverEvent ControlModes_Update(void) {
             return CURSOR_TAKEOVER_NONE;
         }
 
-        /* RT会话期间新按下LT也获得“RT松开后恢复调查”的资格。 */
-        if (lt_pressed && !g_modes.lt_inhibit_until_release) {
+        /*
+         * RT鼠标期间又新按下当前调查键，就记住“RT松开后想回调查”。
+         * - 默认模式：这颗确定键同时仍会由 control_update_mouse_inputs 当成鼠标左键；
+         * - LT模式：行为与R40以前完全相同。
+         * 屏障已锁住时不记录，避免刚被UI/取消键结束的旧按键偷偷恢复。
+         */
+        if (investigation_pressed && !investigation_inhibited) {
             g_modes.resume_investigation_after_rt = 1;
         }
 
         if (!rt_down) {
-            int resume = g_modes.resume_investigation_after_rt && lt_down &&
-                         !g_modes.lt_inhibit_until_release;
+            /*
+             * 只有三个条件同时成立才恢复：之前确实提出过恢复、调查键此刻还按着、
+             * 该键没有被释放屏障锁住。A/LT如果已经松开，RT结束后就回普通手柄。
+             */
+            int resume = g_modes.resume_investigation_after_rt &&
+                         investigation_down && !investigation_inhibited;
+
+            /* 先离开RT状态并清旧鼠标会话，后面再按 resume 决定新状态。 */
             g_modes.mode = CONTROL_MODE_CONTROLLER;
             g_modes.resume_investigation_after_rt = 0;
             control_arm_release_barriers(0, 0);
             control_clear_pointer_sessions();
 
             if (resume) {
+                /*
+                 * control_arm_release_barriers 会把仍按着的 A 当成“鼠标左键残留”暂时锁住。
+                 * 但这里已经明确裁决为恢复 A 调查，这颗 A 是合法的模式保持键，不是残留点击，
+                 * 所以默认模式必须撤掉刚才那条 confirm 屏障；LT模式没有这一步，因为 block_lt=0。
+                 */
+                if (control_investigation_uses_hold_confirm()) {
+                    g_modes.confirm_inhibit_until_release = 0;
+                }
+
+                /* 调查键仍按着：重建调查会话并立即让它读取一次当前安全快照。 */
                 control_enter_investigation();
                 Investigation_UpdateActive();
                 InputRouter_CaptureAll();
-                Runtime_Log("[模式] RT临时鼠标松开且LT仍按住：已返回LT调查；不触发模式切换震动。");
+                Runtime_Log("[模式] RT临时鼠标松开且当前调查键仍按住：已返回调查；不触发模式切换震动。");
                 return CURSOR_TAKEOVER_RIGHT_STICK;
             }
 
+            /* 调查键已经松开或被锁住：本tick吞掉残余输入，下一tick回普通手柄业务。 */
             InputRouter_CaptureAll();
             Runtime_Log("[模式] RT临时鼠标松开：已返回普通手柄；不触发模式切换震动。");
             return CURSOR_TAKEOVER_NONE;
@@ -328,30 +434,76 @@ CursorTakeoverEvent ControlModes_Update(void) {
 
     if (g_modes.mode == CONTROL_MODE_INVESTIGATION) {
         if (!free_map) {
+            /*
+             * 菜单、对话、电影或地图busy一出现，调查就不再拥有自由地图。
+             * 先把仍按着的RT/LT/A/B放进释放屏障，再结束会话；这样新UI不会把
+             * “刚才用于调查的同一颗键”解释成一次确认、翻页或鼠标点击。
+             */
             g_modes.mode = CONTROL_MODE_CONTROLLER;
             control_arm_release_barriers(1, 1);
             Investigation_EndSession();
             InputRouter_CaptureAll();
-            Runtime_Log("[模式] LT调查遇到菜单/对话/非自由状态；已退出并等待LT松开后重新武装。");
+            Runtime_Log("[模式] 调查遇到菜单/对话/非自由状态；已退出并等待当前调查键松开后重新武装。");
             return CURSOR_TAKEOVER_NONE;
         }
 
-        /* 调查中RT新按下立刻覆盖；之后松开RT且LT仍按住会恢复本调查会话。 */
+        /*
+         * 默认模式的“取消键”是明确取消，优先级高于 RT 和“确定键松开确认”。
+         * control_arm_release_barriers 会看到确定键仍然 Down，于是把 confirm_inhibit 置1。
+         * 即使玩家马上松开取消键、却一直不松确定键，这条屏障仍会保留，普通手柄分支
+         * 也不会把旧确定键当成一次新的进入请求。只有确定键真实松开，屏障才会清除。
+         */
+        if (control_investigation_uses_hold_confirm() && cancel_pressed) {
+            g_modes.mode = CONTROL_MODE_CONTROLLER;
+            g_modes.resume_investigation_after_rt = 0;
+            control_arm_release_barriers(0, 0);
+            control_clear_pointer_sessions();
+            InputRouter_CaptureAll();
+            Runtime_Log("[模式] 确定键按住调查中收到取消键：已取消，并锁住确定键直到物理松开。");
+            return CURSOR_TAKEOVER_NONE;
+        }
+
+        /*
+         * 调查中 RT 新按下立刻覆盖。传入的 resume 标志只表示“进入RT这一刻调查键还按着”；
+         * 真正恢复时还会再检查一次，保证玩家在RT期间松开确定键/LT后不会错误返回调查。
+         */
         if (rt_pressed && !g_modes.rt_inhibit_until_release) {
-            control_enter_rt_mouse(lt_down ? 1 : 0);
+            control_enter_rt_mouse(investigation_down ? 1 : 0);
             control_update_mouse_inputs();
             InputRouter_CaptureAll();
             return CURSOR_TAKEOVER_RIGHT_STICK;
         }
 
-        if (!lt_down) {
+        /*
+         * 当前配置的调查键一旦不再 Down，本次调查就结束。
+         * 默认模式必须先在会话仍 active 时询问原版 hover，再结束会话；顺序反过来会让
+         * Investigation_ConfirmCurrentHover 因 active=0 安全拒绝，造成“松开确定键永远不互动”。
+         */
+        if (!investigation_down) {
+            int interacted = 0;
+
+            /* 只有默认模式把确定键松开沿解释成确认；LT模式继续保持“松LT只退出”。 */
+            if (control_investigation_uses_hold_confirm() && investigation_released) {
+                interacted = Investigation_ConfirmCurrentHover();
+            }
+
+            /* 模式先回普通手柄，再清调查私有对象/probe；不调用ResetClicks以保留已获准脉冲。 */
             g_modes.mode = CONTROL_MODE_CONTROLLER;
+            g_modes.resume_investigation_after_rt = 0;
             Investigation_EndSession();
             InputRouter_CaptureAll();
-            Runtime_Log("[模式] LT松开：调查结束，仍属于普通手柄模式，不触发模式切换震动。");
+
+            if (control_investigation_uses_hold_confirm()) {
+                Runtime_Log(interacted
+                    ? "[模式] 确定键松开：原版已确认目标，已提交一次调查并退出。"
+                    : "[模式] 确定键松开：没有已确认目标或probe未完成，已安全退出且不点击。");
+            } else {
+                Runtime_Log("[模式] LT松开：调查结束；A确认语义保持旧方式，不触发模式切换震动。");
+            }
             return CURSOR_TAKEOVER_NONE;
         }
 
+        /* 激活键仍按着、没有取消也没有RT覆盖：推进本帧方向/LB/RB/右杆调查逻辑。 */
         Investigation_UpdateActive();
         InputRouter_CaptureAll();
         return CURSOR_TAKEOVER_NONE;
@@ -359,14 +511,26 @@ CursorTakeoverEvent ControlModes_Update(void) {
 
     /* 普通手柄：RT必须在自由地图中新按下，菜单里按住后关闭菜单不会突然进入。 */
     if (free_map && rt_pressed && !g_modes.rt_inhibit_until_release) {
-        control_enter_rt_mouse(lt_pressed && lt_down ? 1 : 0);
+        /*
+         * RT 与调查键同帧按下时，RT按既定优先级先进入鼠标模式；同时记住调查意图。
+         * 之后松开RT、调查键仍按着，就会进入所配置的A或LT调查。
+         */
+        control_enter_rt_mouse(investigation_pressed && investigation_down ? 1 : 0);
         control_update_mouse_inputs();
         InputRouter_CaptureAll();
         return CURSOR_TAKEOVER_RIGHT_STICK;
     }
 
-    /* LT同样只接受自由地图中的新按下；唯一无新沿恢复路径是“RT覆盖调查后再松开RT”。 */
-    if (free_map && lt_pressed && !g_modes.lt_inhibit_until_release) {
+    /*
+     * 调查只接受自由地图中的“新按下沿”。这条规则同时解决两种穿透：
+     * 1. 菜单里一直按着A/LT，关闭菜单后不能突然进入调查；
+     * 2. 默认模式被取消后，即使取消键先松开、确定键仍按着，也因屏障和没有新按下沿不能重进。
+     *
+     * 默认模式还要求取消键当前没有按着。若先按住取消再按确定，这不是合法开始手势；
+     * 必须把两键都整理好，再重新按一次确定键。
+     */
+    if (free_map && investigation_pressed && !investigation_inhibited &&
+        (!control_investigation_uses_hold_confirm() || !InputRouter_RawDown(INPUT_CANCEL))) {
         control_enter_investigation();
         Investigation_UpdateActive();
         InputRouter_CaptureAll();

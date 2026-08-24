@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》手柄操控模组 v0.3-refactor39 综合静态检查工具。
+《幽城幻剑录》手柄操控模组 v0.3-refactor42 综合静态检查工具。
 
 这个工具只使用 Python 标准库，不修改 RPG.exe，也不修改源码。
 它把这次重构最容易发生的“大回归”变成可以重复执行的机械检查：
@@ -17,7 +17,7 @@
 9. 检查 dev20 的 INI 对外键名仍然完整；
 10. 检查地图十字键只提供八方向步行，且松开后保留左摇杆既有全向走跑阈值；
 11. 检查统一 Shop Adapter 保留 refactor36 已实机通过的连续翻页、Y 信息窗与列标记；
-12. 检查 refactor39 的 Back常驻／地图RT临时鼠标优先级、LT原版resolver调查、左杆连续方向轮盘选择、防穿透与震动仲裁；
+12. 检查 refactor42 的调查进入自动最近目标、确定/取消布局、鼠标语义跟随、RB+ABXY物理快捷隔离、A/LT双激活、RT覆盖与轮盘安全；
 13. 检查 build.bat 逐个编译 29 个独立 .c（含 ControlModes 与 Investigation），并保留 x86、/W4 /WX、UTF-8、无 CRT 约束；
 14. 检查编译产物确实是 PE32 / i386 DLL；
 15. 检查源码文件名均为英文/ASCII，并给出注释覆盖率，帮助持续遵守“项目圣经”；
@@ -284,10 +284,13 @@ CALLS = [
 # refactor37 重新定义鼠标控制契约：旧的常驻右杆、Back 慢速与 R3 复合点击已删除，
 # 对外只保留 RT 完整鼠标和 LT 调查所需参数。这里锁住当前公开键，防止实现与样例 INI 漂移。
 EXPECTED_INI_KEYS = {
+    "SwapConfirmCancel",
     "DefaultHidden",
     "TargetSelectionCursor",
     "MouseModeLeftStickSensitivityPercent",
     "MouseModeRightStickSensitivityPercent",
+    "ActivationMode",
+    "AutoFocusNearest",
     "RightStickSensitivityPercent",
     "SnapRadiusPixels",
     "StrengthPercent",
@@ -1396,23 +1399,30 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     else:
         result.fail("Back 全局 Shift 修饰键", f"缺少={shift_missing}，Shift策略异常={policy_shift_bad}")
 
-    # refactor37 用一套状态机裁决 Back/RT/LT；Cursor 只提供低层鼠标桥，不能再自行解释扳机。
+    # refactor41 仍用一套状态机裁决 Back/RT/调查；调查激活键由 INI 选择 A 或 LT。
+    # Cursor 只提供低层鼠标桥，不能自己解释 A/LT/RT 的模式含义。
     cursor_text_for_sensitivity = read_utf8(src / "cursor.c")
     control_text = read_utf8(src / "control_modes.c") + read_utf8(src / "control_modes.h")
     runtime_text = read_utf8(src / "runtime.c") + read_utf8(src / "runtime.h")
     mode_required = [
         "CONTROL_MODE_BACK_MOUSE", "CONTROL_MODE_RT_MOUSE", "CONTROL_MODE_INVESTIGATION",
-        "if (back_pressed)", "free_map && rt_pressed", "free_map && lt_pressed",
-        "rt_inhibit_until_release", "lt_inhibit_until_release", "resume_investigation_after_rt",
+        "if (back_pressed)", "free_map && rt_pressed", "free_map && investigation_pressed",
+        "rt_inhibit_until_release", "lt_inhibit_until_release", "confirm_inhibit_until_release",
+        "resume_investigation_after_rt", "control_investigation_uses_hold_confirm",
+        "control_investigation_pressed", "control_investigation_down",
+        "control_investigation_released", "control_investigation_inhibited",
         "Cursor_SetMouseModeSession", "Cursor_MoveMouseSticks", "Cursor_PulseLeftClick",
         "Cursor_PulseRightClick", "InputRouter_CaptureAll", "ControlModes_OnPhysicalMouseTakeover",
         "control_any_mouse_ui_active", "Investigation_MapSnapshotReady", "GLOBAL_MAP_ACTION_BUSY",
+        "investigation_activation_mode", 'rt_cfg_int("Investigation", "ActivationMode", 0, 0, 1)',
+        "Investigation_ConfirmCurrentHover", "control_arm_release_barriers(0, 0)",
         "MouseModeLeftStickSensitivityPercent", "MouseModeRightStickSensitivityPercent",
         'rt_cfg_int("Mouse", "MouseModeLeftStickSensitivityPercent", 100, 1, 300)',
         'rt_cfg_int("Mouse", "MouseModeRightStickSensitivityPercent", 15, 1, 300)',
     ]
     mode_joined = control_text + cursor_text_for_sensitivity + runtime_text
     mode_missing = [token for token in mode_required if token not in mode_joined]
+    control_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", control_text, flags=re.S)
     cursor_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", cursor_text_for_sensitivity, flags=re.S)
     removed_mouse_paths = [token for token in [
         "back_precision_mouse_session", "R3RightClickHoldMs", "right_stick_slow_sensitivity_percent",
@@ -1422,12 +1432,105 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     back_pos = control_text.find("if (back_pressed)")
     back_mode_pos = control_text.find("if (g_modes.mode == CONTROL_MODE_BACK_MOUSE)")
     rt_mode_pos = control_text.find("if (g_modes.mode == CONTROL_MODE_RT_MOUSE)")
-    lt_mode_pos = control_text.find("if (g_modes.mode == CONTROL_MODE_INVESTIGATION)")
-    priority_order_ok = 0 <= back_pos < back_mode_pos < rt_mode_pos < lt_mode_pos
-    if not mode_missing and not removed_mouse_paths and priority_order_ok:
-        result.ok("refactor39统一指针模式裁决", "Back常驻 > 地图RT临时 > 地图LT调查 > r36；新按沿、UI中断、释放屏障与实体鼠标无震动接管齐全")
+    investigation_mode_pos = control_text.find("if (g_modes.mode == CONTROL_MODE_INVESTIGATION)")
+    priority_order_ok = 0 <= back_pos < back_mode_pos < rt_mode_pos < investigation_mode_pos
+
+    # A调查内部的裁决顺序必须是：B取消 > RT覆盖 > A松开确认。
+    # 若 A松开先执行，玩家同一帧按B/松A时可能误与目标互动；若RT先于B，B会变成鼠标右键。
+    investigation_mode_code_pos = control_code.find("if (g_modes.mode == CONTROL_MODE_INVESTIGATION)")
+    investigation_mode_code = control_code[investigation_mode_code_pos:] if investigation_mode_code_pos >= 0 else ""
+    cancel_pos = investigation_mode_code.find("control_investigation_uses_hold_confirm() && cancel_pressed")
+    rt_override_pos = investigation_mode_code.find("if (rt_pressed")
+    release_pos = investigation_mode_code.find("if (!investigation_down)")
+    a_mode_order_ok = 0 <= cancel_pos < rt_override_pos < release_pos
+
+    # B取消后必须把仍按着的A锁到松开；真正的松开确认则不能调用ResetClicks抹掉刚排的脉冲。
+    cancel_block_begin = investigation_mode_code.find("if (control_investigation_uses_hold_confirm() && cancel_pressed)")
+    cancel_block_end = investigation_mode_code.find("if (rt_pressed", cancel_block_begin)
+    cancel_block = investigation_mode_code[cancel_block_begin:cancel_block_end] if cancel_block_begin >= 0 and cancel_block_end > cancel_block_begin else ""
+    cancel_latch_ok = all(token in cancel_block for token in [
+        "control_arm_release_barriers(0, 0)", "control_clear_pointer_sessions()", "InputRouter_CaptureAll()",
+    ])
+    release_block_begin = investigation_mode_code.find("if (!investigation_down)")
+    release_block_end = investigation_mode_code.find("Investigation_UpdateActive();", release_block_begin)
+    release_block = investigation_mode_code[release_block_begin:release_block_end] if release_block_begin >= 0 and release_block_end > release_block_begin else ""
+    release_confirm_ok = (
+        "Investigation_ConfirmCurrentHover()" in release_block and
+        "Investigation_EndSession()" in release_block and
+        "control_clear_pointer_sessions()" not in release_block and
+        release_block.find("Investigation_ConfirmCurrentHover()") < release_block.find("Investigation_EndSession()")
+    )
+
+    # A模式和LT模式必须通过同一语义变量参与RT进入/恢复，禁止又散落回 lt_down 特判。
+    generic_rt_resume_ok = (
+        re.search(r"g_modes\.resume_investigation_after_rt\s*&&\s*investigation_down\s*&&\s*!investigation_inhibited", control_code) is not None and
+        "control_enter_rt_mouse(investigation_down ? 1 : 0)" in control_code and
+        "control_enter_rt_mouse(investigation_pressed && investigation_down ? 1 : 0)" in control_code and
+        "lt_pressed" not in control_code and "lt_down" not in control_code
+    )
+
+    if (not mode_missing and not removed_mouse_paths and priority_order_ok and a_mode_order_ok and
+            cancel_latch_ok and release_confirm_ok and generic_rt_resume_ok):
+        result.ok("refactor41统一指针模式裁决", "Back > RT > 调查；ActivationMode=0默认A按住/松开确认/B锁存取消，=1保留LT按住/A确认；RT覆盖与恢复共用同一语义键")
     else:
-        result.fail("refactor39统一指针模式裁决", f"缺少={mode_missing}，Cursor旧解释残留={removed_mouse_paths}，优先级顺序={priority_order_ok}")
+        result.fail("refactor41统一指针模式裁决", f"缺少={mode_missing}，Cursor旧解释残留={removed_mouse_paths}，优先级={priority_order_ok}，A模式顺序={a_mode_order_ok}，B取消锁存={cancel_latch_ok}，松开确认={release_confirm_ok}，RT通用恢复={generic_rt_resume_ok}")
+
+    # R42 确定/取消布局：普通语义与鼠标左右键跟随交换，RB+ABXY快捷键保持固定物理位置。
+    input_router_c = read_utf8(src / "input_router.c")
+    input_router_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", input_router_c, flags=re.S)
+    swap_required = [
+        "swap_confirm_cancel",
+        'rt_cfg_int("Controls", "SwapConfirmCancel", 0, 0, 1)',
+        "static PadButton input_action_button_fixed",
+        "if (Runtime_Config()->swap_confirm_cancel)",
+        "if (action == INPUT_CONFIRM) return PAD_EAST;",
+        "if (action == INPUT_CANCEL) return PAD_SOUTH;",
+        "int InputRouter_RawPressed", "int InputRouter_RawDown", "int InputRouter_RawReleased",
+        "InputRouter_RawPressed(INPUT_CONFIRM)", "InputRouter_RawPressed(INPUT_CANCEL)",
+        "InputRouter_RawDown(INPUT_CONFIRM)", "InputRouter_RawDown(INPUT_CANCEL)",
+    ]
+    swap_missing = [token for token in swap_required if token not in (router + runtime_text + control_text)]
+
+    # 鼠标模式必须用布局后的确定/取消语义；若仍直接读PAD_SOUTH/EAST，PS布局就不会交换左右键。
+    mouse_input_begin = control_code.find("static int control_update_mouse_inputs(void)")
+    mouse_input_end = control_code.find("void ControlModes_Initialize(void)", mouse_input_begin)
+    mouse_input_code = control_code[mouse_input_begin:mouse_input_end] if mouse_input_begin >= 0 and mouse_input_end > mouse_input_begin else ""
+    mouse_semantic_ok = all(token in mouse_input_code for token in [
+        "InputRouter_RawPressed(INPUT_CONFIRM)", "Cursor_PulseLeftClick()",
+        "InputRouter_RawPressed(INPUT_CANCEL)", "Cursor_PulseRightClick()",
+    ]) and "PAD_SOUTH" not in mouse_input_code and "PAD_EAST" not in mouse_input_code
+
+    # Investigation/ControlModes 不得绕开InputRouter直接读南/东键，否则调查激活不会跟随布局。
+    investigation_face_code = re.sub(
+        r"/\*.*?\*/|//[^\n]*", "", read_utf8(src / "investigation.c"), flags=re.S
+    )
+    no_direct_face_reads = all(token not in (control_code + investigation_face_code) for token in [
+        "PadInput_Pressed(PAD_SOUTH)", "PadInput_Pressed(PAD_EAST)",
+        "PadInput_Down(PAD_SOUTH)", "PadInput_Down(PAD_EAST)",
+        "PadInput_Released(PAD_SOUTH)", "PadInput_Released(PAD_EAST)",
+    ])
+
+    # InputRouter_ChordPressed 当前只服务RB+ABXY，必须取fixed表；Battle业务文件无需修改。
+    chord_begin = input_router_code.find("int InputRouter_ChordPressed")
+    chord_end = input_router_code.find("int InputRouter_LeftStickHorizontalStep50", chord_begin)
+    chord_code = input_router_code[chord_begin:chord_end] if chord_begin >= 0 and chord_end > chord_begin else ""
+    battle_shortcut_source = read_utf8(src / "battle.c")
+    fixed_shortcut_ok = (
+        chord_code.count("input_action_button_fixed(") >= 2 and
+        "input_action_button(action)" not in chord_code and
+        "return InputRouter_ChordPressed(INPUT_CATEGORY_NEXT, action);" in battle_shortcut_source
+    )
+
+    # X/Y和其它面键仍由固定表直接返回，不能在swap分支里被一起改掉。
+    xy_unchanged_ok = all(token in input_router_c for token in [
+        "case INPUT_SPECIAL_X:     return PAD_WEST;",
+        "case INPUT_SPECIAL_Y:     return PAD_NORTH;",
+    ])
+    if (not swap_missing and mouse_semantic_ok and no_direct_face_reads and
+            fixed_shortcut_ok and xy_unchanged_ok):
+        result.ok("refactor42确定/取消布局", "Swap=0南确定/东取消，=1东确定/南取消；调查和鼠标左右键跟随语义；RB+ABXY与X/Y固定物理位置不变")
+    else:
+        result.fail("refactor42确定/取消布局", f"缺少={swap_missing}，鼠标语义={mouse_semantic_ok}，无直接面键={no_direct_face_reads}，快捷固定={fixed_shortcut_ok}，XY固定={xy_unchanged_ok}")
 
     # 全局强度与每事件独立时长；模式回切优先级必须压住调查短震。
     rumble_required = [
@@ -1443,7 +1546,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     rumble_joined = runtime_text + pad_text + pad_header + control_text + investigation_rumble_text
     rumble_missing = [token for token in rumble_required if token not in rumble_joined]
 
-    # refactor39 追加震动资格护栏：地图 hover 短震只能来自显式 LT 调查或 Back/RT 鼠标会话。
+    # 地图 hover 短震只能来自显式 A/LT 调查或 Back/RT 鼠标会话。
     # 普通手柄导航也会拥有 controller_owner，所以如果把 Cursor_ControllerOwnsPointer() 当资格门，
     # 隐藏鼠标刚好落在可互动对象上就会在走路/菜单导航时误震。这里把函数体去掉注释后检查，
     # 既允许源码里保留详细“为什么不能这样做”的说明，又机械拒绝真实代码回退。
@@ -1466,9 +1569,9 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     rumble_callers_ok = business_rumble_callers == ["control_modes.c", "investigation.c"]
 
     if not rumble_missing and not hover_gate_missing and not hover_gate_forbidden and rumble_callers_ok:
-        result.ok("refactor39震动资格与时长", "StrengthPercent全局；LT调查/Back/RT鼠标仅在首次hover新可互动对象时共用80ms短震；普通隐藏鼠标静默；真正激活普通手柄模式1000ms高优先级反馈")
+        result.ok("refactor41震动资格与时长", "A/LT调查、LB/RB与Back/RT都只在resolver确认新hover后短震；A按下/松开和B取消不空震；普通隐藏鼠标静默")
     else:
-        result.fail("refactor39震动资格与时长", f"缺少={rumble_missing}，hover门缺少={hover_gate_missing}，错误controller_owner门={hover_gate_forbidden}，业务震动调用源={business_rumble_callers}")
+        result.fail("refactor41震动资格与时长", f"缺少={rumble_missing}，hover门缺少={hover_gate_missing}，错误controller_owner门={hover_gate_forbidden}，业务震动调用源={business_rumble_callers}")
 
     # refactor23 继续逐页 Adapter：r19 Shell 保持；state3/state4 已实机 PASS；state5 只做鼠标焦点隔离修复，并新增 state6 阵形独立 Adapter。
     # 状态页 state1 是只读页，r19 Shell 已覆盖其全部需求，因此不要求造一个空 state1 控制器。
@@ -1835,9 +1938,9 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         elif sha256(path).lower() != expected.lower():
             tome_scope_bad.append(name + "(SHA变化)")
     if tome_scope_bad:
-        result.fail("refactor39旧天书/SaveSlot冻结范围", ", ".join(tome_scope_bad))
+        result.fail("refactor41旧天书/SaveSlot冻结范围", ", ".join(tome_scope_bad))
     else:
-        result.ok("refactor39旧天书/SaveSlot冻结范围", "天书与共享SaveSlot 4/4 文件逐字节保持旧验收版本；Cursor仅按本轮授权改造")
+        result.ok("refactor41旧天书/SaveSlot冻结范围", "天书与共享SaveSlot 4/4 文件逐字节保持旧验收版本；R41不进入这些模块")
 
     # R3 复合状态机被新需求明确删除，但可靠的 48ms Windows消息 + GetKeyState 双通道桥必须保留，
     # 供 RT 的 A/B 与 LT 的 A 共同复用。
@@ -1857,11 +1960,11 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "R3_LEFT_CLICK_PULSE_MS",
     ] if token in cursor_text]
     if not cursor_bridge_missing and not cursor_bridge_forbidden:
-        result.ok("refactor39共享可靠鼠标点击桥", "RT/LT共用48ms左右键脉冲；GetKeyState与mouse_event双通道保留；旧R3状态机已移除")
+        result.ok("refactor41共享可靠鼠标点击桥", "RT鼠标与A/LT调查共用48ms左右键桥；A松开成功保留脉冲，B取消清脉冲；GetKeyState与mouse_event双通道保留")
     else:
-        result.fail("refactor39共享可靠鼠标点击桥", f"缺少={cursor_bridge_missing}，旧R3残留={cursor_bridge_forbidden}")
+        result.fail("refactor41共享可靠鼠标点击桥", f"缺少={cursor_bridge_missing}，旧R3残留={cursor_bridge_forbidden}")
 
-    # LT调查只观察原版resolver真值；模式进入、优先级和CaptureAll由ControlModes统一承担。
+    # A/LT调查只观察原版resolver真值；模式进入、优先级和CaptureAll由ControlModes统一承担。
     investigation_text = read_utf8(src / "investigation.c") + read_utf8(src / "investigation.h")
     plugin_text_r37 = read_utf8(src / "plugin.c")
     exploration_text_r37 = read_utf8(src / "exploration.c")
@@ -1877,8 +1980,13 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "wheel_origin_x", "wheel_origin_y", "left_selected_object", "left_manual_override", "left_failed_object",
         "actor + 0x10u", "actor + 0x14u", "inv_direction_score",
         "wanted_object != g_investigation.left_selected_object",
+        "world_distance_squared", "resolver_index", "INVESTIGATION_FOCUS_SHOULDER",
+        "INVESTIGATION_SHOULDER_RELEASE_SIN_SQ_PERMILLE",
+        "inv_build_shoulder_order", "inv_select_shoulder_target",
+        "PadInput_Pressed(PAD_LB)", "PadInput_Pressed(PAD_RB)",
         "investigation_snap_radius_pixels", "Cursor_MoveInvestigationRightStick",
-        "Cursor_PulseLeftClick", "Investigation_UpdateActive", "PadInput_Rumble", "last_rumble_object",
+        "Cursor_PulseLeftClick", "Investigation_UpdateActive", "Investigation_ConfirmCurrentHover",
+        "investigation_activation_mode == 1", "PadInput_Rumble", "last_rumble_object",
     ]
     investigation_joined = investigation_text + runtime_text + addresses_text + read_utf8(src / "platform.h")
     investigation_missing = [token for token in investigation_required if token not in investigation_joined]
@@ -1899,7 +2007,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     update_begin = investigation_text.find("int Investigation_UpdateActive(void)")
     update_text = investigation_text[update_begin:] if update_begin >= 0 else ""
     direction_pos = update_text.find("inv_left_stick_target(&snapshot")
-    progress_pos = update_text.find("inv_progress_probe(&snapshot);")
+    progress_pos = update_text.find("inv_progress_probe(&snapshot);", direction_pos)
     continuous_direction_order_ok = direction_pos >= 0 and progress_pos >= 0 and direction_pos < progress_pos
     no_legacy_left_latch = "left_stick_latched" not in investigation_text
     no_r38_mouse_anchor = all(token not in investigation_text for token in [
@@ -1913,12 +2021,107 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     ])
     no_hard_forward_cone = "abs_cross > dot" not in investigation_text and "DIRECTION_CONE" not in investigation_text
 
+    # R40：LB/RB 只能给快照目标建立稳定整数顺序，并复用原25点probe。
+    shoulder_required = [
+        "left->world_distance_squared < right->world_distance_squared",
+        "left->resolver_index < right->resolver_index",
+        "cross > 0", "delta > 0 ? 0 : count - 1",
+        "g_investigation.focus_source = INVESTIGATION_FOCUS_SHOULDER",
+        "g_investigation.shoulder_selected_object = target->object",
+        "inv_record_shoulder_axis();", "inv_cancel_probe();",
+        "if (snapshot->hovered_object != target->object)",
+        "inv_begin_probe(snapshot, target, 0);",
+        "inv_shoulder_should_release_to_left_stick()",
+        "cross_squared * 1000u", "SHOULDER_RELEASE_SIN_SQ_PERMILLE",
+    ]
+    shoulder_missing = [token for token in shoulder_required if token not in investigation_text]
+    shoulder_code_forbidden = [token for token in [
+        "float ", "double ", "atan2(", "sqrt(", "qsort(", "resolver_confirmed",
+        "PadInput_Pressed(PAD_EAST)",
+    ] if token in investigation_code_no_comments]
+    shoulder_select_begin = investigation_code_no_comments.find("static int inv_select_shoulder_target")
+    shoulder_select_end = investigation_code_no_comments.find("static int inv_direction_score", shoulder_select_begin)
+    shoulder_select_text = investigation_code_no_comments[shoulder_select_begin:shoulder_select_end] if shoulder_select_begin >= 0 and shoulder_select_end > shoulder_select_begin else ""
+    shoulder_no_direct_rumble = (
+        "PadInput_Rumble" not in shoulder_select_text and
+        "last_rumble_object" not in shoulder_select_text
+    )
+    shoulder_confirmed_rumble_ok = all(token in investigation_text for token in [
+        "Cursor_SetInvestigationSession(1)",
+        "void Investigation_UpdateRumble(void)",
+        "hovered = snapshot.hovered_object",
+        "if (hovered == g_investigation.last_rumble_object) return;",
+        "PadInput_Rumble((u16)strength, (u16)strength",
+    ])
+    shoulder_press_pos = update_text.find("inv_select_shoulder_target(&snapshot, shoulder_delta)")
+    shoulder_progress_pos = update_text.find("inv_progress_probe(&snapshot);", shoulder_press_pos)
+    shoulder_before_probe = (
+        shoulder_press_pos >= 0 and shoulder_progress_pos >= 0 and
+        shoulder_press_pos < shoulder_progress_pos
+    )
+    frozen_pointer_layers_ok = all(token not in (read_utf8(src / "pad_input.c") + read_utf8(src / "cursor.c") + read_utf8(src / "control_modes.c")) for token in [
+        "INVESTIGATION_FOCUS_SHOULDER", "inv_select_shoulder_target", "SHOULDER_RELEASE_SIN_SQ_PERMILLE",
+    ])
+
+    # R41 默认A模式的松开确认必须比旧A按下确认更保守：pending时拒绝、只认新鲜resolver hover。
+    confirm_begin = investigation_code_no_comments.find("int Investigation_ConfirmCurrentHover(void)")
+    confirm_end = investigation_code_no_comments.find("int Investigation_UpdateActive(void)", confirm_begin)
+    confirm_text = investigation_code_no_comments[confirm_begin:confirm_end] if confirm_begin >= 0 and confirm_end > confirm_begin else ""
+    confirm_order = [confirm_text.find(token) for token in [
+        "!g_investigation.enabled || !g_investigation.active",
+        "!PadInput_GameForeground(NULL)",
+        "g_investigation.pending_object != 0u",
+        "!inv_read_snapshot(&snapshot) || !inv_snapshot_fresh(&snapshot)",
+        "snapshot.hovered_object == 0u",
+        "Cursor_PulseLeftClick();",
+    ]]
+    release_confirm_safety_ok = (
+        all(pos >= 0 for pos in confirm_order) and confirm_order == sorted(confirm_order) and
+        "pending_click = 1" not in confirm_text
+    )
+
+    # 旧“按住LT、A按下确认”只能在 ActivationMode=1 分支存在；默认0不能在进入tick误点。
+    update_code_begin = investigation_code_no_comments.find("int Investigation_UpdateActive(void)")
+    update_code = investigation_code_no_comments[update_code_begin:] if update_code_begin >= 0 else ""
+    lt_confirm_gate_ok = re.search(
+        r"if\s*\(Runtime_Config\(\)->investigation_activation_mode\s*==\s*1\s*&&\s*InputRouter_RawPressed\(INPUT_CONFIRM\)\)",
+        update_code,
+    ) is not None
+
+    # R42 自动最近目标只能在会话从inactive变active的第一帧运行一次，并复用R40肩键选择。
+    auto_focus_required = [
+        "investigation_auto_focus_nearest",
+        'rt_cfg_int("Investigation", "AutoFocusNearest", 1, 0, 1)',
+        "int session_started = 0;",
+        "session_started = 1;",
+        "if (session_started && Runtime_Config()->investigation_auto_focus_nearest)",
+        "inv_select_shoulder_target(&snapshot, 1);",
+    ]
+    auto_focus_missing = [token for token in auto_focus_required if token not in investigation_joined]
+    session_begin_pos = update_code.find("if (!g_investigation.active)")
+    session_mark_pos = update_code.find("session_started = 1;", session_begin_pos)
+    auto_focus_pos = update_code.find("if (session_started && Runtime_Config()->investigation_auto_focus_nearest)")
+    right_stick_pos = update_code.find("right_moved = Cursor_MoveInvestigationRightStick();")
+    auto_focus_order_ok = 0 <= session_begin_pos < session_mark_pos < auto_focus_pos < right_stick_pos
+    auto_focus_block_end = update_code.find("right_moved = Cursor_MoveInvestigationRightStick();", auto_focus_pos)
+    auto_focus_block = update_code[auto_focus_pos:auto_focus_block_end] if auto_focus_pos >= 0 and auto_focus_block_end > auto_focus_pos else ""
+    auto_focus_safe_ok = (
+        "inv_select_shoulder_target(&snapshot, 1);" in auto_focus_block and
+        "Cursor_PulseLeftClick" not in auto_focus_block and
+        "PadInput_Rumble" not in auto_focus_block and
+        "snapshot.hovered_object" not in auto_focus_block
+    )
+
     if (not investigation_missing and worker_order_ok and modal_movement_ok and protocol_gate_ok and
             no_direct_trigger_policy and continuous_direction_order_ok and no_legacy_left_latch and
-            no_r38_mouse_anchor and actor_center_ok and no_hard_forward_cone):
-        result.ok("refactor39 LT原版resolver调查", "原函数真值不变；640x480合格快照；角色实时屏幕位置为轮盘中心；前方180度无硬空白扇区；无对角偏差角度评分+约2~3度轻迟滞；新方向先于旧probe；右杆低速短吸附")
+            no_r38_mouse_anchor and actor_center_ok and no_hard_forward_cone and
+            not shoulder_missing and not shoulder_code_forbidden and shoulder_before_probe and
+            frozen_pointer_layers_ok and shoulder_no_direct_rumble and shoulder_confirmed_rumble_ok and
+            release_confirm_safety_ok and lt_confirm_gate_ok and not auto_focus_missing and
+            auto_focus_order_ok and auto_focus_safe_ok):
+        result.ok("refactor42 A/LT原版resolver调查", "进入会话仅一次按AutoFocusNearest自动选择距离第0项；复用R40肩键锁与25点probe，不直接点击/震动；R41双激活与松开安全门保持")
     else:
-        result.fail("refactor39 LT原版resolver调查", f"缺少={investigation_missing}，worker顺序={worker_order_ok}，移动抑制={modal_movement_ok}，协议门={protocol_gate_ok}，无私自扳机策略={no_direct_trigger_policy}，连续方向先裁决={continuous_direction_order_ok}，旧latch已删除={no_legacy_left_latch}，R38鼠标锚点已删除={no_r38_mouse_anchor}，角色中心={actor_center_ok}，无硬扇区={no_hard_forward_cone}")
+        result.fail("refactor42 A/LT原版resolver调查", f"缺少={investigation_missing}，worker顺序={worker_order_ok}，移动抑制={modal_movement_ok}，协议门={protocol_gate_ok}，无私自扳机策略={no_direct_trigger_policy}，连续方向先裁决={continuous_direction_order_ok}，旧latch已删除={no_legacy_left_latch}，R38鼠标锚点已删除={no_r38_mouse_anchor}，角色中心={actor_center_ok}，无硬扇区={no_hard_forward_cone}，肩键缺少={shoulder_missing}，肩键禁用代码={shoulder_code_forbidden}，肩键先于probe={shoulder_before_probe}，冻结层未扩散={frozen_pointer_layers_ok}，肩键无直接震动={shoulder_no_direct_rumble}，确认后统一震动={shoulder_confirmed_rumble_ok}，A松开安全门={release_confirm_safety_ok}，LT模式确认门={lt_confirm_gate_ok}，自动聚焦缺少={auto_focus_missing}，自动聚焦顺序={auto_focus_order_ok}，自动聚焦安全={auto_focus_safe_ok}")
 
     # refactor14 起 CMD1/CMD2 技能/道具列表的 D-Pad 左右应复用原版分页 ButtonEvent。
     # refactor16 复核发现 r14/r15 的 Battle 业务代码虽然已经调用 INPUT_NAV_LEFT/RIGHT，
@@ -2856,11 +3059,78 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     else:
         result.ok("源码注释最低覆盖率", "；".join(ratios))
 
+    # R41 把“初学者能接手”提升为本轮硬门，而不是只满足全项目10%的历史最低线。
+    # 这里锁住本轮真正修改的文件：C文件至少20%～45%，头文件至少35%～40%。
+    beginner_minimums = {
+        "runtime.c": 0.20,
+        "runtime.h": 0.35,
+        "control_modes.c": 0.20,
+        "control_modes.h": 0.35,
+        "input_router.c": 0.20,
+        "input_router.h": 0.35,
+        "investigation.c": 0.22,
+        "investigation.h": 0.40,
+        "plugin.c": 0.45,
+    }
+    beginner_ratio_bad = []
+    for name, minimum in beginner_minimums.items():
+        path = src / name
+        lines = [line for line in read_utf8(path).splitlines() if line.strip()]
+        comment_lines = sum(1 for line in lines if line.lstrip().startswith(("/*", "*", "//")))
+        ratio = comment_lines / max(1, len(lines))
+        if ratio < minimum:
+            beginner_ratio_bad.append(f"{name}({ratio:.1%}<{minimum:.0%})")
 
-def check_ini_and_build(root: Path, result: CheckResult) -> None:
+    # 比例仍可能被无意义注释刷高，所以再要求“为什么、危险场景、每步顺序”真的写进源码。
+    beginner_explanation_tokens = [
+        "可以理解为学校里只有一个值日班长负责分配教室",
+        "默认模式中按“取消键”会立刻取消",
+        "只有三个条件同时成立才恢复",
+        "松开确定键永远不互动",
+        "每一道都在阻止一种危险误点",
+        "尚未被原版确认",
+        "这行不是装饰性的版本号",
+        "如果每个8ms tick都重新执行",
+        "不再写第二套最近算法",
+        "这张表表示“固定物理位置”",
+        "鼠标模式也遵守确定/取消布局",
+        "RB+南键永远攻击，RB+东键永远道具",
+    ]
+    beginner_joined = runtime_text + control_text + investigation_text + plugin_text_r37 + input_router_c
+    beginner_explanation_missing = [
+        token for token in beginner_explanation_tokens if token not in beginner_joined
+    ]
+    build_text_for_comments = read_utf8(src / "build.bat")
+    build_comment_ok = all(token in build_text_for_comments for token in [
+        "ASI 和 INI 必须成对进入编译内容",
+        "同步全部现行中文文档",
+        "最新稳定检查器",
+    ])
+    if not beginner_ratio_bad and not beginner_explanation_missing and build_comment_ok:
+        result.ok("R42初学者级详细注释", "修改文件注释比例达标；模式比喻、B锁存、RT恢复、松开误点、probe安全、一次性自动最近目标和打包步骤均有逐步中文解释")
+    else:
+        result.fail("R42初学者级详细注释", f"比例不足={beginner_ratio_bad}，解释缺少={beginner_explanation_missing}，构建注释={build_comment_ok}")
+
+
+def compiled_content_dir(root: Path) -> Path:
+    """源码包用 root/编译内容；独立编译内容包则把 ASI/INI 直接放在 root。"""
+    nested = root / "编译内容"
+    if nested.is_dir():
+        return nested
+    return root
+
+
+def check_ini_and_build(
+    root: Path,
+    result: CheckResult,
+    source_only: bool = False,
+    artifact_only: bool = False,
+) -> None:
     """检查用户侧配置兼容性和正式 Windows 构建规则。"""
-    ini = root / "编译内容" / "Castle_PadSupport.ini"
-    if not ini.is_file():
+    ini = compiled_content_dir(root) / "Castle_PadSupport.ini"
+    if source_only:
+        print("提示：--source-only 已跳过发布 INI 实体检查；公开键集合仍由 RuntimeConfig/源码护栏覆盖。")
+    elif not ini.is_file():
         result.fail("INI 配置", "Castle_PadSupport.ini 不存在")
     else:
         text = read_utf8(ini)
@@ -2870,7 +3140,32 @@ def check_ini_and_build(root: Path, result: CheckResult) -> None:
         if missing or unexpected:
             result.fail("INI 公开键集合", f"缺少={missing}，新增/意外={unexpected}")
         else:
-            result.ok("INI 公开键集合", f"{len(found)} 个公开键完整（Back/RT双杆速度 + LT精调/吸附 + 全局强度/独立时长）")
+            swap_default_ok = re.search(r"^SwapConfirmCancel\s*=\s*0\s*$", text, flags=re.MULTILINE) is not None
+            activation_default_ok = re.search(r"^ActivationMode\s*=\s*0\s*$", text, flags=re.MULTILINE) is not None
+            auto_focus_default_ok = re.search(r"^AutoFocusNearest\s*=\s*1\s*$", text, flags=re.MULTILINE) is not None
+            chinese_comments_required = [
+                "; 《幽城幻剑录》手柄支持",
+                "; 是否交换“确定/取消”语义：0=Xbox位置布局，1=PS传统布局。",
+                "; 鼠标模式中确定始终对应左键、取消始终对应右键，因此鼠标左右键会跟随本选项交换。",
+                "; 调查模式：",
+                "; 0 = 按住“确定键”，松开确定键进行交互，按住时按“取消键”取消。",
+                "; 进入调查模式时是否自动聚焦离角色最近的可互动目标：1=开启，0=关闭。",
+                "; 自动聚焦仍需经过原版 resolver 和 25 点探测确认，不会直接触发互动。",
+                "; 所有插件震动事件共享的全局强度",
+            ]
+            chinese_comments_missing = [token for token in chinese_comments_required if token not in text]
+            english_comment_regression = any(token in text for token in [
+                "; 0 = hold A", "; 1 = hold LT", "; Auto focus",
+            ])
+            if (swap_default_ok and activation_default_ok and auto_focus_default_ok and
+                    not chinese_comments_missing and not english_comment_regression):
+                result.ok("INI 公开键与中文注释", f"{len(found)} 个公开键完整；SwapConfirmCancel=0、ActivationMode=0、AutoFocusNearest=1；用户中文说明完整保留")
+            else:
+                result.fail("INI 默认值/中文注释", f"Swap0={swap_default_ok}，Activation0={activation_default_ok}，AutoFocus1={auto_focus_default_ok}，缺中文注释={chinese_comments_missing}，英文回退={english_comment_regression}")
+
+    # 独立编译内容包没有源码和 build.bat；artifact-only 到这里完成 INI 检查即可。
+    if artifact_only:
+        return
 
     build = root / "源码" / "build.bat"
     if not build.is_file():
@@ -2887,7 +3182,10 @@ def check_ini_and_build(root: Path, result: CheckResult) -> None:
     ]
     missing_units = [name for name in source_units if name not in text]
     first_lines = text.splitlines()[:5]
-    chcp_ok = any("chcp 65001" in line.lower() for line in first_lines)
+    chcp_ok = any(
+        "chcp 65001" in line.lower() or "chcp.com\" 65001" in line.lower()
+        for line in first_lines
+    )
     raw_build = build.read_bytes()
     utf8_bom = raw_build.startswith(b"\xef\xbb\xbf")
     crlf_only = b"\n" not in raw_build.replace(b"\r\n", b"")
@@ -2899,7 +3197,7 @@ def check_ini_and_build(root: Path, result: CheckResult) -> None:
 
 def check_artifact(root: Path, result: CheckResult) -> None:
     """读取最少量 PE 头，确认打包的 ASI 确实是 32 位 x86 DLL，而不是误打包其它文件。"""
-    asi = root / "编译内容" / "Castle_PadSupport.asi"
+    asi = compiled_content_dir(root) / "Castle_PadSupport.asi"
     if not asi.is_file():
         result.fail("ASI 编译产物", "文件不存在")
         return
@@ -2913,22 +3211,29 @@ def check_artifact(root: Path, result: CheckResult) -> None:
         is_pe32 = magic == 0x010B
         is_dll = bool(characteristics & 0x2000)
         compiled_markers = [
-            b"refactor39",
-            "r38震动边界实机PASS并冻结".encode("utf-8"),
-            "LT调查".encode("utf-8"),
-            "角色中心连续方向轮盘".encode("utf-8"),
-            "隐藏鼠标误震修复保持冻结".encode("utf-8"),
+            b"refactor42",
+            "AutoFocusNearest=1默认自动最近目标".encode("utf-8"),
+            "=0关闭".encode("utf-8"),
+            "SwapConfirmCancel=0为Xbox确定布局".encode("utf-8"),
+            "=1为PS O确定/X取消".encode("utf-8"),
+            "确定=鼠标左键、取消=右键".encode("utf-8"),
+            "RB+ABXY物理快捷不变".encode("utf-8"),
         ]
         missing_markers = [marker.decode("utf-8") for marker in compiled_markers if marker not in data]
         if is_i386 and is_pe32 and is_dll and not missing_markers:
-            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + refactor39 角色中心连续轮盘与r38震动边界冻结标记，SHA-256={sha256(asi)}")
+            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + refactor42 自动最近目标、确定/取消布局、鼠标语义与物理快捷隔离标记，SHA-256={sha256(asi)}")
         else:
             result.fail("ASI PE 结构/本轮编译标记", f"machine=0x{machine:04X}, magic=0x{magic:04X}, DLL={is_dll}，缺编译标记={missing_markers}")
     except Exception as exc:
         result.fail("ASI PE 结构", str(exc))
 
 
-def check_documents(root: Path, result: CheckResult) -> None:
+def check_documents(
+    root: Path,
+    result: CheckResult,
+    source_only: bool = False,
+    artifact_only: bool = False,
+) -> None:
     """
     检查交付包的文档与精简验证边界。
 
@@ -2941,6 +3246,10 @@ def check_documents(root: Path, result: CheckResult) -> None:
     “当前应阅读的说明”与“会持续更新的唯一验证摘要”。
     """
     doc_dir = root / "文档"
+    if not doc_dir.is_dir():
+        repository_doc_dir = root.parent.parent / "docs" / "手柄支持"
+        if repository_doc_dir.is_dir():
+            doc_dir = repository_doc_dir
     required_docs = [
         "截至本版本的完整接档.md",
         "架构设计与模块边界.md",
@@ -2948,14 +3257,14 @@ def check_documents(root: Path, result: CheckResult) -> None:
         "地址与原版协议记录.md",
         "测试与回归清单.md",
         "已知问题与实机验收说明.md",
-        "构建与部署说明.md",
         "第三方依赖说明.md",
         "工具详细说明.md",
         "本版本更新记录.md",
         "项目圣经执行检查.md",
         "文件校验清单.md",
-        "放置说明.txt",
+        "手柄控制说明.md",
         "主菜单手柄交互设计.md",
+        "调查模式设计说明.md",
     ]
 
     missing = [name for name in required_docs if not (doc_dir / name).is_file()]
@@ -2969,35 +3278,75 @@ def check_documents(root: Path, result: CheckResult) -> None:
     # GitHub 约定文件名，不能为了“文档中文名”规则把它改成中文。这里把这个例外写死，
     # 这样既不会误报合法 GitHub README，也不会让其它英文说明文件借机散落到源码目录。
     github_readme = root / "源码" / "readme.md"
-    if not github_readme.is_file():
+    if artifact_only:
+        github_readme = Path("__artifact_package_has_no_github_readme__")
+    elif not github_readme.is_file():
         result.fail("GitHub README 例外", "缺少 源码/readme.md；该文件允许保留英文名，但不能删除或改成其它散落 Markdown")
     else:
-        result.ok("GitHub README 例外", "源码/readme.md 存在；按 GitHub 入口文档规则保留英文文件名")
+        result.ok("GitHub README 例外", "源码/readme.md 是面向GitHub的构建说明；文档目录不重复放构建说明")
 
+    compiled_dir = compiled_content_dir(root)
+    compiled_doc_dir = compiled_dir / "文档"
+    compiled_tool_doc = compiled_dir / "工具" / "工具详细说明.md"
     misplaced_markdown = []
     for path in root.rglob("*.md"):
-        if path.resolve() == github_readme.resolve():
+        if not artifact_only and path.resolve() == github_readme.resolve():
             continue
+        in_primary_docs = False
+        in_compiled_docs = False
         try:
             path.relative_to(doc_dir)
+            in_primary_docs = True
         except ValueError:
+            pass
+        try:
+            path.relative_to(compiled_doc_dir)
+            in_compiled_docs = True
+        except ValueError:
+            pass
+        if not in_primary_docs and not in_compiled_docs and path.resolve() != compiled_tool_doc.resolve():
             misplaced_markdown.append(str(path.relative_to(root)))
     if misplaced_markdown:
         result.fail("文档集中到文档目录", "除 GitHub README 外发现散落 Markdown：" + ", ".join(sorted(misplaced_markdown)))
     else:
-        result.ok("文档集中到文档目录", "除 源码/readme.md 的 GitHub 例外外，其余 Markdown 均位于 文档/")
+        result.ok("文档集中到中文目录", "源码readme仅作GitHub构建说明；其余Markdown只在源码包/编译包的文档或工具中文说明位置")
+
+    # 构建完成后，源码包文档、编译内容文档和工具副本必须逐字节一致。
+    if not artifact_only and compiled_doc_dir.is_dir():
+        drift = []
+        for name in required_docs:
+            primary = doc_dir / name
+            mirror = compiled_doc_dir / name
+            if not mirror.is_file() or sha256(primary) != sha256(mirror):
+                drift.append(name)
+        source_tool = root / "工具" / "refactor_check.py"
+        compiled_tool = compiled_dir / "工具" / "refactor_check.py"
+        tool_ok = compiled_tool.is_file() and source_tool.is_file() and sha256(source_tool) == sha256(compiled_tool)
+        if drift or not tool_ok:
+            result.fail("源码包/编译包独立接档同步", f"文档漂移={drift}，检查器一致={tool_ok}")
+        else:
+            result.ok("源码包/编译包独立接档同步", f"{len(required_docs)}/{len(required_docs)}文档与最新检查器逐字节一致")
+    elif artifact_only:
+        tool = root / "工具" / "refactor_check.py"
+        tool_doc = root / "工具" / "工具详细说明.md"
+        if tool.is_file() and tool_doc.is_file():
+            result.ok("编译内容包工具随附", "最新检查器和简体中文工具详细说明均存在")
+        else:
+            result.fail("编译内容包工具随附", "缺少 工具/refactor_check.py 或 工具/工具详细说明.md")
 
     # 最终“编译内容”只保留用户真正需要部署/配置的 ASI 与 INI。
     # 链接器临时生成的 .lib/.exp、旧版说明 TXT 等都不应该混进最终交付。
-    compiled_dir = root / "编译内容"
-    allowed_compiled = {"Castle_PadSupport.asi", "Castle_PadSupport.ini"}
-    actual_compiled = {path.name for path in compiled_dir.iterdir() if path.is_file()} if compiled_dir.is_dir() else set()
-    unexpected_compiled = sorted(actual_compiled - allowed_compiled)
-    missing_compiled = sorted(allowed_compiled - actual_compiled)
-    if unexpected_compiled or missing_compiled:
-        result.fail("编译内容目录白名单", f"缺少={missing_compiled}，多余={unexpected_compiled}")
+    if source_only:
+        print("提示：--source-only 已跳过编译内容 ASI+INI 发布白名单；ASI PE 本身仍单独检查。")
     else:
-        result.ok("编译内容目录白名单", "仅 ASI + INI")
+        allowed_compiled = {"Castle_PadSupport.asi", "Castle_PadSupport.ini"}
+        actual_compiled = {path.name for path in compiled_dir.iterdir() if path.is_file()} if compiled_dir.is_dir() else set()
+        unexpected_compiled = sorted(actual_compiled - allowed_compiled)
+        missing_compiled = sorted(allowed_compiled - actual_compiled)
+        if unexpected_compiled or missing_compiled:
+            result.fail("编译内容目录白名单", f"缺少={missing_compiled}，多余={unexpected_compiled}")
+        else:
+            result.ok("编译内容目录白名单", "仅 ASI + INI")
 
     # 交付包不能夹带 Python 缓存、OBJ、EXP 等构建中间件。
     # 这些文件既不是源码也不是证据，只会让接档者误以为它们属于正式内容。
@@ -3015,15 +3364,17 @@ def check_documents(root: Path, result: CheckResult) -> None:
     # 用户明确要求从本版起不再内置逐版证据；旧证据树即使内容正确也不能继续塞进交付包。
     evidence_dir = root / "证据"
     if evidence_dir.exists():
-        result.fail("refactor39精简证据策略", "交付包仍包含 证据/；请删除逐版证据树，必要结论只合并进一份持续维护文档")
+        result.fail("refactor42精简证据策略", "交付包仍包含 证据/；请删除逐版证据树，必要结论只合并进一份持续维护文档")
     else:
-        result.ok("refactor39精简证据策略", "未内置逐版证据树；源码、现行文档与本检查器构成交接依据")
+        result.ok("refactor42精简证据策略", "未内置逐版证据树；源码、现行文档与本检查器构成交接依据")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 refactor39：校验Back常驻/地图RT临时鼠标、LT角色中心resolver连续轮盘、r38震动边界冻结、29个独立C构建、文档与目标RPG.exe")
+    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 refactor42：校验自动最近目标、Xbox/PS确定取消布局、鼠标左右键跟随、RB快捷固定、中文INI、R41/R40基线、独立接档包与目标RPG.exe")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent, help="包根目录；默认自动取工具目录的上一层")
     parser.add_argument("--exe", type=Path, help="可选：待验证的 RPG.exe。提供后先检查双样本 SHA 白名单，再执行既有冻结协议以及主 Interface state2～state8 页面协议；state3 治疗目标的 +0x768 短锚点与两处新 Event CALL、以及既有 state7/state8 协议也必须通过")
+    parser.add_argument("--source-only", action="store_true", help="仓库开发模式：允许发布 INI/最终白名单尚未装配；仍检查源码、构建规则、ASI PE、现行 docs/手柄支持 文档和可选 RPG.exe Oracle")
+    parser.add_argument("--artifact-only", action="store_true", help="独立编译内容包模式：不要求源码/build.bat，只检查包根ASI+INI、中文文档、随附工具和可选RPG.exe Oracle")
     args = parser.parse_args()
 
     root = args.root.resolve()
@@ -3031,14 +3382,21 @@ def main() -> int:
     print(f"检查包：{root}")
     print("=" * 78)
 
-    check_source_architecture(root, result)
-    check_ini_and_build(root, result)
+    if args.source_only and args.artifact_only:
+        parser.error("--source-only 与 --artifact-only 不能同时使用")
+
+    if not args.artifact_only:
+        check_source_architecture(root, result)
+    check_ini_and_build(root, result, args.source_only, args.artifact_only)
     check_artifact(root, result)
-    check_documents(root, result)
+    check_documents(root, result, args.source_only, args.artifact_only)
     if args.exe:
         check_target_exe(args.exe.resolve(), result)
     else:
-        print("提示：本次没有传 --exe，因此只检查源码、构建、文档与交付结构；RPG.exe 的双 SHA 白名单、既有冻结协议、state2～state8、存档点与调查 resolver 协议均未执行。")
+        if args.artifact_only:
+            print("提示：本次没有传 --exe，因此独立编译内容包只检查ASI、INI、中文文档与工具；RPG.exe地址协议未执行。")
+        else:
+            print("提示：本次没有传 --exe，因此只检查源码、构建、文档与交付结构；RPG.exe 的双 SHA 白名单、既有冻结协议、state2～state8、存档点与调查 resolver 协议均未执行。")
 
     print("=" * 78)
     print(f"总结果：PASS={result.passed}，FAIL={result.failed}")

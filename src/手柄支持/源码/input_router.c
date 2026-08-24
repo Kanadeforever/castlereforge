@@ -1,4 +1,5 @@
 ﻿#include "input_router.h"
+#include "runtime.h"
 
 /*
  * 物理键映射只在这里集中出现一次。
@@ -68,8 +69,13 @@ static int input_action_consumed(InputAction action) {
     return (g_consumed_actions & (1u << (u32)action)) != 0u;
 }
 
-/* 所有“语义动作 → 默认物理键”只在这一张表出现；业务模块不再散落 SDL 按钮编号。 */
-static PadButton input_action_button(InputAction action) {
+/*
+ * 这张表表示“固定物理位置”，不读取用户的确定/取消布局。
+ * 它主要服务两件事：
+ * 1. 普通语义映射先从这里取得默认位置，再按 INI 只交换 confirm/cancel；
+ * 2. RB+ABXY 战斗快捷键明确要求永远按物理位置，不跟随确定/取消交换。
+ */
+static PadButton input_action_button_fixed(InputAction action) {
     switch (action) {
     case INPUT_CONFIRM:       return PAD_SOUTH;
     case INPUT_CANCEL:        return PAD_EAST;
@@ -88,6 +94,42 @@ static PadButton input_action_button(InputAction action) {
     case INPUT_MODIFIER_SHIFT:return PAD_BACK;
     default:                  return PAD_SOUTH;
     }
+}
+
+/*
+ * 把“确定/取消语义”翻译成当前配置下的物理按钮。
+ *
+ * SwapConfirmCancel=0：CONFIRM→南键，CANCEL→东键；
+ * SwapConfirmCancel=1：CONFIRM→东键，CANCEL→南键。
+ *
+ * X/Y、肩键、方向键等不进入这两个 if，直接回到上面的固定表，所以不会被误交换。
+ */
+static PadButton input_action_button(InputAction action) {
+    if (Runtime_Config()->swap_confirm_cancel) {
+        if (action == INPUT_CONFIRM) return PAD_EAST;
+        if (action == INPUT_CANCEL) return PAD_SOUTH;
+    }
+    return input_action_button_fixed(action);
+}
+
+/*
+ * Raw 系列仍遵守“确定/取消布局”，但故意忽略 consumed mask。
+ * ControlModes 的运行顺序比所有页面早，并且自己负责释放屏障；它需要知道物理键是否还压着，
+ * 即使同一语义已经被屏障标成 consumed，也不能把“仍按住”误读成“已经松开”。
+ */
+int InputRouter_RawPressed(InputAction action) {
+    if ((int)action < 0 || action >= INPUT_ACTION_COUNT) return 0;
+    return PadInput_Pressed(input_action_button(action));
+}
+
+int InputRouter_RawDown(InputAction action) {
+    if ((int)action < 0 || action >= INPUT_ACTION_COUNT) return 0;
+    return PadInput_Down(input_action_button(action));
+}
+
+int InputRouter_RawReleased(InputAction action) {
+    if ((int)action < 0 || action >= INPUT_ACTION_COUNT) return 0;
+    return PadInput_Released(input_action_button(action));
 }
 
 /* 把语义动作翻译成物理键后读取按下沿；这仍是不带 Context 的基础通道。 */
@@ -116,8 +158,13 @@ int InputRouter_ChordPressed(InputAction modifier, InputAction action) {
     if ((int)action < 0 || action >= INPUT_ACTION_COUNT) return 0;
     if (input_action_consumed(modifier) || input_action_consumed(action)) return 0;
 
-    modifier_button = input_action_button(modifier);
-    action_button = input_action_button(action);
+    /*
+     * 这个接口当前只用于 RB+ABXY 战斗快捷键。用户明确要求快捷键保持物理位置：
+     * RB+南键永远攻击，RB+东键永远道具，不能因为O/X确定布局而互换。
+     * 因此这里特意使用 fixed 表；普通菜单和调查不要调用本函数读取确定/取消。
+     */
+    modifier_button = input_action_button_fixed(modifier);
+    action_button = input_action_button_fixed(action);
 
     /*
      * 情况一：修饰键已经按住，这一帧动作键刚按下。

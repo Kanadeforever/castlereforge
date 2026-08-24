@@ -189,10 +189,19 @@ static int rt_cfg_int(const char* section, const char* key, int defv, int minv, 
 
 static void rt_load_config(void) {
     /*
-     * 绝大多数既有默认值继续沿用稳定基线。r38 只继续收口指针模式、LT 调查手感与震动边界：
+     * 绝大多数既有默认值继续沿用稳定基线。R41 只增加调查激活方式选择，
+     * R40左杆/LB/RB手感、指针速度和震动边界继续保持：
      * 已移除业务的延时隐藏、修饰键精细档与摇杆按键长按配置不再读取。
      * 所有配置仍集中由 Runtime 读取，Cursor / Battle 等业务模块只拿已经裁剪过安全范围的结果。
      */
+    /*
+     * SwapConfirmCancel 只允许0/1。默认0保持项目从最早版本开始的Xbox位置语义；
+     * 写1时由InputRouter统一交换确定/取消，业务页面仍只看到语义，不需要逐页改代码。
+     * 鼠标模式也读取同一语义，所以“确定=左键、取消=右键”在两种布局下都成立。
+     */
+    g_cfg.swap_confirm_cancel =
+        rt_cfg_int("Controls", "SwapConfirmCancel", 0, 0, 1);
+
     g_cfg.cursor_default_hidden = rt_cfg_int("Mouse", "DefaultHidden", 1, 0, 1);
     g_cfg.target_cursor_indicator = rt_cfg_int("Mouse", "TargetSelectionCursor", 1, 0, 1);
     g_cfg.mouse_mode_left_stick_sensitivity_percent =
@@ -200,13 +209,31 @@ static void rt_load_config(void) {
     g_cfg.mouse_mode_right_stick_sensitivity_percent =
         (u32)rt_cfg_int("Mouse", "MouseModeRightStickSensitivityPercent", 15, 1, 300);
 
+    /*
+     * ActivationMode 的安全范围只有 0 和 1：
+     * - 缺少 INI、缺少键、写成负数或其它无效内容时，rt_cfg_int 会回到默认 0；
+     * - 写成大于 1 的整数会被夹到 1，绝不会把未知数字交给模式状态机猜测。
+     *
+     * 这样旧用户没有配置文件时会自然得到“按住 A、松开互动”的新默认方式；
+     * 想继续使用 R40 的“按住 LT、A确认”时，只要显式写 ActivationMode=1。
+     */
+    g_cfg.investigation_activation_mode =
+        rt_cfg_int("Investigation", "ActivationMode", 0, 0, 1);
+
+    /*
+     * AutoFocusNearest 默认1，表示每次真正建立调查会话时自动选择最近候选。
+     * rt_cfg_int 仍把用户输入夹在0..1：缺键或无效负数回到默认1，大于1夹到1。
+     * 这里只保存开关，不读取角色、目标或手柄；真正选择仍在 Investigation 的安全快照层。
+     */
+    g_cfg.investigation_auto_focus_nearest =
+        rt_cfg_int("Investigation", "AutoFocusNearest", 1, 0, 1);
     g_cfg.investigation_right_stick_sensitivity_percent =
         (u32)rt_cfg_int("Investigation", "RightStickSensitivityPercent", 8, 1, 100);
     g_cfg.investigation_snap_radius_pixels =
         (u32)rt_cfg_int("Investigation", "SnapRadiusPixels", 12, 1, 64);
     /*
      * 所有震动事件共享一个强度百分比；持续时间按事件拆开，便于逐项调手感。
-     * InvestigationHoverDurationMs 是历史键名：现在它表示“显式 LT 调查或 Back/RT 鼠标模式中，
+     * InvestigationHoverDurationMs 是历史键名：现在它表示“显式 A/LT 调查或 Back/RT 鼠标模式中，
      * 指针首次碰到新的可互动对象”的共享短震时长，不允许普通隐藏鼠标使用。
      */
     g_cfg.rumble_strength_percent =
@@ -532,7 +559,7 @@ int Runtime_ExactBuildOk(void) {
     return 1;
 }
 
-/* LT 调查的 resolver 依赖是独立能力门，不连坐 r36 已验收能力。 */
+/* A/LT 调查共用的 resolver 依赖是独立能力门，不连坐既有已验收能力。 */
 int Runtime_InvestigationProtocolOk(void) {
     static const u8 sig_caller[] = {0xA1,0x08,0xF8,0x89,0x00,0x85,0xC0,0x0F,0x87,0x77,0x01,0x00,0x00,0x8B,0x46,0x20,0x8B,0xCE,0x50};
     static const u8 sig_resolver[] = {0x53,0x55,0x8B,0x6C,0x24,0x0C,0x56,0x8B,0xF1,0x57,0x8D,0x7D,0xFF,0x8B,0x46,0x1C,0x8B,0x4E,0x2C};
@@ -1441,7 +1468,7 @@ int Runtime_Initialize(HMODULE self_module) {
     rt_load_config();
     rt_open_log();
 
-    Runtime_Log("[启动] 幽城幻剑录手柄支持：v0.3-refactor39（LT角色中心轮盘跟手修复候选版）");
+    Runtime_Log("[启动] 幽城幻剑录手柄支持：v0.3-refactor42（自动最近目标 + 确定/取消布局切换）");
     Runtime_Log("[启动] By Luminou with ChatGPT");
     Runtime_LogModule("ASI 插件", g_self_module, NULL);
 
