@@ -557,8 +557,8 @@ static int create_and_prepare_game_(const WCHAR* game_exe, const WCHAR* game_dir
      * Bootstrap 不依赖 KERNEL32，用来承担 v0.2.3 证明不能塞进普通 Core DllMain 的 CP950 NLS 重建。
      */
     if (!PeImportInjector_AddEarlyImports2(pi.hProcess,
-            "CastleLocaleBootstrap.dll", "CastleLocaleBootstrap_Bootstrap",
-            "CastleModCore.dll", "CastleModCore_Bootstrap")) {
+            "mods\\CastleLocaleBootstrap.dll", "CastleLocaleBootstrap_Bootstrap",
+            "mods\\CastleModCore.dll", "CastleModCore_Bootstrap")) {
         log_line_((const WCHAR*)L"[启动失败] 无法把 Locale Bootstrap + Mod Core 一起加入 RPG.exe 的内存导入目录。目标进程已终止。");
         TerminateProcess(pi.hProcess, 2u);
         CloseHandle(pi.hThread);
