@@ -300,7 +300,7 @@ BlurredSides=0
 
 ---
 
-## 安装
+## 安装 (Windows)
 
 ### 推荐方式
 
@@ -322,6 +322,41 @@ mods\overrides\
 ```
 
 该文件夹内已提前内置了模组的空文件夹结构模板，只需要复制一份以后，将复制的文件夹改成模组的名字，并打开这个文件夹将mod放在对应位置即可（如果你是强迫症也可以删掉空文件夹），然后再通过 `CastleModLoader.exe` 管理和启动游戏。
+
+## 安装 (Android)
+
+### 推荐方式
+
+目前在 **AYN Odin 3** 上使用[GameNative](https://github.com/utkarshdalal/GameNative/releases/latest)测试，可正常运行，但无法使用MOD加载器（该问题计划于日后修复）。
+
+若你的安卓设备可以运行GameNative并且顺畅使用，那么本模组则理论上没有使用障碍。
+
+配置要求上，本模组并未增加幽城的配置要求。
+
+综上，软件上暂时只支持GameNative，其余如Winlator等组件请自行测试。
+
+另外本插件不对**盖世游戏**及其相关修改版的运行情况做任何支持，任何来自**盖世游戏**及其修改版的bug汇报将会**无差别关闭**。
+
+### GameNative设置说明
+
+> 建议在电脑上安装完游戏、处理完文件名、安装完毕MOD、调试显示效果等准备工作完成后，再打包移至移动设备中。
+
+1. Android上现阶段无法使用mod加载器，所以需要下载[Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader)（下载x86的winmm.dll），并且GameNative内置的cnc-ddraw并不是那么好用，依然需要下载[cnc-ddraw](https://github.com/FunkyFr3sh/cnc-ddraw/releases/latest)；
+2. 在游戏的 `exe` 文件夹内，放好 `winmm.dll` 并在这个文件夹新建一个 `winmm.ini` ，然后打开这个ini，并在里面添加两行文字并保存：
+```ini
+[globalsets]
+dontloadfromdllmain=0
+```
+3. 将 `mods` 文件夹里的 `asi` 文件夹重命名为 `scripts` 然后放到 `exe` 文件夹内，这样Android上的游戏本体相关的准备工作就算完成了， `scripts` 目录等价mod加载器里的 `asi` 目录。
+4. 开始游戏的设置部分，在GameNavite内添加好游戏后，点击游戏页面右侧的齿轮，打开选项菜单的 `编辑容器` ，进入容器编辑界面；
+5. 在`通用` 页面中，将wine版本切换至带有 `X86_64`字样的内容，这很重要，arm字样无法使用；
+6. 将 `可执行文件路径` 修改为 `exe/RPG.exe` 是启动游戏，修改为 `exe/cnc-ddraw config.exe` 是修改cnc-ddraw的设置；
+7. 将 `语言` 改为 `Traditional Chinese`；
+8. 切换到 `控制器` 页面，关闭所有打开的开关（虽然不关好像也没事）；
+9. 切换到 `Win组件` 页面中，将所有项目的选项全部改为 `Native (Windows)` ，是的，全部选项都要改；
+10. 切换到 `环境` 页面，并移到最下面，点击 `+` 按钮，然后点击右侧的清单按钮，找到 `WINEDLLOVERRIDES`（应该是倒数第三个），然后点击新出现的第二个清单按钮，找到 `dinput8=n,b` 然后点击添加，然后点击这个选项开始编辑，将 `dinput8` 改成 `winmm` ，然后点击“确认”保存结果
+11. 点击右上角的软盘图标保存，准备完毕。
+12. 点击绿色按钮开始游戏吧，进游戏后移动鼠标到屏幕靠中间的任意位置并点一下屏幕，让游戏接收鼠标输入，然后移到边缘隐藏。
 
 ---
 
