@@ -365,6 +365,7 @@ typedef struct CHARFORMATW_ {
 #define IDC_REFRESH_         1004
 #define IDC_LAUNCH_          1005
 #define IDC_ABOUT_           1006
+#define IDC_CNC_CONFIG_      1007
 #define IDC_SETTING_MODLOG_  1101
 #define IDC_SETTING_GAMELOG_ 1102
 #define IDC_SETTING_SAVE_    1103
@@ -602,6 +603,7 @@ static HWND g_override_list;
 static HWND g_about_button;
 static HWND g_settings_button;
 static HWND g_refresh_button;
+static HWND g_cnc_config_button;
 static HWND g_launch_button;
 static HFONT_ g_font;
 static HFONT_ g_title_font;
@@ -1458,6 +1460,7 @@ typedef struct MainLayout_ {
     RECT_ about_button;
     RECT_ settings_button;
     RECT_ refresh_button;
+    RECT_ cnc_config_button;
     RECT_ launch_button;
 } MainLayout_;
 
@@ -1465,7 +1468,9 @@ static int calculate_main_layout_(HWND hwnd, MainLayout_* out) {
     RECT_ rc;
     int m, top, header_h, gap, footer_h, card_top, card_bottom, half, card_header_h;
     int about_w, about_h, settings_w, settings_h, header_button_gap;
-    int refresh_w, refresh_h, launch_w, launch_h;
+    int refresh_w, refresh_h;
+    int cnc_config_w, cnc_config_h, action_gap;
+    int launch_w, launch_h;
 
     if (!out || !g_ui.GetClientRect(hwnd, &rc)) return 0;
 
@@ -1496,6 +1501,11 @@ static int calculate_main_layout_(HWND hwnd, MainLayout_* out) {
     header_button_gap = scale_(hwnd, 10);
     refresh_w = scale_(hwnd, 108);
     refresh_h = scale_(hwnd, 40);
+
+    cnc_config_w = scale_(hwnd, 176);
+    cnc_config_h = scale_(hwnd, 52);
+    action_gap = scale_(hwnd, 12);
+
     launch_w = scale_(hwnd, 176);
     launch_h = scale_(hwnd, 52);
 
@@ -1544,10 +1554,30 @@ static int calculate_main_layout_(HWND hwnd, MainLayout_* out) {
     out->refresh_button.right = m + refresh_w;
     out->refresh_button.bottom = out->refresh_button.top + refresh_h;
 
+    /*
+    * “启动游戏”继续固定在底部右侧，保持原版布局不变。
+    */
     out->launch_button.right = rc.right - m;
     out->launch_button.left = out->launch_button.right - launch_w;
-    out->launch_button.top = out->footer.top + (footer_h - launch_h) / 2;
-    out->launch_button.bottom = out->launch_button.top + launch_h;
+    out->launch_button.top =
+        out->footer.top + (footer_h - launch_h) / 2;
+    out->launch_button.bottom =
+        out->launch_button.top + launch_h;
+
+    /*
+    * cnc-ddraw 配置按钮放在“启动游戏”左侧。
+    * 它的位置依赖 launch_button，所以必须在 launch_button
+    * 的四条边全部计算完成以后再计算。
+    */
+    out->cnc_config_button.right =
+        out->launch_button.left - action_gap;
+    out->cnc_config_button.left =
+        out->cnc_config_button.right - cnc_config_w;
+    out->cnc_config_button.top =
+        out->footer.top + (footer_h - cnc_config_h) / 2;
+    out->cnc_config_button.bottom =
+        out->cnc_config_button.top + cnc_config_h;
+
     return 1;
 }
 
@@ -1576,6 +1606,7 @@ static void layout_main_(void) {
     move_to_rect_without_repaint_(g_asi_list, &layout.asi_list);
     move_to_rect_without_repaint_(g_override_list, &layout.override_list);
     move_to_rect_without_repaint_(g_refresh_button, &layout.refresh_button);
+    move_to_rect_without_repaint_(g_cnc_config_button, &layout.cnc_config_button);
     move_to_rect_without_repaint_(g_launch_button, &layout.launch_button);
 }
 
@@ -1755,7 +1786,7 @@ static void paint_main_(HWND hwnd) {
     g_ui.SelectObject(dc, (HGDIOBJ_)g_font);
     count_rc.left = layout.refresh_button.right + scale_(hwnd, 18);
     count_rc.top = layout.footer.top;
-    count_rc.right = layout.launch_button.left - scale_(hwnd, 18);
+    count_rc.right = layout.cnc_config_button.left - scale_(hwnd, 18);
     count_rc.bottom = layout.footer.bottom;
     g_ui.DrawTextW(dc, status, -1, &count_rc,
                    DT_LEFT_ | DT_VCENTER_ | DT_SINGLELINE_ | DT_END_ELLIPSIS_ | DT_NOPREFIX_);
@@ -3607,6 +3638,13 @@ static LRESULT_ CALLBACK main_proc_(HWND hwnd, UINT msg, WPARAM_ w, LPARAM_ l) {
             draw_flat_button_(dis, (const WCHAR*)L"重新扫描", 0);
             return 1;
         }
+        if (dis->CtlID == IDC_CNC_CONFIG_) {
+            draw_flat_button_(
+                dis,
+                (const WCHAR*)L"启动 cnc-ddraw 设置",
+                0);
+            return 1;
+        }
         if (dis->CtlID == IDC_LAUNCH_) {
             draw_flat_button_(dis, (const WCHAR*)L"启动游戏", 1);
             return 1;
@@ -3631,6 +3669,19 @@ static LRESULT_ CALLBACK main_proc_(HWND hwnd, UINT msg, WPARAM_ w, LPARAM_ l) {
             /* 重新扫描会重新读取磁盘和 INI；新 Mod 会按固定规则自动登记，缺失/空目录状态也会刷新。 */
             if (!LauncherModConfig_Refresh(LauncherApp_GetModsRoot())) show_config_error_(hwnd);
             else refresh_all_lists_();
+            return 0;
+        }
+        if (code == BN_CLICKED_ && id == IDC_CNC_CONFIG_) {
+            if (!LauncherApp_StartCncConfig()) {
+                g_ui.MessageBoxW(
+                    hwnd,
+                    (const WCHAR*)
+                        L"无法启动 cnc-ddraw config.exe。\n\n"
+                        L"请确认 cnc-ddraw config.exe 与 CastleModLoader.exe 位于同一目录。",
+                    kWindowTitle_,
+                    MB_ICONERROR_ | MB_OK_);
+            }
+
             return 0;
         }
         if (code == BN_CLICKED_ && id == IDC_LAUNCH_) {
@@ -3662,6 +3713,7 @@ static LRESULT_ CALLBACK main_proc_(HWND hwnd, UINT msg, WPARAM_ w, LPARAM_ l) {
         set_font_(g_about_button, g_font);
         set_font_(g_settings_button, g_font);
         set_font_(g_refresh_button, g_font);
+        set_font_(g_cnc_config_button, g_font);
         set_font_(g_launch_button, g_font);
         g_ui.SendMessageW(g_asi_list, LB_SETITEMHEIGHT_, 0, (LPARAM_)scale_(g_asi_list, 42));
         g_ui.SendMessageW(g_override_list, LB_SETITEMHEIGHT_, 0, (LPARAM_)scale_(g_override_list, 42));
@@ -3752,16 +3804,20 @@ static int create_main_controls_(void) {
     g_refresh_button = g_ui.CreateWindowExW(0u, (const WCHAR*)L"BUTTON", (const WCHAR*)L"重新扫描",
                                              WS_CHILD_ | WS_VISIBLE_ | WS_TABSTOP_ | BS_OWNERDRAW_,
                                              0,0,0,0,g_main,(HANDLE)(ULONG_PTR)IDC_REFRESH_,g_instance,NULL_PTR);
+    g_cnc_config_button = g_ui.CreateWindowExW(0u, (const WCHAR*)L"BUTTON", (const WCHAR*)L"启动 cnc-ddraw 设置",
+                                                WS_CHILD_ | WS_VISIBLE_ | WS_TABSTOP_ | BS_OWNERDRAW_,
+                                                0, 0, 0, 0,g_main,(HANDLE)(ULONG_PTR)IDC_CNC_CONFIG_,g_instance,NULL_PTR);
     g_launch_button = g_ui.CreateWindowExW(0u, (const WCHAR*)L"BUTTON", (const WCHAR*)L"启动游戏",
                                             WS_CHILD_ | WS_VISIBLE_ | WS_TABSTOP_ | BS_OWNERDRAW_,
                                             0,0,0,0,g_main,(HANDLE)(ULONG_PTR)IDC_LAUNCH_,g_instance,NULL_PTR);
-    if (!g_asi_list || !g_override_list || !g_about_button || !g_settings_button || !g_refresh_button || !g_launch_button) return 0;
+    if (!g_asi_list || !g_override_list || !g_about_button || !g_settings_button || !g_refresh_button || !g_cnc_config_button || !g_launch_button) return 0;
 
     set_font_(g_asi_list, g_font);
     set_font_(g_override_list, g_font);
     set_font_(g_about_button, g_font);
     set_font_(g_settings_button, g_font);
     set_font_(g_refresh_button, g_font);
+    set_font_(g_cnc_config_button, g_font);
     set_font_(g_launch_button, g_font);
     g_ui.SendMessageW(g_asi_list, LB_SETITEMHEIGHT_, 0, (LPARAM_)scale_(g_asi_list, 42));
     g_ui.SendMessageW(g_override_list, LB_SETITEMHEIGHT_, 0, (LPARAM_)scale_(g_override_list, 42));

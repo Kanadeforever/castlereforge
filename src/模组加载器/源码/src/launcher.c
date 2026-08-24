@@ -661,6 +661,108 @@ int LauncherApp_SaveLoggingSettings(int modloader_log_enabled, int game_log_enab
     return 1;
 }
 
+int LauncherApp_StartCncConfig(void) {
+    WCHAR exe_path[CASTLE_PATH_CAP];
+    WCHAR cmdline[CASTLE_PATH_CAP * 2u];
+    STARTUPINFOW_ si;
+    PROCESS_INFORMATION_ pi;
+
+    /*
+     * cnc-ddraw 配置程序固定与 CastleModLoader.exe 同目录。
+     * 使用 Launcher 的物理目录构造完整路径，不依赖调用时的当前目录状态。
+     */
+    if (!path_join_(exe_path,
+                    CASTLE_PATH_CAP,
+                    g_launcher_dir,
+                    (const WCHAR*)L"cnc-ddraw config.exe")) {
+        return 0;
+    }
+
+    if (!file_exists_(exe_path)) {
+        return 0;
+    }
+
+    /*
+     * CreateProcessW 的命令行缓冲区必须可写。
+     * 文件名包含空格，因此明确加双引号。
+     */
+    cmdline[0] = 0;
+    if (!wcopy_(cmdline,
+                CASTLE_PATH_CAP * 2u,
+                (const WCHAR*)L"\"")) {
+        return 0;
+    }
+    if (!wappend_(cmdline,
+                  CASTLE_PATH_CAP * 2u,
+                  exe_path)) {
+        return 0;
+    }
+    if (!wappend_(cmdline,
+                  CASTLE_PATH_CAP * 2u,
+                  (const WCHAR*)L"\"")) {
+        return 0;
+    }
+
+    /*
+     * 与现有 create_and_prepare_game_() 一样，
+     * 手工初始化自定义 STARTUPINFOW_，不依赖 CRT memset。
+     */
+    si.cb = (DWORD)sizeof(si);
+    si.lpReserved = NULL_PTR;
+    si.lpDesktop = NULL_PTR;
+    si.lpTitle = NULL_PTR;
+    si.dwX = 0u;
+    si.dwY = 0u;
+    si.dwXSize = 0u;
+    si.dwYSize = 0u;
+    si.dwXCountChars = 0u;
+    si.dwYCountChars = 0u;
+    si.dwFillAttribute = 0u;
+    si.dwFlags = 0u;
+    si.wShowWindow = 0u;
+    si.cbReserved2 = 0u;
+    si.lpReserved2 = NULL_PTR;
+    si.hStdInput = NULL_PTR;
+    si.hStdOutput = NULL_PTR;
+    si.hStdError = NULL_PTR;
+
+    pi.hProcess = NULL_PTR;
+    pi.hThread = NULL_PTR;
+    pi.dwProcessId = 0u;
+    pi.dwThreadId = 0u;
+
+    /*
+     * 普通启动辅助程序：
+     * - 不 CREATE_SUSPENDED
+     * - 不走 Mod Loader Pre-Loader
+     * - 不注入任何 DLL
+     * - 不等待配置程序退出
+     * - 不关闭 CastleModLoader
+     */
+    if (!CreateProcessW(
+            exe_path,
+            cmdline,
+            NULL_PTR,
+            NULL_PTR,
+            FALSE_,
+            CREATE_UNICODE_ENVIRONMENT_,
+            NULL_PTR,
+            g_launcher_dir,
+            &si,
+            &pi)) {
+        return 0;
+    }
+
+    /*
+     * 这里只释放 Launcher 持有的进程/线程句柄。
+     * cnc-ddraw config.exe 本身继续独立运行。
+     */
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+
+    return 1;
+}
+
 int LauncherApp_StartGame(void) {
     WCHAR game_exe[CASTLE_PATH_CAP];
     WCHAR game_dir[CASTLE_PATH_CAP];

@@ -32,5 +32,10 @@ int LauncherApp_SaveLoggingSettings(int modloader_log_enabled, int game_log_enab
  * 返回 1 表示 RPG.exe 已经成功 Resume；返回 0 表示启动失败，GUI 应保持打开让用户修正问题。
  */
 int LauncherApp_StartGame(void);
+/*
+ * 启动 CastleModLoader.exe 同目录下的 cnc-ddraw config.exe。
+ * 只负责打开配置程序，不等待、不关闭 Launcher，也不进入游戏 Pre-Loader 启动链。
+ */
+int LauncherApp_StartCncConfig(void);
 
 #endif
