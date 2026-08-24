@@ -29,7 +29,7 @@ CastleReforge 是一个面向 Windows 版《天地劫序传·幽城幻剑录》�
 
 ## 项目组成
 
-### 0. 《幽城幻剑录》本体文件
+### 0. 《幽城幻剑录》本体文件 & cnc-ddraw （至少7.1）
 
 请自备，安装顺序为：
 
@@ -37,8 +37,10 @@ CastleReforge 是一个面向 Windows 版《天地劫序传·幽城幻剑录》�
 2. 复制运行盘内文件到游戏目录内并且 **不要覆盖** 任何文件（台3版文件比运行盘文件更新，是修复后的版本）；
 3. 安装 `Kalpa2_200S.EXE` 补丁；sha256: `d3c4a61fe9b4857d38fb10c7e57f1b629551e9e02fb93a261b888f2f404abfdf`
 4. 安装 `200etc.EXE` 补丁；sha256: `e9d70f9fa0b38b594ad9b7e22817327cc09f6be23e3bfd9a9768789cf04b2c19`
-5. 完成！此时的 `exe\RPG.exe1` 的 sha256: `8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f`
+5. 游戏本体准备完成！此时的 `exe\RPG.exe1` 的 sha256: `8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f`
     - 请待机； **千万不要**再安装别的任何内容，之后的所有内容请使用模组加载器安装。
+6. 下载 [cnc-ddraw.zip](https://github.com/FunkyFr3sh/cnc-ddraw/releases/latest) ，并解压`Shaders`文件夹、`cnc-ddraw config.exe`、`ddraw.dll`、`ddraw.ini`到游戏的exe目录内，也就是和 `RPG.exe` 在同一个目录。
+7. 准备完毕！
 
 ### 1. Castle Mod Loader
 
