@@ -380,6 +380,18 @@ CastleReforge 目前只对win11做维护支持，理论上win10也正常运行�
 
 因为编译工具、模组加载等原因，不支持win10以下的系统，xp/win7/8/8.1请自行fork代码修改。
 
+但手柄支持是例外，手柄支持因为依赖SDL，所以极大概率还需要比如这些依赖：
+
+```
+VCRUNTIME140.dll
+VCRUNTIME140_1.dll
+MSVCP140.dll
+ucrtbase.dll
+api-ms-win-crt-*.dll
+```
+
+如果你打开游戏的时候，报 `0xc0000142` ，那么就是缺少依赖，请安装常见的vc运行库，具体请参见[SDL项目主页](https://github.com/libsdl-org/SDL)。
+
 ---
 
 ## 为什么仓库里有这么多文档？
