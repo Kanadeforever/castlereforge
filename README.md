@@ -25,6 +25,8 @@ CastleReforge 是一个面向 Windows 版《天地劫序传·幽城幻剑录》�
 
 当前版本：0.3-dev
 
+<h1><a href="https://github.com/Kanadeforever/castlereforge/releases">虽然点击页面右边/最下面的release按钮就能看到，但看起来好像都不是那么想点，那就点这个吧</a></h1>
+
 ---
 
 ## 项目组成
