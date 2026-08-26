@@ -3,7 +3,6 @@
 #include "game_addresses.h"
 #include "mouse_input.h"
 #include "pad_bridge.h"
-#include "name_panel_pool.h"
 
 /*
  * backlog.c
@@ -16,16 +15,19 @@
  *   -> 若正在查看，切换通用 F-Talk 多框与原字体姓名/正文列表
  *   -> Backlog 活动期间暂停 SceneWorld update 链，只保留绘制链
  *
- * v0.3.3-test3 把打开方式正式拆成两条，并进一步把剧情旁路改成“对原版对话全局零写入”：
+ * v0.3.4-test1 保留真实剧情 / 自由探索两种载体，但统一采用“只登记绘制对象”的冻结方式：
  *
  * 1. 剧情旁路模式：
- *    原版当前已经有稳定展开的对话框时，Backlog 不再伪造 mode、正文缓冲、
- *    current/target、speaker、dialogue_id 等任何剧情状态。它只冻结 SceneWorld update；
+ *    原版当前已经有稳定展开的对话框时，Backlog 不伪造正文缓冲、current/target、
+ *    speaker、dialogue_id 等剧情状态；只临时把 mode 置为只读并冻结 SceneWorld 逻辑；
  *    原版当前人物、姓名牌、姓名文字则分别在自己的绘制 CALL 上被临时跳过。
  *    历史内容完全由 Backlog 的绘制 Hook 画出。
  *
  * 2. 自由探索载体模式：
  *    原版没有对话框，因此仍使用 synthetic dialogue 建立一个“只供绘制”的载体。
+ *
+ * 两种模式活动时都不调用完整 0x40B150，而只调用 0x434500 登记 scene_world 绘制对象。
+ * 这样不会推进 Event/地图逻辑，同时 0x40B050/0x404800 每帧仍有真正入口。
  *
  * 这样剧情中打开历史时，原版正在运行的消息状态机既不会看到 BACKLOG_READ_ONLY_MODE，
  * 也不会看到 speaker=0 / dialogue_id=0 / current=0 之类临时假状态；从根上避免“冻结了逻辑，
@@ -73,8 +75,12 @@
 #define BACKLOG_NAME_TEXT_RIGHT_OFFSET_X  428
 #define BACKLOG_NAME_TEXT_OFFSET_Y        (-35)
 #define BACKLOG_SPEAKER_NAME_BYTES 64u
+/* 默认/最大 stride=110、最上 slot 相对底部为 -330；再小于此值就会挤出姓名上边界。 */
+#define BACKLOG_MIN_SAFE_SHIFT_Y           (-330)
 
 typedef void (BACKLOG_THISCALL *PFN_SceneWorldUpdate)(void* scene_world);
+/* 0x434500 自己 ret 8，所以这里必须用 stdcall；ECX 在原函数中没有被读取。 */
+typedef void (BACKLOG_STDCALL *PFN_DrawQueueRegister)(void* object, u32 key);
 typedef void (BACKLOG_THISCALL *PFN_DialoguePanelDraw)(void* panel,
                                                        i32 arg1, i32 arg2, i32 arg3,
                                                        i32 arg4, i32 arg5);
@@ -145,6 +151,17 @@ typedef struct RepeatKeyState {
     u32 held_ticks;
 } RepeatKeyState;
 
+/*
+ * 0x407510 每画一层都会经 0x407270/0x4072D0 改写这四个对象游标。
+ * 同一 F-Talk/F-Name 在一帧画多次时，必须让每次从同一游标快照开始，并在结束后恢复。
+ */
+typedef struct Sf2DrawCursor {
+    void* layer;
+    i32 layer_index;
+    void* subresource;
+    i32 subresource_index;
+} Sf2DrawCursor;
+
 static BacklogEntry g_history[BACKLOG_STATIC_CAPACITY];
 static u8 g_overlay_buffer[DIALOGUE_BUFFER_BYTES];
 static SavedGameState g_saved;
@@ -164,7 +181,7 @@ static volatile LONG g_accept_input;
  *
  * 1 = 剧情旁路模式：
  *     原版已有真实对话，绝不能把它改造成 synthetic/只读消息。
- *     Backlog 只冻结 SceneWorld update，保留真实剧情全部全局字段。
+ *     Backlog 冻结 SceneWorld 逻辑并临时使用只读 mode，保留其它真实剧情字段。
  */
 static int g_opened_over_live_dialogue;
 
@@ -484,12 +501,22 @@ static BacklogEntry* backlog_entry_from_newest(u32 offset) {
 }
 
 /* 当前滚动锚点及其更旧记录中，最多取四条放进一个 640×480 画面。 */
+static u32 backlog_visible_slot_capacity(void) {
+    /*
+     * 完整原版对话框很高。间距超过 110 后继续塞四条不仅难看，最上姓名还会越过屏幕。
+     * 改成三条后，最大 stride=160 的最上姓名仍有 25 像素上边距。
+     */
+    return Runtime_Config()->panel_stride_y > 110u ? 3u : BACKLOG_VISIBLE_ENTRIES;
+}
+
+/* 当前滚动锚点及其更旧记录中，按当前间距最多取三条或四条。 */
 static u32 backlog_visible_entry_count(void) {
     u32 count = g_history_count;
     u32 available;
+    u32 capacity = backlog_visible_slot_capacity();
     if (count == 0u || g_selected_from_newest >= count) return 0u;
     available = count - g_selected_from_newest;
-    return available < BACKLOG_VISIBLE_ENTRIES ? available : BACKLOG_VISIBLE_ENTRIES;
+    return available < capacity ? available : capacity;
 }
 
 /*
@@ -498,12 +525,78 @@ static u32 backlog_visible_entry_count(void) {
  */
 static BacklogEntry* backlog_visible_entry(u32 order, u32* out_panel_slot) {
     u32 visible = backlog_visible_entry_count();
+    u32 capacity = backlog_visible_slot_capacity();
     u32 offset;
     if (visible == 0u || order >= visible) return NULL;
 
     offset = g_selected_from_newest + (visible - 1u - order);
-    if (out_panel_slot) *out_panel_slot = BACKLOG_VISIBLE_ENTRIES - visible + order;
+    if (out_panel_slot) *out_panel_slot = capacity - visible + order;
     return backlog_entry_from_newest(offset);
+}
+
+/*
+ * 用 INI 计算槽位纵向位移后再做第二道硬夹紧。
+ * 即使配置结构被旧 INI 或其它内存错误写成大数，最上方也不会超过 -330。
+ */
+static i32 backlog_panel_shift_y(u32 panel_slot) {
+    u32 capacity = backlog_visible_slot_capacity();
+    i32 shift;
+    if (panel_slot >= capacity) panel_slot = capacity - 1u;
+    shift =
+        ((i32)panel_slot - ((i32)capacity - 1)) *
+        (i32)Runtime_Config()->panel_stride_y;
+    if (shift < BACKLOG_MIN_SAFE_SHIFT_Y) shift = BACKLOG_MIN_SAFE_SHIFT_Y;
+    return shift;
+}
+
+/* 保存 0x407510 会改写的 +0x50/+0x54/+0x58/+0x5C。 */
+static int backlog_save_sf2_cursor(void* object, Sf2DrawCursor* saved) {
+    u8* bytes = (u8*)object;
+    if (!saved || !Runtime_MemoryRangeReadable(object, 0x60u)) return 0;
+    saved->layer = *(void**)(bytes + 0x50u);
+    saved->layer_index = *(i32*)(bytes + 0x54u);
+    saved->subresource = *(void**)(bytes + 0x58u);
+    saved->subresource_index = *(i32*)(bytes + 0x5Cu);
+    return 1;
+}
+
+/* 恢复同一组游标；只对已经通过 0x60 字节范围检查的对象调用。 */
+static void backlog_restore_sf2_cursor(void* object, const Sf2DrawCursor* saved) {
+    u8* bytes = (u8*)object;
+    if (!object || !saved) return;
+    *(void**)(bytes + 0x50u) = saved->layer;
+    *(i32*)(bytes + 0x54u) = saved->layer_index;
+    *(void**)(bytes + 0x58u) = saved->subresource;
+    *(i32*)(bytes + 0x5Cu) = saved->subresource_index;
+}
+
+/*
+ * 取得原版当前仍存活的 F-Name.SF2 对象。
+ *
+ * 这个对象由原版 0x403C60 创建，并不会在一句剧情结束时立即释放；切换下一个说话人时才会
+ * 先析构旧对象、再把新对象写回同一个 0x46F658 槽。因此“剧情结束后查看刚才的历史”仍可
+ * 使用最后一只原版 F-Name，而不需要 Backlog 私自构造资源。
+ *
+ * 但只检查地址非空还不够。0x407510 入口马上读取 object+0x48，再读取 frame+0x54，
+ * 所以下面逐层证明对象、资源和当前 frame 都在可读内存中。任一项失败就返回 NULL，
+ * 本帧只画姓名文字和正文，绝不把可疑对象交给原版绘制函数。
+ */
+static void* backlog_original_name_panel(void) {
+    u8* object = *(u8* volatile*)GLOBAL_DIALOGUE_NAME_PANEL_OBJECT;
+    void* resource_a;
+    void* resource_b;
+    void* frame;
+
+    if (!Runtime_MemoryRangeReadable(object, 0x84u)) return NULL;
+
+    resource_a = *(void**)(object + 0x30u);
+    resource_b = *(void**)(object + 0x34u);
+    if (!resource_a || resource_a != resource_b) return NULL;
+    if (!Runtime_MemoryRangeReadable(resource_a, 0x38u)) return NULL;
+
+    frame = *(void**)(object + 0x48u);
+    if (!Runtime_MemoryRangeReadable(frame, 0x56u)) return NULL;
+    return object;
 }
 
 /*
@@ -524,10 +617,9 @@ static void BACKLOG_THISCALL Backlog_HookCurrentSpeakerPortraitDraw(void* panel,
 /*
  * 0x404899：原版“当前剧情 F-Name.SF2”绘制 CALL。
  *
- * 注意这里和 Backlog 私有姓名框是两件不同的事：
- * - 原版来到 0x404899 时，本函数在 Backlog 活动期间直接 return，隐藏当前剧情姓名牌；
- * - Backlog_HookPanelDraw 需要画历史姓名牌时，会直接调用保存在
- *   g_previous_name_panel_draw 里的“0x404899 安装前目标”，因此不会再次绕回这个 Hook。
+ * - 原版来到 0x404899 时，本函数在 Backlog 活动期间直接 return，隐藏当前剧情那一块姓名牌；
+ * - Backlog_HookPanelDraw 画历史组合框时，使用同一只已验证的原版 F-Name 对象，直接调用
+ *   g_previous_name_panel_draw，因此不会再次绕回这个 Hook。
  */
 static void BACKLOG_THISCALL Backlog_HookCurrentNamePanelDraw(void* panel,
                                                                i32 arg1, i32 arg2, i32 arg3,
@@ -557,23 +649,27 @@ static void BACKLOG_THISCALL Backlog_HookCurrentNameTextDraw(void* font,
 /*
  * 0x40486E 原本负责绘制 F-Talk.SF2。
  *
- * v0.3.1-test1 仍然存在一个很危险的资源所有权错误：
- * 它为了显示历史姓名牌，直接去读取原版当前剧情对象槽 0x46F658。
- * 但这个对象由 0x403C60 随 NPC 切换不断析构和重建，历史记录的寿命显然比它长。
+ * v0.3.3-test4 的私有 NamePanelPool 走不通：它把裸 C 字符串交给要求游戏字符串对象的
+ * 0x4070D0，剧情结束后打开会稳定破坏资源加载链。现行方案不再创建任何 SF2 对象。
  *
- * v0.3.2-test1 起不再读取 0x46F658。
- * NamePanelPool 在 Backlog 打开时按照原版协议建立 4 个独立 F-Name.SF2 对象，
- * 每一个屏幕槽位只操作自己的对象。因此：
- * - NPC 换了几次都不会改变 Backlog 姓名框的生命周期；
- * - 同一帧不会把同一个带内部动画状态的 SF2 对象重复推进 2~4 次；
- * - 关闭时这些私有对象由游戏线程按原版析构/释放顺序销毁；
- * - 人物 %d-2.SF2 从始至终没有创建。
+ * 有姓名历史严格复用原版“F-Talk + F-Name + 姓名文字 + 正文”组合：
+ * - F-Talk 使用本 CALL 已经传入的原版对象；
+ * - F-Name 使用 0x46F658 最后一只原版已加载对象，并经过完整对象/资源/frame 可读检查；
+ * - 姓名与正文分别走原版 0x4048E6、0x4049FF 的当前链目标；
+ * - 人物图仍在 0x404859 单独屏蔽。
  */
 static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
                                                     i32 arg1, i32 arg2, i32 arg3,
                                                     i32 arg4, i32 arg5) {
+    u8* original_name_panel;
+    Sf2DrawCursor talk_cursor;
+    Sf2DrawCursor name_cursor;
+    int talk_cursor_saved;
+    int name_cursor_saved = 0;
     i32 original_x;
     i32 original_y;
+    i32 original_name_x = 0;
+    i32 original_name_y = 0;
     u32 visible;
     u32 order;
 
@@ -589,16 +685,29 @@ static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
     }
 
     /*
-     * 下面需要读写 F-Talk 对象最前面的 X/Y 两个 32 位字段，所以先证明这 8 字节可读。
-     * 若连这个条件都不满足，就不做多框展开，直接把原调用交回前一层。
+     * 除 X/Y 外还要保存 0x407510 会改写到 +0x5C 的游标，所以必须证明前 0x60 字节可读。
+     * 若条件不满足，就不做多框展开，直接把原调用交回前一层。
      */
-    if (!Runtime_MemoryRangeReadable(panel, 8u)) {
+    if (!Runtime_MemoryRangeReadable(panel, 0x60u)) {
+        g_previous_panel_draw(panel, arg1, arg2, arg3, arg4, arg5);
+        return;
+    }
+
+    talk_cursor_saved = backlog_save_sf2_cursor(panel, &talk_cursor);
+    if (!talk_cursor_saved) {
         g_previous_panel_draw(panel, arg1, arg2, arg3, arg4, arg5);
         return;
     }
 
     original_x = *(i32*)((u8*)panel + 0u);
     original_y = *(i32*)((u8*)panel + 4u);
+    original_name_panel = (u8*)backlog_original_name_panel();
+    if (original_name_panel) {
+        original_name_x = *(i32*)(original_name_panel + 0u);
+        original_name_y = *(i32*)(original_name_panel + 4u);
+        name_cursor_saved = backlog_save_sf2_cursor(original_name_panel, &name_cursor);
+        if (!name_cursor_saved) original_name_panel = NULL;
+    }
     visible = backlog_visible_entry_count();
 
     for (order = 0u; order < visible; ++order) {
@@ -614,11 +723,10 @@ static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
          * panel_slot 固定是 0..3。
          * 最下面一条使用 slot=3，所以 shift_y=0；越旧的记录依次向上移动 PanelStrideY。
          */
-        shift_y =
-            ((i32)panel_slot - ((i32)BACKLOG_VISIBLE_ENTRIES - 1)) *
-            (i32)Runtime_Config()->panel_stride_y;
+        shift_y = backlog_panel_shift_y(panel_slot);
 
         /* 先画这条记录对应的 F-Talk 主框。 */
+        backlog_restore_sf2_cursor(panel, &talk_cursor);
         *(i32*)((u8*)panel + 0u) = original_x;
         *(i32*)((u8*)panel + 4u) = original_y + shift_y;
         g_previous_panel_draw(panel, arg1, arg2, arg3, arg4, arg5);
@@ -633,33 +741,31 @@ static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
               entry->speaker_name[1] == 0x02u);
 
         if (has_name && g_previous_name_panel_draw) {
-            void* name_panel = NamePanelPool_Get(panel_slot);
-
-            if (name_panel && Runtime_MemoryRangeReadable(name_panel, 8u)) {
+            if (original_name_panel) {
                 i32 name_target_x = original_x;
 
                 /*
-                 * 每个私有 F-Name 对象只属于当前 panel_slot，所以这里不必保存/恢复坐标。
-                 * 下一帧再次绘制时还会重新写正确坐标，不会污染 RPG.exe 自己的任何全局对象。
+                 * F-Name 是原版通用姓名框资源。每条绘制只临时改坐标，循环结束后恢复；
+                 * 不加载资源、不切换 speaker，也不制造第二套对象生命周期。
                  */
                 if (entry->speaker_variant != 0u) {
                     name_target_x += BACKLOG_NAME_PANEL_RIGHT_OFFSET_X;
                 }
 
-                *(i32*)((u8*)name_panel + 0u) = name_target_x;
-                *(i32*)((u8*)name_panel + 4u) = original_y + shift_y;
+                backlog_restore_sf2_cursor(original_name_panel, &name_cursor);
+                *(i32*)(original_name_panel + 0u) = name_target_x;
+                *(i32*)(original_name_panel + 4u) = original_y + shift_y;
 
                 /*
                  * 姓名框仍走真正的 0x404899 当前 CALL 目标。
-                 * 如果宽屏等插件已经链在该调用点，我们继续尊重它的 wrapper；
-                 * 但对象本身是 Backlog 私有的，不再借用 0x46F658。
+                 * 如果宽屏等插件已经链在该调用点，我们继续尊重它的 wrapper。
                  */
-                g_previous_name_panel_draw(name_panel, arg1, arg2, arg3, arg4, arg5);
+                g_previous_name_panel_draw(original_name_panel, arg1, arg2, arg3, arg4, arg5);
             } else if (!g_missing_name_panel_logged) {
                 g_missing_name_panel_logged = 1;
                 Runtime_Log(
-                    "[Backlog] 私有 F-Name 姓名框不可用；"
-                    "本次安全退化为只画姓名文字，不读取原版 0x46F658。"
+                    "[Backlog] 原版 F-Name 姓名框当前不可读；"
+                    "本帧安全退化为姓名文字+正文，不创建私有 SF2。"
                 );
             }
         }
@@ -668,6 +774,12 @@ static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
     /* F-Talk 属于游戏自己，必须恢复它进入 Hook 前的原坐标。 */
     *(i32*)((u8*)panel + 0u) = original_x;
     *(i32*)((u8*)panel + 4u) = original_y;
+    backlog_restore_sf2_cursor(panel, &talk_cursor);
+    if (original_name_panel) {
+        *(i32*)(original_name_panel + 0u) = original_name_x;
+        *(i32*)(original_name_panel + 4u) = original_name_y;
+        backlog_restore_sf2_cursor(original_name_panel, &name_cursor);
+    }
 }
 
 /* 姓名缓冲只含 00 02 时表示本条没有可显示姓名。 */
@@ -715,12 +827,10 @@ static void BACKLOG_THISCALL Backlog_HookTextDraw(void* font,
         entry = backlog_visible_entry(order, &panel_slot);
         if (!entry) continue;
 
-        shift_y =
-            ((i32)panel_slot - ((i32)BACKLOG_VISIBLE_ENTRIES - 1)) *
-            (i32)Runtime_Config()->panel_stride_y;
+        shift_y = backlog_panel_shift_y(panel_slot);
 
         /* 有姓名时，姓名独立画在正文上方，不占正文宽度。 */
-        if (backlog_entry_has_speaker_name(entry)) {
+        if (backlog_entry_has_speaker_name(entry) && g_previous_name_text_draw) {
             i32 name_x;
             i32 name_y;
 
@@ -731,10 +841,13 @@ static void BACKLOG_THISCALL Backlog_HookTextDraw(void* font,
                 name_x = x + BACKLOG_NAME_TEXT_RIGHT_OFFSET_X;
             }
             name_y = y + shift_y + BACKLOG_NAME_TEXT_OFFSET_Y;
+            /* 最终屏幕坐标再夹一次；任何配置/状态异常都不能把姓名交给负 Y。 */
+            if (name_y < 0) name_y = 0;
 
-            g_previous_text_draw(font, origin_x, origin_y, surface,
-                                 name_x, name_y, draw_mode,
-                                 entry->speaker_name, draw_flags);
+            /* 姓名走原版 0x4048E6 的前一目标，不借用正文 CALL 的插件链。 */
+            g_previous_name_text_draw(font, origin_x, origin_y, surface,
+                                      name_x, name_y, draw_mode,
+                                      entry->speaker_name, draw_flags);
         }
 
         /*
@@ -833,14 +946,6 @@ static void backlog_open_on_game_thread(void) {
         g_saved.dialogue_id != BACKLOG_SYNTHETIC_DIALOGUE_ID;
 
     /*
-     * 这是游戏线程，资源系统和 DirectDraw 状态都处在 RPG.exe 自己的场景更新时序里。
-     * 因此私有 F-Name.SF2 只能在这里建立，绝不能让 worker 或 DllMain 调游戏资源函数。
-     *
-     * 建立失败不是致命错误：正文和姓名文字仍可工作，只是这一轮没有姓名牌。
-     */
-    NamePanelPool_Create();
-
-    /*
      * 从本函数返回后，Backlog_HookSceneUpdate 会看到 g_active=1，因此不再调用
      * 原版/前一个插件的 SceneWorld update；游戏逻辑停在打开前同一快照。
      *
@@ -850,21 +955,23 @@ static void backlog_open_on_game_thread(void) {
 
     if (g_opened_over_live_dialogue) {
         /*
-         * v0.3.3-test3 剧情旁路的最高优先级规则：对原版剧情全局“零写入”。
+         * 真实剧情已经有可用的 F-Talk/F-Name/字体对象，不需要 synthetic dialogue。
          *
          * 下面这些打开前保存的值，在 Backlog 整个活动期间一个字节都不改：
-         *   dialogue_id / mode / total / visible / display_buffer
+         *   dialogue_id / total / visible / display_buffer
          *   speaker / speaker_style / speaker_variant / speaker_name
          *   current / target
          *   event_yield / event_block / map_input_gate
          *
-         * 当前人物图、姓名牌和姓名文字不再靠 speaker=0 隐藏，而由 0x404859、0x404899、
-         * 0x4048E6 三个独立绘制 Hook 只跳过视觉调用。这样无论原消息绘制函数还是别的
-         * 后台 ASI 去观察这些全局，都只会看到一套自洽的“真实剧情被冻结”状态。
+         * 唯一例外是 mode：0x40B050 的绘制路径内部还会调用 0x403E30 更新消息。
+         * 我们必须把 mode 暂时换成无效的只读值，让 0x403E30 跳过推进/选择业务；关闭时恢复。
+         * 当前人物图、姓名牌和姓名文字则由 0x404859、0x404899、0x4048E6 三个绘制 Hook
+         * 只跳过“当前剧情那一笔”，历史组合框由后续 Hook 自己画。
          */
+        *(volatile u32*)GLOBAL_DIALOGUE_MODE = BACKLOG_READ_ONLY_MODE;
         Runtime_Log(
-            "[剧情旁路] 已在稳定剧情对话上打开：原版对话全局零写入；"
-            "只冻结 SceneWorld update，并在绘制 CALL 层隐藏当前剧情视觉。"
+            "[剧情旁路] 已在稳定剧情对话上打开：只把 mode 置为只读；"
+            "SceneWorld 逻辑冻结，原版有名字+对白组合绘制继续登记。"
         );
     } else {
         /*
@@ -879,8 +986,8 @@ static void backlog_open_on_game_thread(void) {
 
         Runtime_Log(
             "[自由探索载体] 已建立 synthetic dialogue；"
-            "test4 将继续调用 SceneWorld update 维持原版消息绘制载体，"
-            "地图/事件输入仍保持门控。"
+            "现行版只登记 SceneWorld draw 维持原版消息绘制载体，"
+            "不会运行完整 SceneWorld update；地图/事件输入仍保持门控。"
         );
     }
 
@@ -939,21 +1046,21 @@ static void backlog_close_on_game_thread(void) {
      *
      * 剧情旁路：
      *   打开以来没有改过任何 RPG.exe 对话/事件/地图全局，因此这里也不需要“恢复”。
-     *   只销毁 Backlog 私有 F-Name 对象，再清自己的 active 标志即可。
+     *   只清自己的 active 标志即可；没有任何私有 SF2 对象需要销毁。
      *
      * 自由探索 synthetic：
      *   这条路径确实改过 dialogue/event/map 全局，所以仍按打开前快照完整恢复。
      */
     if (was_live_dialogue) {
-        NamePanelPool_Destroy();
-
+        /* 打开期间唯一改过的真实剧情字段是 mode；先恢复，再解除 Backlog active。 */
+        *(volatile u32*)GLOBAL_DIALOGUE_MODE = g_saved.dialogue_mode;
         g_close_barrier_pending = 0;
         g_opened_over_live_dialogue = 0;
         g_active = 0;
 
         Runtime_Log(
-            "[剧情旁路] 已关闭：整个会话没有写过原版剧情全局；"
-            "真实对话继续保持打开前同一快照。"
+            "[剧情旁路] 已关闭：只读 mode 已恢复；"
+            "真实对话继续保持打开前同一页面和人物资源。"
         );
         Runtime_Log("[Backlog] 已关闭；下一次 SceneWorld tick 恢复原游戏逻辑。");
         return;
@@ -961,12 +1068,10 @@ static void backlog_close_on_game_thread(void) {
 
     /*
      * synthetic 模式自己的消息框仍可能正在绘制，所以先把 current/target 清零，
-     * 再销毁四个私有姓名框，最后恢复打开前没有对话的真实状态。
+     * 再恢复打开前没有对话的真实状态；现行方案没有私有姓名框资源。
      */
     *(volatile u8*)GLOBAL_DIALOGUE_CURRENT_STATE = 0u;
     *(volatile u8*)GLOBAL_DIALOGUE_TARGET_STATE = 0u;
-
-    NamePanelPool_Destroy();
 
     *(u8* volatile*)GLOBAL_DIALOGUE_DISPLAY_BUFFER = g_saved.display_buffer;
     *(u8* volatile*)GLOBAL_DIALOGUE_SPEAKER_NAME = g_saved.speaker_name;
@@ -1016,6 +1121,8 @@ static void backlog_move_down_once(void) {
 static void backlog_page_left_once(void) {
     u32 count = g_history_count;
     u32 step = Runtime_Config()->page_size;
+    u32 capacity = backlog_visible_slot_capacity();
+    if (step > capacity) step = capacity;
     if (count <= 1u) return;
     if (g_selected_from_newest + step >= count) g_selected_from_newest = count - 1u;
     else g_selected_from_newest += step;
@@ -1024,6 +1131,8 @@ static void backlog_page_left_once(void) {
 /* →：向新记录跳一页；不足整页时停在最新记录。 */
 static void backlog_page_right_once(void) {
     u32 step = Runtime_Config()->page_size;
+    u32 capacity = backlog_visible_slot_capacity();
+    if (step > capacity) step = capacity;
     if (g_selected_from_newest <= step) g_selected_from_newest = 0u;
     else g_selected_from_newest -= step;
 }
@@ -1101,34 +1210,30 @@ static void BACKLOG_THISCALL Backlog_HookSceneUpdate(void* scene_world) {
     }
 
     /*
-     * v0.3.3-test4 的核心调度规则必须区分两种打开来源。
+     * 不能用“return 不调 0x40B150”来假装只冻结逻辑。
+     * 原版 0x40B150 的 0x40B16B～0x40B173 同时负责：
      *
-     * 1. 剧情旁路（g_opened_over_live_dialogue != 0）
+     *   push 0xBB8
+     *   push scene_world
+     *   call 0x434500
      *
-     *    打开前已经存在真实剧情对话。这里继续完全冻结 SceneWorld update。
-     *    这样原版消息状态机、Event VM 和地图逻辑都停在打开前同一快照；Backlog 只在
-     *    0x404859 / 0x404899 / 0x4048E6 等绘制 CALL 上隐藏当前剧情视觉，再把历史画出来。
+     * 也就是把 scene_world 登记进本帧绘制队列。旧版把整段截断后，0x40B050/0x404800
+     * 没有任何调用入口，所以剧情中 Backlog 必然空白。
      *
-     * 2. 自由探索 synthetic dialogue（g_opened_over_live_dialogue == 0）
+     * 现行活动态只复刻这一笔已经证明的绘制登记，然后 return：
+     * - Event VM、地图实体、遇敌和其它 SceneWorld 逻辑都不推进；
+     * - 本帧仍会调用 vtable[1]=0x40B050；
+     * - 0x404800 内的原版 F-Talk/F-Name/姓名/正文组合绘制 Hook 因而都有入口。
      *
-     *    自由探索原本没有消息对象处于“可绘制”状态。v0.3.3-test3 把 SceneWorld update
-     *    完全截断，结果虽然写入了 synthetic dialogue_id/current/target/display_buffer，原版
-     *    消息系统却没有机会执行一次更新准备，0x404800 内的 F-Talk / 文字绘制 CALL 因而
-     *    根本不会到达，本插件的四框 Hook 自然也没有入口可接。用户实机表现就是：
-     *    Backlog 可以打开、输入/API 都正常，但屏幕上完全没有对话框和正文。
-     *
-     *    v0.3.2 已经实机证明：synthetic 模式继续调用原版 SceneWorld update 时，消息载体
-     *    可以正常进入绘制链。因此 test4 恢复这条已验证行为。安全边界仍由下面三层保持：
-     *      - GLOBAL_MAP_INPUT_GATE = 0：地图输入关闭；
-     *      - GLOBAL_EVENT_YIELD_FLAG / BLOCK_FLAG = 1：事件推进被挡住；
-     *      - BACKLOG_READ_ONLY_MODE + current/target=4：synthetic 消息只作为稳定绘制载体。
-     *
-     *    也就是说，synthetic 模式“允许 SceneWorld update 跑”不等于把游戏逻辑重新放开；
-     *    它只让原版消息系统完成建立/维持 F-Talk 绘制所必需的更新步骤。
-     *
-     * 关闭函数若已经把 g_active 清 0，本 tick 自然继续走正常原更新链。
+     * 关闭函数若已把 g_active 清 0，本 tick 会自然回到完整原更新链。
      */
-    if (g_active && g_opened_over_live_dialogue) return;
+    if (g_active) {
+        PFN_DrawQueueRegister register_draw = (PFN_DrawQueueRegister)FN_DRAW_QUEUE_REGISTER;
+        if (Runtime_MemoryRangeReadable(scene_world, 4u)) {
+            register_draw(scene_world, SCENE_WORLD_DRAW_QUEUE_KEY);
+        }
+        return;
+    }
 
     if (g_previous_scene_update) g_previous_scene_update(scene_world);
 }
@@ -1525,8 +1630,7 @@ int Backlog_IsActive(void) {
  * 正常 ASI 会与 RPG.exe 同寿命，不会在游戏中途卸载。
  * 这里仍恢复 vtable（仅当槽位仍是我们自己），并在极端卸载时把最关键的标量/指针放回。
  * DllMain 卸载路径不调用任何 RPG.exe 内部资源函数。
- * v0.3.2 的私有 F-Name 池正常会在 Backlog 关闭的游戏线程阶段销毁；如果进程恰好在
- * Backlog 打开期间直接结束，这里故意不从 worker/DllMain 再调用游戏析构函数，交给进程回收。
+ * 现行版没有私有 F-Name 池；主动卸载只需恢复 Hook 和 synthetic 标量。
  */
 void Backlog_Shutdown(void) {
     void** slot = (void**)VTABLE_SCENE_WORLD;

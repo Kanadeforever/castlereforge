@@ -35,6 +35,7 @@ typedef signed int     i32;
  * 如果这里写错，即使函数地址正确，返回时也可能破坏栈并让游戏崩溃。
  */
 #define BACKLOG_CDECL    __cdecl
+#define BACKLOG_STDCALL  __stdcall
 #define BACKLOG_THISCALL __thiscall
 
 /* Backlog 工作线程每 8 毫秒采样一次键盘，并读取鼠标/PadSupport 已经准备好的输入状态。 */

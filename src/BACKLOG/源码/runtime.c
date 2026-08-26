@@ -393,11 +393,13 @@ static void runtime_load_config(void) {
         runtime_read_ini_u32("Backlog", "PageSize", 4u), 2u, 32u);
 
     /*
-     * 这是四个历史对话框之间的纵向距离。
-     * 80..160 足够覆盖“更紧凑”到“明显拉开”的调节，同时防止极端值把循环坐标推到荒唐范围。
+     * 布局会按间距自适应同屏条数：
+     * - 80..110 使用最多四条；
+     * - 111..160 使用最多三条。
+     * 三条且 stride=160 时，最上姓名 Y=380-35-2*160=25，仍在屏幕内。
      */
     g_config.panel_stride_y = runtime_clamp_u32(
-        runtime_read_ini_u32("Backlog", "PanelStrideY", 118u), 80u, 160u);
+        runtime_read_ini_u32("Backlog", "PanelStrideY", 150u), 80u, 160u);
 
     delay_ms = runtime_clamp_u32(
         runtime_read_ini_u32("Backlog", "RepeatDelayMs", 350u), 100u, 2000u);
@@ -507,7 +509,7 @@ static int runtime_bytes_equal(u32 address, const u8* expected, u32 size) {
  * 精确能力预检只验证本插件真正依赖的协议：
  * - PE 是固定基址 0x400000 的 i386 RPG.exe；
  * - 场景 vtable 的绘制项仍是 0x40B050；
- * - 说话人切换、消息更新和消息绘制入口仍有已确认签名；
+ * - 说话人字段来源、消息更新、消息绘制和绘制队列登记入口仍有已确认签名；
  * - 关键消息缓冲区大小/终止约定依赖的构造代码没有变化。
  *
  * vtable[0] 允许已经被另一个兼容插件换成同调用约定的包装函数；Backlog 安装时会保存
@@ -529,36 +531,14 @@ static int runtime_exact_game_protocol_ok(void) {
     static const u8 scene_update_signature[] = {
         0x56u,0x8Bu,0xF1u,0xE8u,0x78u,0x01u,0x00u,0x00u,0xE8u,0x43u,0x84u,0xFFu,0xFFu
     };
+    static const u8 speaker_portrait_draw_call[] = {0xE8u,0xB2u,0x2Cu,0x00u,0x00u};
     static const u8 panel_draw_call[] = {0xE8u,0x9Du,0x2Cu,0x00u,0x00u};
     /* 0x404899 -> 0x407510，相对位移 = 0x2C72。 */
     static const u8 name_panel_draw_call[] = {0xE8u,0x72u,0x2Cu,0x00u,0x00u};
+    static const u8 name_text_draw_call[] = {0xE8u,0xF5u,0xE5u,0xFFu,0xFFu};
     static const u8 text_draw_call[] = {0xE8u,0xDCu,0xE4u,0xFFu,0xFFu};
-
-    /*
-     * v0.3.2 新增：Backlog 会自己创建 F-Name.SF2，所以这些资源生命周期函数也变成
-     * “真正会被调用的协议”，必须和其它地址一样做启动前身份校验。
-     *
-     * 每段只取入口最有辨识度、且不包含重定位数据的固定字节。
-     * 它们来自用户提供的原版 RPG.exe.org，而不是根据函数名猜出来的。
-     */
-    static const u8 game_free_signature[] = {
-        0xFFu,0x74u,0x24u,0x04u,0xE8u,0x18u,0x0Cu,0x00u,0x00u,0x59u,0xC3u
-    };
-    static const u8 game_alloc_signature[] = {
-        0x6Au,0x01u,0xFFu,0x74u,0x24u,0x08u,0xE8u,0xA5u,0x0Au,0x00u,0x00u,0x59u,0x59u,0xC3u
-    };
-    static const u8 sf2_ctor_signature[] = {
-        0x8Bu,0xC1u,0x33u,0xC9u,0x89u,0x48u,0x30u,0x89u,0x48u,0x34u,
-        0x88u,0x88u,0x80u,0x00u,0x00u,0x00u,0x88u,0x48u,0x2Du,0xC3u
-    };
-    static const u8 sf2_dtor_signature[] = {
-        0x56u,0x8Bu,0xF1u,0x8Bu,0x46u,0x30u,0x85u,0xC0u,0x74u,0x10u,
-        0x50u,0xE8u,0xA0u,0xA4u,0x04u,0x00u
-    };
-    static const u8 sf2_load_signature[] = {
-        0x8Bu,0x44u,0x24u,0x10u,0x56u,0x8Bu,0xF1u,0x57u,0x8Bu,0x4Cu,
-        0x24u,0x0Cu,0x50u,0x8Du,0x7Eu,0x30u,0x57u,0x51u,0xE8u,0xC9u,
-        0xB4u,0xFFu,0xFFu
+    static const u8 draw_queue_register_signature[] = {
+        0xA1u,0x38u,0xDAu,0x8Du,0x00u,0x3Du,0xC8u,0x00u,0x00u,0x00u,0x7Cu,0x17u
     };
 
     if ((u32)(SIZE_T)game != 0x00400000u) {
@@ -616,34 +596,20 @@ static int runtime_exact_game_protocol_ok(void) {
         Runtime_Log("[预检失败] 正文绘制 CALL 0x4049FF 已变化，不能安全建立多条文字列表。");
         return 0;
     }
-
-    /*
-     * 私有姓名框的构造/加载/销毁会直接进入 RPG.exe 内部函数。
-     * 任何一条签名不一致就整项拒绝启动，不能拿未知 ABI 去碰游戏堆。
-     */
-    if (!runtime_bytes_equal(FN_GAME_FREE, game_free_signature,
-                             (u32)sizeof(game_free_signature))) {
-        Runtime_Log("[预检失败] 游戏释放器 0x451550 身份不一致；不能安全管理私有 F-Name 对象。");
+    if (!runtime_bytes_equal(CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW,
+                             speaker_portrait_draw_call,
+                             (u32)sizeof(speaker_portrait_draw_call))) {
+        Runtime_Log("[预检失败] 人物图绘制 CALL 0x404859 已变化，不能安全只屏蔽人物图。");
         return 0;
     }
-    if (!runtime_bytes_equal(FN_GAME_ALLOC, game_alloc_signature,
-                             (u32)sizeof(game_alloc_signature))) {
-        Runtime_Log("[预检失败] 游戏分配器 0x45165F 身份不一致；不能安全管理私有 F-Name 对象。");
+    if (!runtime_bytes_equal(FN_DRAW_QUEUE_REGISTER, draw_queue_register_signature,
+                             (u32)sizeof(draw_queue_register_signature))) {
+        Runtime_Log("[预检失败] 绘制队列登记函数 0x434500 身份不一致；不能安全冻结逻辑并保留显示。");
         return 0;
     }
-    if (!runtime_bytes_equal(FN_SF2_OBJECT_CTOR, sf2_ctor_signature,
-                             (u32)sizeof(sf2_ctor_signature))) {
-        Runtime_Log("[预检失败] SF2 构造器 0x407080 身份不一致；不能安全建立私有 F-Name 对象。");
-        return 0;
-    }
-    if (!runtime_bytes_equal(FN_SF2_OBJECT_DTOR, sf2_dtor_signature,
-                             (u32)sizeof(sf2_dtor_signature))) {
-        Runtime_Log("[预检失败] SF2 析构器 0x4070A0 身份不一致；不能安全销毁私有 F-Name 对象。");
-        return 0;
-    }
-    if (!runtime_bytes_equal(FN_SF2_OBJECT_LOAD, sf2_load_signature,
-                             (u32)sizeof(sf2_load_signature))) {
-        Runtime_Log("[预检失败] SF2 加载器 0x4070D0 身份不一致；不能安全加载 F-Name.SF2。");
+    if (!runtime_bytes_equal(CALL_DIALOGUE_NAME_TEXT_DRAW, name_text_draw_call,
+                             (u32)sizeof(name_text_draw_call))) {
+        Runtime_Log("[预检失败] 姓名文字绘制 CALL 0x4048E6 已变化，不能安全复用原版姓名布局。");
         return 0;
     }
     return 1;
@@ -663,7 +629,7 @@ int Runtime_Initialize(HMODULE plugin_module) {
         g_log_file = CreateFileA(log_path, GENERIC_WRITE, FILE_SHARE_READ, NULL,
                                  CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     }
-    Runtime_Log("[启动] Castle Backlog v0.3.3-test4 正在初始化。");
+    Runtime_Log("[启动] Castle Backlog v0.3.4-test3 正在初始化。");
     Runtime_Log("[启动] By Luminous with ChatGPT");
 
     runtime_load_config();
@@ -677,6 +643,6 @@ int Runtime_Initialize(HMODULE plugin_module) {
         return 0;
     }
 
-    Runtime_Log("[预检] 对话文本、NameList 姓名、现代四框、SF2 私有资源生命周期、场景更新和绘制协议全部一致。");
+    Runtime_Log("[预检] 对话文本、原版 F-Name/F-Talk 组合框、绘制队列登记、场景更新和输入协议全部一致。");
     return 1;
 }

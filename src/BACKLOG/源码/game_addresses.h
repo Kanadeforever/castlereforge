@@ -19,6 +19,13 @@
 #define VTABLE_SCENE_WORLD              0x00460298u
 #define FN_SCENE_WORLD_UPDATE           0x0040B150u
 #define FN_SCENE_WORLD_DRAW             0x0040B050u
+/*
+ * 0x40B16B～0x40B173 每个逻辑步执行：push 0xBB8、push scene_world、call 0x434500。
+ * 0x434500 把 key/object 成对写入本帧绘制队列并 ret 8，不读取 ECX。
+ * Backlog 活动时只复刻这一次登记，从而冻结 0x40B150 其余逻辑但保留 0x40B050 绘制。
+ */
+#define FN_DRAW_QUEUE_REGISTER          0x00434500u
+#define SCENE_WORLD_DRAW_QUEUE_KEY      0x00000BB8u
 
 /*
  * 原版“设置说话人表现”的函数身份锚点。
@@ -53,23 +60,6 @@
  * 原因是它会随 NPC 切换由 0x403C60 析构/重建，历史系统不能借用这种短生命周期对象。
  */
 #define GLOBAL_DIALOGUE_NAME_PANEL_OBJECT 0x0046F658u
-
-/*
- * Backlog 私有 F-Name.SF2 对象使用的原版资源生命周期函数。
- *
- * 0x403DA4..0x403DF9 已确认原版创建 F-Name 的顺序：
- *   0x45165F(0x84) -> 0x407080(this) -> 0x4070D0(this, "F-Name.SF2",0,0,2,0,0)
- *
- * 0x403CFC..0x403D13 已确认销毁顺序：
- *   0x4070A0(this) -> 0x451550(this)
- *
- * 这些地址只创建姓名框，不调用 FN_DIALOGUE_SET_SPEAKER，因此不会创建人物 %d-2.SF2。
- */
-#define FN_GAME_FREE                    0x00451550u
-#define FN_GAME_ALLOC                   0x0045165Fu
-#define FN_SF2_OBJECT_CTOR              0x00407080u
-#define FN_SF2_OBJECT_DTOR              0x004070A0u
-#define FN_SF2_OBJECT_LOAD              0x004070D0u
 
 /* 原版消息绘制用的 512 字节工作缓冲区指针和当前消息资源来源。 */
 #define GLOBAL_DIALOGUE_SOURCE_BASE     0x0046F660u

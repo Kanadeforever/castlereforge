@@ -48,7 +48,7 @@ static DWORD WINAPI PluginWorker(void* unused) {
      */
     MouseInput_Initialize();
     PadBridge_Initialize();
-    Runtime_Log("[启动] Backlog v0.3.3-test4 已就绪：剧情旁路零写入；键盘/鼠标原生；手柄只通过 CastlePad_GetApi Public API v1 协作。");
+    Runtime_Log("[启动] Backlog v0.3.4-test3 已就绪：间距自适应三/四条；原版有名字+对白组合框；SF2游标安全恢复。");
 
     while (InterlockedCompareExchange(&g_worker_running, 1, 1) != 0) {
         MouseInput_Poll();

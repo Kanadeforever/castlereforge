@@ -175,6 +175,7 @@ def check_game(path: Path) -> list[CheckResult]:
         (0x00404899, bytes.fromhex("E8 72 2C 00 00"), "当前剧情 F-Name 绘制 CALL"),
         (0x004048E6, bytes.fromhex("E8 F5 E5 FF FF"), "当前剧情姓名文字绘制 CALL"),
         (0x004049FF, bytes.fromhex("E8 DC E4 FF FF"), "正文绘制 CALL"),
+        (0x00434500, bytes.fromhex("A1 38 DA 8D 00 3D C8 00 00 00 7C 17"), "绘制队列登记入口"),
     ]
     for address, expected, label in signatures:
         actual = pe.va_bytes(address, len(expected))
@@ -205,7 +206,7 @@ def check_asi(path: Path) -> list[CheckResult]:
     }
     # O2 可能把固定 INI 文件名拆成若干立即数写入，不保证磁盘里仍有连续 ASCII；
     # INI 的存在与内容由源码包检查负责。ASI 本体这里只要求版本标识和动态 SDL 名仍可诊断。
-    required_strings = [b"Castle Backlog v0.3.3-test4", b"CastlePad_GetApi"]
+    required_strings = [b"Castle Backlog v0.3.4-test3", b"CastlePad_GetApi"]
 
     return [
         check(pe.machine == 0x14C, "ASI 为 x86", f"machine=0x{pe.machine:04X}"),
@@ -223,7 +224,7 @@ def has_cjk(text: str) -> bool:
 
 
 def check_source(source_root: Path) -> list[CheckResult]:
-    """检查当前 v0.3.3-test4 源码、Public API 协作、INI 和构建文件。"""
+    """检查当前 v0.3.4-test3 源码、自适应三/四框、原版组合框、Public API、INI 和构建文件。"""
 
     required = {
         "platform.h",
@@ -235,8 +236,6 @@ def check_source(source_root: Path) -> list[CheckResult]:
         "pad_bridge.h",
         "pad_bridge.c",
         "Castle_PadSupport_API.h",
-        "name_panel_pool.h",
-        "name_panel_pool.c",
         "backlog.h",
         "backlog.c",
         "plugin.c",
@@ -262,21 +261,29 @@ def check_source(source_root: Path) -> list[CheckResult]:
         "[Keyboard]",
         "Open=B",
         "Exit=B",
-        "PanelStrideY=118",
+        "PanelStrideY=135",
         "PageSize=4",
     ]
     modern_needles = [
-        # test4 的关键调度不变量：真实剧情旁路冻结，但 synthetic 不能被同一 return 截断。
-        "if (g_active && g_opened_over_live_dialogue) return;",
+        # 活动态只登记 draw，不运行完整 SceneWorld update。
+        "register_draw(scene_world, SCENE_WORLD_DRAW_QUEUE_KEY);",
+        "backlog_original_name_panel",
         "Backlog_HookCurrentSpeakerPortraitDraw",
         "Backlog_HookCurrentNamePanelDraw",
         "Backlog_HookCurrentNameTextDraw",
         "Backlog_HookPanelDraw",
         "Backlog_HookTextDraw",
         "g_opened_over_live_dialogue",
+        "GLOBAL_DIALOGUE_MODE = BACKLOG_READ_ONLY_MODE",
+        "BACKLOG_MIN_SAFE_SHIFT_Y",
+        "backlog_visible_slot_capacity",
+        "panel_stride_y > 110u ? 3u",
+        "backlog_save_sf2_cursor",
+        "backlog_restore_sf2_cursor",
+        "if (name_y < 0) name_y = 0;",
         "CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW",
         "CALL_DIALOGUE_NAME_TEXT_DRAW",
-        "NamePanelPool_Create",
+        "g_previous_name_text_draw(font",
     ]
     api_needles = [
         'GetProcAddress(g_pad_module, "CastlePad_GetApi")',
@@ -289,23 +296,25 @@ def check_source(source_root: Path) -> list[CheckResult]:
         for token in ["VirtualQuery(", "scan_executable", "IMAGE_SECTION_HEADER", "module_base +"]
     )
     no_sdl_source = not (source_root / "sdl_input.c").exists() and not (source_root / "sdl_input.h").exists()
-    no_broad_active_freeze = (
-        "if (g_active) return;\n\n    if (g_previous_scene_update)" not in backlog_text and
-        "if (g_active) return;\r\n\r\n    if (g_previous_scene_update)" not in backlog_text
+    no_private_sf2_pool = all(
+        token not in backlog_text and token not in build_text
+        for token in ["NamePanelPool_", "name_panel_pool.c", "FN_SF2_OBJECT_LOAD"]
     )
-    release_docs = '..\\release\\docs' in build_text and 'backlog_check.py' in build_text
+    no_old_draw_starvation = "if (g_active && g_opened_over_live_dialogue) return;" not in backlog_text
+    release_docs = '..\\release\\文档' in build_text and 'backlog_check.py' in build_text
 
     return [
         check(required.issubset(existing), "源码包必需文件", f"{len(required & existing)}/{len(required)}"),
         check(english_names, "代码文件名为英文/ASCII", ", ".join(path.name for path in code_files)),
         check(comment_ok, "每个 C/H 文件含中文块注释", f"{len(code_files)} 个文件"),
         check(all(needle in ini_text for needle in ini_needles), "INI Virtual-Key/间距默认值", f"{len(ini_needles)} 项"),
-        check(all(needle in backlog_text for needle in modern_needles), "剧情旁路/四框绘制不变量", f"{len(modern_needles)} 项"),
+        check(all(needle in backlog_text for needle in modern_needles), "原版有名字+对白组合框不变量", f"{len(modern_needles)} 项"),
         check(all(needle in bridge_text for needle in api_needles), "PadSupport Public API v1 协作", f"{len(api_needles)} 项"),
         check(no_internal_pad_scan, "不再扫描 PadSupport 内部布局", "无内部状态/VirtualQuery 扫描"),
         check(no_sdl_source, "Backlog 不自带 SDL 输入后端", "sdl_input.c/h 不存在"),
-        check(no_broad_active_freeze, "synthetic 不被全局 g_active 冻结", "只冻结 live dialogue 旁路"),
-        check(release_docs, "构建包携带中文文档和最新检查器", "release/docs + backlog_check.py"),
+        check(no_private_sf2_pool, "不再私建 F-Name/SF2", "无 NamePanelPool/0x4070D0 调用"),
+        check(no_old_draw_starvation, "活动态不再饿死绘制队列", "只调用 0x434500 登记 draw"),
+        check(release_docs, "构建包携带中文文档和最新检查器", "release/文档 + backlog_check.py"),
     ]
 
 def check_document_packages(repository: Path) -> list[CheckResult]:
@@ -314,7 +323,7 @@ def check_document_packages(repository: Path) -> list[CheckResult]:
     canonical_root = repository / "docs" / "BACKLOG"
     source_mirror = repository / "src" / "backlog" / "文档"
     release_root = repository / "src" / "backlog" / "release"
-    release_mirror = release_root / "docs"
+    release_mirror = release_root / "文档"
 
     canonical = sorted(canonical_root.glob("*.md"), key=lambda path: path.name)
     canonical_names = {path.name for path in canonical}
@@ -347,6 +356,13 @@ def check_document_packages(repository: Path) -> list[CheckResult]:
 
     handoff_ok = (canonical_root / "完整接档说明.md").exists()
     tool_doc_ok = (canonical_root / "工具详细说明.md").exists()
+    tool_side_doc = repository / "src" / "backlog" / "工具" / "工具详细说明.md"
+    tool_side_doc_matches = tool_doc_ok and tool_side_doc.exists()
+    if tool_side_doc_matches:
+        tool_side_doc_matches = (
+            hashlib.sha256(tool_side_doc.read_bytes()).digest() ==
+            hashlib.sha256((canonical_root / "工具详细说明.md").read_bytes()).digest()
+        )
 
     return [
         check(len(canonical) >= 10, "权威中文 Markdown 数量", f"{len(canonical)} 份"),
@@ -354,6 +370,7 @@ def check_document_packages(repository: Path) -> list[CheckResult]:
         check(source_matches, "docs/BACKLOG 与源码包文档镜像一致", f"{len(canonical_names)} 份"),
         check(not release_exists or release_matches, "release 文档镜像（若已构建）一致", "未构建或逐文件一致"),
         check(handoff_ok and tool_doc_ok, "独立接档核心文档存在", "完整接档说明 + 工具详细说明"),
+        check(tool_side_doc_matches, "检查器旁中文工具说明为最新版", "工具/工具详细说明.md"),
     ]
 
 def result_dict(result: CheckResult) -> dict[str, object]:
@@ -380,7 +397,7 @@ def main() -> int:
     repository = script.parents[3]
     parser = argparse.ArgumentParser(description="Castle Backlog 静态兼容与封包检查")
     parser.add_argument("--game", type=Path, default=repository / "参考资料" / "Castle" / "exe" / "RPG.exe")
-    parser.add_argument("--asi", type=Path, default=repository / "src" / "backlog" / "编译内容" / "Castle_Backlog.asi")
+    parser.add_argument("--asi", type=Path, default=repository / "src" / "backlog" / "release" / "Castle_Backlog.asi")
     parser.add_argument("--source-root", type=Path, default=repository / "src" / "backlog" / "源码")
     parser.add_argument("--json", type=Path, help="可选：把本次结果另存为 UTF-8 JSON")
     args = parser.parse_args()
