@@ -105,19 +105,19 @@ Loader 自身不会接管或实现 DirectDraw。
 
 详细资料：
 
-* [Mod Loader 使用说明](docs/模组加载器/使用说明.md)
-* [架构与启动时序](docs/模组加载器/架构与启动时序.md)
-* [台湾繁中区域环境层说明](docs/模组加载器/台湾繁中区域环境层说明.md)
-* [模组目录与配置说明](docs/模组加载器/模组目录与配置说明.md)
-* [文件覆写说明](docs/模组加载器/文件覆写说明.md)
-* [插件 INI 编辑器说明](docs/模组加载器/插件INI编辑器说明.md)
-* [第三方研究与许可证说明](docs/模组加载器/第三方研究与许可证说明.md)
+* [Mod Loader 使用说明](docs/MODLoader/使用说明.md)
+* [架构与启动时序](docs/MODLoader/架构与启动时序.md)
+* [台湾繁中区域环境层说明](docs/MODLoader/台湾繁中区域环境层说明.md)
+* [模组目录与配置说明](docs/MODLoader/模组目录与配置说明.md)
+* [文件覆写说明](docs/MODLoader/文件覆写说明.md)
+* [插件 INI 编辑器说明](docs/MODLoader/插件INI编辑器说明.md)
+* [第三方研究与许可证说明](docs/MODLoader/第三方研究与许可证说明.md)
 
 ---
 
 ### 2. 手柄支持
 
-操作见 [手柄控制说明](docs/手柄支持/手柄控制说明.md) 。
+操作见 [手柄控制说明](docs/Controller/手柄控制说明.md) 。
 
 `Castle_PadSupport.asi` 为游戏增加基于 **SDL3** 的现代手柄操控。
 
@@ -171,10 +171,10 @@ Loader 自身不会接管或实现 DirectDraw。
 
 具体版本状态请始终查看：
 
-* [手柄支持完整接档](docs/手柄支持/截至本版本的完整接档.md)
-* [架构设计与模块边界](docs/手柄支持/架构设计与模块边界.md)
-* [已知问题与实机验收说明](docs/手柄支持/已知问题与实机验收说明.md)
-* [测试与回归清单](docs/手柄支持/测试与回归清单.md)
+* [手柄支持完整接档](docs/Controller/截至本版本的完整接档.md)
+* [架构设计与模块边界](docs/Controller/架构设计与模块边界.md)
+* [已知问题与实机验收说明](docs/Controller/已知问题与实机验收说明.md)
+* [测试与回归清单](docs/Controller/测试与回归清单.md)
 
 运行时需要兼容的 **x86 SDL3.dll**。
 
@@ -235,9 +235,9 @@ BlurredSides=0
 
 详细资料：
 
-* [宽屏完整接档](docs/宽屏/截至本版本的完整接档.md)
-* [宽屏技术设计与协议](docs/宽屏/宽屏技术设计与协议.md)
-* [实机测试与已知问题](docs/宽屏/实机测试与已知问题.md)
+* [宽屏完整接档](docs/Widescreen/截至本版本的完整接档.md)
+* [宽屏技术设计与协议](docs/Widescreen/宽屏技术设计与协议.md)
+* [实机测试与已知问题](docs/Widescreen/实机测试与已知问题.md)
 
 ---
 
@@ -295,10 +295,10 @@ BlurredSides=0
 
 详细资料：
 
-* [其他功能使用说明](docs/其他功能/文档/使用说明.md)
-* [安全回退存档设计说明](docs/其他功能/文档/安全回退存档设计说明.md)
-* [已知限制与风险](docs/其他功能/文档/已知限制与风险.md)
-* [逆向分析与验证记录](docs/其他功能/文档/逆向分析与验证记录.md)
+* [其他功能使用说明](docs/Extra/文档/使用说明.md)
+* [安全回退存档设计说明](docs/Extra/文档/安全回退存档设计说明.md)
+* [已知限制与风险](docs/Extra/文档/已知限制与风险.md)
+* [逆向分析与验证记录](docs/Extra/文档/逆向分析与验证记录.md)
 
 ---
 
@@ -407,10 +407,11 @@ CastleReforge 的很多功能都建立在：
 
 ```text
 docs/
-├─ 其他功能/
-├─ 宽屏/
-├─ 手柄支持/
-└─ 模组加载器/
+├─ Backlog/
+├─ Controller/
+├─ Extra/
+├─ MODLoader/
+└─ Widescreen/
 ```
 
 其中包含：
@@ -444,17 +445,22 @@ docs/
 ```text
 castlereforge/
 ├─ src/
-│  ├─ 其他功能/
-│  ├─ 宽屏/
-│  ├─ 手柄支持/
-│  └─ 模组加载器/
+│  ├─ Backlog/
+│  ├─ Controller/
+│  ├─ Extra/
+│  ├─ MODLoader/
+│  ├─ Widescreen/
+│  └─ _toolbox/
 │
 ├─ docs/
-│  ├─ 其他功能/
-│  ├─ 宽屏/
-│  ├─ 手柄支持/
-│  └─ 模组加载器/
+│  ├─ Backlog/
+│  ├─ Controller/
+│  ├─ Extra/
+│  ├─ MODLoader/
+│  └─ Widescreen/
 │
+├─ build/          构建输出（git 忽略）
+├─ build_all.bat   一键编译全部子项目
 ├─ LICENSE
 └─ README.md
 ```
@@ -490,6 +496,8 @@ build.bat
 ```
 
 即可按照该模块规定的参数构建。
+
+也可以在仓库根运行 `build_all.bat` 一键编译全部子项目，产物统一输出到 `build\`（ASI 与同名 INI 会进一步移入 `build\mods\asi`）。
 
 项目中的游戏内插件普遍采用较严格的最小依赖策略，很多模块：
 
