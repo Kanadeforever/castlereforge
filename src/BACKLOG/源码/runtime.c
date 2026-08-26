@@ -1,6 +1,5 @@
 #include "runtime.h"
 #include "game_addresses.h"
-#include "sdl_input.h"
 
 /*
  * runtime.c
@@ -13,7 +12,7 @@
  * 5. 在任何地址写入发生前，确认当前 RPG.exe 仍符合已知机器协议。
  *
  * 业务层不重复实现这些工作。这样以后修改配置格式或增加一个版本门时，
- * 不会误碰历史记录环形队列、原版对话框切换或 SDL 热插拔逻辑。
+ * 不会误碰历史记录环形队列、原版对话框切换、鼠标窗口过程或手柄协作桥。
  */
 
 static HMODULE g_plugin_module;
@@ -53,7 +52,7 @@ static char runtime_ascii_lower(char value) {
 
 /*
  * loose 比较会忽略空格、横线和下划线。
- * 因此 left_shoulder、left-shoulder、Left Shoulder 都会被认成同一个 SDL 按钮名。
+ * 例如 PAGE_UP、Page-Up、Page Up 都可以被当成同一个 Virtual-Key 名称。
  */
 int Runtime_TextEqualsLoose(const char* left, const char* right) {
     u32 li = 0u;
@@ -77,7 +76,8 @@ int Runtime_TextEqualsLoose(const char* left, const char* right) {
 
 /*
  * 解析十进制或 0x 开头的十六进制无符号数。
- * 键盘虚拟键码常写成 0x42；MaxEntries 一类普通配置常写成 128，两种都可以直接使用。
+ * 新版键盘配置优先使用 B / UP 这类名字；这个数字解析器主要服务 MaxEntries、间距、
+ * 重复延迟等普通数值，同时保留旧版 0x42 键位配置的向后兼容。
  */
 int Runtime_ParseU32(const char* text, u32* output) {
     u32 index = 0u;
@@ -215,29 +215,168 @@ static u32 runtime_clamp_u32(u32 value, u32 min_value, u32 max_value) {
     return value;
 }
 
-/* 键盘配置就是 Win32 Virtual-Key 数字；只接受 1..255。 */
-static int runtime_read_virtual_key(const char* key, u32 fallback) {
-    u32 value = runtime_read_ini_u32("Keyboard", key, fallback);
-    if (value < 1u || value > 255u) {
-        Runtime_Log("[配置] 键盘 KB 码超出 1..255，已回退默认键位。");
-        value = fallback;
+/*
+ * 把一个常见的 Win32 Virtual-Key 名称翻译成真正的 VK 数字。
+ *
+ * 用户在 INI 里写的是 Windows 文档里的名字，但省略最前面的 VK_：
+ *
+ *   B       -> VK_B
+ *   UP      -> VK_UP
+ *   RETURN  -> VK_RETURN
+ *   F5      -> VK_F5
+ *   NUMPAD0 -> VK_NUMPAD0
+ *
+ * 这样 INI 不再出现“0x42 到底是什么键”的问题。
+ *
+ * 为了兼容旧配置：
+ * - 写 VK_B 也可以；函数会先去掉 VK_；
+ * - 写 0x42 或 66 仍然可以，但新默认 INI 不再这么写。
+ */
+static int runtime_parse_virtual_key_name(const char* input, int* output) {
+    const char* text = input;
+    u32 numeric;
+    u32 length = 0u;
+
+    /* 这张表只放不能用简单规则算出来的常见 VK。 */
+    typedef struct VkName {
+        const char* name;
+        int value;
+    } VkName;
+
+    static const VkName names[] = {
+        {"LBUTTON", VK_LBUTTON}, {"RBUTTON", VK_RBUTTON}, {"MBUTTON", VK_MBUTTON},
+        {"XBUTTON1", VK_XBUTTON1}, {"XBUTTON2", VK_XBUTTON2},
+        {"BACK", VK_BACK}, {"BACKSPACE", VK_BACK}, {"TAB", VK_TAB},
+        {"CLEAR", VK_CLEAR}, {"RETURN", VK_RETURN}, {"ENTER", VK_RETURN},
+        {"SHIFT", VK_SHIFT}, {"CONTROL", VK_CONTROL}, {"CTRL", VK_CONTROL},
+        {"MENU", VK_MENU}, {"ALT", VK_MENU}, {"PAUSE", VK_PAUSE},
+        {"CAPITAL", VK_CAPITAL}, {"CAPSLOCK", VK_CAPITAL},
+        {"ESCAPE", VK_ESCAPE}, {"ESC", VK_ESCAPE}, {"SPACE", VK_SPACE},
+        {"PRIOR", VK_PRIOR}, {"PAGEUP", VK_PRIOR}, {"PGUP", VK_PRIOR},
+        {"NEXT", VK_NEXT}, {"PAGEDOWN", VK_NEXT}, {"PGDN", VK_NEXT},
+        {"END", VK_END}, {"HOME", VK_HOME}, {"LEFT", VK_LEFT},
+        {"UP", VK_UP}, {"RIGHT", VK_RIGHT}, {"DOWN", VK_DOWN},
+        {"SELECT", VK_SELECT}, {"PRINT", VK_PRINT}, {"EXECUTE", VK_EXECUTE},
+        {"SNAPSHOT", VK_SNAPSHOT}, {"PRINTSCREEN", VK_SNAPSHOT},
+        {"INSERT", VK_INSERT}, {"DELETE", VK_DELETE}, {"DEL", VK_DELETE},
+        {"HELP", VK_HELP},
+        {"LWIN", VK_LWIN}, {"RWIN", VK_RWIN}, {"APPS", VK_APPS},
+        {"SLEEP", VK_SLEEP},
+        {"MULTIPLY", VK_MULTIPLY}, {"ADD", VK_ADD}, {"SEPARATOR", VK_SEPARATOR},
+        {"SUBTRACT", VK_SUBTRACT}, {"DECIMAL", VK_DECIMAL}, {"DIVIDE", VK_DIVIDE},
+        {"NUMLOCK", VK_NUMLOCK}, {"SCROLL", VK_SCROLL}, {"SCROLLLOCK", VK_SCROLL},
+        {"LSHIFT", VK_LSHIFT}, {"RSHIFT", VK_RSHIFT},
+        {"LCONTROL", VK_LCONTROL}, {"LCTRL", VK_LCONTROL},
+        {"RCONTROL", VK_RCONTROL}, {"RCTRL", VK_RCONTROL},
+        {"LMENU", VK_LMENU}, {"LALT", VK_LMENU},
+        {"RMENU", VK_RMENU}, {"RALT", VK_RMENU},
+        {"BROWSERBACK", VK_BROWSER_BACK}, {"BROWSERFORWARD", VK_BROWSER_FORWARD},
+        {"BROWSERREFRESH", VK_BROWSER_REFRESH}, {"BROWSERSTOP", VK_BROWSER_STOP},
+        {"BROWSERSEARCH", VK_BROWSER_SEARCH}, {"BROWSERFAVORITES", VK_BROWSER_FAVORITES},
+        {"BROWSERHOME", VK_BROWSER_HOME},
+        {"VOLUMEMUTE", VK_VOLUME_MUTE}, {"VOLUMEDOWN", VK_VOLUME_DOWN},
+        {"VOLUMEUP", VK_VOLUME_UP}, {"MEDIANEXTTRACK", VK_MEDIA_NEXT_TRACK},
+        {"MEDIAPREVTRACK", VK_MEDIA_PREV_TRACK}, {"MEDIASTOP", VK_MEDIA_STOP},
+        {"MEDIAPLAYPAUSE", VK_MEDIA_PLAY_PAUSE},
+        {"LAUNCHMAIL", VK_LAUNCH_MAIL}, {"LAUNCHMEDIASELECT", VK_LAUNCH_MEDIA_SELECT},
+        {"LAUNCHAPP1", VK_LAUNCH_APP1}, {"LAUNCHAPP2", VK_LAUNCH_APP2}
+    };
+    u32 index;
+
+    if (!text || !output) return 0;
+
+    /* 跳过首尾空白。首部先处理；尾部由各解析分支自己验证。 */
+    while (*text == ' ' || *text == '\t') ++text;
+
+    /* 允许用户照 Windows 文档习惯误写 VK_B；内部自动把 VK_ 去掉。 */
+    if ((text[0] == 'V' || text[0] == 'v') &&
+        (text[1] == 'K' || text[1] == 'k') &&
+        (text[2] == '_' || text[2] == '-' || text[2] == ' ')) {
+        text += 3;
     }
-    return (int)value;
+
+    /* 单个英文字母的 VK 值与大写 ASCII 完全相同。 */
+    while (text[length] != '\0' && text[length] != ' ' && text[length] != '\t') ++length;
+    if (length == 1u) {
+        u32 tail = length;
+        char c = text[0];
+
+        /*
+         * 允许 B 后面只有空格，但不接受 “B something” 这种半截配置。
+         * 这样拼错的 INI 会明确回退默认值，而不是悄悄把第一个字母当成合法键。
+         */
+        while (text[tail] == ' ' || text[tail] == '\t') ++tail;
+        if (text[tail] == '\0') {
+            if (c >= 'a' && c <= 'z') c = (char)(c - ('a' - 'A'));
+            if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+                *output = (int)(u8)c;
+                return 1;
+            }
+        }
+    }
+
+    /* F1..F24 是连续编号，可以直接计算。 */
+    if (runtime_ascii_lower(text[0]) == 'f') {
+        u32 number = 0u;
+        u32 i = 1u;
+        int saw = 0;
+        while (text[i] >= '0' && text[i] <= '9') {
+            number = number * 10u + (u32)(text[i] - '0');
+            saw = 1;
+            ++i;
+        }
+        while (text[i] == ' ' || text[i] == '\t') ++i;
+        if (saw && text[i] == '\0' && number >= 1u && number <= 24u) {
+            *output = VK_F1 + (int)(number - 1u);
+            return 1;
+        }
+    }
+
+    /* NUMPAD0..NUMPAD9 也是连续编号。 */
+    if (length == 7u &&
+        (runtime_ascii_lower(text[0]) == 'n') &&
+        (runtime_ascii_lower(text[1]) == 'u') &&
+        (runtime_ascii_lower(text[2]) == 'm') &&
+        (runtime_ascii_lower(text[3]) == 'p') &&
+        (runtime_ascii_lower(text[4]) == 'a') &&
+        (runtime_ascii_lower(text[5]) == 'd') &&
+        text[6] >= '0' && text[6] <= '9') {
+        u32 i = 7u;
+        while (text[i] == ' ' || text[i] == '\t') ++i;
+        if (text[i] == '\0') {
+            *output = VK_NUMPAD0 + (int)(text[6] - '0');
+            return 1;
+        }
+    }
+
+    /* 其它常见键在表中按 loose 规则比较。 */
+    for (index = 0u; index < (u32)(sizeof(names) / sizeof(names[0])); ++index) {
+        if (Runtime_TextEqualsLoose(text, names[index].name)) {
+            *output = names[index].value;
+            return 1;
+        }
+    }
+
+    /* 最后保留旧版十进制/0x 数字配置兼容。 */
+    if (Runtime_ParseU32(text, &numeric) && numeric >= 1u && numeric <= 255u) {
+        *output = (int)numeric;
+        return 1;
+    }
+    return 0;
 }
 
 /*
- * SDL 名字由纯文本解析器转换成枚举值。
- * 解析发生在 SDL3.dll 加载之前，因此“没有 SDL”不会妨碍 INI 或键盘功能初始化。
+ * 从 [Keyboard] 读取一个 Virtual-Key 名字。
+ * 解析失败时回退到代码给出的默认 VK，而不是把坏值带到 GetAsyncKeyState。
  */
-static int runtime_read_gamepad_button(const char* key, const char* fallback_name,
-                                       int fallback_button) {
+static int runtime_read_virtual_key(const char* key, const char* fallback_name, int fallback_vk) {
     char text[64];
-    int parsed;
-    Runtime_ReadIniText("Gamepad", key, fallback_name, text, (u32)sizeof(text));
-    parsed = SdlInput_ButtonFromName(text);
-    if (parsed < 0) {
-        Runtime_Log("[配置] SDL 手柄按钮名无法识别，已回退该项默认键位。");
-        return fallback_button;
+    int parsed = 0;
+
+    Runtime_ReadIniText("Keyboard", key, fallback_name, text, (u32)sizeof(text));
+    if (!runtime_parse_virtual_key_name(text, &parsed)) {
+        Runtime_Log("[配置] 键盘 Virtual-Key 名称无法识别，已回退默认键位。");
+        return fallback_vk;
     }
     return parsed;
 }
@@ -253,6 +392,13 @@ static void runtime_load_config(void) {
     g_config.page_size = runtime_clamp_u32(
         runtime_read_ini_u32("Backlog", "PageSize", 4u), 2u, 32u);
 
+    /*
+     * 这是四个历史对话框之间的纵向距离。
+     * 80..160 足够覆盖“更紧凑”到“明显拉开”的调节，同时防止极端值把循环坐标推到荒唐范围。
+     */
+    g_config.panel_stride_y = runtime_clamp_u32(
+        runtime_read_ini_u32("Backlog", "PanelStrideY", 118u), 80u, 160u);
+
     delay_ms = runtime_clamp_u32(
         runtime_read_ini_u32("Backlog", "RepeatDelayMs", 350u), 100u, 2000u);
     interval_ms = runtime_clamp_u32(
@@ -260,25 +406,12 @@ static void runtime_load_config(void) {
     g_config.repeat_delay_ticks = Runtime_MsToTicks(delay_ms);
     g_config.repeat_interval_ticks = Runtime_MsToTicks(interval_ms);
 
-    g_config.keyboard_open = runtime_read_virtual_key("Open", 0x42u);
-    g_config.keyboard_exit = runtime_read_virtual_key("Exit", 0x42u);
-    g_config.keyboard_up = runtime_read_virtual_key("Up", 0x26u);
-    g_config.keyboard_down = runtime_read_virtual_key("Down", 0x28u);
-    g_config.keyboard_left = runtime_read_virtual_key("Left", 0x25u);
-    g_config.keyboard_right = runtime_read_virtual_key("Right", 0x27u);
-
-    g_config.gamepad_open = runtime_read_gamepad_button(
-        "Open", "left_shoulder", SDL_BUTTON_LEFT_SHOULDER);
-    g_config.gamepad_exit = runtime_read_gamepad_button(
-        "Exit", "east", SDL_BUTTON_EAST);
-    g_config.gamepad_up = runtime_read_gamepad_button(
-        "Up", "dpad_up", SDL_BUTTON_DPAD_UP);
-    g_config.gamepad_down = runtime_read_gamepad_button(
-        "Down", "dpad_down", SDL_BUTTON_DPAD_DOWN);
-    g_config.gamepad_left = runtime_read_gamepad_button(
-        "Left", "dpad_left", SDL_BUTTON_DPAD_LEFT);
-    g_config.gamepad_right = runtime_read_gamepad_button(
-        "Right", "dpad_right", SDL_BUTTON_DPAD_RIGHT);
+    g_config.keyboard_open = runtime_read_virtual_key("Open", "B", (int)'B');
+    g_config.keyboard_exit = runtime_read_virtual_key("Exit", "B", (int)'B');
+    g_config.keyboard_up = runtime_read_virtual_key("Up", "UP", VK_UP);
+    g_config.keyboard_down = runtime_read_virtual_key("Down", "DOWN", VK_DOWN);
+    g_config.keyboard_left = runtime_read_virtual_key("Left", "LEFT", VK_LEFT);
+    g_config.keyboard_right = runtime_read_virtual_key("Right", "RIGHT", VK_RIGHT);
 }
 
 const RuntimeConfig* Runtime_Config(void) {
@@ -287,11 +420,68 @@ const RuntimeConfig* Runtime_Config(void) {
 
 /*
  * 32 位 RPG.exe 的正常用户对象位于 64 KiB 以上、2 GiB 以下。
- * 这里只做第一层保守过滤；它不能代替对象自己的 active/状态检查。
+ * 这里只做第一层保守过滤；它不能证明页面仍然 MEM_COMMIT。
  */
 int Runtime_PointerLooksReadable(const void* pointer) {
     u32 address = (u32)(SIZE_T)pointer;
     return address >= 0x00010000u && address < 0x7FFF0000u;
+}
+
+/*
+ * 检查一整段地址是否真的可以读。
+ *
+ * 为什么不能只检查“地址看起来像 0x12345678”：
+ * NPC 对话结束后，原版可能已经 VirtualFree/回收某个资源；全局槽里却仍暂时留下旧数值。
+ * 旧 v0.3 只看地址范围，随后直接解引用，正是“记了几条 NPC 对话再打开”崩溃的重要风险。
+ *
+ * VirtualQuery 会告诉我们每一页当前是否：
+ *   1. MEM_COMMIT：页面真的存在；
+ *   2. 不是 PAGE_GUARD / PAGE_NOACCESS；
+ *   3. 从起点一直覆盖到 size 个字节的末尾。
+ *
+ * 注意：堆里“已经 free 但页面仍 commit”的小块，VirtualQuery 仍无法识别。
+ * v0.3.2 因此不再把这个函数当成“原版当前 F-Name 对象仍存活”的证明；历史姓名框改为
+ * Backlog 自己在游戏线程创建并持有，直到关闭时按原版析构协议释放。
+ */
+int Runtime_MemoryRangeReadable(const void* pointer, u32 size) {
+    SIZE_T current;
+    SIZE_T end;
+
+    if (!pointer || size == 0u || !Runtime_PointerLooksReadable(pointer)) return 0;
+    current = (SIZE_T)pointer;
+    end = current + (SIZE_T)size;
+    if (end <= current || end > (SIZE_T)0x7FFF0000u) return 0;
+
+    while (current < end) {
+        MEMORY_BASIC_INFORMATION info;
+        SIZE_T region_end;
+        DWORD protection;
+
+        if (VirtualQuery((const void*)current, &info, sizeof(info)) != sizeof(info)) return 0;
+        if (info.State != MEM_COMMIT) return 0;
+
+        protection = info.Protect;
+        if ((protection & PAGE_GUARD) != 0u || (protection & PAGE_NOACCESS) != 0u) return 0;
+
+        /*
+         * PAGE_* 的低 8 位是基本访问方式；执行页只要带 READ 也允许读取。
+         * PAGE_EXECUTE（只有执行、没有读）按不可读处理。
+         */
+        protection &= 0xFFu;
+        if (protection != PAGE_READONLY &&
+            protection != PAGE_READWRITE &&
+            protection != PAGE_WRITECOPY &&
+            protection != PAGE_EXECUTE_READ &&
+            protection != PAGE_EXECUTE_READWRITE &&
+            protection != PAGE_EXECUTE_WRITECOPY) {
+            return 0;
+        }
+
+        region_end = (SIZE_T)info.BaseAddress + info.RegionSize;
+        if (region_end <= current) return 0;
+        current = region_end;
+    }
+    return 1;
 }
 
 /* 前台窗口 PID 必须等于当前 RPG.exe PID，Alt+Tab 后不会继续响应 B 或方向键。 */
@@ -340,7 +530,36 @@ static int runtime_exact_game_protocol_ok(void) {
         0x56u,0x8Bu,0xF1u,0xE8u,0x78u,0x01u,0x00u,0x00u,0xE8u,0x43u,0x84u,0xFFu,0xFFu
     };
     static const u8 panel_draw_call[] = {0xE8u,0x9Du,0x2Cu,0x00u,0x00u};
+    /* 0x404899 -> 0x407510，相对位移 = 0x2C72。 */
+    static const u8 name_panel_draw_call[] = {0xE8u,0x72u,0x2Cu,0x00u,0x00u};
     static const u8 text_draw_call[] = {0xE8u,0xDCu,0xE4u,0xFFu,0xFFu};
+
+    /*
+     * v0.3.2 新增：Backlog 会自己创建 F-Name.SF2，所以这些资源生命周期函数也变成
+     * “真正会被调用的协议”，必须和其它地址一样做启动前身份校验。
+     *
+     * 每段只取入口最有辨识度、且不包含重定位数据的固定字节。
+     * 它们来自用户提供的原版 RPG.exe.org，而不是根据函数名猜出来的。
+     */
+    static const u8 game_free_signature[] = {
+        0xFFu,0x74u,0x24u,0x04u,0xE8u,0x18u,0x0Cu,0x00u,0x00u,0x59u,0xC3u
+    };
+    static const u8 game_alloc_signature[] = {
+        0x6Au,0x01u,0xFFu,0x74u,0x24u,0x08u,0xE8u,0xA5u,0x0Au,0x00u,0x00u,0x59u,0x59u,0xC3u
+    };
+    static const u8 sf2_ctor_signature[] = {
+        0x8Bu,0xC1u,0x33u,0xC9u,0x89u,0x48u,0x30u,0x89u,0x48u,0x34u,
+        0x88u,0x88u,0x80u,0x00u,0x00u,0x00u,0x88u,0x48u,0x2Du,0xC3u
+    };
+    static const u8 sf2_dtor_signature[] = {
+        0x56u,0x8Bu,0xF1u,0x8Bu,0x46u,0x30u,0x85u,0xC0u,0x74u,0x10u,
+        0x50u,0xE8u,0xA0u,0xA4u,0x04u,0x00u
+    };
+    static const u8 sf2_load_signature[] = {
+        0x8Bu,0x44u,0x24u,0x10u,0x56u,0x8Bu,0xF1u,0x57u,0x8Bu,0x4Cu,
+        0x24u,0x0Cu,0x50u,0x8Du,0x7Eu,0x30u,0x57u,0x51u,0xE8u,0xC9u,
+        0xB4u,0xFFu,0xFFu
+    };
 
     if ((u32)(SIZE_T)game != 0x00400000u) {
         Runtime_Log("[预检失败] RPG.exe 没有加载在已确认的 0x00400000 基址。");
@@ -387,9 +606,44 @@ static int runtime_exact_game_protocol_ok(void) {
         Runtime_Log("[预检失败] F-Talk 绘制 CALL 0x40486E 已变化，不能安全建立多框列表。");
         return 0;
     }
+    if (!runtime_bytes_equal(CALL_DIALOGUE_NAME_PANEL_DRAW, name_panel_draw_call,
+                             (u32)sizeof(name_panel_draw_call))) {
+        Runtime_Log("[预检失败] F-Name 绘制 CALL 0x404899 已变化，不能安全建立带姓名历史框。");
+        return 0;
+    }
     if (!runtime_bytes_equal(CALL_DIALOGUE_TEXT_DRAW, text_draw_call,
                              (u32)sizeof(text_draw_call))) {
         Runtime_Log("[预检失败] 正文绘制 CALL 0x4049FF 已变化，不能安全建立多条文字列表。");
+        return 0;
+    }
+
+    /*
+     * 私有姓名框的构造/加载/销毁会直接进入 RPG.exe 内部函数。
+     * 任何一条签名不一致就整项拒绝启动，不能拿未知 ABI 去碰游戏堆。
+     */
+    if (!runtime_bytes_equal(FN_GAME_FREE, game_free_signature,
+                             (u32)sizeof(game_free_signature))) {
+        Runtime_Log("[预检失败] 游戏释放器 0x451550 身份不一致；不能安全管理私有 F-Name 对象。");
+        return 0;
+    }
+    if (!runtime_bytes_equal(FN_GAME_ALLOC, game_alloc_signature,
+                             (u32)sizeof(game_alloc_signature))) {
+        Runtime_Log("[预检失败] 游戏分配器 0x45165F 身份不一致；不能安全管理私有 F-Name 对象。");
+        return 0;
+    }
+    if (!runtime_bytes_equal(FN_SF2_OBJECT_CTOR, sf2_ctor_signature,
+                             (u32)sizeof(sf2_ctor_signature))) {
+        Runtime_Log("[预检失败] SF2 构造器 0x407080 身份不一致；不能安全建立私有 F-Name 对象。");
+        return 0;
+    }
+    if (!runtime_bytes_equal(FN_SF2_OBJECT_DTOR, sf2_dtor_signature,
+                             (u32)sizeof(sf2_dtor_signature))) {
+        Runtime_Log("[预检失败] SF2 析构器 0x4070A0 身份不一致；不能安全销毁私有 F-Name 对象。");
+        return 0;
+    }
+    if (!runtime_bytes_equal(FN_SF2_OBJECT_LOAD, sf2_load_signature,
+                             (u32)sizeof(sf2_load_signature))) {
+        Runtime_Log("[预检失败] SF2 加载器 0x4070D0 身份不一致；不能安全加载 F-Name.SF2。");
         return 0;
     }
     return 1;
@@ -409,7 +663,7 @@ int Runtime_Initialize(HMODULE plugin_module) {
         g_log_file = CreateFileA(log_path, GENERIC_WRITE, FILE_SHARE_READ, NULL,
                                  CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     }
-    Runtime_Log("[启动] Castle Backlog v0.2.0 现代整屏列表正在初始化。");
+    Runtime_Log("[启动] Castle Backlog v0.3.3-test4 正在初始化。");
     Runtime_Log("[启动] By Luminous with ChatGPT");
 
     runtime_load_config();
@@ -423,6 +677,6 @@ int Runtime_Initialize(HMODULE plugin_module) {
         return 0;
     }
 
-    Runtime_Log("[预检] 对话文本、NameList 姓名、现代四框、场景更新和绘制协议全部一致。");
+    Runtime_Log("[预检] 对话文本、NameList 姓名、现代四框、SF2 私有资源生命周期、场景更新和绘制协议全部一致。");
     return 1;
 }

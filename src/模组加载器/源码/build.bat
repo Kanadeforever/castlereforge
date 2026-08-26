@@ -135,6 +135,7 @@ echo   编译内容\mods\CastleLocaleBootstrap.dll
 echo   编译内容\mods\CastleModCore.dll
 echo.
 echo 建议随后运行：python 工具\preloader_check.py "你的RPG.exe完整路径"
+pause
 exit /b 0
 
 :fail

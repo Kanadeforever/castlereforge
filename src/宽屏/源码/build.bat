@@ -8,7 +8,7 @@ set "TARGET=%ROOT%..\编译内容\Castle_Widescreen.asi"
 
 if exist "%OUT%" rmdir /s /q "%OUT%"
 mkdir "%OUT%" || goto :fail
-
+if not exist "%ROOT%..\编译内容\" mkdir "%ROOT%..\编译内容\" || goto :fail
 
 set "CLANG_CL="
 set "LLD_LINK="
@@ -38,9 +38,11 @@ copy /y "%ROOT%Castle_Widescreen.ini" "%ROOT%..\编译内容\Castle_Widescreen.i
 
 if exist "%OUT%" rmdir /s /q "%OUT%"
 echo [Build] Done: %TARGET%
+pause
 exit /b 0
 
 :fail
 if exist "%OUT%" rmdir /s /q "%OUT%"
 echo [Build] Failed. No old binary was substituted.
+pause
 exit /b 1

@@ -1,4 +1,4 @@
-﻿#include "pad_input.h"
+#include "pad_input.h"
 #include "runtime.h"
 
 /* SDL3 只在运行时动态加载，因此源码包不要求 SDL3 头文件和 import lib。 */
@@ -408,6 +408,12 @@ int PadInput_GameForeground(HWND* out_hwnd) {
     return 1;
 }
 
+/*
+ * 只报告 SDL 输入层是否完成 pad_load_sdl() 的全部初始化步骤。
+ * 与“DLL 是否被 LoadLibrary 成功”不同：缺导出或 SDL_Init 失败时模块句柄可能已经存在，
+ * 但 initialized 仍为 0，因此公共 API 不会误报 ready。
+ */
+int PadInput_Ready(void) { return g_pad.initialized != 0; }
 int PadInput_GamepadConnected(void) { return g_pad.gamepad != NULL; }
 HMODULE PadInput_SdlModule(void) { return g_pad.sdl_module; }
 

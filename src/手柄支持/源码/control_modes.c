@@ -556,3 +556,22 @@ void ControlModes_OnPhysicalMouseTakeover(void) {
 int ControlModes_BlocksMapMovement(void) {
     return g_modes.mode != CONTROL_MODE_CONTROLLER;
 }
+
+/*
+ * Public API 的模式编号是已经发布给第三方的稳定语义，不能简单 return (u32)g_modes.mode。
+ * 这里逐项 switch，是为了允许未来内部 ControlMode enum 自由增加/重排而不破坏 ABI。
+ */
+u32 ControlModes_PublicMode(void) {
+    switch (g_modes.mode) {
+    case CONTROL_MODE_CONTROLLER:
+        return 0u;
+    case CONTROL_MODE_BACK_MOUSE:
+        return 1u;
+    case CONTROL_MODE_RT_MOUSE:
+        return 2u;
+    case CONTROL_MODE_INVESTIGATION:
+        return 3u;
+    default:
+        return 0x7FFFFFFFu;
+    }
+}

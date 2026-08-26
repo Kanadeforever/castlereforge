@@ -19,4 +19,12 @@ CursorTakeoverEvent ControlModes_Update(void);
 void ControlModes_OnPhysicalMouseTakeover(void);
 int ControlModes_BlocksMapMovement(void);
 
+/*
+ * 给 Public API 发布器使用的稳定模式编号。
+ * 返回值固定为：0=普通手柄、1=Back常驻鼠标、2=RT临时鼠标、3=调查模式。
+ * 这里不把内部 ControlMode enum 的地址或结构体暴露出去；未来内部 enum 即使重排，
+ * 只要本函数继续做显式映射，外部 ABI 的数字含义就不会变化。
+ */
+u32 ControlModes_PublicMode(void);
+
 #endif /* CASTLE_PAD_CONTROL_MODES_H */

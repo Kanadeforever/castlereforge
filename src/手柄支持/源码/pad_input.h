@@ -1,4 +1,4 @@
-﻿#ifndef CASTLE_PAD_INPUT_H
+#ifndef CASTLE_PAD_INPUT_H
 #define CASTLE_PAD_INPUT_H
 
 #include "platform.h"
@@ -80,6 +80,11 @@ int PadInput_HasAnyActivity(int include_r3);
 int PadInput_GameForeground(HWND* out_hwnd);
 
 /* 供日志/调试使用。 */
+/*
+ * Public API 发布器只需要知道 SDL 输入后端是否真正初始化成功。
+ * 这个查询只读 g_pad.initialized，不触发枚举、重试或任何 SDL 调用。
+ */
+int PadInput_Ready(void);
 int PadInput_GamepadConnected(void);
 HMODULE PadInput_SdlModule(void);
 

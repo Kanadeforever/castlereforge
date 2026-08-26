@@ -33,10 +33,43 @@
  * 现代整屏列表只接管 0x404800 内部两处很窄的“画通用对话框 / 画正文”CALL。
  * 宽屏插件验证的是 0x404800 入口和 0x40B08C 外层 CALL；这两个既有检查点仍保持原样。
  */
-#define CALL_DIALOGUE_PANEL_DRAW        0x0040486Eu
-#define CALL_DIALOGUE_TEXT_DRAW         0x004049FFu
+/* 有姓名剧情中的人物 %d-2.SF2 绘制 CALL。Backlog 活动时只拦截这一个绘制点，不改 speaker_active。 */
+#define CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW 0x00404859u
+#define CALL_DIALOGUE_PANEL_DRAW            0x0040486Eu
+/* 有姓名对话的 F-Name.SF2 独立绘制 CALL。 */
+#define CALL_DIALOGUE_NAME_PANEL_DRAW       0x00404899u
+/* 原版姓名文字独立使用 0x402EE0；Backlog 活动时拦截，避免真实剧情姓名叠到历史列表上。 */
+#define CALL_DIALOGUE_NAME_TEXT_DRAW        0x004048E6u
+#define CALL_DIALOGUE_TEXT_DRAW             0x004049FFu
 #define FN_DIALOGUE_PANEL_DRAW          0x00407510u
 #define FN_DIALOGUE_TEXT_DRAW           0x00402EE0u
+/*
+ * 原版当前剧情使用的 F-Name.SF2 对象槽。
+ *
+ * 0x40488D：mov ecx, dword ptr [0x46F658]
+ * 0x404899：call 0x407510
+ *
+ * v0.3.2-test1 以后这个地址只保留为逆向证据，Backlog 运行代码禁止读取它。
+ * 原因是它会随 NPC 切换由 0x403C60 析构/重建，历史系统不能借用这种短生命周期对象。
+ */
+#define GLOBAL_DIALOGUE_NAME_PANEL_OBJECT 0x0046F658u
+
+/*
+ * Backlog 私有 F-Name.SF2 对象使用的原版资源生命周期函数。
+ *
+ * 0x403DA4..0x403DF9 已确认原版创建 F-Name 的顺序：
+ *   0x45165F(0x84) -> 0x407080(this) -> 0x4070D0(this, "F-Name.SF2",0,0,2,0,0)
+ *
+ * 0x403CFC..0x403D13 已确认销毁顺序：
+ *   0x4070A0(this) -> 0x451550(this)
+ *
+ * 这些地址只创建姓名框，不调用 FN_DIALOGUE_SET_SPEAKER，因此不会创建人物 %d-2.SF2。
+ */
+#define FN_GAME_FREE                    0x00451550u
+#define FN_GAME_ALLOC                   0x0045165Fu
+#define FN_SF2_OBJECT_CTOR              0x00407080u
+#define FN_SF2_OBJECT_DTOR              0x004070A0u
+#define FN_SF2_OBJECT_LOAD              0x004070D0u
 
 /* 原版消息绘制用的 512 字节工作缓冲区指针和当前消息资源来源。 */
 #define GLOBAL_DIALOGUE_SOURCE_BASE     0x0046F660u

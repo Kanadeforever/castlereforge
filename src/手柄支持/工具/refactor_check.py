@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 《幽城幻剑录》手柄操控模组 v0.3-refactor42 综合静态检查工具。
@@ -3265,6 +3265,7 @@ def check_documents(
         "手柄控制说明.md",
         "主菜单手柄交互设计.md",
         "调查模式设计说明.md",
+        "公共插件接口说明.md",
     ]
 
     missing = [name for name in required_docs if not (doc_dir / name).is_file()]
@@ -3273,17 +3274,17 @@ def check_documents(
     else:
         result.ok("独立接档文档集合", f"文档目录内 {len(required_docs)} 份现行说明均存在")
 
-    # 通常所有说明 Markdown 都应集中在“文档/”。唯一例外是源码目录的 readme.md：
+    # 说明 Markdown 通常集中在“文档/”；源码目录保留一份中文“构建说明.md”作为构建入口：
     # 用户明确说明它是发布到 GitHub 时使用的仓库入口，因此必须保留 README/readme 这个
     # GitHub 约定文件名，不能为了“文档中文名”规则把它改成中文。这里把这个例外写死，
     # 这样既不会误报合法 GitHub README，也不会让其它英文说明文件借机散落到源码目录。
-    github_readme = root / "源码" / "readme.md"
+    github_readme = root / "源码" / "构建说明.md"
     if artifact_only:
         github_readme = Path("__artifact_package_has_no_github_readme__")
     elif not github_readme.is_file():
-        result.fail("GitHub README 例外", "缺少 源码/readme.md；该文件允许保留英文名，但不能删除或改成其它散落 Markdown")
+        result.fail("中文构建说明", "缺少 源码/构建说明.md；所有非代码文档文件名必须使用简体中文")
     else:
-        result.ok("GitHub README 例外", "源码/readme.md 是面向GitHub的构建说明；文档目录不重复放构建说明")
+        result.ok("中文构建说明", "源码/构建说明.md 使用简体中文文件名；非代码文档命名规则一致")
 
     compiled_dir = compiled_content_dir(root)
     compiled_doc_dir = compiled_dir / "文档"
@@ -3307,9 +3308,9 @@ def check_documents(
         if not in_primary_docs and not in_compiled_docs and path.resolve() != compiled_tool_doc.resolve():
             misplaced_markdown.append(str(path.relative_to(root)))
     if misplaced_markdown:
-        result.fail("文档集中到文档目录", "除 GitHub README 外发现散落 Markdown：" + ", ".join(sorted(misplaced_markdown)))
+        result.fail("文档集中到文档目录", "发现散落 Markdown：" + ", ".join(sorted(misplaced_markdown)))
     else:
-        result.ok("文档集中到中文目录", "源码readme仅作GitHub构建说明；其余Markdown只在源码包/编译包的文档或工具中文说明位置")
+        result.ok("文档集中到中文目录", "源码构建说明使用中文文件名；其余 Markdown 只在源码包/编译包的文档或工具中文说明位置")
 
     # 构建完成后，源码包文档、编译内容文档和工具副本必须逐字节一致。
     if not artifact_only and compiled_doc_dir.is_dir():
@@ -3321,18 +3322,28 @@ def check_documents(
                 drift.append(name)
         source_tool = root / "工具" / "refactor_check.py"
         compiled_tool = compiled_dir / "工具" / "refactor_check.py"
-        tool_ok = compiled_tool.is_file() and source_tool.is_file() and sha256(source_tool) == sha256(compiled_tool)
+        source_api_tool = root / "工具" / "public_api_check.py"
+        compiled_api_tool = compiled_dir / "工具" / "public_api_check.py"
+        tool_ok = (
+            compiled_tool.is_file()
+            and source_tool.is_file()
+            and sha256(source_tool) == sha256(compiled_tool)
+            and compiled_api_tool.is_file()
+            and source_api_tool.is_file()
+            and sha256(source_api_tool) == sha256(compiled_api_tool)
+        )
         if drift or not tool_ok:
-            result.fail("源码包/编译包独立接档同步", f"文档漂移={drift}，检查器一致={tool_ok}")
+            result.fail("源码包/编译包独立接档同步", f"文档漂移={drift}，两份检查器一致={tool_ok}")
         else:
-            result.ok("源码包/编译包独立接档同步", f"{len(required_docs)}/{len(required_docs)}文档与最新检查器逐字节一致")
+            result.ok("源码包/编译包独立接档同步", f"{len(required_docs)}/{len(required_docs)}文档与两份最新检查器逐字节一致")
     elif artifact_only:
         tool = root / "工具" / "refactor_check.py"
+        api_tool = root / "工具" / "public_api_check.py"
         tool_doc = root / "工具" / "工具详细说明.md"
-        if tool.is_file() and tool_doc.is_file():
-            result.ok("编译内容包工具随附", "最新检查器和简体中文工具详细说明均存在")
+        if tool.is_file() and api_tool.is_file() and tool_doc.is_file():
+            result.ok("编译内容包工具随附", "refactor检查器、Public API检查器和简体中文工具说明均存在")
         else:
-            result.fail("编译内容包工具随附", "缺少 工具/refactor_check.py 或 工具/工具详细说明.md")
+            result.fail("编译内容包工具随附", "缺少 refactor_check.py / public_api_check.py / 工具详细说明.md")
 
     # 最终“编译内容”只保留用户真正需要部署/配置的 ASI 与 INI。
     # 链接器临时生成的 .lib/.exp、旧版说明 TXT 等都不应该混进最终交付。

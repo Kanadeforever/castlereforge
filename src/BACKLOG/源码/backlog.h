@@ -13,7 +13,7 @@
 /* 把场景 vtable[0] 换成链式包装器；失败时不进入输入循环。 */
 int Backlog_Install(void);
 
-/* worker 调用：读取键盘/可选 SDL，把动作记成线程安全的计数请求。 */
+/* worker 调用：读取键盘、鼠标事件和可选 PadSupport 桥，把动作记成线程安全的计数请求。 */
 void Backlog_PollInput(void);
 
 /* 停止接收新动作并尽力恢复 vtable；正常游戏退出时由操作系统最终回收内存。 */

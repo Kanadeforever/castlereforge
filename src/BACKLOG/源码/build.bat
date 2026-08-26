@@ -2,11 +2,12 @@
 setlocal DisableDelayedExpansion
 "%SystemRoot%\System32\chcp.com" 65001 >nul
 
-rem ---------------------------------------------------------------------------
-rem Castle Backlog x86 构建脚本。
-rem 只在本源码目录生成临时 _build，并把最终包写到 ..\编译内容。
-rem ---------------------------------------------------------------------------
+rem This script builds the 32-bit ASI from a clean object directory.
+rem It intentionally uses only ASCII source text because cmd.exe on some Chinese Windows
+rem versions can mis-parse UTF-8 multibyte characters before CHCP takes full effect.
+rem All human documentation is kept in the sibling docs directory instead.
 
+rem Locate a Visual Studio developer environment. The project is x86 even on x64 Windows.
 set "VSDEV="
 if exist "C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat" set "VSDEV=C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat"
 if not defined VSDEV if exist "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" set "VSDEV=C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat"
@@ -14,12 +15,14 @@ if not defined VSDEV if exist "C:\Program Files\Microsoft Visual Studio\2022\Pro
 if not defined VSDEV if exist "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" set "VSDEV=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
 
 if not defined VSDEV (
-  echo [错误] 没有找到 Visual Studio x86 开发环境。
+  echo [ERROR] Visual Studio developer environment was not found.
+  pause
   exit /b 1
 )
 
-rem Codex/精简终端的 PATH 可能没有 System32；VsDevCmd 自己会调用 findstr 等系统工具。
-set "PATH=%SystemRoot%\System32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0;C:\Users\luminous\scoop\apps\llvm\current\bin"
+rem Keep the system tools in PATH before entering VsDevCmd. Some stripped terminals do not
+rem inherit System32, while VsDevCmd itself needs tools such as findstr.exe.
+set "PATH=%SystemRoot%\System32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0;%PATH%"
 set "INCLUDE="
 set "LIB="
 set "LIBPATH="
@@ -33,64 +36,70 @@ set "VisualStudioVersion="
 
 call "%VSDEV%" -no_logo -arch=x86 -host_arch=x64 >nul
 if errorlevel 1 (
-  echo [错误] Visual Studio x86 环境初始化失败。
+  echo [ERROR] Visual Studio x86 environment initialization failed.
+  pause
   exit /b 1
 )
 
 where clang-cl >nul 2>nul || goto :tool_fail
 where link >nul 2>nul || goto :tool_fail
 
-if not exist "..\编译内容" mkdir "..\编译内容"
-if not exist "..\编译内容\文档" mkdir "..\编译内容\文档"
-if not exist "..\编译内容\工具" mkdir "..\编译内容\工具"
-if not exist "..\文档" mkdir "..\文档"
-
-rem _build 只属于当前源码目录；先删旧临时对象，防止上一轮残留混进新 ASI。
+rem release is recreated logically from the current source. _build contains temporary .obj
+rem files only and is always removed on both success and failure.
+if not exist "..\release" mkdir "..\release"
+if not exist "..\release\docs" mkdir "..\release\docs"
+if not exist "..\release\tools" mkdir "..\release\tools"
 if exist "_build" rmdir /s /q "_build"
 mkdir "_build"
 
-rem /nodefaultlib 明确禁止 CRT；kernel32/user32 只提供稳定 Win32 API import。
+rem /nodefaultlib keeps the ASI independent of the CRT. kernel32/user32 are the only Win32
+rem import libraries needed by runtime, mouse window subclassing, and the optional PadSupport bridge.
 set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-cast-function-type-mismatch"
 
 call :compile runtime.c runtime.obj || goto :fail
-call :compile sdl_input.c sdl_input.obj || goto :fail
+call :compile mouse_input.c mouse_input.obj || goto :fail
+call :compile pad_bridge.c pad_bridge.obj || goto :fail
 call :compile backlog.c backlog.obj || goto :fail
 call :compile plugin.c plugin.obj || goto :fail
+call :compile name_panel_pool.c name_panel_pool.obj || goto :fail
 
-echo [链接] Castle_Backlog.asi
+echo [LINK] Castle_Backlog.asi
 link /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 ^
-  "_build\runtime.obj" "_build\sdl_input.obj" "_build\backlog.obj" "_build\plugin.obj" ^
-  kernel32.lib user32.lib /out:"..\编译内容\Castle_Backlog.asi"
+  "_build\runtime.obj" "_build\mouse_input.obj" "_build\pad_bridge.obj" ^
+  "_build\backlog.obj" "_build\plugin.obj" "_build\name_panel_pool.obj" ^
+  kernel32.lib user32.lib /out:"..\release\Castle_Backlog.asi"
 if errorlevel 1 goto :fail
 
-rem ASI、默认 INI、全部中文文档和最新检查器共同组成一个可独立接档的编译内容包。
-copy /y "Castle_Backlog.ini" "..\编译内容\Castle_Backlog.ini" >nul || goto :fail
-rem 先清理两个明确文档镜像里的旧 Markdown，避免版本改名后旧接档与新接档同时残留。
-del /q "..\文档\*.md" 2>nul
-del /q "..\编译内容\文档\*.md" 2>nul
-copy /y "..\..\..\docs\backlog\*.md" "..\文档\" >nul || goto :fail
-copy /y "..\..\..\docs\backlog\*.md" "..\编译内容\文档\" >nul || goto :fail
-copy /y "..\工具\backlog_check.py" "..\编译内容\工具\backlog_check.py" >nul || goto :fail
-copy /y "..\..\..\docs\backlog\工具详细说明.md" "..\编译内容\工具\工具详细说明.md" >nul || goto :fail
+rem The runtime INI must sit beside the ASI. All Markdown documents use Chinese filenames and
+rem are copied into the compiled release so that the binary package can be resumed independently.
+copy /y "Castle_Backlog.ini" "..\release\Castle_Backlog.ini" >nul || goto :fail
 
-del /q "..\编译内容\Castle_Backlog.lib" 2>nul
-del /q "..\编译内容\Castle_Backlog.exp" 2>nul
+copy /y "..\文档\*.md" "..\release\docs\" >nul || goto :fail
+copy /y "..\工具\backlog_check.py" "..\release\tools\backlog_check.py" >nul || goto :fail
+
+rem The linker may emit import-library side products next to the ASI; they are not runtime files.
+del /q "..\release\Castle_Backlog.lib" 2>nul
+del /q "..\release\Castle_Backlog.exp" 2>nul
 rmdir /s /q "_build"
 
-echo [完成] ASI + INI + 全部中文文档 + 检查器已同步。
+echo [DONE] ASI, INI, Chinese documents, and the latest checker were written to ..\release
+pause
 exit /b 0
 
 :compile
-echo [编译] %1
+rem Compile one C file. %1 is the source filename and %2 is the temporary object filename.
+echo [COMPILE] %1
 clang-cl %CFLAGS% "%1" /Fo:"_build\%2"
 if errorlevel 1 exit /b 1
 exit /b 0
 
 :tool_fail
-echo [错误] 缺少 clang-cl 或 link。
+echo [ERROR] clang-cl.exe or link.exe was not found after VsDevCmd.
+pause
 exit /b 1
 
 :fail
-echo [失败] 构建或打包中止；不会把半套产物报告为成功。
+echo [ERROR] Build stopped. No partial result is reported as a successful release.
 if exist "_build" rmdir /s /q "_build"
+pause
 exit /b 1

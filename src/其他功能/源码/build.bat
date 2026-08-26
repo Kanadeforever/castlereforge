@@ -7,24 +7,31 @@ set "SRC_DIR=%SCRIPT_DIR%src"
 set "OUT_DIR=%SCRIPT_DIR%..\插件"
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%" 2>nul
 
-where cl.exe >nul 2>nul
-if not errorlevel 1 goto :have_cl
-
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%VSWHERE%" (
-    echo [错误] 找不到 cl.exe，也找不到 vswhere.exe。
-    echo 请安装 Visual Studio 的“使用 C++ 的桌面开发”组件。
+    echo [错误] 找不到 vswhere.exe。
+    echo 请安装 Visual Studio 的“使用 C++ 的桌面开发”组件，或从“x86 Native Tools Command Prompt”运行。
     goto :fail
 )
 for /f "usebackq tokens=*" %%I in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSROOT=%%I"
 if not defined VSROOT (
     echo [错误] 没有找到可用的 MSVC x86/x64 工具链。
+    echo 请安装 Visual Studio 的“使用 C++ 的桌面开发”组件。
     goto :fail
 )
 call "%VSROOT%\Common7\Tools\VsDevCmd.bat" -arch=x86 -host_arch=x64 >nul
-if errorlevel 1 goto :fail
+if errorlevel 1 (
+    echo [错误] VsDevCmd.bat 初始化失败，无法切换到 x86 编译环境。
+    goto :fail
+)
 
 :have_cl
+where cl.exe >nul 2>nul
+if errorlevel 1 (
+    echo [错误] 找不到 cl.exe，请确认已安装 Visual Studio C++ 桌面开发组件。
+    goto :fail
+)
+
 set CFLAGS=/nologo /std:c++17 /utf-8 /O2 /Oi- /W4 /WX /GR- /GS- /Gs999999999 /Zl /LD
 set LFLAGS=/link /NOLOGO /NODEFAULTLIB /ENTRY:DllMain /SUBSYSTEM:WINDOWS /MACHINE:X86 kernel32.lib
 
@@ -54,6 +61,7 @@ if errorlevel 1 goto :fail
 
 echo.
 echo [成功] 四个 ASI 已输出到“插件”目录，并且全部通过 x86 / DLL / 非零入口点检查。
+pause
 exit /b 0
 
 :check_pe
@@ -64,4 +72,5 @@ exit /b %errorlevel%
 :fail
 echo.
 echo [失败] 构建中止，请从上方第一条错误开始检查。
+pause
 exit /b 1

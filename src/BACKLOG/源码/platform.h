@@ -37,7 +37,7 @@ typedef signed int     i32;
 #define BACKLOG_CDECL    __cdecl
 #define BACKLOG_THISCALL __thiscall
 
-/* Backlog 工作线程每 8 毫秒采样一次键盘和可选 SDL 手柄。 */
+/* Backlog 工作线程每 8 毫秒采样一次键盘，并读取鼠标/PadSupport 已经准备好的输入状态。 */
 #define BACKLOG_WORKER_SLEEP_MS 8u
 
 #endif /* CASTLE_BACKLOG_PLATFORM_H */

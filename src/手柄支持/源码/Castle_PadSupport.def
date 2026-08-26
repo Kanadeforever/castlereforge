@@ -1,0 +1,6 @@
+; Castle PadSupport Public API v1 export table.
+; Keep the public name undecorated. On x86 MSVC/lld-link a bare export entry
+; correctly resolves the internal C symbol _CastlePad_GetApi.
+LIBRARY Castle_PadSupport
+EXPORTS
+    CastlePad_GetApi

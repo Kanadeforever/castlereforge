@@ -170,7 +170,10 @@ def check_game(path: Path) -> list[CheckResult]:
         (0x00403E30, bytes.fromhex("A0 78 F6 46 00 84 C0 75 09 A0 79 F6 46 00"), "消息更新入口"),
         (0x00404800, bytes.fromhex("83 EC 08 A0 79 F6 46 00 56 84 C0"), "消息绘制入口"),
         (0x0040B150, bytes.fromhex("56 8B F1 E8 78 01 00 00 E8 43 84 FF FF"), "场景更新入口"),
+        (0x00404859, bytes.fromhex("E8 B2 2C 00 00"), "当前剧情人物图绘制 CALL"),
         (0x0040486E, bytes.fromhex("E8 9D 2C 00 00"), "F-Talk 绘制 CALL"),
+        (0x00404899, bytes.fromhex("E8 72 2C 00 00"), "当前剧情 F-Name 绘制 CALL"),
+        (0x004048E6, bytes.fromhex("E8 F5 E5 FF FF"), "当前剧情姓名文字绘制 CALL"),
         (0x004049FF, bytes.fromhex("E8 DC E4 FF FF"), "正文绘制 CALL"),
     ]
     for address, expected, label in signatures:
@@ -191,7 +194,7 @@ def check_game(path: Path) -> list[CheckResult]:
 
 
 def check_asi(path: Path) -> list[CheckResult]:
-    """验证 ASI 位数、入口、动态 SDL 边界和无 CRT 导入。"""
+    """验证 ASI 位数、入口、无 SDL/CRT 硬依赖，以及 Public API 协作标记。"""
 
     pe = PEImage(path)
     imports = pe.imported_dlls()
@@ -202,14 +205,14 @@ def check_asi(path: Path) -> list[CheckResult]:
     }
     # O2 可能把固定 INI 文件名拆成若干立即数写入，不保证磁盘里仍有连续 ASCII；
     # INI 的存在与内容由源码包检查负责。ASI 本体这里只要求版本标识和动态 SDL 名仍可诊断。
-    required_strings = [b"Castle Backlog v0.2.0", b"SDL3.dll"]
+    required_strings = [b"Castle Backlog v0.3.3-test4", b"CastlePad_GetApi"]
 
     return [
         check(pe.machine == 0x14C, "ASI 为 x86", f"machine=0x{pe.machine:04X}"),
         check(pe.entry_rva != 0, "ASI 存在 DllMain 入口", f"entry_rva=0x{pe.entry_rva:X}"),
         check(not forbidden, "ASI 不强制导入 SDL/CRT", ", ".join(imports) or "无导入"),
         check(set(imports).issubset({"kernel32.dll", "user32.dll"}), "ASI 仅导入稳定 Win32 DLL", ", ".join(imports)),
-        check(all(value in pe.data for value in required_strings), "ASI 携带版本/动态 SDL 诊断字符串", "2/2"),
+        check(all(value in pe.data for value in required_strings), "ASI 携带版本/Public API 诊断字符串", "2/2"),
     ]
 
 
@@ -220,112 +223,138 @@ def has_cjk(text: str) -> bool:
 
 
 def check_source(source_root: Path) -> list[CheckResult]:
-    """检查代码英文文件名、中文详细注释、INI 关键项和构建文件是否齐全。"""
+    """检查当前 v0.3.3-test4 源码、Public API 协作、INI 和构建文件。"""
 
     required = {
         "platform.h",
         "game_addresses.h",
         "runtime.h",
         "runtime.c",
-        "sdl_input.h",
-        "sdl_input.c",
+        "mouse_input.h",
+        "mouse_input.c",
+        "pad_bridge.h",
+        "pad_bridge.c",
+        "Castle_PadSupport_API.h",
+        "name_panel_pool.h",
+        "name_panel_pool.c",
         "backlog.h",
         "backlog.c",
         "plugin.c",
         "Castle_Backlog.ini",
         "build.bat",
-        "readme.md",
     }
     existing = {path.name for path in source_root.iterdir() if path.is_file()}
     code_files = sorted(source_root.glob("*.c")) + sorted(source_root.glob("*.h"))
     english_names = all(path.name.isascii() for path in code_files)
     comment_ok = all(
-        has_cjk(path.read_text(encoding="utf-8")) and "/*" in path.read_text(encoding="utf-8")
+        has_cjk(path.read_text(encoding="utf-8-sig")) and "/*" in path.read_text(encoding="utf-8-sig")
         for path in code_files
     )
 
     ini_path = source_root / "Castle_Backlog.ini"
-    ini_text = ini_path.read_text(encoding="utf-8") if ini_path.exists() else ""
-    backlog_text = (source_root / "backlog.c").read_text(encoding="utf-8") if (source_root / "backlog.c").exists() else ""
+    ini_text = ini_path.read_text(encoding="utf-8-sig") if ini_path.exists() else ""
+    backlog_text = (source_root / "backlog.c").read_text(encoding="utf-8-sig") if (source_root / "backlog.c").exists() else ""
+    bridge_text = (source_root / "pad_bridge.c").read_text(encoding="utf-8-sig") if (source_root / "pad_bridge.c").exists() else ""
+    build_text = (source_root / "build.bat").read_text(encoding="utf-8-sig") if (source_root / "build.bat").exists() else ""
+
     ini_needles = [
         "[Backlog]",
         "[Keyboard]",
-        "[Gamepad]",
-        "Open=0x42",
-        "Open=left_shoulder",
-        "Exit=east",
+        "Open=B",
+        "Exit=B",
+        "PanelStrideY=118",
         "PageSize=4",
     ]
     modern_needles = [
+        # test4 的关键调度不变量：真实剧情旁路冻结，但 synthetic 不能被同一 return 截断。
+        "if (g_active && g_opened_over_live_dialogue) return;",
+        "Backlog_HookCurrentSpeakerPortraitDraw",
+        "Backlog_HookCurrentNamePanelDraw",
+        "Backlog_HookCurrentNameTextDraw",
         "Backlog_HookPanelDraw",
         "Backlog_HookTextDraw",
-        "BACKLOG_VISIBLE_ENTRIES 4u",
-        "GLOBAL_DIALOGUE_SPEAKER_ACTIVE = 0u",
-        "CALL_DIALOGUE_PANEL_DRAW",
-        "CALL_DIALOGUE_TEXT_DRAW",
+        "g_opened_over_live_dialogue",
+        "CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW",
+        "CALL_DIALOGUE_NAME_TEXT_DRAW",
+        "NamePanelPool_Create",
     ]
-    no_speaker_reload = "PFN_DialogueSetSpeaker" not in backlog_text and "set_speaker(" not in backlog_text
+    api_needles = [
+        'GetProcAddress(g_pad_module, "CastlePad_GetApi")',
+        "CASTLE_PAD_API_VERSION_1",
+        "AllowsExternalUiInput",
+    ]
+    # 历史注释允许提到 PadInputState/ControlModeState；真正禁止的是仍存在运行时代码扫描。
+    no_internal_pad_scan = all(
+        token not in bridge_text
+        for token in ["VirtualQuery(", "scan_executable", "IMAGE_SECTION_HEADER", "module_base +"]
+    )
+    no_sdl_source = not (source_root / "sdl_input.c").exists() and not (source_root / "sdl_input.h").exists()
+    no_broad_active_freeze = (
+        "if (g_active) return;\n\n    if (g_previous_scene_update)" not in backlog_text and
+        "if (g_active) return;\r\n\r\n    if (g_previous_scene_update)" not in backlog_text
+    )
+    release_docs = '..\\release\\docs' in build_text and 'backlog_check.py' in build_text
 
     return [
         check(required.issubset(existing), "源码包必需文件", f"{len(required & existing)}/{len(required)}"),
         check(english_names, "代码文件名为英文/ASCII", ", ".join(path.name for path in code_files)),
         check(comment_ok, "每个 C/H 文件含中文块注释", f"{len(code_files)} 个文件"),
-        check(all(needle in ini_text for needle in ini_needles), "INI 公开键位与默认值", f"{len(ini_needles)} 项"),
-        check(all(needle in backlog_text for needle in modern_needles), "现代四框绘制不变量", f"{len(modern_needles)} 项"),
-        check(no_speaker_reload, "浏览期不重载人物资源", "无 0x403C60 函数指针/调用"),
+        check(all(needle in ini_text for needle in ini_needles), "INI Virtual-Key/间距默认值", f"{len(ini_needles)} 项"),
+        check(all(needle in backlog_text for needle in modern_needles), "剧情旁路/四框绘制不变量", f"{len(modern_needles)} 项"),
+        check(all(needle in bridge_text for needle in api_needles), "PadSupport Public API v1 协作", f"{len(api_needles)} 项"),
+        check(no_internal_pad_scan, "不再扫描 PadSupport 内部布局", "无内部状态/VirtualQuery 扫描"),
+        check(no_sdl_source, "Backlog 不自带 SDL 输入后端", "sdl_input.c/h 不存在"),
+        check(no_broad_active_freeze, "synthetic 不被全局 g_active 冻结", "只冻结 live dialogue 旁路"),
+        check(release_docs, "构建包携带中文文档和最新检查器", "release/docs + backlog_check.py"),
     ]
 
-
 def check_document_packages(repository: Path) -> list[CheckResult]:
-    """遍历全部权威文档，并确认源码包、编译内容包都是逐文件完整镜像。"""
+    """遍历全部 BACKLOG 文档；源码镜像必须一致，release 若存在也必须一致。"""
 
-    canonical_root = repository / "docs" / "backlog"
+    canonical_root = repository / "docs" / "BACKLOG"
     source_mirror = repository / "src" / "backlog" / "文档"
-    compiled_root = repository / "src" / "backlog" / "编译内容"
-    compiled_mirror = compiled_root / "文档"
+    release_root = repository / "src" / "backlog" / "release"
+    release_mirror = release_root / "docs"
 
     canonical = sorted(canonical_root.glob("*.md"), key=lambda path: path.name)
     canonical_names = {path.name for path in canonical}
     source_names = {path.name for path in source_mirror.glob("*.md")}
-    compiled_names = {path.name for path in compiled_mirror.glob("*.md")}
 
-    # 文档文件“主名”不能含英文字母；扩展名 .md 不参与这个规则。
-    chinese_names = all(not any(character.isascii() and character.isalpha() for character in path.stem) for path in canonical)
-    content_matches = True
-    for document in canonical:
-        source_copy = source_mirror / document.name
-        compiled_copy = compiled_mirror / document.name
-        if not source_copy.exists() or not compiled_copy.exists():
-            content_matches = False
-            break
-        digest = hashlib.sha256(document.read_bytes()).digest()
-        if hashlib.sha256(source_copy.read_bytes()).digest() != digest:
-            content_matches = False
-            break
-        if hashlib.sha256(compiled_copy.read_bytes()).digest() != digest:
-            content_matches = False
-            break
-
-    # “每个包能独立接档”至少要求完整接档、ASI、INI、检查器和中文工具说明同时存在。
-    package_complete = all(
-        [
-            (source_mirror / "截至零点二版的完整接档.md").exists(),
-            (compiled_mirror / "截至零点二版的完整接档.md").exists(),
-            (compiled_root / "Castle_Backlog.asi").exists(),
-            (compiled_root / "Castle_Backlog.ini").exists(),
-            (compiled_root / "工具" / "backlog_check.py").exists(),
-            (compiled_root / "工具" / "工具详细说明.md").exists(),
-        ]
+    chinese_names = all(
+        not any(character.isascii() and character.isalpha() for character in path.stem)
+        for path in canonical
     )
 
-    return [
-        check(len(canonical) == 9, "权威中文 Markdown 数量", f"{len(canonical)}/9"),
-        check(chinese_names, "文档主文件名不含英文字母", ", ".join(path.name for path in canonical)),
-        check(canonical_names == source_names == compiled_names, "三处文档文件集合一致", f"{len(canonical_names)} 份"),
-        check(content_matches, "三处文档逐文件 SHA 一致", f"{len(canonical)} 份"),
-        check(package_complete, "源码包与编译包可独立接档", "完整接档/ASI/INI/工具/中文说明"),
-    ]
+    source_matches = canonical_names == source_names
+    if source_matches:
+        for document in canonical:
+            source_copy = source_mirror / document.name
+            if hashlib.sha256(source_copy.read_bytes()).digest() != hashlib.sha256(document.read_bytes()).digest():
+                source_matches = False
+                break
 
+    release_exists = release_mirror.exists()
+    release_matches = True
+    if release_exists:
+        release_names = {path.name for path in release_mirror.glob("*.md")}
+        release_matches = release_names == canonical_names
+        if release_matches:
+            for document in canonical:
+                release_copy = release_mirror / document.name
+                if hashlib.sha256(release_copy.read_bytes()).digest() != hashlib.sha256(document.read_bytes()).digest():
+                    release_matches = False
+                    break
+
+    handoff_ok = (canonical_root / "完整接档说明.md").exists()
+    tool_doc_ok = (canonical_root / "工具详细说明.md").exists()
+
+    return [
+        check(len(canonical) >= 10, "权威中文 Markdown 数量", f"{len(canonical)} 份"),
+        check(chinese_names, "文档主文件名不含英文字母", ", ".join(path.name for path in canonical)),
+        check(source_matches, "docs/BACKLOG 与源码包文档镜像一致", f"{len(canonical_names)} 份"),
+        check(not release_exists or release_matches, "release 文档镜像（若已构建）一致", "未构建或逐文件一致"),
+        check(handoff_ok and tool_doc_ok, "独立接档核心文档存在", "完整接档说明 + 工具详细说明"),
+    ]
 
 def result_dict(result: CheckResult) -> dict[str, object]:
     """把 dataclass 转成稳定中文 JSON 字段。"""
@@ -368,7 +397,7 @@ def main() -> int:
     passed = print_results(results)
     if args.json:
         payload = {
-            "工具版本": "1.0.0",
+            "工具版本": "1.1.0",
             "总体通过": passed,
             "结果": [result_dict(result) for result in results],
         }

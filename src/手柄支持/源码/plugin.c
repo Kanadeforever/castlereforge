@@ -1,7 +1,8 @@
-﻿#include "platform.h"
+#include "platform.h"
 #include "runtime.h"
 #include "pad_input.h"
 #include "input_router.h"
+#include "pad_public_api.h"
 #include "cursor.h"
 #include "ui_bridge.h"
 #include "battle.h"
@@ -163,7 +164,7 @@ static int plugin_install_all_hooks(void) {
      * 用来拒绝“源码已经是R41，但编译内容仍误放R40旧二进制”的打包错误。
      * 两种模式的数字含义也写进成品，现场只拿到日志时仍能判断用户到底应按 A 还是 LT。
      */
-    Runtime_Log("[启动] refactor42：AutoFocusNearest=1默认自动最近目标、=0关闭；SwapConfirmCancel=0为Xbox确定布局、=1为PS O确定/X取消；确定=鼠标左键、取消=右键；RB+ABXY物理快捷不变。");
+    Runtime_Log("[启动] refactor42 + Public API v1：AutoFocusNearest=1默认自动最近目标、=0关闭；SwapConfirmCancel=0为Xbox确定布局、=1为PS O确定/X取消；确定=鼠标左键、取消=右键；RB+ABXY物理快捷不变。");
     return 1;
 }
 
@@ -210,6 +211,14 @@ static DWORD WINAPI PluginWorker(void* unused) {
     }
     ControlModes_Initialize();
 
+    /*
+     * Public API 的导出入口从 ASI 被加载时就存在，但内部输入线程可能还没完成初始化。
+     * 这里先发布一份“未就绪”的全零快照。这样其它 ASI 即使更早找到 CastlePad_GetApi，
+     * 也只会得到 IsReady()==0，而不会读取尚未初始化的 PadInput / ControlModes 内部状态。
+     */
+    CastlePad_PublicApiReset();
+    Runtime_Log("[公共API] CastlePad_GetApi v1 已启用；第三方 ASI 只读取版本化只读快照。");
+
     g_worker_running = 1;
     Runtime_Log("[启动] 手柄工作线程已开始运行。");
 
@@ -230,6 +239,14 @@ static DWORD WINAPI PluginWorker(void* unused) {
         } else if (takeover == CURSOR_TAKEOVER_NONE) {
             takeover = cursor_takeover;
         }
+
+        /*
+         * 到这里为止，本 tick 的 SDL 物理采样、InputRouter 映射和 ControlModes 裁决都已完成。
+         * 现在把这些结果复制到 Public API 的只读快照里。第三方读取的是快照，而不是 g_pad、
+         * g_modes 或 SDL_Gamepad*，所以 PadSupport 内部结构以后继续变化也不会破坏外部 ABI。
+         */
+        CastlePad_PublicApiPublishFrame();
+
         Investigation_UpdateRumble();
         if (takeover != CURSOR_TAKEOVER_NONE) {
             Battle_OnPointerTakeover(takeover);
@@ -323,6 +340,11 @@ static DWORD WINAPI PluginWorker(void* unused) {
         }
     }
 
+    /*
+     * 退出时先把公开快照清成“未就绪”，然后才释放 SDL 和光标资源。
+     * 这样外部插件不会在 PadSupport 正在退出时继续把上一帧状态当成有效输入。
+     */
+    CastlePad_PublicApiReset();
     PadInput_Shutdown();
     Cursor_Shutdown();
     Runtime_Log("[退出] 手柄工作线程已停止。");
