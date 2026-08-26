@@ -399,7 +399,7 @@ static void runtime_load_config(void) {
      * 三条且 stride=160 时，最上姓名 Y=380-35-2*160=25，仍在屏幕内。
      */
     g_config.panel_stride_y = runtime_clamp_u32(
-        runtime_read_ini_u32("Backlog", "PanelStrideY", 150u), 80u, 160u);
+        runtime_read_ini_u32("Backlog", "PanelStrideY", 160u), 80u, 160u);
 
     delay_ms = runtime_clamp_u32(
         runtime_read_ini_u32("Backlog", "RepeatDelayMs", 350u), 100u, 2000u);

@@ -5,42 +5,29 @@ rem Widescreen 需要 LLVM（clang-cl/lld-link）在 PATH
 rem 注：AnytimeSaveProbe为诊断工具，默认不参与一键编译 
 rem ============================================================ 
 
+@echo off
+
 chcp 65001 >nul
 setlocal EnableExtensions
+
 @echo off
 
 set "ROOT=%~dp0"
 
 echo [1/5] Backlog
-call "%ROOT%src\Backlog\build.bat" || goto :fail
+call "%ROOT%src\Backlog\build.bat" < nul || goto :fail
 
 echo [2/5] Controller（手柄支持）
-call "%ROOT%src\Controller\build.bat" || goto :fail
+call "%ROOT%src\Controller\build.bat" < nul || goto :fail
 
 echo [3/5] Widescreen（宽屏）
-call "%ROOT%src\Widescreen\build.bat" || goto :fail
+call "%ROOT%src\Widescreen\build.bat" < nul || goto :fail
 
 echo [4/5] Extra（其他功能）
-call "%ROOT%src\Extra\build.bat" || goto :fail
+call "%ROOT%src\Extra\build.bat" < nul || goto :fail
 
 echo [5/5] MODLoader（模组加载器）
-call "%ROOT%src\MODLoader\build.bat" || goto :fail
-
-echo.
-echo [UPX] 压缩全部 ASI/DLL/EXE（--best --lzma）...
-set "UPXEXE="
-for /f "delims=" %%I in ('where upx 2^>nul') do if not defined UPXEXE set "UPXEXE=%%I"
-if not defined UPXEXE (
-    echo [错误] 未找到 upx.exe，请安装 UPX 并加入 PATH。
-    goto :fail
-)
-for %%F in ("%ROOT%build\*.asi" "%ROOT%build\*.exe" "%ROOT%build\mods\*.dll") do (
-    "%UPXEXE%" --best --lzma "%%F" >nul 2>nul
-    if errorlevel 1 (
-        echo [UPX] 跳过（不可压缩）: %%~nxF
-    )
-)
-echo [UPX] 压缩完成
+call "%ROOT%src\MODLoader\build.bat" < nul || goto :fail
 
 echo.
 echo [移动] 移动 ASI 与同名 INI 到 mods\asi...

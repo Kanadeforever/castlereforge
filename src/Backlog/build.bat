@@ -64,6 +64,7 @@ del /q "%OUT%\Castle_Backlog.exp" 2>nul
 rmdir /s /q "%ROOT%_build"
 
 echo [完成] ASI、INI 已写入 build 目录
+pause
 exit /b 0
 
 :compile
