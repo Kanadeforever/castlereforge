@@ -1,4 +1,5 @@
 # 项目自定义屏蔽区域
+.cc-history
 参考资料/
 pyghidra_mcp_projects/
 AGENTS.md
