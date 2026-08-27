@@ -1,198 +1,196 @@
-#pragma once
+#ifndef CASTLE_SAVE_ENHANCE_PATCH_UTIL_H
+#define CASTLE_SAVE_ENHANCE_PATCH_UTIL_H
 
 #include "Win32Mini.h"
 
 // ============================================================================
-// PatchUtil.h  v0.3.2
+// PatchUtil.h
 // ----------------------------------------------------------------------------
-// 这是四个 ASI 共用的“内存补丁小工具”。
+// 这是 Castle_SaveEnhance 自己携带的最小“机器码补丁工具”。
 //
-// 可以把 RPG.exe 想成一本已经印好的书：
-// - RVA 就像“从书的起点往后数多少字节”；
-// - original/expected 是我们预期那里原本印着的内容；
-// - patched/replacement 是插件想临时改成的内容。
+// 老游戏插件经常需要把 RPG.exe 某几条指令换成 CALL Hook 或新的常量。真正危险的地方
+// 不是“写 5 个字节”本身，而是：如果游戏版本不对、别的 MOD 已经改过、或者只改了一半，
+// 我们就可能把 CPU 引到错误位置。因此这个工具坚持三条规则：
 //
-// v0.3.1a 继续保留固定字节补丁与“安全替换 x86 CALL rel32”两套能力。
-// 这是 Safe AnytimeSave 所需要的：目标函数在 ASI 被 Windows 装入后地址才确定，
-// 所以 CALL 后面的 4 字节相对距离必须运行时计算，不能提前写成固定常量。
+// 1. 写之前逐字节确认“现在正是我们认识的原版字节”；
+// 2. 用 VirtualProtect 临时开放写权限，写完恢复保护并刷新 CPU 指令缓存；
+// 3. 一组互相依赖的补丁按事务处理：中途失败就尽量恢复调用前的真实字节。
 //
-// 无论哪一种补丁，都遵守同一条最高安全规则：
-// **写之前先验证当前位置。发现不是已知机器码就拒绝写，而不是赌地址没有变。**
+// 对初学者来说，可以把 PatchSet 想成“同时改八个螺丝”。八个缺一个机器就不完整，所以
+// 不能改完前三个、第四个失败后就装作没事继续运行。
 // ============================================================================
 
 namespace ycr {
 
-// 一个固定字节补丁描述。
 struct Patch {
-    DWORD rva;
-    const BYTE* original;
-    const BYTE* patched;
-    SIZE_T size;
+    DWORD rva;           // 相对 RPG.exe ImageBase 的位置。
+    const BYTE* original;// 这个版本原来必须是什么字节。
+    const BYTE* patched; // 成功后希望写成什么字节。
+    SIZE_T size;         // 这一项一共多少字节。
 };
 
-// 比较两段字节是否完全一样。
-// 不调用 C 运行库 memcmp，这样交叉构建时最终 ASI 可以继续只依赖 kernel32.dll。
-inline bool BytesEqual(const BYTE* left, const BYTE* right, SIZE_T size) {
-    for (SIZE_T i = 0; i < size; ++i) {
-        if (left[i] != right[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-// 获取主程序 RPG.exe 的实际加载基址。
 inline BYTE* GetExeBase() {
+    // 传 nullptr 给 GetModuleHandleW，Windows 返回“当前 EXE”，这里就是 RPG.exe。
     return reinterpret_cast<BYTE*>(GetModuleHandleW(nullptr));
 }
 
-// ---------------------------------------------------------------------------
-// 最底层的“已经决定写什么之后，安全写入”函数。
-// ---------------------------------------------------------------------------
-// target      = 真正要修改的内存地址；
-// desired     = 要写进去的新字节；
-// size        = 字节数。
-//
-// 这个函数不负责判断版本身份；身份检查必须由上层先完成。
-inline bool WriteBytes(BYTE* target, const BYTE* desired, SIZE_T size) {
-    // 如果当前位置本来已经等于目标字节，不重复修改页面权限。
-    if (BytesEqual(target, desired, size)) {
-        return true;
-    }
-
-    // RPG.exe 的 .text 通常是“可执行+可读、不可写”。
-    // VirtualProtect 暂时改成可读写执行，oldProtect 记录原权限以便稍后恢复。
-    DWORD oldProtect = 0;
-    if (!VirtualProtect(target, size, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+inline bool BytesEqual(const BYTE* actual, const BYTE* expected, SIZE_T size) {
+    if (actual == nullptr || expected == nullptr || size == 0u) {
         return false;
     }
-
-    // 不使用 memcpy，一个字节一个字节复制，避免额外 C 运行库依赖。
-    for (SIZE_T i = 0; i < size; ++i) {
-        target[i] = desired[i];
-    }
-
-    // 恢复代码页原权限。restoreProtect 只是接收 API 要求的输出值。
-    DWORD restoreProtect = 0;
-    VirtualProtect(target, size, oldProtect, &restoreProtect);
-
-    // CPU 可能缓存过旧指令。刷新指令缓存可以保证后续取到刚写入的新机器码。
-    return FlushInstructionCache(GetCurrentProcess(), target, size) != FALSE;
-}
-
-// 检查固定补丁位置是不是我们认识的原版或已补丁状态。
-inline bool IsPatchStateRecognized(const Patch& patch) {
-    BYTE* base = GetExeBase();
-    if (base == nullptr) {
-        return false;
-    }
-
-    const BYTE* current = base + patch.rva;
-    return BytesEqual(current, patch.original, patch.size) ||
-           BytesEqual(current, patch.patched, patch.size);
-}
-
-// 按 enabled 选择“目标补丁字节”或“恢复原始字节”，然后写入。
-inline bool WritePatchBytes(const Patch& patch, bool enabled) {
-    BYTE* base = GetExeBase();
-    if (base == nullptr) {
-        return false;
-    }
-
-    BYTE* target = base + patch.rva;
-    const BYTE* desired = enabled ? patch.patched : patch.original;
-    return WriteBytes(target, desired, patch.size);
-}
-
-// 一次性检查一整组补丁。
-// 先全检查、后全写，避免第三个地址不对时前两个已经改掉的“半成功”状态。
-inline bool ValidatePatchSet(const Patch* patches, SIZE_T count) {
-    for (SIZE_T i = 0; i < count; ++i) {
-        if (!IsPatchStateRecognized(patches[i])) {
+    for (SIZE_T i = 0u; i < size; ++i) {
+        if (actual[i] != expected[i]) {
             return false;
         }
     }
     return true;
 }
 
-// 统一打开或关闭一整组固定字节补丁。
-inline bool SetPatchSetState(const Patch* patches, SIZE_T count, bool enabled) {
-    if (!ValidatePatchSet(patches, count)) {
+inline void CopyRaw(BYTE* out, const BYTE* in, SIZE_T size) {
+    // 逐字节复制，避免无 CRT 构建时优化器偷偷生成外部 memcpy 依赖。
+    for (SIZE_T i = 0u; i < size; ++i) {
+        out[i] = in[i];
+    }
+}
+
+inline bool WriteBytes(BYTE* address, const BYTE* bytes, SIZE_T size) {
+    if (address == nullptr || bytes == nullptr || size == 0u) {
         return false;
     }
 
-    for (SIZE_T i = 0; i < count; ++i) {
-        if (!WritePatchBytes(patches[i], enabled)) {
+    DWORD oldProtect = 0u;
+    // 代码页通常不可直接写。先暂时切到 EXECUTE_READWRITE。
+    if (!VirtualProtect(address, size, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        return false;
+    }
+
+    for (SIZE_T i = 0u; i < size; ++i) {
+        address[i] = bytes[i];
+    }
+
+    // 写完先刷新 CPU 指令缓存。即使内存字节已经改变，如果 CPU 还缓存旧指令也会出问题。
+    const BOOL flushed = FlushInstructionCache(GetCurrentProcess(), address, size);
+
+    DWORD ignored = 0u;
+    const BOOL restored = VirtualProtect(address, size, oldProtect, &ignored);
+    return flushed != FALSE && restored != FALSE;
+}
+
+inline bool ValidatePatchSet(BYTE* exeBase, const Patch* patches, SIZE_T count) {
+    if (exeBase == nullptr || patches == nullptr || count == 0u) {
+        return false;
+    }
+    for (SIZE_T i = 0u; i < count; ++i) {
+        const Patch& patch = patches[i];
+        if (patch.original == nullptr || patch.patched == nullptr || patch.size == 0u ||
+            !BytesEqual(exeBase + patch.rva, patch.original, patch.size)) {
             return false;
         }
     }
     return true;
 }
 
-// ---------------------------------------------------------------------------
-// v0.2.0 新增：安全安装 x86 `CALL rel32`
-// ---------------------------------------------------------------------------
-// x86 的近 CALL 机器码是：
-//   E8 xx xx xx xx
-// 其中后 4 字节不是目标绝对地址，而是：
-//   target_address - address_after_call
-//
-// 例如 CALL 本身位于 A，长度 5 字节，那么 CPU 实际跳到：
-//   (A + 5) + signed_rel32
-//
-// ASI 每次装入地址可能不同，所以这 4 字节必须等 Windows 把 ASI 装好后再计算。
+inline bool ApplyPatchSet(BYTE* exeBase, const Patch* patches, SIZE_T count) {
+    // SaveEnhance 当前一组最多十几项，小固定缓冲足够，避免 heap/CRT。
+    if (exeBase == nullptr || patches == nullptr || count == 0u || count > 32u) {
+        return false;
+    }
+
+    struct Backup {
+        BYTE bytes[16];
+        SIZE_T size;
+    } backups[32];
+
+    // 单项最大 16 字节。超出说明以后有人改了结构，应该扩工具而不是悄悄截断。
+    for (SIZE_T i = 0u; i < count; ++i) {
+        if (patches[i].size == 0u || patches[i].size > 16u) {
+            return false;
+        }
+        backups[i].size = patches[i].size;
+        CopyRaw(backups[i].bytes, exeBase + patches[i].rva, patches[i].size);
+    }
+
+    // 必须先把“全部项”都验证完，再写第一项，避免版本不匹配造成半安装。
+    if (!ValidatePatchSet(exeBase, patches, count)) {
+        return false;
+    }
+
+    for (SIZE_T i = 0u; i < count; ++i) {
+        if (WriteBytes(exeBase + patches[i].rva, patches[i].patched, patches[i].size)) {
+            continue;
+        }
+
+        // 第 i 项虽然返回失败，也可能已经写了字节、只是 FlushInstructionCache 失败。
+        // 因此回滚范围必须包含 i 自己，而不是只回滚 0..i-1。
+        SIZE_T rollback = i + 1u;
+        while (rollback > 0u) {
+            --rollback;
+            WriteBytes(exeBase + patches[rollback].rva, backups[rollback].bytes, backups[rollback].size);
+        }
+        return false;
+    }
+    return true;
+}
+
+inline bool RestorePatchSetToOriginal(BYTE* exeBase, const Patch* patches, SIZE_T count) {
+    if (exeBase == nullptr || patches == nullptr) {
+        return false;
+    }
+    bool ok = true;
+    for (SIZE_T i = 0u; i < count; ++i) {
+        if (!WriteBytes(exeBase + patches[i].rva, patches[i].original, patches[i].size)) {
+            ok = false;
+        }
+    }
+    return ok;
+}
+
 inline bool InstallRelativeCall(
-    DWORD callRva,
-    const BYTE expectedOriginal[5],
-    const void* replacementFunction) {
-
-    BYTE* base = GetExeBase();
-    if (base == nullptr || replacementFunction == nullptr) {
+    BYTE* exeBase,
+    DWORD rva,
+    const BYTE expected[5],
+    const void* target) {
+    if (exeBase == nullptr || expected == nullptr || target == nullptr) {
         return false;
     }
 
-    BYTE* callSite = base + callRva;
-
-    // 构造新的 5 字节 CALL。
-    BYTE desired[5];
-    desired[0] = 0xE8;
-
-    // 这里整个程序是 32 位，所以指针和 DWORD 都是 32 位。
-    // 先得到“CALL 下一条指令”的地址，再做 32 位减法，就得到 x86 rel32 位模式。
-    const DWORD nextInstruction =
-        static_cast<DWORD>(reinterpret_cast<SIZE_T>(callSite + 5));
-    const DWORD destination =
-        static_cast<DWORD>(reinterpret_cast<SIZE_T>(replacementFunction));
-    const DWORD relative = destination - nextInstruction;
-
-    // 小端序机器上最低有效字节放最前面。
-    desired[1] = static_cast<BYTE>((relative >> 0) & 0xFFu);
-    desired[2] = static_cast<BYTE>((relative >> 8) & 0xFFu);
-    desired[3] = static_cast<BYTE>((relative >> 16) & 0xFFu);
-    desired[4] = static_cast<BYTE>((relative >> 24) & 0xFFu);
-
-    // 如果当前位置已经正好是指向本函数的 CALL，说明可能发生重复装载；直接视为成功。
-    if (BytesEqual(callSite, desired, 5u)) {
-        return true;
-    }
-
-    // 只有当前位置仍是我们确认过的原始 CALL 才允许第一次覆盖。
-    // 如果别的 MOD、不同版本 EXE 或旧实验已经改了这 5 字节，就拒绝争抢 Hook 点。
-    if (!BytesEqual(callSite, expectedOriginal, 5u)) {
+    BYTE* site = exeBase + rva;
+    if (!BytesEqual(site, expected, 5u)) {
         return false;
     }
 
-    return WriteBytes(callSite, desired, 5u);
+    BYTE patch[5];
+    patch[0] = 0xE8u; // x86 E8 = CALL rel32。
+    const SIZE_T nextInstruction = reinterpret_cast<SIZE_T>(site + 5u);
+    const SIZE_T destination = reinterpret_cast<SIZE_T>(target);
+    const DWORD displacement = static_cast<DWORD>(destination - nextInstruction);
+    *reinterpret_cast<DWORD*>(patch + 1u) = displacement;
+    return WriteBytes(site, patch, 5u);
 }
 
-// 计算 UTF-16 字符串长度，不包含末尾 L'\0'。
-// MaxGrowthAndDrop 自动写默认 INI 时使用；继续避免依赖 wcslen。
-inline SIZE_T WideLength(const wchar_t* text) {
-    SIZE_T length = 0;
-    while (text[length] != L'\0') {
-        ++length;
+inline bool InstallRelativeCall6(
+    BYTE* exeBase,
+    DWORD rva,
+    const BYTE expected[6],
+    const void* target) {
+    // 有些原版指令正好 6 字节。我们用 5 字节 CALL 替换，再用 1 个 NOP 补齐长度，
+    // 这样后面的原版指令地址完全不移动。
+    if (exeBase == nullptr || expected == nullptr || target == nullptr) {
+        return false;
     }
-    return length;
+    BYTE* site = exeBase + rva;
+    if (!BytesEqual(site, expected, 6u)) {
+        return false;
+    }
+    BYTE patch[6];
+    patch[0] = 0xE8u;
+    const SIZE_T nextInstruction = reinterpret_cast<SIZE_T>(site + 5u);
+    const SIZE_T destination = reinterpret_cast<SIZE_T>(target);
+    *reinterpret_cast<DWORD*>(patch + 1u) = static_cast<DWORD>(destination - nextInstruction);
+    patch[5] = 0x90u;
+    return WriteBytes(site, patch, 6u);
 }
 
-}  // namespace ycr
+} // namespace ycr
+
+#endif // CASTLE_SAVE_ENHANCE_PATCH_UTIL_H

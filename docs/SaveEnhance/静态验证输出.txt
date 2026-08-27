@@ -1,0 +1,91 @@
+
+=== 原版 RPG.exe ===
+[PASS] RPG.exe SHA-256
+       预期=8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f 实际=8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f
+[PASS] RPG.exe 为 PE32/i386
+       Machine=0x014C OptionalMagic=0x010B
+[PASS] RPG.exe ImageBase
+       预期=0x00400000 实际=0x00400000
+[PASS] 固定菜单补丁：LoadSlot 槽号 +1
+       VA=0x00424D8D 预期=8D 54 01 01 实际=8D 54 01 01
+[PASS] 固定菜单补丁：SaveSlot 槽号 +1
+       VA=0x00424DE7 预期=8D 4C 02 01 实际=8D 4C 02 01
+[PASS] 固定菜单补丁：聚焦行控件槽号 +1
+       VA=0x00425324 预期=8D 54 02 01 实际=8D 54 02 01
+[PASS] 固定菜单补丁：元数据检查槽号 +1
+       VA=0x004253C0 预期=8D 54 10 01 实际=8D 54 10 01
+[PASS] 固定菜单补丁：当前选择标签槽号 +1
+       VA=0x00425486 预期=8D 4C 10 01 实际=8D 4C 10 01
+[PASS] 固定菜单补丁：行标签槽号 +1
+       VA=0x004255BA 预期=8D 54 11 01 实际=8D 54 11 01
+[PASS] 固定菜单补丁：下一页逻辑读取 MiscInfo 页数
+       VA=0x00424ECB 预期=8B 8A C2 03 00 00 实际=8B 8A C2 03 00 00
+[PASS] 固定菜单补丁：下一页箭头读取 MiscInfo 页数
+       VA=0x0042565A 预期=8B 91 C2 03 00 00 实际=8B 91 C2 03 00 00
+[PASS] 固定菜单补丁：第一页上一页箭头边界分支
+       VA=0x00425626 预期=7E 11 实际=7E 11
+[PASS] 固定菜单补丁：最后页下一页箭头边界分支
+       VA=0x00425665 预期=7D 11 实际=7D 11
+[PASS] 循环分页 Hook：上一页 page-base 读取
+       VA=0x00424E90 预期=8B 86 98 05 00 00 实际=8B 86 98 05 00 00
+[PASS] 循环分页 Hook：下一页 page-base 读取
+       VA=0x00424EC2 预期=8B 86 98 05 00 00 实际=8B 86 98 05 00 00
+[PASS] CALL Hook：正常菜单保存许可
+       VA=0x0040CCC2 预期=E8 F9 D3 FF FF 实际=E8 F9 D3 FF FF
+[PASS] CALL Hook：普通地图 Legacy Tick
+       VA=0x0040B078 预期=E8 63 FD FF FF 实际=E8 63 FD FF FF
+[PASS] CALL Hook：SaveSlot 内部 Writer
+       VA=0x0043B34C 预期=E8 0F 00 00 00 实际=E8 0F 00 00 00
+[PASS] CALL Hook：存档菜单手动 SaveSlot
+       VA=0x00424DF2 预期=E8 29 65 01 00 实际=E8 29 65 01 00
+[PASS] CALL Hook：隐藏命令手动 SaveSlot
+       VA=0x0044A82D 预期=E8 EE 0A FF FF 实际=E8 EE 0A FF FF
+[PASS] SaveAction vtable Update 指针
+       VA=0x00460BA8 预期=C0 62 42 00 实际=C0 62 42 00
+[PASS] 原版 save gate 0x40A0C0
+       VA=0x0040A0C0 预期=8B 01 8B 80 80 03 00 00 C3 实际=8B 01 8B 80 80 03 00 00 C3
+[PASS] SaveSlot 0x43B320 关键前缀
+       VA=0x0043B320 预期=8B 44 24 04 81 EC 2C 01 00 00 56 8B F1 50 68 0C BB 46 00 8D 4C 24 0C 68 04 BB 46 00 实际=8B 44 24 04 81 EC 2C 01 00 00 56 8B F1 50 68 0C BB 46 00 8D 4C 24 0C 68 04 BB 46 00
+[PASS] LoadSlot 0x43B4D0 关键前缀
+       VA=0x0043B4D0 预期=8B 44 24 04 81 EC 2C 01 00 00 56 8B F1 50 68 0C BB 46 00 8D 4C 24 0C 68 04 BB 46 00 实际=8B 44 24 04 81 EC 2C 01 00 00 56 8B F1 50 68 0C BB 46 00 8D 4C 24 0C 68 04 BB 46 00
+[PASS] 存档命名证据：三位槽号格式串
+       VA=0x0046BB04 预期=25 73 25 30 33 64 00 实际=25 73 25 30 33 64 00
+[PASS] 存档命名证据：Save 文件基名
+       VA=0x0046BB0C 预期=53 61 76 65 00 实际=53 61 76 65 00
+[PASS] 存档命名证据：TSF 扩展名
+       VA=0x0046A43C 预期=2E 54 53 46 00 实际=2E 54 53 46 00
+
+=== MiscInfo.ENC ===
+[PASS] MiscInfo.ENC 文件大小
+       预期=1054 实际=1054
+[PASS] MiscInfo 解码后 SHA-256
+       预期=cd18d110d458fe60928eb874f76453f751489cf2d0341d2c7c250c4ece13e6e9 实际=cd18d110d458fe60928eb874f76453f751489cf2d0341d2c7c250c4ece13e6e9
+[PASS] MiscInfo +0x3C2 原版页数
+       预期=8 实际=8；原版 8页×4行=32槽
+
+=== Castle_SaveEnhance.asi ===
+[PASS] ASI 为 PE32/i386
+       Machine=0x014C OptionalMagic=0x010B
+[PASS] ASI 带 DLL 标志
+       Characteristics=0x2102
+[PASS] ASI 入口点非零
+       AddressOfEntryPoint=0x64A0
+[PASS] ASI 导出 Castle Mod Loader 正式入口 InitializeASI
+       导出=InitializeASI
+[PASS] ASI 静态只导入 KERNEL32.dll
+       DLL=KERNEL32.dll
+[PASS] ASI 必需 KERNEL32 导入齐全且未被装饰
+       缺少=无; 实际=CloseHandle, CreateFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileAttributesExW, GetFileSize, GetLastError, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile
+[PASS] ASI 无 CRT/UCRT/VCRUNTIME 静态依赖
+       发现=无
+[PASS] user32/winmm 保持动态可选依赖
+       Import Table 中没有 user32/winmm；运行时需要时才 LoadLibrary
+[PASS] ASI 含 Castle_SaveEnhance 身份字符串
+       存在
+[PASS] ASI SHA-256（记录）
+       34c0fe8fb78cad1e4273bfccc9a72cea97c7c7d38662920ea8063b6e3b4bb0d0
+
+[INFO] JSON 报告已写入：文档/静态验证结果.json
+
+=== 总结 ===
+[PASS] 所有静态检查通过。注意：这仍然不是游戏实机验收。

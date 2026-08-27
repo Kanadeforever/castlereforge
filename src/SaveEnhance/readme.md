@@ -1,56 +1,96 @@
-# SaveEnhance 主功能源码完整接档说明
+# Castle_SaveEnhance v0.1.0-test4 构建与静态验证结果
 
-## 1. 当前状态
+## 0. test4 本轮结果
 
-安全存档增强功能已在 2026-08-28 从 `src/Extra` 移到 `src/SaveEnhance`，成为与 `Backlog`、`Controller`、`Widescreen` 等目录同级的主功能。源码主文件与正式产物名称继续使用 `AnytimeSave`，避免改变功能身份和部署文件名。
+针对 test3 实机结果，本轮源码已加入：
 
-本次只移动正式源码和构建入口，没有修改 `AnytimeSave.cpp` 或公共头文件的功能内容。正式算法继续沿用 v0.3.1a 的安全回退存档方案，功能版本仍属于 v0.3.2 整体交付结论的一部分。
+- 91~99 文件检查改为原版 `Save\SaveNNN.TSF` 相对工作目录语义；
+- 自动存档成功后增加相同路径语义的可见性诊断；
+- F5 在严格自由行动且当前地图已有冻结安全锚点时，原版 gate=0 允许 Writer fallback；
+- `[Sound] Volume=0~100`；Volume<100 对 PCM WAV 内存副本缩放，100 原样播放；
+- 新增 `ReadFile/GetFileSize/GetProcessHeap/HeapAlloc/HeapFree` KERNEL32 导入，仍无 CRT。
 
-## 2. 当前目录
+当前源码重新执行 x86 `/W4 /WX /O2` 编译通过；PE32/i386 链接通过；`InitializeASI` 导出、目标 EXE 地址、MiscInfo、KERNEL32 导入、无 CRT 静态验证全部 PASS。
 
-```text
-src/SaveEnhance/
-  source/
-    AnytimeSave.cpp
-    PatchUtil.h
-    PluginLog.h
-    Win32Mini.h
-  build.bat
-  readme.md
-```
+## 1. 本轮修复背景
 
-正式功能自带一套现有公共头文件，因此不依赖 `src/Extra`。先前随源码保存的 Probe 工具已按本次手工目录整理移除；其历史研究结论仍保存在 `docs/Extra`。
-
-## 3. 构建方法
-
-运行：
+用户实机运行 test2 时，日志只输出到：
 
 ```text
-build.bat
+[配置] QuickLoadPresses=2 WindowMs=1200 AutoIntervalMin=5。
 ```
 
-脚本只构建 `AnytimeSave.asi`，并输出到仓库根 `build` 目录。编译参数、无 CRT 原则和构建后的 x86/DLL/非零入口检查均与搬移前一致。
+之后既没有“完整 Hook 安装成功”，也没有 fail-closed 错误；0~99、随时安全存档、Quick/Auto 全部没有生效。
 
-## 4. 已确认架构
+对照 Castle Mod Loader 当前源码确认：Loader 在 `LoadLibraryExW` 返回以后，先给 ASI 补 `OverrideLoader_PatchModule` / `LocaleLayer_PatchModule`，随后通过 `GetProcAddress(module, "InitializeASI")` 调用可选正式初始化。test2 却把 INI、模块查询、VirtualQuery/VirtualProtect 和全部机器码 Hook 安装放在 `DllMain` 的 `DLL_PROCESS_ATTACH` 中。
 
-- 正式插件只生成原版 TSF，不修改 TSF 格式；
-- 原版允许存档时完全沿用原版逻辑；
-- 原版禁止存档时，只有已取得入口级安全锚点才扩展开放；
-- 写入阶段会重新核对地图身份和 World 缓冲，失败时直接中止；
-- 不再生成或读取历史实验中的 TSA/YCS 旁挂文件；
-- 磐沙堡楼梯危险点已经得到“读档回安全入口、不再形成原坏档”的实机正向结果。
+**test3 修正：** `DllMain` 只保存 HMODULE 并调用 `DisableThreadLibraryCalls`；正式初始化全部移动到导出的 `InitializeASI()`。
 
-## 5. 已否定方案与踩坑
+## 2. 构建参数
 
-- 无条件开放原版禁存点会制造坏档，已经否定；
-- TSA/YCS 精确恢复实验曾遇到提交时机和路径解析问题，正式版本已经移除；
-- v0.3.1 旧预编译包曾出现 PE 入口为 0 的封包错误，当前构建脚本继续强制检查非零入口。
+```text
+C++17
+/utf-8
+/O2
+/Oi-
+/W4 /WX
+/GR-
+/GS-
+/Gs999999999
+/Zl
+/NODEFAULTLIB
+/MACHINE:X86
+/ENTRY:DllMain
+```
 
-## 6. 已知限制、阻塞与下一步
+当前 `source/Castle_SaveEnhance.cpp` 已使用 x86 clang-cl 从零重新编译，`/W4 /WX` 零告警通过。
 
-- 当前方案是安全进度保险，不是保存瞬间坐标的精确 Save Anywhere；
-- 单个危险地点的实机通过不能代表全部特殊场景；
-- 2026-08-28 已使用当前 MSVC x86 工具链实编译 `AnytimeSave.asi` 成功，并通过 x86、DLL、非零入口检查，入口 RVA 为 `0x000021E0`；
-- 先前 Probe 在当前 MSVC 19.51 下曾因自定义 `memcpy/memset` 被识别为内部函数而报 `C2169`；当前源码包已不再携带该诊断工具，正式 `AnytimeSave.asi` 不受影响；
-- 后续优先继续实机覆盖不同地图、传送前后与多 record 场景；若出现新反例，再从历史研究包恢复诊断工具另行处理；
-- 完整的地址、测试、历史失败方案和风险记录仍保存在 `docs/Extra/文档` 与 `docs/Extra/参考资料`，本次没有迁移或改写这些历史证据。
+正式 Windows 构建请在 VS x86 Native Tools 运行包根 `build.bat`。test4 的 `build.bat` 除 PE32/i386 基础检查外，还使用 `dumpbin /exports` **强制确认 `InitializeASI` 导出存在**。
+
+## 3. 容器交叉链接说明
+
+研究环境没有完整 Windows SDK，因此随包测试候选用最小 KERNEL32 import library 做第二套 x86 ABI/PE 链接。临时库产生 `_Foo@N` 名称后，只对 PE 的 IMAGE_IMPORT_BY_NAME 文本原地规范化成真实 KERNEL32 `Foo` 名称，不移动任何 RVA。正式 Windows `build.bat` 使用真实 `kernel32.lib`，不需要这一处理。
+
+## 4. 最终 test4 ASI
+
+SHA-256：
+
+`34c0fe8fb78cad1e4273bfccc9a72cea97c7c7d38662920ea8063b6e3b4bb0d0`
+
+静态验证：
+
+- PE32/i386：PASS；
+- DLL flag：PASS；
+- EntryPoint 非零：PASS；
+- **Export Table 含 `InitializeASI`：PASS；**
+- 静态只导入 KERNEL32：PASS；
+- KERNEL32 import 均为未装饰真实名称：PASS；
+- 新增 `ReadFile/GetFileSize/GetProcessHeap/HeapAlloc/HeapFree`：PASS；
+- 无 CRT/UCRT/VCRUNTIME：PASS；
+- user32/winmm 保持运行时可选动态依赖：PASS。
+
+## 5. RPG 原版地址验证
+
+全部 PASS：
+
+- 10 个固定菜单补丁；
+- 2 个循环分页点；
+- 5 个 CALL Hook；
+- SaveAction Update vtable；
+- 原版 save gate；
+- SaveSlot/LoadSlot；
+- `%03d` / `Save` / `.TSF` 命名字符串。
+
+## 6. MiscInfo
+
+全部 PASS：
+
+- size 1054；
+- decoded SHA-256 `cd18d110d458fe60928eb874f76453f751489cf2d0341d2c7c250c4ece13e6e9`；
+- `+0x3C2 = 8`。
+
+## 7. 结论边界
+
+静态验证已经证明 test4 的生命周期导出、PE/ABI、目标原版机器码与新增 KERNEL32 导入一致。
+
+**test3 已经实机证明 `InitializeASI` 与完整 Hook 安装能够执行。** test4 尚未实机证明的是本轮三个修复：91~99 相对路径轮换、Quick fallback、WAV Volume。

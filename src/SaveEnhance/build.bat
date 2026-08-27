@@ -1,63 +1,57 @@
 @echo off
 chcp 65001 >nul
-setlocal EnableExtensions
+setlocal
 
-set "SCRIPT_DIR=%~dp0"
-set "SRC_DIR=%SCRIPT_DIR%source"
-set "OUT_DIR=%SCRIPT_DIR%..\..\build"
-if not exist "%OUT_DIR%" mkdir "%OUT_DIR%" 2>nul
-rem 中间对象目录（不散落到运行目录）
-set "OBJ_DIR=%SCRIPT_DIR%_build"
-if not exist "%OBJ_DIR%" mkdir "%OBJ_DIR%" 2>nul
+@echo off
+cd /d "%~dp0"
 
-set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
-if not exist "%VSWHERE%" (
-    echo [错误] 找不到 vswhere.exe。
-    echo 请安装 Visual Studio 的“使用 C++ 的桌面开发”组件，或从“x86 Native Tools Command Prompt”运行。
-    goto :fail
-)
-for /f "usebackq tokens=*" %%I in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSROOT=%%I"
-if not defined VSROOT (
-    echo [错误] 没有找到可用的 MSVC x86/x64 工具链。
-    echo 请安装 Visual Studio 的“使用 C++ 的桌面开发”组件。
-    goto :fail
-)
-call "%VSROOT%\Common7\Tools\VsDevCmd.bat" -arch=x86 -host_arch=x64 >nul
-if errorlevel 1 (
-    echo [错误] VsDevCmd.bat 初始化失败，无法切换到 x86 编译环境。
-    goto :fail
-)
-
-:have_cl
 where cl.exe >nul 2>nul
 if errorlevel 1 (
-    echo [错误] 找不到 cl.exe，请确认已安装 Visual Studio C++ 桌面开发组件。
-    goto :fail
+    echo [错误] 找不到 cl.exe。请从 x86 Native Tools Command Prompt 运行本脚本。
+    pause
+    exit /b 1
+)
+where link.exe >nul 2>nul
+if errorlevel 1 (
+    echo [错误] 找不到 link.exe。请确认 Visual Studio C++ 工具已经安装。
+    pause
+    exit /b 1
 )
 
-set CFLAGS=/nologo /std:c++17 /utf-8 /O2 /Oi- /W4 /WX /GR- /GS- /Gs999999999 /Zl /LD
-set LFLAGS=/link /NOLOGO /NODEFAULTLIB /ENTRY:DllMain /SUBSYSTEM:WINDOWS /MACHINE:X86 kernel32.lib
+if not exist build mkdir build
+if not exist release mkdir release
+del /q build\Castle_SaveEnhance.obj 2>nul
+del /q release\Castle_SaveEnhance.asi 2>nul
 
-echo [1/1] AnytimeSave.asi - v0.3.1a Safe Fallback Save
-cl.exe %CFLAGS% "%SRC_DIR%\AnytimeSave.cpp" /Fo"%OBJ_DIR%\AnytimeSave.obj" %LFLAGS% /OUT:"%OUT_DIR%\AnytimeSave.asi"
-if errorlevel 1 goto :fail
-call :check_pe "%OUT_DIR%\AnytimeSave.asi"
-if errorlevel 1 goto :fail
+cl.exe /nologo /c /std:c++17 /utf-8 /O2 /Oi- /W4 /WX /GR- /GS- /Gs999999999 /Zl ^
+  source\Castle_SaveEnhance.cpp /Fo:build\Castle_SaveEnhance.obj
+if errorlevel 1 exit /b 1
 
-rmdir /s /q "%OBJ_DIR%" 2>nul
-echo.
-echo [成功] AnytimeSave.asi 已输出到 build 目录，并且通过 x86 / DLL / 非零入口点检查。
+link.exe /nologo /DLL /NODEFAULTLIB /ENTRY:DllMain /SUBSYSTEM:WINDOWS /MACHINE:X86 ^
+  /OUT:release\Castle_SaveEnhance.asi build\Castle_SaveEnhance.obj kernel32.lib
+if errorlevel 1 exit /b 1
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$p='release\Castle_SaveEnhance.asi';$b=[IO.File]::ReadAllBytes($p);if($b.Length-lt64-or$b[0]-ne0x4D-or$b[1]-ne0x5A){exit 10};$pe=[BitConverter]::ToInt32($b,0x3C);if([Text.Encoding]::ASCII.GetString($b,$pe,4)-ne('PE'+[char]0+[char]0)){exit 11};$m=[BitConverter]::ToUInt16($b,$pe+4);$ch=[BitConverter]::ToUInt16($b,$pe+22);$op=$pe+24;$ep=[BitConverter]::ToUInt32($b,$op+16);if($m-ne0x14C-or($ch-band0x2000)-eq0-or$ep-eq0){exit 12}"
+if errorlevel 1 (
+    echo [错误] PE 基础验证失败；不要使用本次输出。
+    pause
+    exit /b 1
+)
+
+where dumpbin.exe >nul 2>nul
+if errorlevel 1 (
+    echo [错误] 找不到 dumpbin.exe，无法验证 InitializeASI 导出。
+    pause
+    exit /b 1
+)
+dumpbin.exe /nologo /exports release\Castle_SaveEnhance.asi | findstr /C:"InitializeASI" >nul
+if errorlevel 1 (
+    echo [错误] 最终 ASI 没有导出 InitializeASI；Castle Mod Loader 将不会执行正式初始化。
+    pause
+    exit /b 1
+)
+
+echo [成功] 已生成 release\Castle_SaveEnhance.asi，并确认导出 InitializeASI。
 pause
 exit /b 0
-
-:check_pe
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ^
-  "$p='%~1'; $b=[IO.File]::ReadAllBytes($p); if($b.Length -lt 64){exit 10}; $pe=[BitConverter]::ToInt32($b,0x3C); if($pe -lt 0 -or ($pe+44) -gt $b.Length){exit 11}; $m=[BitConverter]::ToUInt16($b,$pe+4); $c=[BitConverter]::ToUInt16($b,$pe+22); $ep=[BitConverter]::ToUInt32($b,$pe+40); if($m -ne 0x014C){Write-Host '[错误] 不是 x86 PE：' $p; exit 12}; if(($c -band 0x2000) -eq 0){Write-Host '[错误] PE 没有 DLL 标志：' $p; exit 13}; if($ep -eq 0){Write-Host '[错误] AddressOfEntryPoint=0，DllMain 不会执行：' $p; exit 14}; Write-Host ('[入口检查] PASS  RVA=0x{0:X8}  {1}' -f $ep,$p)"
-exit /b %errorlevel%
-
-:fail
-rmdir /s /q "%OBJ_DIR%" 2>nul
-echo.
-echo [失败] 构建中止，请从上方第一条错误开始检查。
-pause
-exit /b 1

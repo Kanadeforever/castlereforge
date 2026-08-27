@@ -1,35 +1,49 @@
-#pragma once
+#ifndef CASTLE_SAVE_ENHANCE_WIN32_MINI_H
+#define CASTLE_SAVE_ENHANCE_WIN32_MINI_H
 
 // ============================================================================
-// Win32Mini.h  v0.3.2
+// Win32Mini.h
 // ----------------------------------------------------------------------------
-// 这个头文件只声明四个正式 ASI 真正会使用的少量 Windows 基础类型和 API。
-// v0.3.2 因 BUGFix 合并 CrashFix test2，新增 VirtualAlloc / VirtualFree / GetLastError，
-// 供双路径 x86 stub 的申请、释放和失败日志使用；其它插件不因此增加运行时行为。
+// 这个项目故意不包含 <windows.h>，原因不是 Windows 头文件不好，而是本插件希望维持
+// “无 CRT、只依赖极少 Windows API”的老游戏 ASI 结构，同时还要能在没有 Windows SDK
+// 头文件的交叉编译环境里做第二套语法/ABI 检查。
 //
-// 为什么不用 <windows.h>：
-// 1. 《幽城幻剑录》的 RPG.exe 是 32 位程序，本插件只需要 kernel32.dll 的少数功能；
-// 2. 把最小 API 全部写在一个短文件里，初学者可以直接看到插件向 Windows 请求什么；
-// 3. 同一份源码既能在 Windows + MSVC 下编译，也能在研究环境用 Clang 做第二套
-//    32 位 PE 交叉构建验证，不依赖完整 Windows SDK 头文件。
+// 对刚接触编程的人，可以把这个文件理解成一份“我们实际会用到的 Windows 名词表”：
+// - DWORD / BYTE 这些是固定大小的数字类型；
+// - HMODULE / HANDLE 是 Windows 返回给程序的“对象把手”；
+// - extern "C" 下面是 Windows 已经提供的函数，我们这里只告诉编译器它们长什么样；
+// - 真正的实现仍然在 Windows 自带的 kernel32.dll 里，不是我们重新实现一遍。
 //
-// 这里“只是声明”，并没有自己实现 Windows。最终这些函数仍由系统 kernel32.dll 提供。
+// 这里每加一个声明都应该有明确用途，不要把整个 Windows SDK 手工复制进来。
 // ============================================================================
 
+#if defined(_MSC_VER) || defined(__clang__)
+#define WINAPI __stdcall
+#define CALLBACK __stdcall
+#else
+#define WINAPI
+#define CALLBACK
+#endif
+
+// 32 位目标下这些基础类型的大小与 Win32 SDK 保持一致。
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned long DWORD;
+typedef signed long LONG;
 typedef int BOOL;
-typedef unsigned long SIZE_T;
+typedef unsigned int UINT;
+typedef unsigned int SIZE_T;
 typedef void* HANDLE;
+typedef void* HINSTANCE;
 typedef void* HMODULE;
+typedef void* HWND;
+typedef void* FARPROC;
 typedef void* LPVOID;
 typedef const void* LPCVOID;
 typedef const char* LPCSTR;
-typedef char* LPSTR;
 typedef const wchar_t* LPCWSTR;
 typedef wchar_t* LPWSTR;
-typedef HMODULE HINSTANCE;
+typedef DWORD* LPDWORD;
 
 #ifndef TRUE
 #define TRUE 1
@@ -38,43 +52,70 @@ typedef HMODULE HINSTANCE;
 #define FALSE 0
 #endif
 
+// DllMain 的 reason 值。ASI 被装进进程时收到 ATTACH，游戏退出/卸载时收到 DETACH。
 #define DLL_PROCESS_DETACH 0u
 #define DLL_PROCESS_ATTACH 1u
 
-#define PAGE_NOACCESS 0x01u
-#define PAGE_READONLY 0x02u
-#define PAGE_READWRITE 0x04u
-#define PAGE_WRITECOPY 0x08u
-#define PAGE_EXECUTE 0x10u
-#define PAGE_EXECUTE_READ 0x20u
-#define PAGE_EXECUTE_READWRITE 0x40u
-#define PAGE_EXECUTE_WRITECOPY 0x80u
-#define PAGE_GUARD 0x100u
-#define MEM_COMMIT 0x1000u
-#define MEM_RESERVE 0x2000u
-#define MEM_RELEASE 0x8000u
+// VirtualQuery / VirtualProtect 相关常量。只保留本插件真正检查/修改内存时需要的值。
+#define MEM_COMMIT 0x00001000u
+#define PAGE_NOACCESS 0x00000001u
+#define PAGE_READONLY 0x00000002u
+#define PAGE_READWRITE 0x00000004u
+#define PAGE_WRITECOPY 0x00000008u
+#define PAGE_EXECUTE 0x00000010u
+#define PAGE_EXECUTE_READ 0x00000020u
+#define PAGE_EXECUTE_READWRITE 0x00000040u
+#define PAGE_EXECUTE_WRITECOPY 0x00000080u
+#define PAGE_GUARD 0x00000100u
 
+// CreateFileW / ReadFile / WriteFile 的最小文件常量。
+// - 日志只需要 GENERIC_WRITE + CREATE_ALWAYS；
+// - 外置 WAV 的音量缩放需要 GENERIC_READ + OPEN_EXISTING，只读原文件后在内存副本里改振幅。
 #define GENERIC_READ 0x80000000u
 #define GENERIC_WRITE 0x40000000u
 #define FILE_SHARE_READ 0x00000001u
-#define FILE_SHARE_WRITE 0x00000002u
-#define FILE_SHARE_DELETE 0x00000004u
-#define CREATE_NEW 1u
-#define CREATE_ALWAYS 2u
 #define OPEN_EXISTING 3u
+#define CREATE_ALWAYS 2u
 #define FILE_ATTRIBUTE_NORMAL 0x00000080u
 #define INVALID_FILE_SIZE 0xFFFFFFFFu
-#define INVALID_FILE_ATTRIBUTES 0xFFFFFFFFu
-#define INVALID_HANDLE_VALUE ((HANDLE)(long)-1)
+#define INVALID_HANDLE_VALUE ((HANDLE)(LONG)-1)
 
-#ifndef WINAPI
-#define WINAPI __stdcall
-#endif
+// 文件时间查询只用于 91~99 自动档：有空槽先填空，全满后覆盖最后写入时间最旧的一个。
+#define ERROR_FILE_NOT_FOUND 2u
+#define ERROR_PATH_NOT_FOUND 3u
 
-// 32 位 Windows 的 VirtualQuery 输出结构。
-// 插件在读取游戏运行时指针前会先确认目标内存页已经提交且可访问，避免因为某个对象
-// 尚未创建、已经销毁或指针暂时为空而直接解引用导致游戏崩溃。
-struct MEMORY_BASIC_INFORMATION_MINI {
+// 键盘虚拟键。用户已经固定 F5=快速存档、F9=快速读档，所以不需要整张 VK 表。
+#define VK_F5 0x74
+#define VK_F9 0x78
+
+// PlaySoundW 的标志。它来自 winmm.dll；本插件运行时动态获取，不形成静态依赖。
+// SND_MEMORY 表示第一个参数不是文件名，而是一整块仍然存活的 WAV 文件内存。
+// SaveEnhance 用它播放“已经在内存里按 Volume 缩放过”的 WAV 副本。
+#define SND_ASYNC 0x0001u
+#define SND_NODEFAULT 0x0002u
+#define SND_MEMORY 0x0004u
+#define SND_FILENAME 0x00020000u
+
+
+// FILETIME 是 Windows 的 64 位时间戳，SDK 为了兼容 32 位 C 把它拆成两个 DWORD。
+typedef struct FILETIME_MINI {
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+} FILETIME_MINI;
+
+// GetFileAttributesExW(GetFileExInfoStandard=0) 返回的最小标准结构。
+typedef struct WIN32_FILE_ATTRIBUTE_DATA_MINI {
+    DWORD dwFileAttributes;
+    FILETIME_MINI ftCreationTime;
+    FILETIME_MINI ftLastAccessTime;
+    FILETIME_MINI ftLastWriteTime;
+    DWORD nFileSizeHigh;
+    DWORD nFileSizeLow;
+} WIN32_FILE_ATTRIBUTE_DATA_MINI;
+
+// Windows 的 MEMORY_BASIC_INFORMATION 在 32 位进程中的最小布局。
+// VirtualQuery 会把某段地址所在内存区域的信息写进这里。
+typedef struct MEMORY_BASIC_INFORMATION_MINI {
     LPVOID BaseAddress;
     LPVOID AllocationBase;
     DWORD AllocationProtect;
@@ -82,105 +123,76 @@ struct MEMORY_BASIC_INFORMATION_MINI {
     DWORD State;
     DWORD Protect;
     DWORD Type;
-};
-
-// 研究环境的 Clang 没有微软官方 kernel32.lib。交叉构建时会临时生成只用于链接验证
-// 的 import library；这个别名让最终 PE 导入表仍使用 Windows 的真实 API 名。
-#ifdef YCR_CROSS_BUILD
-#define YCR_IMPORT_ALIAS(name) __asm__("_" #name)
-#else
-#define YCR_IMPORT_ALIAS(name)
-#endif
+} MEMORY_BASIC_INFORMATION_MINI;
 
 extern "C" {
+// ---- 模块和函数地址 ---------------------------------------------------------
+HMODULE WINAPI GetModuleHandleW(LPCWSTR moduleName);
+HMODULE WINAPI GetModuleHandleA(LPCSTR moduleName);
+DWORD WINAPI GetModuleFileNameW(HMODULE module, LPWSTR filename, DWORD size);
+FARPROC WINAPI GetProcAddress(HMODULE module, LPCSTR procName);
+HMODULE WINAPI LoadLibraryW(LPCWSTR filename);
+BOOL WINAPI FreeLibrary(HMODULE module);
 
-__declspec(dllimport) HMODULE WINAPI GetModuleHandleW(LPCWSTR moduleName)
-    YCR_IMPORT_ALIAS(GetModuleHandleW);
+// ---- INI --------------------------------------------------------------------
+UINT WINAPI GetPrivateProfileIntW(LPCWSTR section, LPCWSTR key, int defaultValue, LPCWSTR filename);
+DWORD WINAPI GetPrivateProfileStringW(
+    LPCWSTR section,
+    LPCWSTR key,
+    LPCWSTR defaultValue,
+    LPWSTR returnedString,
+    DWORD size,
+    LPCWSTR filename);
+BOOL WINAPI WritePrivateProfileStringW(
+    LPCWSTR section,
+    LPCWSTR key,
+    LPCWSTR value,
+    LPCWSTR filename);
 
-__declspec(dllimport) BOOL WINAPI VirtualProtect(
-    LPVOID address,
-    SIZE_T size,
-    DWORD newProtect,
-    DWORD* oldProtect)
-    YCR_IMPORT_ALIAS(VirtualProtect);
+// ---- 时间 / 进程 ------------------------------------------------------------
+DWORD WINAPI GetTickCount(void);
+DWORD WINAPI GetCurrentProcessId(void);
+DWORD WINAPI GetLastError(void);
+HANDLE WINAPI GetCurrentProcess(void);
+BOOL WINAPI DisableThreadLibraryCalls(HMODULE module);
 
-__declspec(dllimport) BOOL WINAPI FlushInstructionCache(
-    HANDLE process,
-    LPCVOID baseAddress,
-    SIZE_T size)
-    YCR_IMPORT_ALIAS(FlushInstructionCache);
+// ---- 内存 -------------------------------------------------------------------
+SIZE_T WINAPI VirtualQuery(LPCVOID address, MEMORY_BASIC_INFORMATION_MINI* info, SIZE_T length);
+BOOL WINAPI VirtualProtect(LPVOID address, SIZE_T size, DWORD newProtect, LPDWORD oldProtect);
+BOOL WINAPI FlushInstructionCache(HANDLE process, LPCVOID baseAddress, SIZE_T size);
 
-__declspec(dllimport) HANDLE WINAPI GetCurrentProcess(void)
-    YCR_IMPORT_ALIAS(GetCurrentProcess);
+// ---- 文件状态（只读自动档时间） --------------------------------------------
+BOOL WINAPI GetFileAttributesExW(LPCWSTR filename, int infoLevelId, LPVOID fileInformation);
 
-__declspec(dllimport) BOOL WINAPI DisableThreadLibraryCalls(HMODULE module)
-    YCR_IMPORT_ALIAS(DisableThreadLibraryCalls);
+// ---- 外置 WAV 只读装载 ------------------------------------------------------
+// SaveEnhance 不改磁盘上的 WAV。它只读完整文件，复制到进程堆，再对内存副本的 PCM 样本缩放。
+BOOL WINAPI ReadFile(
+    HANDLE file,
+    LPVOID buffer,
+    DWORD bytesToRead,
+    LPDWORD bytesRead,
+    LPVOID overlapped);
+DWORD WINAPI GetFileSize(HANDLE file, LPDWORD fileSizeHigh);
+HANDLE WINAPI GetProcessHeap(void);
+LPVOID WINAPI HeapAlloc(HANDLE heap, DWORD flags, SIZE_T bytes);
+BOOL WINAPI HeapFree(HANDLE heap, DWORD flags, LPVOID memory);
 
-__declspec(dllimport) DWORD WINAPI GetModuleFileNameW(
-    HMODULE module,
-    LPWSTR fileName,
-    DWORD size)
-    YCR_IMPORT_ALIAS(GetModuleFileNameW);
-
-__declspec(dllimport) HANDLE WINAPI CreateFileW(
-    LPCWSTR fileName,
+// ---- 日志文件 ---------------------------------------------------------------
+HANDLE WINAPI CreateFileW(
+    LPCWSTR filename,
     DWORD desiredAccess,
     DWORD shareMode,
     LPVOID securityAttributes,
     DWORD creationDisposition,
     DWORD flagsAndAttributes,
-    HANDLE templateFile)
-    YCR_IMPORT_ALIAS(CreateFileW);
-
-__declspec(dllimport) BOOL WINAPI WriteFile(
+    HANDLE templateFile);
+BOOL WINAPI WriteFile(
     HANDLE file,
     LPCVOID buffer,
     DWORD bytesToWrite,
-    DWORD* bytesWritten,
-    LPVOID overlapped)
-    YCR_IMPORT_ALIAS(WriteFile);
-
-__declspec(dllimport) BOOL WINAPI CloseHandle(HANDLE object)
-    YCR_IMPORT_ALIAS(CloseHandle);
-
-
-__declspec(dllimport) DWORD WINAPI GetFileAttributesW(LPCWSTR fileName)
-    YCR_IMPORT_ALIAS(GetFileAttributesW);
-
-__declspec(dllimport) unsigned int WINAPI GetPrivateProfileIntW(
-    LPCWSTR section,
-    LPCWSTR key,
-    int defaultValue,
-    LPCWSTR fileName)
-    YCR_IMPORT_ALIAS(GetPrivateProfileIntW);
-
-__declspec(dllimport) SIZE_T WINAPI VirtualQuery(
-    LPCVOID address,
-    MEMORY_BASIC_INFORMATION_MINI* buffer,
-    SIZE_T length)
-    YCR_IMPORT_ALIAS(VirtualQuery);
-
-// BUGFix v0.3.2 合并 CrashFix 后需要为两条 x86 跳转路径建立极小的可执行 stub。
-// VirtualAlloc 负责申请 stub 内存；VirtualFree 在插件被正常卸载时释放它。
-__declspec(dllimport) LPVOID WINAPI VirtualAlloc(
-    LPVOID address,
-    SIZE_T size,
-    DWORD allocationType,
-    DWORD protect)
-    YCR_IMPORT_ALIAS(VirtualAlloc);
-
-__declspec(dllimport) BOOL WINAPI VirtualFree(
-    LPVOID address,
-    SIZE_T size,
-    DWORD freeType)
-    YCR_IMPORT_ALIAS(VirtualFree);
-
-// GetLastError 只用于把极少数安装失败的 Win32 原因写进 BUGFix.log。
-// 修复逻辑本身不会依赖错误码作危险的“猜测式继续”。
-__declspec(dllimport) DWORD WINAPI GetLastError(void)
-    YCR_IMPORT_ALIAS(GetLastError);
+    LPDWORD bytesWritten,
+    LPVOID overlapped);
+BOOL WINAPI CloseHandle(HANDLE handle);
 }
 
-#ifndef YCR_CROSS_BUILD
-#pragma comment(lib, "kernel32.lib")
-#endif
+#endif // CASTLE_SAVE_ENHANCE_WIN32_MINI_H
