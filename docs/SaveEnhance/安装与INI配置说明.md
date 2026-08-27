@@ -1,4 +1,4 @@
-# Castle_SaveEnhance v0.1.0-test5 安装与 INI 配置说明
+# Castle_SaveEnhance v0.1.0-test6 安装与 INI 配置说明
 
 ## 安装
 
@@ -17,8 +17,15 @@
 
 不要同时保留旧 `AnytimeSave.asi`，SaveEnhance 已经包含它的安全保存主线。
 
-从源码构建时直接运行 `src\SaveEnhance\build.bat`。最终 ASI 输出到仓库根
-`build\Castle_SaveEnhance.asi`，临时对象位于 `src\SaveEnhance\_build`，构建结束后自动删除。
+从源码构建时直接运行 `src\SaveEnhance\build.bat`。最终只向仓库根 `build` 输出：
+
+```text
+Castle_SaveEnhance.asi
+Castle_SaveEnhance.ini
+```
+
+INI 来自 `src\SaveEnhance\templete\Castle_SaveEnhance.ini`。脚本不复制 Markdown；
+`src\SaveEnhance\_build` 和 `src\SaveEnhance\tools\__pycache__` 在成功或失败后都会清理。
 
 ## test3 启动生命周期
 
@@ -149,7 +156,7 @@ mods\asi\Castle_SaveEnhance.log
 实机反馈时请同时提供日志和复现步骤。
 
 
-## test5 自动槽内部状态文件
+## test6 自动槽内部状态文件
 
 `NextAutoSlot` **不写入 INI**。插件把它保存到游戏存档目录：
 
@@ -157,7 +164,8 @@ mods\asi\Castle_SaveEnhance.log
 游戏目录\Save\.NEXTAUTOSLOT
 ```
 
-- 路径按 `RPG.exe` 所在目录构造，不依赖启动器工作目录；
+- 路径由日志同款模块路径构造器生成：`RPG.exe` 所在目录加 `Save\.NEXTAUTOSLOT`；
+- 写入前用 `CreateDirectoryW` 创建缺失的 `Save` 目录；
 - 文件名以点开头、没有后缀；不会额外设置 Windows Hidden 属性；
 - 内容固定为 `091`~`099` 三个 ASCII 字节，没有换行；
 - 91~99 有空槽时忽略游标，优先填最低空槽；
@@ -165,6 +173,14 @@ mods\asi\Castle_SaveEnhance.log
 - 99 后回到 91；
 - 文件缺失、损坏或值超范围时安全回到 91；
 - 状态文件写失败不会否定刚完成的 TSF，但日志会提示重启后可能从 91 开始。
+
+test5 用户实机确认 TSF 保存成功后，插件仍报告“无法创建 Save\.NEXTAUTOSLOT”。第一版
+test6 曾尝试游戏内部 `File::Read/Write`，机器检查通过但实机崩溃，已经回退。当前 test6
+继续使用日志同款 Win32 文本写入，只补上父目录创建和错误码诊断。成功时日志应出现：
+
+```text
+[自动槽状态] 已写入 Save\.NEXTAUTOSLOT，下一候选=92。
+```
 
 这个文件只是自动档轮换顺序，不包含 TSF、剧情或 GameVar。不要再向 INI 添加
 `[Internal]` 或 `NextAutoSlot`。

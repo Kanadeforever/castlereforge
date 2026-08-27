@@ -1,6 +1,6 @@
 {
   "tool": "verify_saveenhance_candidate.py",
-  "version": "v0.1.0-test5",
+  "version": "v0.1.0-test6",
   "all_passed": true,
   "results": [
     {
@@ -217,7 +217,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI 入口点非零",
       "ok": true,
-      "detail": "AddressOfEntryPoint=0x6AE0"
+      "detail": "AddressOfEntryPoint=0x6F20"
     },
     {
       "group": "Castle_SaveEnhance.asi",
@@ -235,7 +235,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI 必需 KERNEL32 导入齐全且未被装饰",
       "ok": true,
-      "detail": "缺少=无; 实际=CloseHandle, CreateFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile"
+      "detail": "缺少=无; 实际=CloseHandle, CreateDirectoryW, CreateFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetLastError, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile"
     },
     {
       "group": "Castle_SaveEnhance.asi",
@@ -271,7 +271,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI SHA-256（记录）",
       "ok": true,
-      "detail": "1c7c372f3dedba0bd2b5f99d8c06774b748f06d8e03c79a89163a8f375beb96e"
+      "detail": "4ce3e9ac3aab599da882ccab5ba3ed31ef437791a6a9dfc18e124e996e09f555"
     }
   ]
 }
