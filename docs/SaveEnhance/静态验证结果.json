@@ -217,7 +217,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI 入口点非零",
       "ok": true,
-      "detail": "AddressOfEntryPoint=0x6070"
+      "detail": "AddressOfEntryPoint=0x6AE0"
     },
     {
       "group": "Castle_SaveEnhance.asi",
@@ -235,7 +235,13 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI 必需 KERNEL32 导入齐全且未被装饰",
       "ok": true,
-      "detail": "缺少=无; 实际=CloseHandle, CreateFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile, WritePrivateProfileStringW"
+      "detail": "缺少=无; 实际=CloseHandle, CreateFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile"
+    },
+    {
+      "group": "Castle_SaveEnhance.asi",
+      "name": "NextAutoSlot 不再通过 INI 写回",
+      "ok": true,
+      "detail": "WritePrivateProfileStringW=不存在"
     },
     {
       "group": "Castle_SaveEnhance.asi",
@@ -257,9 +263,15 @@
     },
     {
       "group": "Castle_SaveEnhance.asi",
+      "name": "ASI 含自动槽状态文件路径 Save\\.NEXTAUTOSLOT",
+      "ok": true,
+      "detail": "存在"
+    },
+    {
+      "group": "Castle_SaveEnhance.asi",
       "name": "ASI SHA-256（记录）",
       "ok": true,
-      "detail": "5621b47e4cf06d90f1696467ed9c9c3b62e0b1c4790234df14d629a906a96abc"
+      "detail": "1c7c372f3dedba0bd2b5f99d8c06774b748f06d8e03c79a89163a8f375beb96e"
     }
   ]
 }

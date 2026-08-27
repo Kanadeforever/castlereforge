@@ -555,6 +555,18 @@ def verify_asi(path: Path) -> List[CheckResult]:
             )
         )
 
+        # 用户已经明确要求 NextAutoSlot 只能写进 Save\.NEXTAUTOSLOT，不能再回写 INI。
+        # 如果以后有人误把 WritePrivateProfileStringW 加回源码，这条导入表硬检查会立刻失败，
+        # 不会只靠人工阅读文档才发现轮换状态又跟着 INI 走了。
+        writes_private_profile = "WritePrivateProfileStringW" in kernel_names
+        results.append(
+            CheckResult(
+                "NextAutoSlot 不再通过 INI 写回",
+                not writes_private_profile,
+                "WritePrivateProfileStringW=" + ("存在" if writes_private_profile else "不存在"),
+            )
+        )
+
         crt_markers = ("msvcr", "msvcp", "ucrt", "vcruntime", "api-ms-win-crt")
         crt = sorted(
             dll for dll in imports if any(marker in dll.lower() for marker in crt_markers)
@@ -583,6 +595,18 @@ def verify_asi(path: Path) -> List[CheckResult]:
             "ASI 含 Castle_SaveEnhance 身份字符串",
             marker in pe.data,
             "存在" if marker in pe.data else "未找到",
+        )
+    )
+
+    # C++ 源码使用宽字符 L"Save\\.NEXTAUTOSLOT" 调用 CreateFileW，所以最终 PE 中应该
+    # 保留对应 UTF-16LE 字节。导入表检查只能证明“不再写 INI”，这条再证明新状态文件路径
+    # 确实进入了本次构建产物，避免误打包迁移前的旧 ASI。
+    state_path_marker = "Save\\.NEXTAUTOSLOT".encode("utf-16le")
+    results.append(
+        CheckResult(
+            "ASI 含自动槽状态文件路径 Save\\.NEXTAUTOSLOT",
+            state_path_marker in pe.data,
+            "存在" if state_path_marker in pe.data else "未找到",
         )
     )
     results.append(CheckResult("ASI SHA-256（记录）", True, sha256_bytes(pe.data)))

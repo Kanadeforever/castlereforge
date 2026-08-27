@@ -17,6 +17,9 @@
 
 不要同时保留旧 `AnytimeSave.asi`，SaveEnhance 已经包含它的安全保存主线。
 
+从源码构建时直接运行 `src\SaveEnhance\build.bat`。最终 ASI 输出到仓库根
+`build\Castle_SaveEnhance.asi`，临时对象位于 `src\SaveEnhance\_build`，构建结束后自动删除。
+
 ## test3 启动生命周期
 
 从 test3 开始，`DllMain` 不再执行正式业务初始化。Castle Mod Loader 完成 `LoadLibraryExW`、Locale/Overrides IAT 补挂后，会调用 ASI 导出的：
@@ -146,13 +149,22 @@ mods\asi\Castle_SaveEnhance.log
 实机反馈时请同时提供日志和复现步骤。
 
 
-## test5 自动槽内部状态
+## test5 自动槽内部状态文件
 
-INI 新增由插件自动维护的 `[Internal] NextAutoSlot`。用户一般不需要修改。
+`NextAutoSlot` **不写入 INI**。插件把它保存到游戏存档目录：
 
-- 91~99 有空槽：忽略游标，优先填最低空槽；
-- 91~99 全满：覆盖 `NextAutoSlot`，成功并经游戏文件层回读确认后推进到下一槽；
+```text
+游戏目录\Save\.NEXTAUTOSLOT
+```
+
+- 路径按 `RPG.exe` 所在目录构造，不依赖启动器工作目录；
+- 文件名以点开头、没有后缀；不会额外设置 Windows Hidden 属性；
+- 内容固定为 `091`~`099` 三个 ASCII 字节，没有换行；
+- 91~99 有空槽时忽略游标，优先填最低空槽；
+- 91~99 全满时覆盖文件记录的下一槽，成功并经游戏文件层回读确认后推进；
 - 99 后回到 91；
-- 非 91~99 值自动按 91 处理。
+- 文件缺失、损坏或值超范围时安全回到 91；
+- 状态文件写失败不会否定刚完成的 TSF，但日志会提示重启后可能从 91 开始。
 
-这个字段只是自动档轮换顺序，不包含任何游戏存档数据。
+这个文件只是自动档轮换顺序，不包含 TSF、剧情或 GameVar。不要再向 INI 添加
+`[Internal]` 或 `NextAutoSlot`。

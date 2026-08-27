@@ -75,23 +75,27 @@
 [PASS] ASI 带 DLL 标志
        Characteristics=0x2102
 [PASS] ASI 入口点非零
-       AddressOfEntryPoint=0x6070
+       AddressOfEntryPoint=0x6AE0
 [PASS] ASI 导出 Castle Mod Loader 正式入口 InitializeASI
        导出=InitializeASI
 [PASS] ASI 静态只导入 KERNEL32.dll
        DLL=KERNEL32.dll
 [PASS] ASI 必需 KERNEL32 导入齐全且未被装饰
-       缺少=无; 实际=CloseHandle, CreateFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile, WritePrivateProfileStringW
+       缺少=无; 实际=CloseHandle, CreateFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile
+[PASS] NextAutoSlot 不再通过 INI 写回
+       WritePrivateProfileStringW=不存在
 [PASS] ASI 无 CRT/UCRT/VCRUNTIME 静态依赖
        发现=无
 [PASS] user32/winmm 保持动态可选依赖
        Import Table 中没有 user32/winmm；运行时需要时才 LoadLibrary
 [PASS] ASI 含 Castle_SaveEnhance 身份字符串
        存在
+[PASS] ASI 含自动槽状态文件路径 Save\.NEXTAUTOSLOT
+       存在
 [PASS] ASI SHA-256（记录）
-       5621b47e4cf06d90f1696467ed9c9c3b62e0b1c4790234df14d629a906a96abc
+       1c7c372f3dedba0bd2b5f99d8c06774b748f06d8e03c79a89163a8f375beb96e
 
-[INFO] JSON 报告已写入：build_test5/静态验证结果.json
+[INFO] JSON 报告已写入：docs\SaveEnhance\静态验证结果.json
 
 === 总结 ===
 [PASS] 所有静态检查通过。注意：这仍然不是游戏实机验收。

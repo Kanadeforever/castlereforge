@@ -61,6 +61,7 @@ if not exist "%OUT_DIR%" mkdir "%OUT_DIR%"
 if exist "%OBJ_DIR%" rmdir /s /q "%OBJ_DIR%"
 mkdir "%OBJ_DIR%"
 del /q "%OUT_DIR%\Castle_SaveEnhance.asi" 2>nul
+del /q "%OUT_DIR%\存档增强截至该版本的完整接档.md" 2>nul
 
 echo [1/3] 编译 Castle_SaveEnhance.cpp
 rem /W4 /WX 把四级警告全部当错误；/Zl 与链接阶段的 /NODEFAULTLIB 一起保证不依赖 CRT。
@@ -102,16 +103,25 @@ if not defined HAS_INITIALIZE_ASI (
     goto :fail
 )
 
+rem 每个编译内容包必须自带完整接档。复制失败时不留下“只有 ASI、没有说明”的半成品。
+copy /y "%SCRIPT_DIR%截至该版本的完整接档.md" "%OUT_DIR%\存档增强截至该版本的完整接档.md" >nul
+if errorlevel 1 (
+    echo [错误] 无法把中文完整接档复制到仓库根 build。
+    goto :fail
+)
+
 rmdir /s /q "%OBJ_DIR%"
 echo.
 echo [成功] 已生成仓库根 build\Castle_SaveEnhance.asi。
+echo [成功] 已同步 build\存档增强截至该版本的完整接档.md。
 echo [成功] 已确认 PE32、DLL、非零入口点及 InitializeASI 导出。
 pause
 exit /b 0
 
 :fail
-rem 失败时删除可能只写了一半的最终 ASI和全部临时文件，避免用户误用坏产物。
+rem 失败时删除可能只写了一半的最终 ASI 和接档副本，并清理全部临时文件。
 del /q "%OUT_DIR%\Castle_SaveEnhance.asi" 2>nul
+del /q "%OUT_DIR%\存档增强截至该版本的完整接档.md" 2>nul
 if exist "%OBJ_DIR%" rmdir /s /q "%OBJ_DIR%"
 echo.
 echo [失败] Castle_SaveEnhance 构建中止，请从上方第一条错误开始检查。
