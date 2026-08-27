@@ -123,12 +123,6 @@ DWORD WINAPI GetPrivateProfileStringW(
     LPWSTR returnedString,
     DWORD size,
     LPCWSTR filename);
-BOOL WINAPI WritePrivateProfileStringW(
-    LPCWSTR section,
-    LPCWSTR key,
-    LPCWSTR value,
-    LPCWSTR filename);
-
 // ---- 时间 / 进程 ------------------------------------------------------------
 DWORD WINAPI GetTickCount(void);
 DWORD WINAPI GetCurrentProcessId(void);

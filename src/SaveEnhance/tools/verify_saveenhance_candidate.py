@@ -544,7 +544,6 @@ def verify_asi(path: Path) -> List[CheckResult]:
             "VirtualProtect",
             "VirtualQuery",
             "WriteFile",
-            "WritePrivateProfileStringW",
         }
         missing = sorted(required - kernel_names)
         results.append(

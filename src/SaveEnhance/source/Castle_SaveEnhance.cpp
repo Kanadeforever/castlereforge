@@ -19,7 +19,7 @@
 //   RB + R3    = Controller 快速存档；
 //   RB + Start = Controller 快速读档请求，同样进入 N 次确认状态机。
 //
-//   自动存档  = 真正换地图 + 可配置分钟间隔；91~99 有空槽先填空，全满后按 TSF 文件修改时间覆盖最旧一份；
+//   自动存档  = 真正换地图 + 可配置分钟间隔；91~99 有空槽先填空，全满后按持久化环形游标覆盖；
 //   存档页面  = 原版 8 页×4 扩成 25 页×4，编号改成 0~99；第一页上一页跳最后一页，
 //               最后一页下一页跳第一页；
 //   保留槽 UI = 0、91~99 打开“取消/读档/存档”三项窗口时，把“存档”按钮标为原版 disabled，
@@ -265,8 +265,9 @@ GameFileDtorFunction gGameFileDtor = nullptr;
 GameFileOpenFunction gGameFileOpen = nullptr;
 
 // 91~99 全部已存在后，NextAutoSlot 指示“下一次应该覆盖哪一个物理槽”。
-// 它写进同一个 Castle_SaveEnhance.ini 的 [Internal]，只是一枚轮换游标，不含任何游戏进度。
-// 如果用户删掉任一自动档，游戏文件层扫描会优先填空槽，游标不会强行覆盖其它档。
+// 这个值只写入 RPG.exe 旁边的 Save\.NEXTAUTOSLOT，不再污染玩家可能复制、重装或替换的 INI。
+// 文件只保存 091~099 三个 ASCII 字节，不含任何游戏进度；丢失或损坏时安全回到 91。
+// 如果用户删掉任一自动档，游戏文件层扫描仍优先填空槽，游标不会强行覆盖其它档。
 DWORD gNextAutoSlot = kAutoSlotFirst;
 
 // ============================================================================
@@ -374,6 +375,30 @@ bool BuildIniPath(wchar_t* out, SIZE_T capacity) {
     return GetSelfDirectory(out, capacity) && AppendW(out, capacity, L"Castle_SaveEnhance.ini");
 }
 
+bool BuildAutoRingStatePath(wchar_t* out, SIZE_T capacity) {
+    // 状态文件必须跟着游戏存档走，而不是跟着 ASI/INI 走。因此这里传 nullptr 给
+    // GetModuleFileNameW，取得当前主程序 RPG.exe 的绝对路径，再把文件名替换成
+    // Save\.NEXTAUTOSLOT。即使 Mod Loader 从别的工作目录启动，最终位置也保持稳定。
+    if (out == nullptr || capacity < 32u) {
+        return false;
+    }
+    const DWORD length = GetModuleFileNameW(nullptr, out, static_cast<DWORD>(capacity));
+    if (length == 0u || static_cast<SIZE_T>(length) >= capacity) {
+        return false;
+    }
+
+    // 从 RPG.exe 末尾向前找到最后一个路径分隔符，只保留游戏根目录和末尾反斜杠。
+    SIZE_T cut = static_cast<SIZE_T>(length);
+    while (cut > 0u && out[cut - 1u] != L'\\' && out[cut - 1u] != L'/') {
+        --cut;
+    }
+    if (cut == 0u) {
+        return false;
+    }
+    out[cut] = L'\0';
+    return AppendW(out, capacity, L"Save\\.NEXTAUTOSLOT");
+}
+
 bool IsValidWavFilename(const wchar_t* name) {
     // 只接受“单个文件名”，不允许用户通过 ..\ 或绝对路径把播放范围跳出插件资源目录。
     const SIZE_T length = WLen(name);
@@ -464,15 +489,6 @@ void LoadConfig() {
     ReadSoundValue(L"AutoSaveFailed", gConfig.sound.autoSaveFailed, 192u);
 }
 
-void WriteThreeDigits(DWORD value, wchar_t* out) {
-    // 原版文件名使用 %03d，所以固定写三位：0=>000、91=>091、99=>099。
-    // 本插件实际只使用 0~99，但保留百位计算让辅助函数本身与原版三位格式一致。
-    out[0] = static_cast<wchar_t>(L'0' + ((value / 100u) % 10u));
-    out[1] = static_cast<wchar_t>(L'0' + ((value / 10u) % 10u));
-    out[2] = static_cast<wchar_t>(L'0' + (value % 10u));
-    out[3] = L'\0';
-}
-
 bool BuildSaveAnsiPath(DWORD slot, char* out, SIZE_T capacity) {
     // 这就是原版 Writer 最终送进游戏 File::Open 的路径：Save\SaveNNN.TSF。
     // 这里使用 ANSI char 而不是 wchar_t，因为 0x4417C0 本身接收 char*。
@@ -518,21 +534,74 @@ DWORD ClampAutoRingSlot(DWORD value) {
 }
 
 void LoadAutoRingState() {
-    // Internal 区域由插件自己维护。它不是用户功能设置，也不参与 TSF 内容。
-    // INI 丢失/值损坏时回到 91；只要 91~99 里还有空槽，ChooseAutoSaveSlot 仍优先填空槽。
-    gNextAutoSlot = ClampAutoRingSlot(
-        GetPrivateProfileIntW(L"Internal", L"NextAutoSlot", static_cast<int>(kAutoSlotFirst), gIniPath));
+    // 先设置安全默认值。文件不存在、路径失败、读取失败、长度不是 3 或内容超出 091~099，
+    // 都保持 91，不把损坏的元数据扩大成错误槽位写入。
+    gNextAutoSlot = kAutoSlotFirst;
+
+    wchar_t path[520];
+    if (!BuildAutoRingStatePath(path, 520u)) {
+        ycrlog::Line("[自动槽状态] 无法构造 Save\\.NEXTAUTOSLOT 路径；本轮从91开始。");
+        return;
+    }
+
+    HANDLE file = CreateFileW(
+        path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        // 第一次使用插件时文件本来就不存在。这不是功能失败，第一次成功自动存档后会创建。
+        ycrlog::Line("[自动槽状态] Save\\.NEXTAUTOSLOT 不存在；本轮从91开始。");
+        return;
+    }
+
+    // 只接受恰好三个 ASCII 数字。多读一个字节是为了拒绝“091换行”或其它尾随垃圾。
+    BYTE raw[4] = {};
+    DWORD bytesRead = 0u;
+    const BOOL readOk = ReadFile(file, raw, 4u, &bytesRead, nullptr);
+    CloseHandle(file);
+    if (readOk == FALSE || bytesRead != 3u ||
+        raw[0] < static_cast<BYTE>('0') || raw[0] > static_cast<BYTE>('9') ||
+        raw[1] < static_cast<BYTE>('0') || raw[1] > static_cast<BYTE>('9') ||
+        raw[2] < static_cast<BYTE>('0') || raw[2] > static_cast<BYTE>('9')) {
+        ycrlog::Line("[自动槽状态] Save\\.NEXTAUTOSLOT 内容无效；本轮从91开始。");
+        return;
+    }
+
+    const DWORD parsed = static_cast<DWORD>(raw[0] - static_cast<BYTE>('0')) * 100u +
+                         static_cast<DWORD>(raw[1] - static_cast<BYTE>('0')) * 10u +
+                         static_cast<DWORD>(raw[2] - static_cast<BYTE>('0'));
+    if (parsed < kAutoSlotFirst || parsed > kAutoSlotLast) {
+        ycrlog::Line("[自动槽状态] Save\\.NEXTAUTOSLOT 不在091~099范围；本轮从91开始。");
+        return;
+    }
+    gNextAutoSlot = parsed;
 }
 
 void SaveAutoRingState(DWORD nextSlot) {
     gNextAutoSlot = ClampAutoRingSlot(nextSlot);
 
-    // 91~99 都是三位数，可以复用 WriteThreeDigits，不需要 sprintf/CRT。
-    wchar_t value[4];
-    WriteThreeDigits(gNextAutoSlot, value);
-    if (WritePrivateProfileStringW(L"Internal", L"NextAutoSlot", value, gIniPath) == FALSE) {
-        // 状态写失败不会把本次游戏存档判成失败。最坏只是下次进程重启后从 91 开始轮换。
-        ycrlog::Line("[自动槽状态] 无法写回 INI 的 NextAutoSlot；本次存档仍有效，重启后轮换游标可能回到91。");
+    wchar_t path[520];
+    if (!BuildAutoRingStatePath(path, 520u)) {
+        ycrlog::Line("[自动槽状态] 无法构造 Save\\.NEXTAUTOSLOT 路径；本次存档仍有效，重启后从91开始。");
+        return;
+    }
+
+    HANDLE file = CreateFileW(
+        path, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        ycrlog::Line("[自动槽状态] 无法创建 Save\\.NEXTAUTOSLOT；本次存档仍有效，重启后从91开始。");
+        return;
+    }
+
+    // 文件固定只有三个 ASCII 字节，例如 92 写成“092”。不用 sprintf，可以继续维持无 CRT。
+    const BYTE raw[3] = {
+        static_cast<BYTE>('0' + ((gNextAutoSlot / 100u) % 10u)),
+        static_cast<BYTE>('0' + ((gNextAutoSlot / 10u) % 10u)),
+        static_cast<BYTE>('0' + (gNextAutoSlot % 10u))};
+    DWORD bytesWritten = 0u;
+    const BOOL writeOk = WriteFile(file, raw, 3u, &bytesWritten, nullptr);
+    CloseHandle(file);
+    if (writeOk == FALSE || bytesWritten != 3u) {
+        // 状态写失败不会把刚完成的游戏存档判成失败；当前进程仍继续使用内存里的正确游标。
+        ycrlog::Line("[自动槽状态] 写入 Save\\.NEXTAUTOSLOT 失败；本次存档仍有效，重启后可能从91开始。");
     }
 }
 
@@ -1887,8 +1956,11 @@ extern "C" void __fastcall SafeMapTickHook(void* sceneContainer, void* unusedEdx
 extern "C" BOOL __fastcall SafeSaveWriterHook(void* runtimeManager, void* unusedEdx, const char* path);
 extern "C" BOOL __fastcall ProtectedManualSaveHook(void* runtimeManager, void* unusedEdx, DWORD slot);
 extern "C" void __fastcall SaveActionUpdateHook(void* action, void* unusedEdx);
-extern "C" __declspec(naked) void PrevPageBaseLoopHelper();
-extern "C" __declspec(naked) void NextPageBaseLoopHelper();
+// MSVC 只允许把 naked 属性写在“函数定义”上，不能写在这种前置声明上。
+// 这里先告诉编译器函数名称和参数即可；文件后面的真正定义仍然保留
+// __declspec(naked)，所以生成的裸汇编入口不会发生任何行为变化。
+extern "C" void PrevPageBaseLoopHelper();
+extern "C" void NextPageBaseLoopHelper();
 
 // 启动中途失败时用的“本轮是否已写过”标记。只有本插件刚刚改过的内容才恢复。
 bool gFixedPatchesInstalled = false;
@@ -2226,4 +2298,3 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) 
     }
     return TRUE;
 }
-
