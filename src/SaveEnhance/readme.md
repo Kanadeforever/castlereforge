@@ -1,32 +1,25 @@
-# AnytimeSave 主功能源码完整接档说明
+# SaveEnhance 主功能源码完整接档说明
 
 ## 1. 当前状态
 
-`AnytimeSave` 已在 2026-08-28 从 `src/Extra` 移到 `src/AnytimeSave`，成为与 `Backlog`、`Controller`、`Widescreen` 等目录同级的主功能。
+安全存档增强功能已在 2026-08-28 从 `src/Extra` 移到 `src/SaveEnhance`，成为与 `Backlog`、`Controller`、`Widescreen` 等目录同级的主功能。源码主文件与正式产物名称继续使用 `AnytimeSave`，避免改变功能身份和部署文件名。
 
-本次只移动源码、诊断工具和构建入口，没有修改 `AnytimeSave.cpp`、公共头文件或 Probe 源码的功能内容。正式算法继续沿用 v0.3.1a 的安全回退存档方案，功能版本仍属于 v0.3.2 整体交付结论的一部分。
+本次只移动正式源码和构建入口，没有修改 `AnytimeSave.cpp` 或公共头文件的功能内容。正式算法继续沿用 v0.3.1a 的安全回退存档方案，功能版本仍属于 v0.3.2 整体交付结论的一部分。
 
 ## 2. 当前目录
 
 ```text
-src/AnytimeSave/
+src/SaveEnhance/
   source/
     AnytimeSave.cpp
     PatchUtil.h
     PluginLog.h
     Win32Mini.h
-  tools/AnytimeSaveProbe/
-    asi/AnytimeSaveProbe.asi
-    src/
-      AnytimeSaveProbe.cpp
-      PatchUtil.h
-      Win32Mini.h
-    build_probe.bat
   build.bat
-  完整接档说明.md
+  readme.md
 ```
 
-正式功能自带一套现有公共头文件，因此不依赖 `src/Extra`。Probe 也继续保留自己的源码和已归档诊断产物。
+正式功能自带一套现有公共头文件，因此不依赖 `src/Extra`。先前随源码保存的 Probe 工具已按本次手工目录整理移除；其历史研究结论仍保存在 `docs/Extra`。
 
 ## 3. 构建方法
 
@@ -37,14 +30,6 @@ build.bat
 ```
 
 脚本只构建 `AnytimeSave.asi`，并输出到仓库根 `build` 目录。编译参数、无 CRT 原则和构建后的 x86/DLL/非零入口检查均与搬移前一致。
-
-只读诊断工具需要时单独运行：
-
-```text
-tools/AnytimeSaveProbe/build_probe.bat
-```
-
-Probe 与正式 `AnytimeSave.asi` 使用同一个菜单 Hook 点，绝不能同时加载。
 
 ## 4. 已确认架构
 
@@ -66,6 +51,6 @@ Probe 与正式 `AnytimeSave.asi` 使用同一个菜单 Hook 点，绝不能同�
 - 当前方案是安全进度保险，不是保存瞬间坐标的精确 Save Anywhere；
 - 单个危险地点的实机通过不能代表全部特殊场景；
 - 2026-08-28 已使用当前 MSVC x86 工具链实编译 `AnytimeSave.asi` 成功，并通过 x86、DLL、非零入口检查，入口 RVA 为 `0x000021E0`；
-- 同次验证中，未改源码的 Probe 在当前 MSVC 19.51 下因自定义 `memcpy/memset` 被识别为内部函数而报 `C2169`。这不是搬移后的路径错误，正式 `AnytimeSave.asi` 不受影响；本轮按“只移动、不做大修改”的范围保留该诊断工具构建阻塞；
-- 后续优先继续实机覆盖不同地图、传送前后与多 record 场景；出现新反例时，再使用 Probe 采样；
+- 先前 Probe 在当前 MSVC 19.51 下曾因自定义 `memcpy/memset` 被识别为内部函数而报 `C2169`；当前源码包已不再携带该诊断工具，正式 `AnytimeSave.asi` 不受影响；
+- 后续优先继续实机覆盖不同地图、传送前后与多 record 场景；若出现新反例，再从历史研究包恢复诊断工具另行处理；
 - 完整的地址、测试、历史失败方案和风险记录仍保存在 `docs/Extra/文档` 与 `docs/Extra/参考资料`，本次没有迁移或改写这些历史证据。

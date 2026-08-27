@@ -8,42 +8,49 @@
 - `NoCD`：跳过原版光盘检查；
 - `MaxGrowthAndDrop`：最大成长与最大掉宝，可由同名 INI 控制。
 
-`AnytimeSave` 已在 2026-08-28 移到同级的 `src/AnytimeSave`，作为单独主功能维护和构建。本次整理只改变文件位置与构建路径，没有修改任何 C++ 实现、补丁地址、机器码、配置键或运行行为。
+安全存档增强功能已在 2026-08-28 移到同级的 `src/SaveEnhance`，作为单独主功能维护和构建；正式产物仍名为 `AnytimeSave.asi`。本次整理只改变文件位置与构建路径，没有修改任何 C++ 实现、补丁地址、机器码、配置键或运行行为。
 
 ## 2. 当前目录
 
 ```text
 src/Extra/
-  BUGFix/source/
-    BUGFix.cpp
-    PatchUtil.h
-    PluginLog.h
-    Win32Mini.h
-  NoCD/source/
-    NoCD.cpp
-    PatchUtil.h
-    PluginLog.h
-    Win32Mini.h
-  MaxGrowthAndDrop/source/
-    MaxGrowthAndDrop.cpp
-    PatchUtil.h
-    PluginLog.h
-    Win32Mini.h
-  build.bat
+  BUGFix/
+    build.bat
+    source/
+      BUGFix.cpp
+      PatchUtil.h
+      PluginLog.h
+      Win32Mini.h
+  NoCD/
+    build.bat
+    source/
+      NoCD.cpp
+      PatchUtil.h
+      PluginLog.h
+      Win32Mini.h
+  MaxGrowthAndDrop/
+    build.bat
+    source/
+      MaxGrowthAndDrop.cpp
+      PatchUtil.h
+      PluginLog.h
+      Win32Mini.h
   完整接档说明.md
 ```
 
-三个功能各自保留一套同版本公共头文件，使任一功能目录都能独立阅读，不依赖已经移出的旧 `source` 汇总目录。以后若修改公共头文件，必须同步核对三个目录以及 `src/AnytimeSave/source` 中的副本。
+三个功能各自保留完整 `build.bat`、源码和一套同版本公共头文件，使任一功能目录都能独立阅读、独立构建，不依赖 Extra 根脚本或已经移出的旧 `source` 汇总目录。`src/Extra` 不再提供 `build.bat`；仓库根 `build_all.bat` 会直接调用三个功能脚本。以后若修改公共头文件，必须同步核对三个目录以及 `src/SaveEnhance/source` 中的副本。
 
 ## 3. 构建方法
 
-运行：
+单独构建某个功能时，直接运行对应脚本：
 
 ```text
-build.bat
+BUGFix/build.bat
+NoCD/build.bat
+MaxGrowthAndDrop/build.bat
 ```
 
-脚本使用 Visual Studio 的 x86 MSVC 工具链，输出到仓库根 `build` 目录：
+每个功能脚本都能自行定位 Visual Studio x86 MSVC 工具链、管理自己的 `_build` 中间目录，并把唯一目标输出到仓库根 `build` 目录：
 
 ```text
 BUGFix.asi
@@ -75,9 +82,11 @@ MaxGrowthAndDrop.asi
 
 2026-08-28 已使用当前 MSVC x86 工具链实编译通过：`BUGFix.asi / NoCD.asi / MaxGrowthAndDrop.asi` 均生成成功，并分别通过 x86、DLL、非零入口检查。入口 RVA 依次为 `0x00001DE0 / 0x00001140 / 0x000011D0`。
 
+三个脚本分别独立通过后，又在 LLVM 已加入 `PATH` 的环境下运行仓库根 `build_all.bat`；八个步骤全部成功，根脚本确认会直接调用三个功能入口，不需要 `src/Extra/build.bat`。
+
 ## 6. 下一步
 
 1. 每次修改任一公共头文件时，同步四套正式源码副本并做差异检查；
-2. 后续改动后重新运行本目录 `build.bat`，确认三个 ASI 继续通过 PE 入口检查；
+2. 后续改动后先运行被修改功能自己的 `build.bat`，再运行仓库根 `build_all.bat` 做全项目回归；
 3. 功能变化仍按 `docs/Extra/文档/测试说明.md` 做实机回归；
-4. 不把 `AnytimeSave` 源码重新并回 `Extra`，其独立入口为 `src/AnytimeSave/build.bat`。
+4. 不把安全存档增强源码重新并回 `Extra`，其独立入口为 `src/SaveEnhance/build.bat`。

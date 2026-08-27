@@ -2,7 +2,7 @@
 rem build_all.bat - 一键编译全部子项目，输出统一到仓库根 build\ 
 rem 前置：Visual Studio x86 工具链； 
 rem Widescreen 需要 LLVM（clang-cl/lld-link）在 PATH 
-rem 注：AnytimeSave 为独立主功能；AnytimeSaveProbe 为诊断工具，默认不参与一键编译
+rem 注：SaveEnhance 为独立主功能目录，当前构建产物仍名为 AnytimeSave.asi
 rem ============================================================ 
 
 @echo off
@@ -14,22 +14,28 @@ setlocal EnableExtensions
 
 set "ROOT=%~dp0"
 
-echo [1/6] Backlog
+echo [1/8] Backlog
 call "%ROOT%src\Backlog\build.bat" < nul || goto :fail
 
-echo [2/6] Controller（手柄支持）
+echo [2/8] Controller（手柄支持）
 call "%ROOT%src\Controller\build.bat" < nul || goto :fail
 
-echo [3/6] Widescreen（宽屏）
+echo [3/8] Widescreen（宽屏）
 call "%ROOT%src\Widescreen\build.bat" < nul || goto :fail
 
-echo [4/6] AnytimeSave（安全扩展存档）
-call "%ROOT%src\AnytimeSave\build.bat" < nul || goto :fail
+echo [4/8] SaveEnhance（安全扩展存档）
+call "%ROOT%src\SaveEnhance\build.bat" < nul || goto :fail
 
-echo [5/6] Extra（其他功能）
-call "%ROOT%src\Extra\build.bat" < nul || goto :fail
+echo [5/8] BUGFix（原版问题修复）
+call "%ROOT%src\Extra\BUGFix\build.bat" < nul || goto :fail
 
-echo [6/6] MODLoader（模组加载器）
+echo [6/8] NoCD（免 CD）
+call "%ROOT%src\Extra\NoCD\build.bat" < nul || goto :fail
+
+echo [7/8] MaxGrowthAndDrop（最大成长与掉宝）
+call "%ROOT%src\Extra\MaxGrowthAndDrop\build.bat" < nul || goto :fail
+
+echo [8/8] MODLoader（模组加载器）
 call "%ROOT%src\MODLoader\build.bat" < nul || goto :fail
 
 echo.

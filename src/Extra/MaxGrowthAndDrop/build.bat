@@ -2,16 +2,17 @@
 chcp 65001 >nul
 setlocal EnableExtensions
 
+rem 本脚本只构建 MaxGrowthAndDrop，不依赖 src\Extra 根目录中的其它构建脚本。
 set "SCRIPT_DIR=%~dp0"
-set "BUGFIX_SRC_DIR=%SCRIPT_DIR%BUGFix\source"
-set "NOCD_SRC_DIR=%SCRIPT_DIR%NoCD\source"
-set "MAX_GROWTH_AND_DROP_SRC_DIR=%SCRIPT_DIR%MaxGrowthAndDrop\source"
-set "OUT_DIR=%SCRIPT_DIR%..\..\build"
+set "SRC_DIR=%SCRIPT_DIR%source"
+set "OUT_DIR=%SCRIPT_DIR%..\..\..\build"
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%" 2>nul
-rem 中间对象目录（不散落到运行目录）
+
+rem 所有中间文件只放在当前功能目录的 _build 中，成功或失败后都会清理。
 set "OBJ_DIR=%SCRIPT_DIR%_build"
 if not exist "%OBJ_DIR%" mkdir "%OBJ_DIR%" 2>nul
 
+rem 通过 vswhere 定位本机最新的 Visual Studio C++ x86 工具链。
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%VSWHERE%" (
     echo [错误] 找不到 vswhere.exe。
@@ -30,41 +31,30 @@ if errorlevel 1 (
     goto :fail
 )
 
-:have_cl
 where cl.exe >nul 2>nul
 if errorlevel 1 (
     echo [错误] 找不到 cl.exe，请确认已安装 Visual Studio C++ 桌面开发组件。
     goto :fail
 )
 
+rem 沿用拆分前的编译与链接参数，不改变优化、警告、CRT 或 DLL 入口策略。
 set CFLAGS=/nologo /std:c++17 /utf-8 /O2 /Oi- /W4 /WX /GR- /GS- /Gs999999999 /Zl /LD
 set LFLAGS=/link /NOLOGO /NODEFAULTLIB /ENTRY:DllMain /SUBSYSTEM:WINDOWS /MACHINE:X86 kernel32.lib
 
-echo [1/3] BUGFix.asi - 已合并稳定 CrashFix test2 双调用路径修复
-cl.exe %CFLAGS% "%BUGFIX_SRC_DIR%\BUGFix.cpp" /Fo"%OBJ_DIR%\BUGFix.obj" %LFLAGS% /OUT:"%OUT_DIR%\BUGFix.asi"
-if errorlevel 1 goto :fail
-call :check_pe "%OUT_DIR%\BUGFix.asi"
-if errorlevel 1 goto :fail
-
-echo [2/3] NoCD.asi
-cl.exe %CFLAGS% "%NOCD_SRC_DIR%\NoCD.cpp" /Fo"%OBJ_DIR%\NoCD.obj" %LFLAGS% /OUT:"%OUT_DIR%\NoCD.asi"
-if errorlevel 1 goto :fail
-call :check_pe "%OUT_DIR%\NoCD.asi"
-if errorlevel 1 goto :fail
-
-echo [3/3] MaxGrowthAndDrop.asi
-cl.exe %CFLAGS% "%MAX_GROWTH_AND_DROP_SRC_DIR%\MaxGrowthAndDrop.cpp" /Fo"%OBJ_DIR%\MaxGrowthAndDrop.obj" %LFLAGS% /OUT:"%OUT_DIR%\MaxGrowthAndDrop.asi"
+echo [1/1] MaxGrowthAndDrop.asi
+cl.exe %CFLAGS% "%SRC_DIR%\MaxGrowthAndDrop.cpp" /Fo"%OBJ_DIR%\MaxGrowthAndDrop.obj" %LFLAGS% /OUT:"%OUT_DIR%\MaxGrowthAndDrop.asi"
 if errorlevel 1 goto :fail
 call :check_pe "%OUT_DIR%\MaxGrowthAndDrop.asi"
 if errorlevel 1 goto :fail
 
 rmdir /s /q "%OBJ_DIR%" 2>nul
 echo.
-echo [成功] Extra 的三个 ASI 已输出到 build 目录，并且全部通过 x86 / DLL / 非零入口点检查。
+echo [成功] MaxGrowthAndDrop.asi 已输出到 build 目录，并且通过 x86 / DLL / 非零入口点检查。
 pause
 exit /b 0
 
 :check_pe
+rem 直接读取 PE 头，防止错误架构、非 DLL 或零入口产物进入交付目录。
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ^
   "$p='%~1'; $b=[IO.File]::ReadAllBytes($p); if($b.Length -lt 64){exit 10}; $pe=[BitConverter]::ToInt32($b,0x3C); if($pe -lt 0 -or ($pe+44) -gt $b.Length){exit 11}; $m=[BitConverter]::ToUInt16($b,$pe+4); $c=[BitConverter]::ToUInt16($b,$pe+22); $ep=[BitConverter]::ToUInt32($b,$pe+40); if($m -ne 0x014C){Write-Host '[错误] 不是 x86 PE：' $p; exit 12}; if(($c -band 0x2000) -eq 0){Write-Host '[错误] PE 没有 DLL 标志：' $p; exit 13}; if($ep -eq 0){Write-Host '[错误] AddressOfEntryPoint=0，DllMain 不会执行：' $p; exit 14}; Write-Host ('[入口检查] PASS  RVA=0x{0:X8}  {1}' -f $ep,$p)"
 exit /b %errorlevel%
@@ -72,6 +62,6 @@ exit /b %errorlevel%
 :fail
 rmdir /s /q "%OBJ_DIR%" 2>nul
 echo.
-echo [失败] 构建中止，请从上方第一条错误开始检查。
+echo [失败] MaxGrowthAndDrop 构建中止，请从上方第一条错误开始检查。
 pause
 exit /b 1
