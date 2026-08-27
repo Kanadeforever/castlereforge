@@ -122,9 +122,14 @@ jobs:
           Compress-Archive -Path 'build\*' -DestinationPath $zip `
             -CompressionLevel Optimal
           Write-Host "[打包] $zip"
-          # 确认中文模板目录已正确写入
-          $hit = tar -tf $zip | Select-String '模板_复制后改名'
-          if (-not $hit) { throw 'zip 内缺少 模板_复制后改名 目录' }
+          # 用 .NET ZipFile 枚举条目校验中文模板目录（Unicode 安全）
+          # 不要用 tar -tf 文本输出匹配中文：bsdtar 按 ANSI 码页输出条目名，
+          # 在英文 runner 上中文必乱码，Select-String 永远匹配失败
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $found = [IO.Compression.ZipFile]::OpenRead($zip).Entries.FullName |
+            Where-Object { $_ -match '模板_复制后改名' }
+          if (-not $found) { throw 'zip 内缺少 模板_复制后改名 目录' }
+          Write-Host '[打包] 已确认 zip 含 overrides 模板目录'
 
       - name: 生成更新日志
         shell: pwsh
