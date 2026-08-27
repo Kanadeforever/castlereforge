@@ -5,7 +5,7 @@ Castle PadSupport Public API v1 静态检查器。
 这个工具只做“公共接口有没有被正确接进当前源码/二进制”的检查，不替代原来的
 refactor_check.py。两者分工如下：
 
-- refactor_check.py：继续验证 refactor42 的游戏功能、地址、页面适配和历史基线；
+- refactor_check.py：继续验证 refactor43 的游戏功能、地址、页面适配和历史基线；
 - public_api_check.py：只验证 CastlePad_GetApi v1 的源码、构建脚本和 PE 导出。
 
 工具只使用 Python 标准库，不需要 pefile。
@@ -40,7 +40,6 @@ def check_source(source: Path) -> None:
         "pad_public_api.c",
         "Castle_PadSupport.def",
         "plugin.c",
-        "build.bat",
     ]
     missing = [name for name in required_files if not (source / name).is_file()]
     if missing:
@@ -49,7 +48,12 @@ def check_source(source: Path) -> None:
     api = (source / "Castle_PadSupport_API.h").read_text(encoding="utf-8-sig")
     provider = (source / "pad_public_api.c").read_text(encoding="utf-8-sig")
     plugin = (source / "plugin.c").read_text(encoding="utf-8-sig")
-    build = (source / "build.bat").read_text(encoding="utf-8-sig")
+    # 新仓库结构把 build.bat 放在 Controller 包根，源码则集中在 source/。
+    # 这里从 source 的父目录读取构建脚本，绝不能为了兼容旧检查器去恢复“源码/build.bat”。
+    build_path = source.parent / "build.bat"
+    if not build_path.is_file():
+        fail("Controller 包根缺少 build.bat。")
+    build = build_path.read_text(encoding="utf-8-sig")
     definition = (source / "Castle_PadSupport.def").read_text(encoding="ascii")
 
     needles = [
@@ -81,10 +85,8 @@ def check_source(source: Path) -> None:
 
     if "pad_public_api.c pad_public_api.obj" not in build:
         fail("build.bat 没有编译 pad_public_api.c。")
-    if '/def:"Castle_PadSupport.def"' not in build:
+    if "Castle_PadSupport.def" not in build or "/def:" not in build:
         fail("build.bat 没有使用 Castle_PadSupport.def。")
-    if "开发接口\\Castle_PadSupport_API.h" not in build:
-        fail("build.bat 没有把公共头文件带入编译内容。")
 
     lines = [
         line.strip()
@@ -180,7 +182,7 @@ def check_binary(path: Path) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="检查 Castle PadSupport Public API v1")
-    parser.add_argument("--source", type=Path, default=Path(__file__).resolve().parents[1] / "源码")
+    parser.add_argument("--source", type=Path, default=Path(__file__).resolve().parents[1] / "source")
     parser.add_argument("--asi", type=Path, help="可选：检查已编译 Castle_PadSupport.asi 的导出表")
     args = parser.parse_args()
 

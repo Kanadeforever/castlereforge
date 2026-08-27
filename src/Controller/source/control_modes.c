@@ -21,13 +21,13 @@
  * 这样做不是为了多包一层，而是为了把以下互相冲突的边界放进同一个有限状态机：
  *
  * 1. Back 常驻鼠标在任何界面都能进入；再次 Back 总能退出。
- * 2. RT 临时鼠标只能由“自由地图中的新按下沿”建立，不能从菜单里带着一颗旧 RT 穿出来。
+ * 2. RT 临时鼠标可由“自由地图或剧情消息中的新按下沿”建立；其它菜单仍保留自己的RT业务。
  * 3. 调查激活键由 INI 选择：0=按住A、松开确认（默认），1=按住LT、另按A确认（旧方式）。
  * 4. 两种调查方式都和 RT 共用同一道自由地图门；RT 永远覆盖当前调查。
  * 5. RT 覆盖前已经处于调查，或 RT 期间新按下当前配置的调查键，松开 RT 后都允许恢复调查。
  * 6. 默认模式中按“取消键”会立刻取消，并锁住仍按着的“确定键”，直到确定键真实松开；
  *    取消键先松开也不能重进。具体物理键由 SwapConfirmCancel 决定。
- * 7. 临时态遇到新 UI 必须当帧结束，并锁住仍按着的 RT/LT/A/B，直到物理松开。
+ * 7. RT临时态允许普通剧情和剧情选项继续存在；遇到其它UI才结束并锁住仍按着的RT/LT/A/B。
  * 8. A/B 的鼠标脉冲若尚未松开，取消/接管指针态时必须由 Cursor_ResetClicks 收尾；
  *    但默认模式“松开确定键”已经获准的左键脉冲不能被退出清理立即抹掉。
  * 9. 实体鼠标接管不是“回到手柄”，所以结束插件会话但不播放模式切换震动。
@@ -43,12 +43,11 @@
  * barrier 会在随后每个 tick 继续消费仍按着的 RT/LT/A/B，直到真实松开，
  * 因而刚打开的商店或询问框绝不会把“触发它的同一颗键”再次解释为菜单操作。
  *
- * Back 常驻鼠标的 UI 自动回切还要求自由地图连续稳定 64ms。
- * 这是为了避开剧情句间、析构/构造交界的一帧空档；嵌套弹窗只要仍有任一 owner，计时就会重置。
+ * refactor43 删除旧版“Back模式在UI结束后自动回切”的计时状态。
+ * Back既然叫常驻鼠标，就只由再次Back、自由地图RT、实体鼠标接管、失去前台或断开手柄结束；
+ * 剧情句间和摇杆移动都不再偷偷改变模式。
  */
 
-/* UI全部退出后要求自由地图稳定64ms，避免连续剧情各句间的一帧空档误触自动回切。 */
-#define CONTROL_UI_EXIT_STABLE_MS 64u
 #define CONTROL_RUMBLE_PRIORITY_MODE 2
 
 typedef enum ControlMode {
@@ -67,9 +66,6 @@ typedef struct ControlModeState {
     int cancel_inhibit_until_release;
 
     int resume_investigation_after_rt;
-    int back_mouse_saw_ui;
-    int ui_exit_tracking;
-    u32 ui_exit_start_tick;
 } ControlModeState;
 
 static ControlModeState g_modes;
@@ -82,7 +78,7 @@ static int control_movie_active(void) {
 
 /*
  * “非菜单”不靠单一猜测标志，而是汇总项目已经各自闭合的owner和原版消息状态。
- * 子菜单不单独触发自动回切；只要任一顶层/模态owner仍存在，UI栈就仍被视为活动。
+ * 这个结果现在只服务自由地图/RT合法性判断，不再启动Back模式的任何自动回切计时。
  */
 static int control_any_mouse_ui_active(void) {
     if (Battle_AnyUiActive()) return 1;
@@ -101,12 +97,24 @@ static int control_any_mouse_ui_active(void) {
     return 0;
 }
 
-/* RT临时鼠标和两种调查激活方式严格共用这一道自由地图能力门。 */
+/* 两种调查激活方式严格使用这道自由地图能力门；RT会在后面额外放行剧情消息。 */
 static int control_free_map_active(int ui_active) {
     if (ui_active) return 0;
     if (!Investigation_MapSnapshotReady()) return 0;
     if (*(volatile u32*)GLOBAL_MAP_ACTION_BUSY != 0u) return 0;
     return 1;
+}
+
+/*
+ * RT鼠标的合法场景比调查多一类：剧情消息。
+ *
+ * - 自由地图：保持既有RT鼠标能力；
+ * - GLOBAL_DIALOGUE_ID非0：普通剧情、mode=2多选、mode=3是/否都允许RT查看并点击；
+ * - 标题、战斗、主Interface、商店等其它UI：仍不允许RT抢走页面自己的翻页/数量语义。
+ */
+static int control_rt_mouse_allowed(int free_map) {
+    if (free_map) return 1;
+    return *(volatile u32*)GLOBAL_DIALOGUE_ID != 0u;
 }
 
 /*
@@ -191,13 +199,10 @@ static void control_clear_pointer_sessions(void) {
     Cursor_ResetClicks();
 }
 
-static void control_enter_back_mouse(int ui_active, const char* log_text) {
+static void control_enter_back_mouse(const char* log_text) {
     Investigation_EndSession();
     g_modes.mode = CONTROL_MODE_BACK_MOUSE;
     g_modes.resume_investigation_after_rt = 0;
-    g_modes.back_mouse_saw_ui = ui_active ? 1 : 0;
-    g_modes.ui_exit_tracking = 0;
-    g_modes.ui_exit_start_tick = 0u;
     Cursor_SetMouseModeSession(1);
     Runtime_Log(log_text);
 }
@@ -206,9 +211,6 @@ static void control_enter_back_mouse(int ui_active, const char* log_text) {
 static void control_exit_back_mouse(const char* log_text) {
     g_modes.mode = CONTROL_MODE_CONTROLLER;
     g_modes.resume_investigation_after_rt = 0;
-    g_modes.back_mouse_saw_ui = 0;
-    g_modes.ui_exit_tracking = 0;
-    g_modes.ui_exit_start_tick = 0u;
     control_arm_release_barriers(1, 1);
     control_clear_pointer_sessions();
     control_rumble_controller_mode();
@@ -221,7 +223,7 @@ static void control_enter_rt_mouse(int resume_investigation) {
     g_modes.mode = CONTROL_MODE_RT_MOUSE;
     g_modes.resume_investigation_after_rt = resume_investigation ? 1 : 0;
     Cursor_SetMouseModeSession(1);
-    Runtime_Log("[模式] 自由地图RT临时鼠标已进入；这是手柄模式子态，不产生模式切换震动。");
+    Runtime_Log("[模式] RT临时鼠标已进入（自由地图或剧情消息）；这是手柄模式子态，不产生模式切换震动。");
 }
 
 static void control_enter_investigation(void) {
@@ -264,25 +266,23 @@ void ControlModes_Initialize(void) {
     g_modes.confirm_inhibit_until_release = 0;
     g_modes.cancel_inhibit_until_release = 0;
 
-    /* 下面三项都是跨tick状态，也必须显式清零，不能依赖静态区碰巧为0。 */
+    /* RT覆盖调查的恢复意图是跨tick状态，启动时必须显式清零。 */
     g_modes.resume_investigation_after_rt = 0;
-    g_modes.back_mouse_saw_ui = 0;
-    g_modes.ui_exit_tracking = 0;
-    g_modes.ui_exit_start_tick = 0u;
 
     /* 清掉 Cursor/Investigation 可能留下的会话和鼠标按键脉冲，建立干净起点。 */
     control_clear_pointer_sessions();
 
     if (control_investigation_uses_hold_confirm()) {
-        Runtime_Log("[模式] 路由已启用：Back常驻鼠标 > 自由地图RT临时鼠标 > 确定键按住调查 > 原手柄操作；ActivationMode=0。");
+        Runtime_Log("[模式] 路由已启用：Back常驻鼠标 > 地图/剧情RT临时鼠标 > 确定键按住调查 > 原手柄操作；ActivationMode=0。");
     } else {
-        Runtime_Log("[模式] 路由已启用：Back常驻鼠标 > 自由地图RT临时鼠标 > LT按住调查 > 原手柄操作；ActivationMode=1。");
+        Runtime_Log("[模式] 路由已启用：Back常驻鼠标 > 地图/剧情RT临时鼠标 > LT按住调查 > 原手柄操作；ActivationMode=1。");
     }
 }
 
 CursorTakeoverEvent ControlModes_Update(void) {
     int ui_active;
     int free_map;
+    int rt_mouse_allowed;
     int back_pressed;
     int rt_pressed;
     int rt_down;
@@ -296,8 +296,6 @@ CursorTakeoverEvent ControlModes_Update(void) {
     if (!PadInput_GameForeground(NULL) || !PadInput_GamepadConnected()) {
         g_modes.mode = CONTROL_MODE_CONTROLLER;
         g_modes.resume_investigation_after_rt = 0;
-        g_modes.back_mouse_saw_ui = 0;
-        g_modes.ui_exit_tracking = 0;
         control_clear_pointer_sessions();
         return CURSOR_TAKEOVER_NONE;
     }
@@ -306,6 +304,7 @@ CursorTakeoverEvent ControlModes_Update(void) {
 
     ui_active = control_any_mouse_ui_active();
     free_map = control_free_map_active(ui_active);
+    rt_mouse_allowed = control_rt_mouse_allowed(free_map);
     back_pressed = PadInput_Pressed(PAD_BACK);
     rt_pressed = PadInput_Pressed(PAD_RT);
     rt_down = PadInput_Down(PAD_RT);
@@ -330,7 +329,7 @@ CursorTakeoverEvent ControlModes_Update(void) {
             return CURSOR_TAKEOVER_NONE;
         }
 
-        control_enter_back_mouse(ui_active,
+        control_enter_back_mouse(
             g_modes.mode == CONTROL_MODE_RT_MOUSE
                 ? "[模式] RT临时鼠标中按Back：已转为常驻鼠标；松开RT不会退出。"
                 : "[模式] Back：已进入任何界面可用的常驻鼠标模式。");
@@ -339,22 +338,6 @@ CursorTakeoverEvent ControlModes_Update(void) {
     }
 
     if (g_modes.mode == CONTROL_MODE_BACK_MOUSE) {
-        if (ui_active) {
-            g_modes.back_mouse_saw_ui = 1;
-            g_modes.ui_exit_tracking = 0;
-        } else if (g_modes.back_mouse_saw_ui && free_map) {
-            if (!g_modes.ui_exit_tracking) {
-                g_modes.ui_exit_tracking = 1;
-                g_modes.ui_exit_start_tick = Runtime_Tick();
-            } else if ((Runtime_Tick() - g_modes.ui_exit_start_tick) >=
-                       Runtime_MsToTicks(CONTROL_UI_EXIT_STABLE_MS)) {
-                control_exit_back_mouse("[模式] 全部菜单/对话已退出并稳定回到地图；常驻鼠标自动回到手柄模式。");
-                return CURSOR_TAKEOVER_NONE;
-            }
-        } else {
-            g_modes.ui_exit_tracking = 0;
-        }
-
         /* 地图中的一颗新RT可以退出常驻鼠标；本次RT必须锁到松开，不能立即重进临时态。 */
         if (g_modes.mode == CONTROL_MODE_BACK_MOUSE && free_map && rt_pressed &&
             !g_modes.rt_inhibit_until_release) {
@@ -369,13 +352,13 @@ CursorTakeoverEvent ControlModes_Update(void) {
     }
 
     if (g_modes.mode == CONTROL_MODE_RT_MOUSE) {
-        if (!free_map) {
+        if (!rt_mouse_allowed) {
             g_modes.mode = CONTROL_MODE_CONTROLLER;
             g_modes.resume_investigation_after_rt = 0;
             control_arm_release_barriers(1, 1);
             control_clear_pointer_sessions();
             InputRouter_CaptureAll();
-            Runtime_Log("[模式] RT临时鼠标期间出现菜单/对话/非自由状态；已无震动退出并锁住RT到松开。");
+            Runtime_Log("[模式] RT临时鼠标期间进入非剧情菜单/战斗/电影；已无震动退出并锁住RT到松开。");
             return CURSOR_TAKEOVER_NONE;
         }
 
@@ -391,10 +374,11 @@ CursorTakeoverEvent ControlModes_Update(void) {
 
         if (!rt_down) {
             /*
-             * 只有三个条件同时成立才恢复：之前确实提出过恢复、调查键此刻还按着、
-             * 该键没有被释放屏障锁住。A/LT如果已经松开，RT结束后就回普通手柄。
+             * 只有四个条件同时成立才恢复：现在仍是自由地图、之前确实提出过恢复、
+             * 调查键此刻还按着、该键没有被释放屏障锁住。
+             * 剧情中允许RT鼠标，但绝不能在剧情还开着时恢复地图调查。
              */
-            int resume = g_modes.resume_investigation_after_rt &&
+            int resume = free_map && g_modes.resume_investigation_after_rt &&
                          investigation_down && !investigation_inhibited;
 
             /* 先离开RT状态并清旧鼠标会话，后面再按 resume 决定新状态。 */
@@ -509,13 +493,14 @@ CursorTakeoverEvent ControlModes_Update(void) {
         return CURSOR_TAKEOVER_NONE;
     }
 
-    /* 普通手柄：RT必须在自由地图中新按下，菜单里按住后关闭菜单不会突然进入。 */
-    if (free_map && rt_pressed && !g_modes.rt_inhibit_until_release) {
+    /* 普通手柄：RT可在自由地图或正在显示的剧情消息中新按下；其它菜单仍不允许抢键。 */
+    if (rt_mouse_allowed && rt_pressed && !g_modes.rt_inhibit_until_release) {
         /*
          * RT 与调查键同帧按下时，RT按既定优先级先进入鼠标模式；同时记住调查意图。
          * 之后松开RT、调查键仍按着，就会进入所配置的A或LT调查。
          */
-        control_enter_rt_mouse(investigation_pressed && investigation_down ? 1 : 0);
+        /* 只有自由地图才可能恢复调查；剧情中按RT不会制造一条无效的调查恢复意图。 */
+        control_enter_rt_mouse(free_map && investigation_pressed && investigation_down ? 1 : 0);
         control_update_mouse_inputs();
         InputRouter_CaptureAll();
         return CURSOR_TAKEOVER_RIGHT_STICK;
@@ -547,8 +532,6 @@ void ControlModes_OnPhysicalMouseTakeover(void) {
     control_arm_release_barriers(1, 1);
     g_modes.mode = CONTROL_MODE_CONTROLLER;
     g_modes.resume_investigation_after_rt = 0;
-    g_modes.back_mouse_saw_ui = 0;
-    g_modes.ui_exit_tracking = 0;
     control_clear_pointer_sessions();
     Runtime_Log("[模式] 实体鼠标接管：手柄指针会话已结束；键鼠继续完全由原版处理。");
 }

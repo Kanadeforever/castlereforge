@@ -164,10 +164,28 @@
  * refactor10 不再修改 GetAsyncKeyState 全局 IAT；只把这两个 6 字节
  * “mov esi,[0x4601A4]”改成“mov esi,我们的局部包装函数”。
  */
-#define GLOBAL_DIALOGUE_MODE           0x0046F640u /* 公共消息子模式；3=剧情两项选择。 */
+#define GLOBAL_DIALOGUE_MODE           0x0046F640u /* 公共消息子模式；2=剧情多行选项，3=剧情“是/否”。 */
+
+/*
+ * mode=2 多行剧情选项使用的原版行范围。
+ *
+ * 0x4044F0 会把两项数值代入下面的真实鼠标命中公式：
+ * - 第一行命中区上边界：359 + 22 * first_line；
+ * - 最后一行命中区下边界：379 + 22 * last_line。
+ *
+ * 插件只读取它们来计算“第几项”的隐藏命中坐标，不写行号、不写 VAR999，
+ * 最终结果仍由 RPG.exe 在收到原版左键后自行提交。
+ */
+#define GLOBAL_DIALOGUE_MULTI_FIRST_LINE 0x0046F628u
+#define GLOBAL_DIALOGUE_MULTI_LAST_LINE  0x0046F644u
+
 #define GLOBAL_DIALOGUE_CHOICE_VISUAL_STATE 0x0046F678u /* 原版显示/动画状态，mode=3 时使用 8/9/10。 */
 #define GLOBAL_DIALOGUE_CHOICE_HOVER_STATE  0x0046F679u /* 原版鼠标当前指向：8=无、10=第一项、9=第二项。 */
-#define SIG_DIALOGUE_CHOICE_DISPATCH   0x00403E5Au /* mode switch；index3 最终 CALL 0x404600。 */
+#define SIG_DIALOGUE_CHOICE_DISPATCH   0x00403E5Au /* mode switch；index2/3 分别进入 0x4044F0/0x404600。 */
+#define CALL_DIALOGUE_MULTI_CHOICE_UPDATE 0x00403E79u
+#define FN_DIALOGUE_MULTI_CHOICE_UPDATE   0x004044F0u
+#define SIG_DIALOGUE_MULTI_CHOICE_CURSOR  0x004044F0u
+#define CALL_DIALOGUE_MULTI_CHOICE_RESULT 0x004045A9u
 #define CALL_DIALOGUE_CHOICE_UPDATE    0x00403E80u
 #define FN_DIALOGUE_CHOICE_UPDATE      0x00404600u
 #define SIG_DIALOGUE_CHOICE_CURSOR     0x00404600u

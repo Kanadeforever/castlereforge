@@ -10,6 +10,8 @@
  *
  * 当前 Cursor 只拥有三种低层职责：显式鼠标会话、调查指针、既有菜单视觉。
  * Back/RT/LT/A/B 的业务解释全部由 ControlModes 完成；这里不再读取任何模式键。
+ * refactor43 又删除了“任意普通手柄活动自动夺回所有权并隐藏鼠标”的旧通用路径；
+ * 只有明确菜单导航、目标选择或显式鼠标/调查会话才会取得所有权。
  * 键鼠一旦产生真实移动，显隐与点击都交回原版；插件不替键鼠维持会话。
  * RT/LT 结束时必须释放仍在计时的模拟按键，避免把 DOWN 带回普通菜单。
  * 所有坐标 API 对外都以 640x480 客户区为准，系统 SetCursorPos 才使用屏幕坐标。
@@ -69,12 +71,37 @@ static SHORT WINAPI Cursor_HookGameGetKeyState(int virtual_key) {
     return original_state;
 }
 
-/* 记录 RPG.exe/插件自己的 warp，防止下一 tick 被误判成实体鼠标接管。 */
+/*
+ * 记录 RPG.exe/插件自己的 warp，防止下一 tick 被误判成实体鼠标接管。
+ *
+ * refactor42 以前只记“请求移动到哪里”，随后调用者又把这个请求值保存成采样基线。
+ * 在 DPI 缩放、窗口边界或 ddraw 包装层存在时，Windows 最终落点可能和请求值差1像素；
+ * 下一次 GetCursorPos 就会把这1像素误判为真人移动，ControlModes 因而立刻退出Back/RT鼠标。
+ *
+ * 现在 SetCursorPos 返回后立即再读一次真实系统落点，并把真实值保存为基线。
+ * 玩家随后真的移动鼠标时，下一次采样仍会变化，所以实体鼠标接管能力不会被关闭。
+ */
 static BOOL WINAPI Cursor_HookGameSetCursorPos(i32 x, i32 y) {
+    const RuntimeApi* api = Runtime_Api();
+    Point32 actual;
+    BOOL moved;
+
     g_cursor.game_warp_tick = Runtime_Tick();
     g_cursor.game_warp_x = x;
     g_cursor.game_warp_y = y;
-    return g_cursor.game_set_cursor_pos ? g_cursor.game_set_cursor_pos(x, y) : FALSE;
+
+    moved = g_cursor.game_set_cursor_pos ? g_cursor.game_set_cursor_pos(x, y) : FALSE;
+    if (!moved) return FALSE;
+
+    actual.x = x;
+    actual.y = y;
+    if (api && api->get_cursor_pos) {
+        /* 读取失败时保留请求值兜底；成功时使用Windows最终确认的真实屏幕坐标。 */
+        api->get_cursor_pos(&actual);
+    }
+    g_cursor.last_cursor_sample = actual;
+    g_cursor.last_cursor_sample_valid = 1;
+    return TRUE;
 }
 
 /* 稳定基线的摇杆曲线：死区外轻推1像素，推满每tick最多10像素。 */
@@ -153,8 +180,6 @@ static int cursor_apply_delta(HWND hwnd, int dx, int dy) {
     }
 
     if (!Cursor_HookGameSetCursorPos(point.x, point.y)) return 0;
-    g_cursor.last_cursor_sample = point;
-    g_cursor.last_cursor_sample_valid = 1;
     return 1;
 }
 
@@ -314,17 +339,6 @@ static int cursor_observe_physical_mouse(void) {
     return 1;
 }
 
-/* 手柄模式外的按键/摇杆仍只用来维持既有所有权切换，不再让右摇杆常驻移动鼠标。 */
-/*
- * 普通态重新取得所有权只接受仍有 r36 业务意义的输入。
- * PadInput 已经从这个查询中排除 Back、Start 和右摇杆；
- * Back 归 ControlModes，Start 归电影跳过，右摇杆只允许显式鼠标/调查会话读取。
- * 这个分层可以避免看似“没有动作”的右杆轻微漂移把真实鼠标所有权偷回来。
- */
-static int cursor_gamepad_has_navigation_activity(void) {
-    return PadInput_HasAnyActivity(0);
-}
-
 /* 主鼠标 draw hook：插件只能额外压制，从不强迫原版本来不画的光标出现。 */
 static void FASTCALL Cursor_HookMouseDraw(void* mouse, void* unused_edx) {
     u8* m = (u8*)mouse;
@@ -382,19 +396,20 @@ int Cursor_InstallHooks(void) {
     g_cursor.effective_visible = 1;
     g_cursor.visible_state_logged = -1;
     cursor_update_visibility();
-    Runtime_Log("[鼠标] refactor39：普通态右摇杆与R3复合点击保持删除；完整鼠标只由Back/地图RT显式会话启用。");
+    Runtime_Log("[鼠标] refactor43：普通手柄活动不再自动隐藏鼠标；完整鼠标由Back或地图/剧情RT显式启用，主动warp按实际落点登记。");
     return 1;
 }
 
 /*
- * Cursor_Update 只维护按键脉冲、实体鼠标接管与普通手柄所有权。
+ * Cursor_Update 只维护按键脉冲、实体鼠标接管与显式会话所有权。
  * 显式 Back/RT/LT 会话已经在同 tick 更早由 ControlModes 建立；此处绝不再次解释扳机，
- * 也绝不让普通态右摇杆产生移动或抢回所有权。
+ * 也不再使用“任意普通手柄活动就隐藏鼠标”的旧通用机制。
+ * 菜单/战斗真正需要手柄焦点时会明确调用 Cursor_ClaimForControllerNavigation；
+ * 地图移动本身不再偷偷改变鼠标显隐或所有权。
  */
 CursorTakeoverEvent Cursor_Update(void) {
     int foreground = PadInput_GameForeground(NULL);
     int physical_moved;
-    int gamepad_active;
 
     cursor_update_click_pulses();
 
@@ -418,11 +433,7 @@ CursorTakeoverEvent Cursor_Update(void) {
         return CURSOR_TAKEOVER_NONE;
     }
 
-    gamepad_active = cursor_gamepad_has_navigation_activity();
-    if (gamepad_active) {
-        if (!g_cursor.controller_owner) Runtime_Log("[光标] 本 tick 检测到普通手柄活动，重新取得指针所有权。");
-        g_cursor.controller_owner = 1;
-    }
+    /* 普通态不做自动所有权切换；只有各业务模块的显式Claim才代表真的开始手柄导航。 */
     cursor_update_visibility();
     return CURSOR_TAKEOVER_NONE;
 }
@@ -520,8 +531,6 @@ int Cursor_MoveControllerAt(i32 x, i32 y) {
         *(i32*)(mouse + MOUSE_POS_Y) = screen.y;
     }
     if (!Cursor_HookGameSetCursorPos(screen.x, screen.y)) return 0;
-    g_cursor.last_cursor_sample = screen;
-    g_cursor.last_cursor_sample_valid = 1;
     g_cursor.controller_owner = 1;
     return 1;
 }
@@ -535,9 +544,6 @@ void Cursor_ShowTargetAt(i32 x, i32 y) {
     *(i32*)(mouse + MOUSE_POS_X) = x;
     *(i32*)(mouse + MOUSE_POS_Y) = y;
     Cursor_HookGameSetCursorPos(x, y);
-    g_cursor.last_cursor_sample.x = x;
-    g_cursor.last_cursor_sample.y = y;
-    g_cursor.last_cursor_sample_valid = 1;
     g_cursor.target_indicator_active = 1;
     cursor_update_visibility();
 }
@@ -556,9 +562,6 @@ void Cursor_ShowMenuFocusAt(i32 x, i32 y) {
     *(i32*)(mouse + MOUSE_POS_X) = x;
     *(i32*)(mouse + MOUSE_POS_Y) = y;
     Cursor_HookGameSetCursorPos(x, y);
-    g_cursor.last_cursor_sample.x = x;
-    g_cursor.last_cursor_sample.y = y;
-    g_cursor.last_cursor_sample_valid = 1;
     g_cursor.menu_focus_indicator_active = 1;
     cursor_update_visibility();
 }
@@ -573,9 +576,6 @@ void Cursor_MoveHiddenSelectionAt(i32 x, i32 y) {
     *(i32*)(mouse + MOUSE_POS_X) = x;
     *(i32*)(mouse + MOUSE_POS_Y) = y;
     Cursor_HookGameSetCursorPos(x, y);
-    g_cursor.last_cursor_sample.x = x;
-    g_cursor.last_cursor_sample.y = y;
-    g_cursor.last_cursor_sample_valid = 1;
     g_cursor.menu_focus_indicator_active = 0;
     cursor_update_visibility();
 }

@@ -361,37 +361,6 @@ i16 PadInput_Axis(PadAxis axis) {
     return g_pad.axes[(int)axis];
 }
 
-int PadInput_HasAnyActivity(int include_r3) {
-    u32 mask = g_pad.buttons;
-    int i;
-
-    /* r37 删除普通态R3鼠标复合操作；保留参数只为兼容既有调用边界。 */
-    if (!include_r3) mask &= ~(1u << (u32)PAD_R3);
-
-    /*
-     * Back 已提升为 ControlModes 的显式模式键。这里继续排除它，避免物理鼠标接管后
-     * 同一颗尚未松开的 Back 又从底层通用活动路径抢回所有权。
-     */
-    mask &= ~(1u << (u32)PAD_BACK);
-
-    /*
-     * Start 是“流程按键”，不是“指针/菜单导航活动”。
-     * refactor4 封版时根本没有采样 Start；现在新增动画跳过时，如果把 Start 也算成通用手柄活动，
-     * 就会顺手改变 Cursor 的所有权和显隐，这是本功能完全不需要的副作用。
-     * 所以这里始终把 Start 从 Cursor 活动判断里排除：Start 只交给输入语义层和 Movie Context。
-     */
-    mask &= ~(1u << (u32)PAD_START);
-    if (mask != 0u) return 1;
-
-    /* 普通手柄态只有左摇杆仍有业务；右摇杆必须保持完全无功能、也不参与所有权回抢。 */
-    for (i = PAD_AXIS_LEFT_X; i <= PAD_AXIS_LEFT_Y; ++i) {
-        int value = (int)g_pad.axes[i];
-        if (value < 0) value = -value;
-        if (value >= PAD_STICK_DEADZONE) return 1;
-    }
-    return 0;
-}
-
 /* 通过前台窗口 PID 与当前进程 PID 比较，阻止游戏在后台时模拟鼠标或角色移动。 */
 int PadInput_GameForeground(HWND* out_hwnd) {
     const RuntimeApi* api = Runtime_Api();

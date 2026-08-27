@@ -146,8 +146,10 @@ static int plugin_install_all_hooks(void) {
     if (!DialogueInput_InstallHook()) return 0;
 
     /*
-     * 公共剧情“是/否”不是菜单 ConfirmDialog，而是消息引擎 mode=3 的 0x404600 鼠标选择器。
-     * SceneChoice 不修改剧情变量；隐藏鼠标只负责第一/第二项真实命中坐标，视觉焦点使用 RPG.exe 自己的选择框，再发送原版左键脉冲。
+     * 公共剧情选项不是菜单 ConfirmDialog：
+     * - mode=2 的 /q 多行回答走 0x4044F0；
+     * - mode=3 的 /z“是/否”走 0x404600。
+     * SceneChoice 不修改剧情变量；隐藏鼠标只负责原版命中坐标，视觉焦点和结果提交都交给 RPG.exe。
      */
     if (!SceneChoice_Install()) return 0;
 
@@ -164,7 +166,7 @@ static int plugin_install_all_hooks(void) {
      * 用来拒绝“源码已经是R41，但编译内容仍误放R40旧二进制”的打包错误。
      * 两种模式的数字含义也写进成品，现场只拿到日志时仍能判断用户到底应按 A 还是 LT。
      */
-    Runtime_Log("[启动] refactor42 + Public API v1：AutoFocusNearest=1默认自动最近目标、=0关闭；SwapConfirmCancel=0为Xbox确定布局、=1为PS O确定/X取消；确定=鼠标左键、取消=右键；RB+ABXY物理快捷不变。");
+    Runtime_Log("[启动] refactor43 + Public API v1：剧情mode=2多选支持上下/确定；剧情可用RT鼠标；Back不再自动回切；手柄warp不再误判实体鼠标；普通活动自动隐藏路径已删除。");
     return 1;
 }
 
@@ -284,7 +286,7 @@ static DWORD WINAPI PluginWorker(void* unused) {
              * 存档点内部按深度优先继续处理真正的子模态层：
              * - SaveSlot_Update 已在上面先处理槽位、三项动作和直接确认框；
              * - action+0x5B4 的二次 Yes/No 属于通用 ConfirmDialog，必须在 wrapper 存在时仍可读手柄；
-             * - 进入存档点前的剧情 mode=3 可能还有一个 64ms LEFTDOWN 脉冲，只维护到期 LEFTUP，
+             * - 进入存档点前的剧情 mode=2/mode=3 可能还有一个 64ms LEFTDOWN 脉冲，只维护到期 LEFTUP，
              *   不允许旧剧情窗口在存档点背后继续读取新按键。
              */
             ConfirmDialog_Update();
@@ -310,7 +312,7 @@ static DWORD WINAPI PluginWorker(void* unused) {
         InterfaceOptions_Update();
 
         /*
-         * 模态层优先级：菜单 ConfirmDialog -> 剧情 mode=3 选择 -> 客栈/炼化根业务 -> 普通对话 A。
+         * 模态层优先级：菜单 ConfirmDialog -> 剧情 mode=2/mode=3 选择 -> 客栈/炼化根业务 -> 普通对话确定键。
          * 特别是“歇息”后客栈对象可能短时间仍存在；SceneChoice 先消费 A/B/方向可防止同一颗键再次误点客栈按钮。
          */
         ConfirmDialog_Update();

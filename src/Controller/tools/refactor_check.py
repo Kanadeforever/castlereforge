@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》手柄操控模组 v0.3-refactor42 综合静态检查工具。
+《幽城幻剑录》手柄操控模组 v0.3-refactor43 综合静态检查工具。
 
 这个工具只使用 Python 标准库，不修改 RPG.exe，也不修改源码。
 它把这次重构最容易发生的“大回归”变成可以重复执行的机械检查：
@@ -17,8 +17,8 @@
 9. 检查 dev20 的 INI 对外键名仍然完整；
 10. 检查地图十字键只提供八方向步行，且松开后保留左摇杆既有全向走跑阈值；
 11. 检查统一 Shop Adapter 保留 refactor36 已实机通过的连续翻页、Y 信息窗与列标记；
-12. 检查 refactor42 的调查进入自动最近目标、确定/取消布局、鼠标语义跟随、RB+ABXY物理快捷隔离、A/LT双激活、RT覆盖与轮盘安全；
-13. 检查 build.bat 逐个编译 29 个独立 .c（含 ControlModes 与 Investigation），并保留 x86、/W4 /WX、UTF-8、无 CRT 约束；
+12. 检查 refactor43 的剧情mode=2多行选择、剧情RT鼠标、Back常驻边界、主动warp防误判与普通活动自动隐藏路径删除；
+13. 检查 build.bat 逐个编译 30 个独立 .c（含Public API、ControlModes与Investigation），并保留 x86、/W4 /WX、UTF-8、无 CRT 约束；
 14. 检查编译产物确实是 PE32 / i386 DLL；
 15. 检查源码文件名均为英文/ASCII，并给出注释覆盖率，帮助持续遵守“项目圣经”；
 16. 检查所有现行说明文档都集中在“文档”目录，且不再携带逐版“证据”树；
@@ -349,7 +349,8 @@ SEALED_REFACTOR24_BATTLE_SHA256 = {
 }
 
 SEALED_REFACTOR11_DIALOGUE_SHA256 = {
-    "dialogue_input.c": "a0c89357393a0e2082667b1a7db7a56714ff9c8e2d091b021c460ae23bbbd1d0",
+    # refactor43 只在 dialogue_input.c 增加 SceneChoice 活动时清旧pending的模态隔离，
+    # 原两阶段Hook结构由下方语义护栏继续保护，因此不再错误地锁死整个 .c。
     "dialogue_input.h": "6e848df4c366e74dc6c4aee30ddc1a5290396b926a3259217c322fe1a51811c1",
 }
 
@@ -1008,10 +1009,13 @@ def read_utf8(path: Path) -> str:
 
 def check_source_architecture(root: Path, result: CheckResult) -> None:
     """检查“新架构”不是只停留在文档里的口号。"""
-    src = root / "源码"
+    # 2026-08-27 起仓库统一采用英文目录：Controller/source、templete、tools。
+    # 检查器必须跟随新结构，不能为了通过旧规则又创建“源码/”或复制一套文件。
+    src = root / "source"
     required = [
         "platform.h", "game_addresses.h", "runtime.h", "runtime.c",
         "pad_input.h", "pad_input.c", "input_router.h", "input_router.c",
+        "Castle_PadSupport_API.h", "Castle_PadSupport.def", "pad_public_api.h", "pad_public_api.c",
         "movie_skip.h", "movie_skip.c",
         "confirm_dialog.h", "confirm_dialog.c", "dialogue_input.h", "dialogue_input.c",
         "cursor.h", "cursor.c", "exploration.h", "exploration.c", "investigation.h", "investigation.c",
@@ -1020,7 +1024,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "spatial_neighbor.h", "spatial_neighbor.c", "interface_formation.h", "interface_formation.c",
         "interface_tome.h", "interface_tome.c", "interface_options.h", "interface_options.c",
         "save_slot.h", "save_slot.c", "save_point.h", "save_point.c",
-        "frontend.h", "frontend.c", "battle.h", "battle.c", "plugin.c", "build.bat",
+        "frontend.h", "frontend.c", "battle.h", "battle.c", "plugin.c",
     ]
     missing = [name for name in required if not (src / name).is_file()]
     if missing:
@@ -1030,7 +1034,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
 
     # 所有代码文件名必须是英文/ASCII；这是项目长期规范，而不是本轮临时偏好。
     bad_names = []
-    for path in list(src.glob("*.[ch]")) + [src / "build.bat"]:
+    for path in list(src.glob("*.[ch]")) + [root / "build.bat"]:
         try:
             path.name.encode("ascii")
         except UnicodeEncodeError:
@@ -1341,10 +1345,12 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         result.fail("Start=ESC 最小电影实现", f"缺少={simple_missing}，发现复杂旧方案={complex_hits}")
 
     pad_text = read_utf8(src / "pad_input.c")
-    if "PAD_START" in pad_text and "mask &= ~(1u << (u32)PAD_START);" in pad_text:
-        result.ok("Start 不污染 Cursor 所有权", "采样 Start，但从通用指针活动判断中排除")
+    pad_header = read_utf8(src / "pad_input.h")
+    generic_activity_removed = "PadInput_HasAnyActivity" not in (pad_text + pad_header + read_utf8(src / "cursor.c"))
+    if "PAD_START" in pad_header and generic_activity_removed:
+        result.ok("Start 不污染 Cursor 所有权", "Start仍被采样；普通活动自动夺权接口已经整体删除，不再需要逐键排除")
     else:
-        result.fail("Start 不污染 Cursor 所有权", "缺少 Start 采样或 Cursor 活动隔离")
+        result.fail("Start 不污染 Cursor 所有权", f"Start采样={'PAD_START' in pad_header}，普通活动接口已删除={generic_activity_removed}")
 
     # refactor22：SDL3 热插拔必须主动刷新设备层。
     # 本插件没有跑 SDL 事件循环，因此不能沿用 r21 的“先 SDL_GamepadConnected，后 SDL_UpdateGamepads”顺序；
@@ -1383,9 +1389,8 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     # refactor16：Back 首次正式进入采样，但固定只作为 Shift 修饰键。
     # 单按 Back 不能被视作普通“手柄活动”，否则只想进入精细鼠标模式时会无端改变 Cursor 所有权。
     # 所有 Context 的 Shift 策略必须保持 PASS，未来组合键才能在具体业务层自由读取，而不需要每个 Context 重复声明。
-    pad_header = read_utf8(src / "pad_input.h")
     shift_required = [
-        "PAD_BACK = 4", "PAD_BACK, PAD_START", "mask &= ~(1u << (u32)PAD_BACK);",
+        "PAD_BACK = 4", "PAD_BACK, PAD_START",
         "INPUT_MODIFIER_SHIFT", "case INPUT_MODIFIER_SHIFT:return PAD_BACK",
     ]
     shift_missing = [token for token in shift_required if token not in (pad_header + pad_text + router)]
@@ -1394,10 +1399,10 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         values = re.findall(r"INPUT_(?:PASS|MERGE|OVERRIDE|CONSUME)", match.group(2))
         if len(values) != 15 or values[-1] != "INPUT_PASS":
             policy_shift_bad.append(match.group(1))
-    if not shift_missing and not policy_shift_bad:
-        result.ok("Back 全局 Shift 修饰键", f"SDL Back已采样；单按不抢所有权；{len(list(re.finditer(r'static const InputPolicy\s+g_policy_', router)))}张策略均让Shift PASS")
+    if not shift_missing and not policy_shift_bad and generic_activity_removed:
+        result.ok("Back 全局 Shift 修饰键", f"SDL Back已采样；普通活动自动夺权已删除；{len(list(re.finditer(r'static const InputPolicy\s+g_policy_', router)))}张策略均让Shift PASS")
     else:
-        result.fail("Back 全局 Shift 修饰键", f"缺少={shift_missing}，Shift策略异常={policy_shift_bad}")
+        result.fail("Back 全局 Shift 修饰键", f"缺少={shift_missing}，Shift策略异常={policy_shift_bad}，普通活动接口已删除={generic_activity_removed}")
 
     # refactor41 仍用一套状态机裁决 Back/RT/调查；调查激活键由 INI 选择 A 或 LT。
     # Cursor 只提供低层鼠标桥，不能自己解释 A/LT/RT 的模式含义。
@@ -1406,7 +1411,8 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     runtime_text = read_utf8(src / "runtime.c") + read_utf8(src / "runtime.h")
     mode_required = [
         "CONTROL_MODE_BACK_MOUSE", "CONTROL_MODE_RT_MOUSE", "CONTROL_MODE_INVESTIGATION",
-        "if (back_pressed)", "free_map && rt_pressed", "free_map && investigation_pressed",
+        "if (back_pressed)", "rt_mouse_allowed && rt_pressed", "free_map && investigation_pressed",
+        "control_rt_mouse_allowed", "GLOBAL_DIALOGUE_ID != 0u", "int resume = free_map &&",
         "rt_inhibit_until_release", "lt_inhibit_until_release", "confirm_inhibit_until_release",
         "resume_investigation_after_rt", "control_investigation_uses_hold_confirm",
         "control_investigation_pressed", "control_investigation_down",
@@ -1463,9 +1469,9 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
 
     # A模式和LT模式必须通过同一语义变量参与RT进入/恢复，禁止又散落回 lt_down 特判。
     generic_rt_resume_ok = (
-        re.search(r"g_modes\.resume_investigation_after_rt\s*&&\s*investigation_down\s*&&\s*!investigation_inhibited", control_code) is not None and
+        re.search(r"free_map\s*&&\s*g_modes\.resume_investigation_after_rt\s*&&\s*investigation_down\s*&&\s*!investigation_inhibited", control_code) is not None and
         "control_enter_rt_mouse(investigation_down ? 1 : 0)" in control_code and
-        "control_enter_rt_mouse(investigation_pressed && investigation_down ? 1 : 0)" in control_code and
+        "control_enter_rt_mouse(free_map && investigation_pressed && investigation_down ? 1 : 0)" in control_code and
         "lt_pressed" not in control_code and "lt_down" not in control_code
     )
 
@@ -1826,19 +1832,23 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     else:
         result.fail("Target A/B 游戏线程事务门槛", f"缺少={missing_target}；消费段仍依赖 worker Context={'g_context == BCTX_TARGET' in target_hook.split('if (g_nav_active',1)[0]}")
 
-    # refactor37 明确键鼠优先：真实鼠标移动必须在任何手柄活动回抢之前立即返回接管事件。
+    # refactor43 明确键鼠优先，同时已经删除普通手柄活动自动回抢路径。
     cursor_text = read_utf8(src / "cursor.c")
     cursor_update_begin = cursor_text.find("CursorTakeoverEvent Cursor_Update")
     cursor_update_end = cursor_text.find("int Cursor_GetPointerPosition", cursor_update_begin)
     cursor_update = cursor_text[cursor_update_begin:cursor_update_end] if cursor_update_begin >= 0 and cursor_update_end > cursor_update_begin else ""
     order_physical = cursor_update.find("physical_moved = cursor_observe_physical_mouse")
     immediate_return = cursor_update.find("if (physical_moved) return CURSOR_TAKEOVER_PHYSICAL_MOUSE;")
-    order_gamepad = cursor_update.find("gamepad_active = cursor_gamepad_has_navigation_activity")
-    physical_wins = 0 <= order_physical < immediate_return < order_gamepad
+    old_gamepad_reclaim_absent = (
+        "gamepad_active" not in cursor_update and
+        "cursor_gamepad_has_navigation_activity" not in cursor_update and
+        "PadInput_HasAnyActivity" not in cursor_update
+    )
+    physical_wins = 0 <= order_physical < immediate_return and old_gamepad_reclaim_absent
     if physical_wins:
-        result.ok("Cursor 同 tick 键鼠优先", "真实鼠标先无条件接管；ControlModes随后无震动结束手柄指针会话")
+        result.ok("Cursor 同 tick 键鼠优先", "真实鼠标先无条件接管；普通手柄活动不再自动抢回或隐藏指针")
     else:
-        result.fail("Cursor 同 tick 键鼠优先", f"physical={order_physical}，立即返回={immediate_return}，gamepad={order_gamepad}")
+        result.fail("Cursor 同 tick 键鼠优先", f"physical={order_physical}，立即返回={immediate_return}，旧自动回抢已删除={old_gamepad_reclaim_absent}")
 
     # refactor18 仍把未涉及本轮 owner 迁移的稳定业务文件按 r16 SHA 锁死。
     # Battle/Save/Confirm 的 .c 因 owner-aware API 迁移有意改变，另用 r18 新 SHA 封住。
@@ -3015,22 +3025,57 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         )
 
     scene_required = [
-        "GLOBAL_DIALOGUE_MODE", "SCENE_CHOICE_MODE_YES_NO", "Cursor_MoveHiddenSelectionAt",
+        "GLOBAL_DIALOGUE_MODE", "SCENE_CHOICE_MODE_MULTI", "SCENE_CHOICE_MODE_YES_NO", "Cursor_MoveHiddenSelectionAt",
+        "GLOBAL_DIALOGUE_MULTI_FIRST_LINE", "GLOBAL_DIALOGUE_MULTI_LAST_LINE",
+        "CALL_DIALOGUE_MULTI_CHOICE_UPDATE", "CALL_DIALOGUE_MULTI_CHOICE_RESULT",
+        "scene_multi_line_range", "scene_choice_move_multi(-1)", "scene_choice_move_multi(1)",
+        "SCENE_MULTI_ROW_CENTER_BASE + SCENE_MULTI_ROW_HEIGHT * line",
         "GLOBAL_DIALOGUE_CHOICE_VISUAL_STATE", "GLOBAL_DIALOGUE_CHOICE_HOVER_STATE",
         "MOUSEEVENTF_LEFTDOWN_", "MOUSEEVENTF_LEFTUP_", "INPUT_CTX_SCENE_CHOICE",
         "Runtime_SceneChoiceProtocolOk", "SceneChoice_Update",
     ]
     scene_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", scene_choice_text, flags=re.S)
-    scene_ok = all(t in (scene_choice_text + plugin_r29 + read_utf8(src / "runtime.c")) for t in scene_required)
+    scene_joined = scene_choice_text + plugin_r29 + read_utf8(src / "runtime.c") + addresses_text
+    scene_ok = all(t in scene_joined for t in scene_required)
     scene_forbidden = [
         "0x0044B0B0", "0x44B0B0", "GLOBAL_DIALOGUE_CHOICE_HOVER_STATE =", "GLOBAL_DIALOGUE_MODE =",
         "Cursor_ShowMenuFocusAt",
     ]
-    scene_ok = scene_ok and not any(t in scene_code for t in scene_forbidden)
+    dialogue_choice_isolation_ok = (
+        '#include "scene_choice.h"' in dialogue_text and
+        "ConfirmDialog_IsActive() || SceneChoice_IsActive()" in dialogue_text and
+        "g_confirm_pending = 0;" in dialogue_text
+    )
+    scene_ok = scene_ok and not any(t in scene_code for t in scene_forbidden) and dialogue_choice_isolation_ok
     if scene_ok:
-        result.ok("refactor29剧情mode=3两项选择边界", "隐藏鼠标只驱动原版选择框命中并发左键脉冲；A当前项、B选择否；不直接写剧情结果/不显示第二套手形焦点")
+        result.ok("refactor43剧情mode=2/mode=3选择边界", "mode=2上下驱动动态原版行焦点，mode=3保留是/否；确定键均走左键，旧对话pending隔离，不直接写剧情结果/不显示第二套鼠标")
     else:
-        result.fail("refactor29剧情mode=3两项选择边界", "缺mode=3精确协议/输入消费，或出现直接剧情结果写入")
+        result.fail("refactor43剧情mode=2/mode=3选择边界", f"缺多行/是非精确协议或输入消费，直接剧情结果写入，或普通对话pending未隔离；对话隔离={dialogue_choice_isolation_ok}")
+
+    # refactor43 鼠标模式修复：剧情放行RT、Back不自动回切、主动warp按系统实际落点登记。
+    # 同时删除旧的“任意普通手柄活动自动取得所有权并隐藏鼠标”路径；真正菜单仍显式Claim。
+    control_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", control_text, flags=re.S)
+    cursor_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", cursor_text, flags=re.S)
+    pad_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", pad_text, flags=re.S)
+    mouse_mode_required = [
+        "control_rt_mouse_allowed", "GLOBAL_DIALOGUE_ID != 0u", "if (!rt_mouse_allowed)",
+        "if (rt_mouse_allowed && rt_pressed", "int resume = free_map &&",
+        "actual.x = x", "actual.y = y", "api->get_cursor_pos(&actual)",
+        "g_cursor.last_cursor_sample = actual", "Cursor_ClaimForControllerNavigation",
+    ]
+    mouse_mode_joined = control_text + cursor_text
+    mouse_mode_missing = [token for token in mouse_mode_required if token not in mouse_mode_joined]
+    mouse_mode_forbidden = [
+        "CONTROL_UI_EXIT_STABLE_MS", "back_mouse_saw_ui", "ui_exit_tracking", "ui_exit_start_tick",
+        "PadInput_HasAnyActivity", "cursor_gamepad_has_navigation_activity",
+    ]
+    mouse_mode_forbidden_hits = [
+        token for token in mouse_mode_forbidden if token in (control_code + cursor_code + pad_code)
+    ]
+    if not mouse_mode_missing and not mouse_mode_forbidden_hits:
+        result.ok("refactor43剧情RT与鼠标模式稳定边界", "剧情可进入/保持RT；Back仅显式退出；主动warp记录实际落点；普通活动自动隐藏接口已删除，实体鼠标仍可接管")
+    else:
+        result.fail("refactor43剧情RT与鼠标模式稳定边界", f"缺少={mouse_mode_missing}，旧机制残留={mouse_mode_forbidden_hits}")
 
     # 代码里出现 TODO/FIXME 往往意味着“交付前已经知道没做完却没有写进接档”。本包禁止这种隐性状态。
     todo_hits = []
@@ -3059,7 +3104,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     else:
         result.ok("源码注释最低覆盖率", "；".join(ratios))
 
-    # R41 把“初学者能接手”提升为本轮硬门，而不是只满足全项目10%的历史最低线。
+    # R43 延续“初学者能接手”的硬门，并把本轮新增的剧情选择与鼠标仲裁文件纳入比例检查。
     # 这里锁住本轮真正修改的文件：C文件至少20%～45%，头文件至少35%～40%。
     beginner_minimums = {
         "runtime.c": 0.20,
@@ -3071,6 +3116,12 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "investigation.c": 0.22,
         "investigation.h": 0.40,
         "plugin.c": 0.45,
+        "scene_choice.c": 0.24,
+        "scene_choice.h": 0.35,
+        # Cursor是近600行的历史底层文件，本轮新增解释已逐步覆盖实际修改点；全文件仍以12%为硬门。
+        "cursor.c": 0.12,
+        "cursor.h": 0.35,
+        "dialogue_input.c": 0.20,
     }
     beginner_ratio_bad = []
     for name, minimum in beginner_minimums.items():
@@ -3085,7 +3136,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     beginner_explanation_tokens = [
         "可以理解为学校里只有一个值日班长负责分配教室",
         "默认模式中按“取消键”会立刻取消",
-        "只有三个条件同时成立才恢复",
+        "只有四个条件同时成立才恢复",
         "松开确定键永远不互动",
         "每一道都在阻止一种危险误点",
         "尚未被原版确认",
@@ -3095,28 +3146,33 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "这张表表示“固定物理位置”",
         "鼠标模式也遵守确定/取消布局",
         "RB+南键永远攻击，RB+东键永远道具",
+        "mode=2：MSG 文本里的 /q",
+        "Windows 最终落点可能和请求值差1像素",
+        "不再使用“任意普通手柄活动就隐藏鼠标”的旧通用机制",
     ]
-    beginner_joined = runtime_text + control_text + investigation_text + plugin_text_r37 + input_router_c
+    beginner_joined = (
+        runtime_text + control_text + investigation_text + plugin_text_r37 + input_router_c +
+        scene_choice_text + cursor_text + dialogue_text
+    )
     beginner_explanation_missing = [
         token for token in beginner_explanation_tokens if token not in beginner_joined
     ]
-    build_text_for_comments = read_utf8(src / "build.bat")
+    build_text_for_comments = read_utf8(root / "build.bat")
     build_comment_ok = all(token in build_text_for_comments for token in [
-        "ASI 和 INI 必须成对进入编译内容",
-        "同步全部现行中文文档",
-        "最新稳定检查器",
+        "统一输出目录：仓库根 build",
+        "ASI、INI 已同步到 build 目录",
+        "source\\%1",
     ])
     if not beginner_ratio_bad and not beginner_explanation_missing and build_comment_ok:
-        result.ok("R42初学者级详细注释", "修改文件注释比例达标；模式比喻、B锁存、RT恢复、松开误点、probe安全、一次性自动最近目标和打包步骤均有逐步中文解释")
+        result.ok("R43初学者级详细注释", "修改文件注释比例达标；mode=2行命中、剧情RT、Back常驻、warp实际落点和新目录构建均有逐步中文解释")
     else:
-        result.fail("R42初学者级详细注释", f"比例不足={beginner_ratio_bad}，解释缺少={beginner_explanation_missing}，构建注释={build_comment_ok}")
+        result.fail("R43初学者级详细注释", f"比例不足={beginner_ratio_bad}，解释缺少={beginner_explanation_missing}，构建注释={build_comment_ok}")
 
 
 def compiled_content_dir(root: Path) -> Path:
-    """源码包用 root/编译内容；独立编译内容包则把 ASI/INI 直接放在 root。"""
-    nested = root / "编译内容"
-    if nested.is_dir():
-        return nested
+    """仓库源码包统一输出到仓库根build/；独立产物目录则直接使用传入root。"""
+    if (root / "source").is_dir():
+        return root.parent.parent / "build"
     return root
 
 
@@ -3127,10 +3183,9 @@ def check_ini_and_build(
     artifact_only: bool = False,
 ) -> None:
     """检查用户侧配置兼容性和正式 Windows 构建规则。"""
-    ini = compiled_content_dir(root) / "Castle_PadSupport.ini"
-    if source_only:
-        print("提示：--source-only 已跳过发布 INI 实体检查；公开键集合仍由 RuntimeConfig/源码护栏覆盖。")
-    elif not ini.is_file():
+    # 仓库模式检查用户维护的中文模板；artifact-only才检查目录里的已复制INI。
+    ini = (root / "templete" / "Castle_PadSupport.ini") if not artifact_only else (root / "Castle_PadSupport.ini")
+    if not ini.is_file():
         result.fail("INI 配置", "Castle_PadSupport.ini 不存在")
     else:
         text = read_utf8(ini)
@@ -3167,7 +3222,7 @@ def check_ini_and_build(
     if artifact_only:
         return
 
-    build = root / "源码" / "build.bat"
+    build = root / "build.bat"
     if not build.is_file():
         result.fail("Windows 构建脚本", "build.bat 不存在")
         return
@@ -3175,7 +3230,7 @@ def check_ini_and_build(
     required_flags = ["/W4", "/WX", "/utf-8", "/machine:x86", "/nodefaultlib"]
     missing_flags = [flag for flag in required_flags if flag.lower() not in text.lower()]
     source_units = [
-        "runtime.c", "pad_input.c", "input_router.c", "movie_skip.c", "confirm_dialog.c", "dialogue_input.c",
+        "runtime.c", "pad_input.c", "input_router.c", "pad_public_api.c", "movie_skip.c", "confirm_dialog.c", "dialogue_input.c",
         "cursor.c", "exploration.c", "investigation.c", "control_modes.c", "ui_bridge.c", "interface_shell.c", "interface_items.c", "interface_skills.c", "interface_equipment.c", "interface_inner_stats.c",
         "spatial_neighbor.c", "interface_formation.c", "interface_tome.c", "interface_options.c",
         "inn.c", "synthesis.c", "shop.c", "scene_choice.c", "save_slot.c", "save_point.c", "frontend.c", "battle.c", "plugin.c",
@@ -3192,7 +3247,7 @@ def check_ini_and_build(
     if missing_flags or missing_units or not chcp_ok or not utf8_bom or not crlf_only:
         result.fail("Windows 独立编译单元构建规则", f"缺标志={missing_flags}，缺源码={missing_units}，chcp65001={chcp_ok}，UTF8_BOM={utf8_bom}，CRLF={crlf_only}")
     else:
-        result.ok("Windows 独立编译单元构建规则", "29 个 .c + x86 /W4 /WX /utf-8 /nodefaultlib + UTF-8 BOM/CRLF")
+        result.ok("Windows 独立编译单元构建规则", "30 个 .c + x86 /W4 /WX /utf-8 /nodefaultlib + UTF-8 BOM/CRLF；输出到仓库根build")
 
 
 def check_artifact(root: Path, result: CheckResult) -> None:
@@ -3211,17 +3266,16 @@ def check_artifact(root: Path, result: CheckResult) -> None:
         is_pe32 = magic == 0x010B
         is_dll = bool(characteristics & 0x2000)
         compiled_markers = [
-            b"refactor42",
-            "AutoFocusNearest=1默认自动最近目标".encode("utf-8"),
-            "=0关闭".encode("utf-8"),
-            "SwapConfirmCancel=0为Xbox确定布局".encode("utf-8"),
-            "=1为PS O确定/X取消".encode("utf-8"),
-            "确定=鼠标左键、取消=右键".encode("utf-8"),
-            "RB+ABXY物理快捷不变".encode("utf-8"),
+            b"refactor43",
+            "剧情mode=2多选支持上下/确定".encode("utf-8"),
+            "剧情可用RT鼠标".encode("utf-8"),
+            "Back不再自动回切".encode("utf-8"),
+            "手柄warp不再误判实体鼠标".encode("utf-8"),
+            "普通活动自动隐藏路径已删除".encode("utf-8"),
         ]
         missing_markers = [marker.decode("utf-8") for marker in compiled_markers if marker not in data]
         if is_i386 and is_pe32 and is_dll and not missing_markers:
-            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + refactor42 自动最近目标、确定/取消布局、鼠标语义与物理快捷隔离标记，SHA-256={sha256(asi)}")
+            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + refactor43剧情多选、剧情RT、Back常驻与warp防误判标记，SHA-256={sha256(asi)}")
         else:
             result.fail("ASI PE 结构/本轮编译标记", f"machine=0x{machine:04X}, magic=0x{magic:04X}, DLL={is_dll}，缺编译标记={missing_markers}")
     except Exception as exc:
@@ -3245,11 +3299,10 @@ def check_documents(
     这样做的目的不是追求目录整齐本身，而是让任何人打开包时可以立即区分：
     “当前应阅读的说明”与“会持续更新的唯一验证摘要”。
     """
-    doc_dir = root / "文档"
-    if not doc_dir.is_dir():
-        repository_doc_dir = root.parent.parent / "docs" / "手柄支持"
-        if repository_doc_dir.is_dir():
-            doc_dir = repository_doc_dir
+    # 新仓库把所有项目文档统一放在仓库根 docs/<Project>/，Controller 不再复制“文档/”镜像。
+    # root通常是 src/Controller，因此上两级就是仓库根；artifact root=build时则上一级是仓库根。
+    repository_root = root.parent.parent if (root / "source").is_dir() else root.parent
+    doc_dir = repository_root / "docs" / "Controller"
     required_docs = [
         "截至本版本的完整接档.md",
         "架构设计与模块边界.md",
@@ -3274,21 +3327,19 @@ def check_documents(
     else:
         result.ok("独立接档文档集合", f"文档目录内 {len(required_docs)} 份现行说明均存在")
 
-    # 说明 Markdown 通常集中在“文档/”；源码目录保留一份中文“构建说明.md”作为构建入口：
-    # 用户明确说明它是发布到 GitHub 时使用的仓库入口，因此必须保留 README/readme 这个
-    # GitHub 约定文件名，不能为了“文档中文名”规则把它改成中文。这里把这个例外写死，
-    # 这样既不会误报合法 GitHub README，也不会让其它英文说明文件借机散落到源码目录。
-    github_readme = root / "源码" / "构建说明.md"
+    # Controller/readme.md 是GitHub构建入口，是用户明确保留的英文约定文件名例外。
+    # 其它非代码说明仍全部使用docs/Controller下的简体中文文件名。
+    github_readme = root / "readme.md"
     if artifact_only:
         github_readme = Path("__artifact_package_has_no_github_readme__")
     elif not github_readme.is_file():
-        result.fail("中文构建说明", "缺少 源码/构建说明.md；所有非代码文档文件名必须使用简体中文")
+        result.fail("GitHub构建README", "缺少 src/Controller/readme.md")
     else:
-        result.ok("中文构建说明", "源码/构建说明.md 使用简体中文文件名；非代码文档命名规则一致")
+        result.ok("GitHub构建README", "src/Controller/readme.md作为唯一英文文档名例外；其它说明集中在docs/Controller")
 
     compiled_dir = compiled_content_dir(root)
-    compiled_doc_dir = compiled_dir / "文档"
-    compiled_tool_doc = compiled_dir / "工具" / "工具详细说明.md"
+    compiled_doc_dir = Path("__new_layout_has_no_compiled_doc_mirror__")
+    compiled_tool_doc = root / "tools" / "工具详细说明.md"
     misplaced_markdown = []
     for path in root.rglob("*.md"):
         if not artifact_only and path.resolve() == github_readme.resolve():
@@ -3310,7 +3361,7 @@ def check_documents(
     if misplaced_markdown:
         result.fail("文档集中到文档目录", "发现散落 Markdown：" + ", ".join(sorted(misplaced_markdown)))
     else:
-        result.ok("文档集中到中文目录", "源码构建说明使用中文文件名；其余 Markdown 只在源码包/编译包的文档或工具中文说明位置")
+        result.ok("文档集中到新目录", "GitHub readme例外有效；其余现行说明集中在docs/Controller")
 
     # 构建完成后，源码包文档、编译内容文档和工具副本必须逐字节一致。
     if not artifact_only and compiled_doc_dir.is_dir():
@@ -3337,27 +3388,21 @@ def check_documents(
         else:
             result.ok("源码包/编译包独立接档同步", f"{len(required_docs)}/{len(required_docs)}文档与两份最新检查器逐字节一致")
     elif artifact_only:
-        tool = root / "工具" / "refactor_check.py"
-        api_tool = root / "工具" / "public_api_check.py"
-        tool_doc = root / "工具" / "工具详细说明.md"
-        if tool.is_file() and api_tool.is_file() and tool_doc.is_file():
-            result.ok("编译内容包工具随附", "refactor检查器、Public API检查器和简体中文工具说明均存在")
-        else:
-            result.fail("编译内容包工具随附", "缺少 refactor_check.py / public_api_check.py / 工具详细说明.md")
+        # build/是仓库统一二进制输出目录，不再复制工具；权威工具保留在src/Controller/tools。
+        result.ok("统一build目录不复制工具", "工具与中文说明分别保留在src/Controller/tools和docs/Controller")
 
     # 最终“编译内容”只保留用户真正需要部署/配置的 ASI 与 INI。
     # 链接器临时生成的 .lib/.exp、旧版说明 TXT 等都不应该混进最终交付。
     if source_only:
         print("提示：--source-only 已跳过编译内容 ASI+INI 发布白名单；ASI PE 本身仍单独检查。")
     else:
-        allowed_compiled = {"Castle_PadSupport.asi", "Castle_PadSupport.ini"}
+        required_compiled = {"Castle_PadSupport.asi", "Castle_PadSupport.ini"}
         actual_compiled = {path.name for path in compiled_dir.iterdir() if path.is_file()} if compiled_dir.is_dir() else set()
-        unexpected_compiled = sorted(actual_compiled - allowed_compiled)
-        missing_compiled = sorted(allowed_compiled - actual_compiled)
-        if unexpected_compiled or missing_compiled:
-            result.fail("编译内容目录白名单", f"缺少={missing_compiled}，多余={unexpected_compiled}")
+        missing_compiled = sorted(required_compiled - actual_compiled)
+        if missing_compiled:
+            result.fail("统一build目录Controller产物", f"缺少={missing_compiled}")
         else:
-            result.ok("编译内容目录白名单", "仅 ASI + INI")
+            result.ok("统一build目录Controller产物", "Castle_PadSupport.asi + Castle_PadSupport.ini齐全；允许其它项目产物并存")
 
     # 交付包不能夹带 Python 缓存、OBJ、EXP 等构建中间件。
     # 这些文件既不是源码也不是证据，只会让接档者误以为它们属于正式内容。
@@ -3375,17 +3420,17 @@ def check_documents(
     # 用户明确要求从本版起不再内置逐版证据；旧证据树即使内容正确也不能继续塞进交付包。
     evidence_dir = root / "证据"
     if evidence_dir.exists():
-        result.fail("refactor42精简证据策略", "交付包仍包含 证据/；请删除逐版证据树，必要结论只合并进一份持续维护文档")
+        result.fail("refactor43精简证据策略", "Controller包仍包含证据目录；必要结论应合并进docs/Controller现行文档")
     else:
-        result.ok("refactor42精简证据策略", "未内置逐版证据树；源码、现行文档与本检查器构成交接依据")
+        result.ok("refactor43精简证据策略", "未内置逐版证据树；source、docs/Controller与tools构成交接依据")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 refactor42：校验自动最近目标、Xbox/PS确定取消布局、鼠标左右键跟随、RB快捷固定、中文INI、R41/R40基线、独立接档包与目标RPG.exe")
+    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 refactor43：校验剧情mode=2多选、剧情RT鼠标、Back常驻、warp防误判、R42/R41基线、新目录结构与目标RPG.exe")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent, help="包根目录；默认自动取工具目录的上一层")
     parser.add_argument("--exe", type=Path, help="可选：待验证的 RPG.exe。提供后先检查双样本 SHA 白名单，再执行既有冻结协议以及主 Interface state2～state8 页面协议；state3 治疗目标的 +0x768 短锚点与两处新 Event CALL、以及既有 state7/state8 协议也必须通过")
-    parser.add_argument("--source-only", action="store_true", help="仓库开发模式：允许发布 INI/最终白名单尚未装配；仍检查源码、构建规则、ASI PE、现行 docs/手柄支持 文档和可选 RPG.exe Oracle")
-    parser.add_argument("--artifact-only", action="store_true", help="独立编译内容包模式：不要求源码/build.bat，只检查包根ASI+INI、中文文档、随附工具和可选RPG.exe Oracle")
+    parser.add_argument("--source-only", action="store_true", help="仓库开发模式：检查src/Controller/source、templete、build.bat、仓库根build产物、docs/Controller和可选RPG.exe Oracle")
+    parser.add_argument("--artifact-only", action="store_true", help="统一build目录模式：不要求源码/build.bat，只检查Castle_PadSupport ASI+INI、仓库docs/Controller和可选RPG.exe Oracle")
     args = parser.parse_args()
 
     root = args.root.resolve()

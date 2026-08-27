@@ -54,7 +54,7 @@ void Cursor_ShowMenuFocusAt(i32 x, i32 y);
 /*
  * 有些原版界面虽然用真实鼠标坐标做命中，但自己已经会画“当前选择框”。
  * 这种界面只需要把隐藏的原版鼠标移动到命中区，不能再额外显示手形，否则会出现两套焦点视觉。
- * 典型用途就是公共剧情 mode=3 的“是 / 否”。
+ * 典型用途就是公共剧情 mode=2 多行回答和 mode=3“是/否”。
  */
 void Cursor_MoveHiddenSelectionAt(i32 x, i32 y);
 

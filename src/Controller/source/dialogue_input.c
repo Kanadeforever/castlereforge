@@ -4,6 +4,7 @@
 #include "game_addresses.h"
 #include "input_router.h"
 #include "confirm_dialog.h"
+#include "scene_choice.h"
 
 /*
  * 这里保存 RPG.exe 原本使用的 USER32!GetAsyncKeyState。
@@ -95,8 +96,11 @@ static SHORT WINAPI DialogueInput_TypewriterGetAsyncKeyState(int virtual_key) {
         return real_value;
     }
 
-    /* Yes/No 盖在文字上时，A 必须先交给询问框。 */
-    if (ConfirmDialog_IsActive()) return real_value;
+    /* 菜单询问框或剧情选项盖在文字上时，确定键必须交给更高模态层。 */
+    if (ConfirmDialog_IsActive() || SceneChoice_IsActive()) {
+        g_confirm_pending = 0;
+        return real_value;
+    }
 
     /*
      * 本句已经完整显示：这里故意什么都不做，也绝对不能清 pending。
@@ -142,7 +146,10 @@ static SHORT WINAPI DialogueInput_AdvanceGetAsyncKeyState(int virtual_key) {
         return real_value;
     }
 
-    if (ConfirmDialog_IsActive()) return real_value;
+    if (ConfirmDialog_IsActive() || SceneChoice_IsActive()) {
+        g_confirm_pending = 0;
+        return real_value;
+    }
 
     /*
      * 本句如果又回到了逐字显示状态，就不能在等待路径里越级推进。
@@ -225,8 +232,11 @@ void DialogueInput_Update(void) {
         return;
     }
 
-    /* 询问框覆盖消息文字时，A 必须先给询问框，不能把底下的文字同时推进。 */
-    if (ConfirmDialog_IsActive()) {
+    /*
+     * 询问框或mode=2/mode=3剧情选项覆盖消息文字时，确定键必须先给上层。
+     * 这里还要主动清旧pending：否则进入选项前排队的那颗确定键可能在选项关闭后突然推进下一句。
+     */
+    if (ConfirmDialog_IsActive() || SceneChoice_IsActive()) {
         g_confirm_pending = 0;
         return;
     }

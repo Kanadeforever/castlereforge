@@ -1285,21 +1285,29 @@ int Runtime_MovieEscapeProtocolOk(void) {
 
 
 /*
- * 公共剧情消息 mode=3“两项选择”的独立协议校验。
+ * 公共剧情消息 mode=2/mode=3 的独立协议校验。
  *
- * 这一层和普通对话 A、菜单 ConfirmDialog 都不同：0x403E30 的公共消息分发器在 mode=3 时
- * 调用 0x404600；该函数用真实鼠标坐标区分第一/第二项，同时写自己的选择框状态，再用左键提交结果。
- * SceneChoice 不改任何机器码，但会读取这些全局状态并把原版鼠标移动到精确命中矩形，所以仍必须先确认
- * 我们面对的确实是已经逆向闭合的原版实现。任何锚点不一致都只禁用剧情选择手柄，不连坐普通对话。
+ * 这一层和普通对话 A、菜单 ConfirmDialog 都不同。0x403E30 的公共消息分发器会按 mode 选择：
+ * - mode=2 调用 0x4044F0，处理截图中“我的回答是”这类两行或多行剧情选项；
+ * - mode=3 调用 0x404600，处理固定的“是/否”两项选择。
+ *
+ * 两条原版路径都依靠真实鼠标命中并在检测到左键后自行写 VAR999。SceneChoice 不改机器码、
+ * 不直接写剧情结果，只把隐藏鼠标放进正确行并发送左键。因此必须同时核对两条选择器和提交 CALL；
+ * 任一锚点不一致都只禁用剧情选择手柄，不连坐普通对话推进。
  */
 int Runtime_SceneChoiceProtocolOk(void) {
     static const u8 sig_dispatch[] = {
         0xA1,0x40,0xF6,0x46,0x00,0x83,0xF8,0x03,0x77,0x21,0xFF,0x24,0x85,0x8C,0x3E,0x40,0x00
     };
-    static const u8 sig_update[] = {
+    static const u8 sig_multi_update[] = {
+        0x83,0xEC,0x08,0x8D,0x44,0x24,0x00,0x53,0x50,0xFF,0x15,0x04,0x02,0x46,0x00
+    };
+    static const u8 sig_yes_no_update[] = {
         0x83,0xEC,0x08,0x8D,0x44,0x24,0x00,0x50,0xFF,0x15,0x04,0x02,0x46,0x00
     };
     static const RtCallCheck calls[] = {
+        {CALL_DIALOGUE_MULTI_CHOICE_UPDATE, FN_DIALOGUE_MULTI_CHOICE_UPDATE, "[剧情选择预检失败] mode=2 分发 CALL 不一致。"},
+        {CALL_DIALOGUE_MULTI_CHOICE_RESULT, 0x0044B0B0u, "[剧情选择预检失败] mode=2 原版结果提交 CALL 不一致。"},
         {CALL_DIALOGUE_CHOICE_UPDATE, FN_DIALOGUE_CHOICE_UPDATE, "[剧情选择预检失败] mode=3 分发 CALL 不一致。"},
         {0x00404697u, 0x0044B0B0u, "[剧情选择预检失败] 第二项/结果2原版提交 CALL 不一致。"},
         {0x004046AFu, 0x0044B0B0u, "[剧情选择预检失败] 第一项/结果1原版提交 CALL 不一致。"}
@@ -1307,22 +1315,28 @@ int Runtime_SceneChoiceProtocolOk(void) {
     SIZE_T i;
 
     if (!Runtime_MemEq((const u8*)SIG_DIALOGUE_CHOICE_DISPATCH, sig_dispatch, sizeof(sig_dispatch))) {
-        Runtime_Log("[剧情选择预检失败] 0x403E30 mode 分发器身份不一致；剧情两项选择已单独禁用。");
+        Runtime_Log("[剧情选择预检失败] 0x403E30 mode 分发器身份不一致；剧情选项手柄已单独禁用。");
         return 0;
     }
-    if (!Runtime_MemEq((const u8*)SIG_DIALOGUE_CHOICE_CURSOR, sig_update, sizeof(sig_update))) {
-        Runtime_Log("[剧情选择预检失败] 0x404600 鼠标选择器入口不一致；剧情两项选择已单独禁用。");
+    if (!Runtime_MemEq((const u8*)SIG_DIALOGUE_MULTI_CHOICE_CURSOR,
+                       sig_multi_update, sizeof(sig_multi_update))) {
+        Runtime_Log("[剧情选择预检失败] 0x4044F0 多行鼠标选择器入口不一致；剧情选项手柄已单独禁用。");
+        return 0;
+    }
+    if (!Runtime_MemEq((const u8*)SIG_DIALOGUE_CHOICE_CURSOR,
+                       sig_yes_no_update, sizeof(sig_yes_no_update))) {
+        Runtime_Log("[剧情选择预检失败] 0x404600 是/否鼠标选择器入口不一致；剧情选项手柄已单独禁用。");
         return 0;
     }
     for (i = 0; i < sizeof(calls) / sizeof(calls[0]); ++i) {
         if (!rt_check_call_item(&calls[i])) return 0;
     }
     if (!g_api.mouse_event || !g_api.set_cursor_pos) {
-        Runtime_Log("[剧情选择预检失败] USER32 mouse_event/SetCursorPos 不可用；剧情两项选择已单独禁用。");
+        Runtime_Log("[剧情选择预检失败] USER32 mouse_event/SetCursorPos 不可用；剧情选项手柄已单独禁用。");
         return 0;
     }
 
-    Runtime_Log("[剧情选择] 原版 mode=3 协议预检通过：分发/选择器2个锚点 + 原版 CALL 3/3。");
+    Runtime_Log("[剧情选择] 原版 mode=2/mode=3 协议预检通过：分发器 + 两个选择器 + 原版 CALL 5/5。");
     return 1;
 }
 
@@ -1468,7 +1482,7 @@ int Runtime_Initialize(HMODULE self_module) {
     rt_load_config();
     rt_open_log();
 
-    Runtime_Log("[启动] 幽城幻剑录手柄支持：v0.3-refactor42（自动最近目标 + 确定/取消布局切换）");
+    Runtime_Log("[启动] 幽城幻剑录手柄支持：v0.3-refactor43（剧情多选 + 剧情RT鼠标 + 鼠标模式稳定化）");
     Runtime_Log("[启动] By Luminou with ChatGPT");
     Runtime_LogModule("ASI 插件", g_self_module, NULL);
 

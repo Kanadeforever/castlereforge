@@ -68,14 +68,6 @@ int PadInput_Pressed(PadButton button);
 int PadInput_Released(PadButton button);
 i16 PadInput_Axis(PadAxis axis);
 
-/*
- * 只回答“这一刻手柄上有没有明显活动”，不赋予按钮任何业务含义。
- * Cursor 用它判断何时把光标所有权交给手柄，从而不必在 Cursor 里再抄一遍 A/B/X/Y 等物理键编号。
- * include_r3=0 时会忽略 R3。Back 由模式裁决层独占，不在通用活动里重复抢所有权。
- * 普通手柄态只让左摇杆参与活动判定；右摇杆已删除常驻功能，静止模式下不会抢回实体鼠标。
- */
-int PadInput_HasAnyActivity(int include_r3);
-
 /* 当前前台窗口是否属于 RPG.exe；所有模拟输入都必须先尊重这个 gate。 */
 int PadInput_GameForeground(HWND* out_hwnd);
 

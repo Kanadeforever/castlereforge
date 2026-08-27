@@ -424,9 +424,10 @@ static const InputPolicy g_policy_interface_options = {{
 }};
 
 /*
- * 公共剧情消息 mode=3 的两项选择。
- * 这不是 0x4272C0/0x4276F0 菜单 ConfirmDialog，而是 0x404600 的原版鼠标选择器。
- * A/B/四方向全部由 SceneChoice Adapter 接管；其它菜单键不能穿透到客栈、地图或主 Interface。
+ * 公共剧情消息 mode=2/mode=3 的原版选项。
+ * 这不是 0x4272C0/0x4276F0 菜单 ConfirmDialog，而是 0x4044F0/0x404600 的原版鼠标选择器。
+ * 确定/取消/四方向全部由 SceneChoice Adapter 接管；mode=2只赋义上下，左右明确吞掉；
+ * 其它菜单键不能穿透到客栈、地图或主 Interface。
  * Start/R3/Back 继续 PASS：Start 保留系统语义，R3/Back 仍可主动进入鼠标模式。
  */
 static const InputPolicy g_policy_scene_choice = {{
