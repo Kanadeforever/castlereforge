@@ -1,4 +1,3 @@
-```bat
 @echo off
 chcp 65001 >nul
 setlocal EnableExtensions DisableDelayedExpansion
@@ -243,4 +242,3 @@ echo [失败] Castle_SaveEnhance 构建中止。
 echo [说明] 请检查上方第一条编译、链接或验证错误。
 pause
 exit /b 1
-```
