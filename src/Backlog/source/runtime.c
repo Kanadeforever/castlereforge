@@ -629,7 +629,7 @@ int Runtime_Initialize(HMODULE plugin_module) {
         g_log_file = CreateFileA(log_path, GENERIC_WRITE, FILE_SHARE_READ, NULL,
                                  CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     }
-    Runtime_Log("[启动] Castle Backlog v0.3.4-test3 正在初始化。");
+    Runtime_Log("[启动] Castle Backlog v0.3.4 正在初始化。");
     Runtime_Log("[启动] By Luminous with ChatGPT");
 
     runtime_load_config();

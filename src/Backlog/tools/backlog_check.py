@@ -206,7 +206,7 @@ def check_asi(path: Path) -> list[CheckResult]:
     }
     # O2 可能把固定 INI 文件名拆成若干立即数写入，不保证磁盘里仍有连续 ASCII；
     # INI 的存在与内容由源码包检查负责。ASI 本体这里只要求版本标识和动态 SDL 名仍可诊断。
-    required_strings = [b"Castle Backlog v0.3.4-test3", b"CastlePad_GetApi"]
+    required_strings = [b"Castle Backlog v0.3.4", b"CastlePad_GetApi"]
 
     return [
         check(pe.machine == 0x14C, "ASI 为 x86", f"machine=0x{pe.machine:04X}"),
@@ -224,7 +224,7 @@ def has_cjk(text: str) -> bool:
 
 
 def check_source(source_root: Path) -> list[CheckResult]:
-    """检查当前 v0.3.4-test3 源码、自适应三/四框、原版组合框、Public API、INI 和构建文件。"""
+    """检查当前 v0.3.4 稳定版源码、自适应三/四框、原版组合框、Public API、INI 和构建文件。"""
 
     required = {
         "platform.h",
