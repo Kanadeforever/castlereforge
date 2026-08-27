@@ -3,7 +3,7 @@
 #include "Castle_PadSupport_API.h"
 
 // ============================================================================
-// Castle_SaveEnhance.cpp  v0.1.0-test4
+// Castle_SaveEnhance.cpp  v0.1.0-test5
 // ----------------------------------------------------------------------------
 // 《幽城幻剑录》存档增强插件第一版完整实机候选。
 //
@@ -34,7 +34,7 @@
 // 1. 普通保存菜单继续保留 AnytimeSave 的安全 fallback：原版禁存但当前地图已有入口级
 //    安全锚点时，只在原版 Writer 调用期间临时替换 World 前 0xC8 字节；
 // 2. Quick Save 仍然只允许严格自由行动；但实机证明《幽城》即使在自由行动时原版 save gate
-//    也可能返回拒绝。因此 test4 在“严格自由行动 + 当前地图已冻结安全锚点”时允许复用安全
+//    也可能返回拒绝。因此 test5 在“严格自由行动 + 当前地图已冻结安全锚点”时允许复用安全
 //    fallback 写 0 号；楼梯/剧情 transient 本身过不了严格自由行动门，仍然不会被 Quick Save 写入；
 // 3. Auto Save 可以延后。换图/到时如果当前不安全，就等新地图建立安全锚点以后再补存；
 // 4. Quick Load 同样只接受自由行动状态下的请求；第一次看到地图、刚刚读档后的第一张图
@@ -95,6 +95,16 @@ const DWORD kOriginalSaveSlotFunctionRva = 0x0003B320u;  // 0x43B320
 const DWORD kOriginalLoadSlotFunctionRva = 0x0003B4D0u;  // 0x43B4D0
 const DWORD kOriginalSavePrepareFunctionRva = 0x0004B150u;// 0x44B150
 const DWORD kOriginalPostLoadFunctionRva = 0x0004B1F0u;  // 0x44B1F0
+
+// ---- 原版文件系统对象：自动档轮换必须和游戏自己看到同一套 Save 文件 ------------
+// test4 实机已经证明：即使字符串是同一个 `Save\Save091.TSF`，Win32 的
+// GetFileAttributesExW 仍然看不到原版成功写出的文件。原因是 0x43B360 Writer 并不
+// 直接调用 Win32 文件 API，而是 new 一个 0x14 字节的游戏 File 对象，再经过这里三条函数。
+// 因此 test5 检查 91~99 是否存在时，直接复用 LoadSlot 相同的 File::Open(mode=1) 路径。
+const DWORD kGameFileCtorFunctionRva = 0x000416F0u; // 0x4416F0，this + 一个栈参数 archiveAware
+const DWORD kGameFileDtorFunctionRva = 0x00041710u; // 0x441710，析构并关闭文件
+const DWORD kGameFileOpenFunctionRva = 0x000417C0u; // 0x4417C0，this + path + mode + flags
+const SIZE_T kGameFileObjectBytes = 0x14u;
 
 // ---- 普通/隐藏手动保存入口：用于保留槽二次写保护 -----------------------------
 const DWORD kMenuSaveCallRva = 0x00024DF2u; // 0x424DF2
@@ -228,6 +238,13 @@ typedef BOOL (__fastcall *OriginalLoadSlotFunction)(void* runtimeManager, void* 
 typedef void (__cdecl *OriginalNoArgFunction)(void);
 typedef void (__fastcall *OriginalSaveActionUpdateFunction)(void* action, void* unusedEdx);
 
+// 游戏 File 对象是 MSVC x86 thiscall。源码用 __fastcall + 一个占位 EDX 来表达：
+// 第一个参数进 ECX，第二个 unusedEdx 进 EDX，剩余参数仍按原版顺序压栈。
+typedef void* (__fastcall *GameFileCtorFunction)(void* fileObject, void* unusedEdx, DWORD archiveAware);
+typedef void (__fastcall *GameFileDtorFunction)(void* fileObject, void* unusedEdx);
+typedef BOOL (__fastcall *GameFileOpenFunction)(
+    void* fileObject, void* unusedEdx, const char* path, DWORD mode, DWORD flags);
+
 BYTE* gExeBase = nullptr;
 HMODULE gSelfModule = nullptr;
 
@@ -243,6 +260,14 @@ OriginalLoadSlotFunction gOriginalLoadSlot = nullptr;
 OriginalNoArgFunction gOriginalSavePrepare = nullptr;
 OriginalNoArgFunction gOriginalPostLoad = nullptr;
 OriginalSaveActionUpdateFunction gOriginalSaveActionUpdate = nullptr;
+GameFileCtorFunction gGameFileCtor = nullptr;
+GameFileDtorFunction gGameFileDtor = nullptr;
+GameFileOpenFunction gGameFileOpen = nullptr;
+
+// 91~99 全部已存在后，NextAutoSlot 指示“下一次应该覆盖哪一个物理槽”。
+// 它写进同一个 Castle_SaveEnhance.ini 的 [Internal]，只是一枚轮换游标，不含任何游戏进度。
+// 如果用户删掉任一自动档，游戏文件层扫描会优先填空槽，游标不会强行覆盖其它档。
+DWORD gNextAutoSlot = kAutoSlotFirst;
 
 // ============================================================================
 // 五、动态 user32 / winmm API
@@ -448,68 +473,90 @@ void WriteThreeDigits(DWORD value, wchar_t* out) {
     out[3] = L'\0';
 }
 
-bool BuildSaveFilePath(DWORD slot, wchar_t* out, SIZE_T capacity) {
-    // 这里故意不再拼 RPG.exe 所在目录。
-    //
-    // test3 的实机现象是：原版 SaveSlot 明明成功写了 91，但下一次轮换检查仍然认为 91 不存在，
-    // 所以永远重复覆盖 91。重新核对原版 0x43B320/0x43B360 后确认，它交给文件层的是相对路径：
-    //     Save\Save091.TSF
-    // Windows 会相对于“进程当前工作目录”解析它，而不是自动相对于 RPG.exe 文件目录。
-    // Castle Mod Loader/启动器完全可能让工作目录和 EXE 所在目录不同；test3 强拼 EXE 目录就会
-    // 形成“游戏能保存、SaveEnhance 却看不到文件”的假空槽。
-    //
-    // test4 因此让 GetFileAttributesExW 使用和原版 Writer 同一条相对路径语义。检查发生在真正
-    // SaveSlot 调用前后同一游戏线程内，能够最大限度和原版文件层保持一致。
+bool BuildSaveAnsiPath(DWORD slot, char* out, SIZE_T capacity) {
+    // 这就是原版 Writer 最终送进游戏 File::Open 的路径：Save\SaveNNN.TSF。
+    // 这里使用 ANSI char 而不是 wchar_t，因为 0x4417C0 本身接收 char*。
     if (out == nullptr || capacity < 18u || slot > 999u) return false;
-    out[0] = L'\0';
-    if (!AppendW(out, capacity, L"Save\\Save")) return false;
 
-    wchar_t digits[4];
-    WriteThreeDigits(slot, digits);
-    return AppendW(out, capacity, digits) && AppendW(out, capacity, L".TSF");
+    const char prefix[] = "Save\\Save";
+    const char suffix[] = ".TSF";
+    SIZE_T cursor = 0u;
+    for (SIZE_T i = 0u; prefix[i] != '\0'; ++i) out[cursor++] = prefix[i];
+
+    out[cursor++] = static_cast<char>('0' + ((slot / 100u) % 10u));
+    out[cursor++] = static_cast<char>('0' + ((slot / 10u) % 10u));
+    out[cursor++] = static_cast<char>('0' + (slot % 10u));
+
+    for (SIZE_T i = 0u; suffix[i] != '\0'; ++i) out[cursor++] = suffix[i];
+    out[cursor] = '\0';
+    return cursor + 1u <= capacity;
 }
 
-int CompareFileTimeOldFirst(const FILETIME_MINI& a, const FILETIME_MINI& b) {
-    // FILETIME 是一个拆成高/低两个 DWORD 的 64 位计数。先比较高 32 位，相等再比较低 32 位。
-    if (a.dwHighDateTime < b.dwHighDateTime) return -1;
-    if (a.dwHighDateTime > b.dwHighDateTime) return 1;
-    if (a.dwLowDateTime < b.dwLowDateTime) return -1;
-    if (a.dwLowDateTime > b.dwLowDateTime) return 1;
-    return 0;
+bool GameSaveFileExists(DWORD slot) {
+    // test3/test5 的错误都来自“插件自己猜 Windows 实际路径”。test5 完全不再这样做。
+    // 这里创建一个和原版 0x43B360/0x43B510 一样的 0x14 字节 File 对象：
+    // 1. ctor(1) 让它使用游戏自己的搜索/重定向文件层；
+    // 2. Open(path, mode=1, flags=0) 与 LoadSlot 读取 TSF 的模式一致；
+    // 3. 无论打开成功还是失败都调用析构，释放 File 内部可能分配的路径缓冲。
+    if (gGameFileCtor == nullptr || gGameFileDtor == nullptr || gGameFileOpen == nullptr) {
+        return false;
+    }
+
+    char path[32];
+    if (!BuildSaveAnsiPath(slot, path, sizeof(path))) return false;
+
+    BYTE fileObject[kGameFileObjectBytes];
+    memset(fileObject, 0, sizeof(fileObject));
+    gGameFileCtor(fileObject, nullptr, 1u);
+    const BOOL opened = gGameFileOpen(fileObject, nullptr, path, 1u, 0u);
+    gGameFileDtor(fileObject, nullptr);
+    return opened != FALSE;
 }
 
-bool ChooseOldestAutoSaveSlot(DWORD* slotOut) {
-    if (slotOut == nullptr) return false;
+DWORD ClampAutoRingSlot(DWORD value) {
+    return (value >= kAutoSlotFirst && value <= kAutoSlotLast) ? value : kAutoSlotFirst;
+}
 
-    bool oldestValid = false;
-    DWORD oldestSlot = kAutoSlotFirst;
-    FILETIME_MINI oldestTime = {};
+void LoadAutoRingState() {
+    // Internal 区域由插件自己维护。它不是用户功能设置，也不参与 TSF 内容。
+    // INI 丢失/值损坏时回到 91；只要 91~99 里还有空槽，ChooseAutoSaveSlot 仍优先填空槽。
+    gNextAutoSlot = ClampAutoRingSlot(
+        GetPrivateProfileIntW(L"Internal", L"NextAutoSlot", static_cast<int>(kAutoSlotFirst), gIniPath));
+}
 
+void SaveAutoRingState(DWORD nextSlot) {
+    gNextAutoSlot = ClampAutoRingSlot(nextSlot);
+
+    // 91~99 都是三位数，可以复用 WriteThreeDigits，不需要 sprintf/CRT。
+    wchar_t value[4];
+    WriteThreeDigits(gNextAutoSlot, value);
+    if (WritePrivateProfileStringW(L"Internal", L"NextAutoSlot", value, gIniPath) == FALSE) {
+        // 状态写失败不会把本次游戏存档判成失败。最坏只是下次进程重启后从 91 开始轮换。
+        ycrlog::Line("[自动槽状态] 无法写回 INI 的 NextAutoSlot；本次存档仍有效，重启后轮换游标可能回到91。");
+    }
+}
+
+DWORD NextAutoRingSlot(DWORD slot) {
+    return (slot >= kAutoSlotLast) ? kAutoSlotFirst : (slot + 1u);
+}
+
+bool ChooseAutoSaveSlot(DWORD* slotOut, bool* usedEmptySlot) {
+    if (slotOut == nullptr || usedEmptySlot == nullptr) return false;
+
+    // 第一优先级永远是“游戏自己的文件层认为不存在的最低槽”。
+    // 因此第一次自然是 91，第二次会看到 91 已存在而选择 92，直到 99。
     for (DWORD slot = kAutoSlotFirst; slot <= kAutoSlotLast; ++slot) {
-        wchar_t path[520];
-        if (!BuildSaveFilePath(slot, path, 520u)) return false;
-
-        WIN32_FILE_ATTRIBUTE_DATA_MINI info = {};
-        if (GetFileAttributesExW(path, 0, &info) == FALSE) {
-            const DWORD error = GetLastError();
-            if (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND) {
-                // 有空槽时优先使用编号最小的空槽。这样第一次自然是 91、92……99。
-                *slotOut = slot;
-                return true;
-            }
-            // 其它错误（权限、共享、路径异常）不能当成“空文件”；跳过它，避免误覆盖。
-            continue;
-        }
-
-        if (!oldestValid || CompareFileTimeOldFirst(info.ftLastWriteTime, oldestTime) < 0) {
-            oldestValid = true;
-            oldestSlot = slot;
-            oldestTime = info.ftLastWriteTime;
+        if (!GameSaveFileExists(slot)) {
+            *slotOut = slot;
+            *usedEmptySlot = true;
+            return true;
         }
     }
 
-    if (!oldestValid) return false;
-    *slotOut = oldestSlot;
+    // 九个都存在后才进入持久化环形覆盖。由于每次成功后都把游标推进一格，覆盖顺序就是：
+    // 91→92→...→99→91...。这比文件重命名安全得多，每次只写一个 TSF。
+    *slotOut = ClampAutoRingSlot(gNextAutoSlot);
+    *usedEmptySlot = false;
     return true;
 }
 
@@ -517,7 +564,7 @@ bool ChooseOldestAutoSaveSlot(DWORD* slotOut) {
 // 六-B、外置 WAV 的独立音量缩放
 // ============================================================================
 // PlaySoundW 本身没有“只改这一声 WAV 音量”的参数。直接调用 waveOutSetVolume 又会改整个
-// 输出设备/游戏声音，不符合用户要求。因此 test4 的做法是：
+// 输出设备/游戏声音，不符合用户要求。因此 test5 的做法是：
 // 1. Volume=100：仍直接让 PlaySoundW 播文件，任何 Windows 支持的 WAV 编码都能照常尝试；
 // 2. Volume=1~99：只读 WAV 到私有内存，解析 RIFF 的 fmt/data chunk；
 // 3. 对 PCM 样本乘 Volume/100，再用 SND_MEMORY 异步播放这份副本；
@@ -694,7 +741,7 @@ bool ScaleWaveImageInPlace(BYTE* image, DWORD bytes, DWORD volume) {
     const WORD bitsPerSample = ReadLe16(fmt + 14u);
 
     // WAVE_FORMAT_EXTENSIBLE(0xFFFE) 的真正编码类型在 SubFormat GUID 的 Data1。
-    // test4 的 Volume<100 只缩放 PCM，所以只接受 SubFormat.Data1=1。
+    // test5 的 Volume<100 只缩放 PCM，所以只接受 SubFormat.Data1=1。
     // IEEE-float/压缩 WAV 若需要保持原格式，可以把 Volume 设为 100 让 Windows 直接播放。
     if (formatTag == 0xFFFEu) {
         if (fmtBytes < 40u) return false;
@@ -1377,9 +1424,10 @@ bool PerformAutoSave(const char* reason) {
     }
 
     DWORD slot = 0u;
-    if (!ChooseOldestAutoSaveSlot(&slot)) {
+    bool usedEmptySlot = false;
+    if (!ChooseAutoSaveSlot(&slot, &usedEmptySlot)) {
         ClearArm();
-        ycrlog::Line("[自动存档] 无法可靠判断 91~99 的空槽/最旧槽；本次不覆盖任何自动档。");
+        ycrlog::Line("[自动存档] 无法通过游戏文件层选择 91~99 自动槽；本次不覆盖任何自动档。");
         PlayConfiguredSound(gConfig.sound.autoSaveFailed);
         return false;
     }
@@ -1401,15 +1449,20 @@ bool PerformAutoSave(const char* reason) {
     ycrlog::Unsigned(slot);
     ycrlog::Line("。");
 
-    // 成功后立刻用和下一次轮换完全相同的相对路径再看一遍。
-    // 这不是保存成功的额外条件（原版 SaveSlot 返回值才是），只是专门抓“文件层路径语义仍不一致”。
-    wchar_t writtenPath[64];
-    WIN32_FILE_ATTRIBUTE_DATA_MINI writtenInfo = {};
-    if (!BuildSaveFilePath(slot, writtenPath, 64u) ||
-        GetFileAttributesExW(writtenPath, 0, &writtenInfo) == FALSE) {
-        ycrlog::Text("[自动存档诊断] 原版报告保存成功，但按原版相对路径语义仍看不到槽文件；槽=");
+    // 保存成功后立刻用“游戏自己的 File::Open(read)”回读验证。
+    // 这是 test5 的关键验收：如果槽91刚保存成功，这里就必须看到91存在；下一次扫描才会走92。
+    if (!GameSaveFileExists(slot)) {
+        ycrlog::Text("[自动存档诊断] SaveSlot 返回成功，但游戏文件层仍无法回读刚写入的槽；槽=");
         ycrlog::Unsigned(slot);
-        ycrlog::Line("。若下一次仍重复同槽，请保留此行。");
+        ycrlog::Line("。本次不推进环形游标，请保留此行。");
+    } else {
+        const DWORD nextSlot = NextAutoRingSlot(slot);
+        SaveAutoRingState(nextSlot);
+        ycrlog::Text("[自动槽] 游戏文件层已确认槽 ");
+        ycrlog::Unsigned(slot);
+        ycrlog::Text(" 可读取；下一个环形覆盖候选=");
+        ycrlog::Unsigned(nextSlot);
+        ycrlog::Line(usedEmptySlot ? "（本次填空槽）。" : "（本次环形覆盖）。");
     }
 
     const DWORD now = GetTickCount();
@@ -1902,6 +1955,9 @@ bool InstallAllHooks() {
     gOriginalPostLoad = reinterpret_cast<OriginalNoArgFunction>(gExeBase + kOriginalPostLoadFunctionRva);
     gOriginalSaveActionUpdate = reinterpret_cast<OriginalSaveActionUpdateFunction>(
         static_cast<SIZE_T>(kSaveActionUpdateOriginalVa));
+    gGameFileCtor = reinterpret_cast<GameFileCtorFunction>(gExeBase + kGameFileCtorFunctionRva);
+    gGameFileDtor = reinterpret_cast<GameFileDtorFunction>(gExeBase + kGameFileDtorFunctionRva);
+    gGameFileOpen = reinterpret_cast<GameFileOpenFunction>(gExeBase + kGameFileOpenFunctionRva);
 
     if (!ycr::ApplyPatchSet(gExeBase, kFixedMenuPatches, kFixedMenuPatchCount)) goto fail;
     gFixedPatchesInstalled = true;
@@ -2110,7 +2166,7 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
     // 从正式生命周期开始才打开/清空日志。这样日志中的“启动”就表示正式初始化确实已经进入，
     // 不再把“DLL 被映射进进程”误当成“SaveEnhance 已经安装”。
     ycrlog::Open(gSelfModule, L"Castle_SaveEnhance.log");
-    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.1.0-test4 启动。");
+    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.1.0-test5 启动。");
     ycrlog::Line("By Luminous with ChatGPT");
     ycrlog::Line("[装载] 已由 Castle Mod Loader 的 InitializeASI 生命周期进入正式初始化。");
     ycrlog::Line("[槽位] 0=Quick，1~90=Manual，91~99=Rolling Auto；普通菜单保留槽只读。");
@@ -2127,6 +2183,7 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
     }
 
     LoadConfig();
+    LoadAutoRingState();
     ycrlog::Text("[配置] QuickLoadPresses=");
     ycrlog::Unsigned(gConfig.quickLoadPresses);
     ycrlog::Text(" WindowMs=");
@@ -2136,6 +2193,9 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
     ycrlog::Text(" SoundVolume=");
     ycrlog::Unsigned(gConfig.soundVolume);
     ycrlog::Line("。");
+    ycrlog::Text("[自动槽] 持久化环形候选=");
+    ycrlog::Unsigned(gNextAutoSlot);
+    ycrlog::Line("；若91~99存在空槽，仍优先填最低空槽。");
 
     // 增加两个阶段日志。即使以后某台机器仍在安装阶段异常停止，也能一眼知道停在“进入预检查”
     // 之前还是“已经开始机器码安装”之后，不再只剩一行配置日志。
@@ -2161,7 +2221,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) 
     if (reason == DLL_PROCESS_DETACH) {
         // 退出时只做纯内存状态恢复和日志句柄关闭；不会重新安装/卸载代码 Hook。
         EndSaveButtonOverride();
-        ycrlog::Line("[退出] Castle_SaveEnhance v0.1.0-test4 卸载。");
+        ycrlog::Line("[退出] Castle_SaveEnhance v0.1.0-test5 卸载。");
         ycrlog::Close();
     }
     return TRUE;

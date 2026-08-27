@@ -48,6 +48,12 @@
        VA=0x0043B320 预期=8B 44 24 04 81 EC 2C 01 00 00 56 8B F1 50 68 0C BB 46 00 8D 4C 24 0C 68 04 BB 46 00 实际=8B 44 24 04 81 EC 2C 01 00 00 56 8B F1 50 68 0C BB 46 00 8D 4C 24 0C 68 04 BB 46 00
 [PASS] LoadSlot 0x43B4D0 关键前缀
        VA=0x0043B4D0 预期=8B 44 24 04 81 EC 2C 01 00 00 56 8B F1 50 68 0C BB 46 00 8D 4C 24 0C 68 04 BB 46 00 实际=8B 44 24 04 81 EC 2C 01 00 00 56 8B F1 50 68 0C BB 46 00 8D 4C 24 0C 68 04 BB 46 00
+[PASS] Game File ctor 0x4416F0
+       VA=0x004416F0 预期=8A 54 24 04 8B C1 33 C9 C7 00 FF FF FF FF 实际=8A 54 24 04 8B C1 33 C9 C7 00 FF FF FF FF
+[PASS] Game File dtor 0x441710
+       VA=0x00441710 预期=56 8B F1 8B 46 0C C6 46 09 00 实际=56 8B F1 8B 46 0C C6 46 09 00
+[PASS] Game File open 0x4417C0
+       VA=0x004417C0 预期=81 EC 2C 01 00 00 55 56 57 8B BC 24 3C 01 00 00 实际=81 EC 2C 01 00 00 55 56 57 8B BC 24 3C 01 00 00
 [PASS] 存档命名证据：三位槽号格式串
        VA=0x0046BB04 预期=25 73 25 30 33 64 00 实际=25 73 25 30 33 64 00
 [PASS] 存档命名证据：Save 文件基名
@@ -69,13 +75,13 @@
 [PASS] ASI 带 DLL 标志
        Characteristics=0x2102
 [PASS] ASI 入口点非零
-       AddressOfEntryPoint=0x64A0
+       AddressOfEntryPoint=0x6070
 [PASS] ASI 导出 Castle Mod Loader 正式入口 InitializeASI
        导出=InitializeASI
 [PASS] ASI 静态只导入 KERNEL32.dll
        DLL=KERNEL32.dll
 [PASS] ASI 必需 KERNEL32 导入齐全且未被装饰
-       缺少=无; 实际=CloseHandle, CreateFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileAttributesExW, GetFileSize, GetLastError, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile
+       缺少=无; 实际=CloseHandle, CreateFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile, WritePrivateProfileStringW
 [PASS] ASI 无 CRT/UCRT/VCRUNTIME 静态依赖
        发现=无
 [PASS] user32/winmm 保持动态可选依赖
@@ -83,9 +89,9 @@
 [PASS] ASI 含 Castle_SaveEnhance 身份字符串
        存在
 [PASS] ASI SHA-256（记录）
-       34c0fe8fb78cad1e4273bfccc9a72cea97c7c7d38662920ea8063b6e3b4bb0d0
+       5621b47e4cf06d90f1696467ed9c9c3b62e0b1c4790234df14d629a906a96abc
 
-[INFO] JSON 报告已写入：文档/静态验证结果.json
+[INFO] JSON 报告已写入：build_test5/静态验证结果.json
 
 === 总结 ===
 [PASS] 所有静态检查通过。注意：这仍然不是游戏实机验收。

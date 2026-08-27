@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》Castle_SaveEnhance v0.1.0-test4 静态验证工具。
+《幽城幻剑录》Castle_SaveEnhance v0.1.0-test5 静态验证工具。
 
 这个工具只读取文件，不会修改 RPG.exe、MiscInfo.ENC 或 Castle_SaveEnhance.asi。
 它的目标是让任何接手者都能重复确认：当前候选是不是针对我们锁定的台湾第三版原版，
@@ -62,6 +62,13 @@ FIXED_MENU_SITES: Sequence[Tuple[str, int, bytes]] = (
 PAGE_LOOP_CALL_SITES: Sequence[Tuple[str, int, bytes]] = (
     ("上一页 page-base 读取", 0x00424E90, bytes.fromhex("8B 86 98 05 00 00")),
     ("下一页 page-base 读取", 0x00424EC2, bytes.fromhex("8B 86 98 05 00 00")),
+)
+
+# test5 直接调用游戏自己的 File 对象判断自动档是否存在。
+GAME_FILE_PREFIXES: Sequence[Tuple[str, int, bytes]] = (
+    ("Game File ctor 0x4416F0", 0x004416F0, bytes.fromhex("8A 54 24 04 8B C1 33 C9 C7 00 FF FF FF FF")),
+    ("Game File dtor 0x441710", 0x00441710, bytes.fromhex("56 8B F1 8B 46 0C C6 46 09 00")),
+    ("Game File open 0x4417C0", 0x004417C0, bytes.fromhex("81 EC 2C 01 00 00 55 56 57 8B BC 24 3C 01 00 00")),
 )
 
 # ============================================================================
@@ -256,7 +263,7 @@ class PEFile:
 
     def list_exports(self) -> List[str]:
         """
-        只解析导出函数名。test4 必须继续真正导出 InitializeASI，Castle Mod Loader 才会在
+        只解析导出函数名。test5 必须继续真正导出 InitializeASI，Castle Mod Loader 才会在
         LoadLibraryExW 返回、补完 Locale/Overrides IAT 后调用正式初始化。
 
         IMAGE_EXPORT_DIRECTORY 固定 40 字节，其中：
@@ -404,6 +411,8 @@ def verify_rpg(path: Path) -> List[CheckResult]:
     add_va_check(results, pe, *SAVE_GATE_FUNCTION_SITE)
     for name, va, expected in SAVE_LOAD_PREFIXES:
         add_va_check(results, pe, name, va, expected)
+    for name, va, expected in GAME_FILE_PREFIXES:
+        add_va_check(results, pe, name, va, expected)
     for name, va, expected in STRING_SITES:
         add_va_check(results, pe, f"存档命名证据：{name}", va, expected)
     return results
@@ -519,9 +528,7 @@ def verify_asi(path: Path) -> List[CheckResult]:
             "FlushInstructionCache",
             "GetCurrentProcess",
             "GetCurrentProcessId",
-            "GetFileAttributesExW",
             "GetFileSize",
-            "GetLastError",
             "GetProcessHeap",
             "HeapAlloc",
             "HeapFree",
@@ -537,6 +544,7 @@ def verify_asi(path: Path) -> List[CheckResult]:
             "VirtualProtect",
             "VirtualQuery",
             "WriteFile",
+            "WritePrivateProfileStringW",
         }
         missing = sorted(required - kernel_names)
         results.append(
@@ -594,7 +602,7 @@ def print_group(title: str, results: Sequence[CheckResult]) -> None:
 
 def parser() -> argparse.ArgumentParser:
     command = argparse.ArgumentParser(
-        description="只读验证 Castle_SaveEnhance v0.1.0-test4 的目标 EXE、MiscInfo 与 ASI。"
+        description="只读验证 Castle_SaveEnhance v0.1.0-test5 的目标 EXE、MiscInfo 与 ASI。"
     )
     command.add_argument("--rpg", required=True, type=Path, help="锁定原版 RPG.exe")
     command.add_argument("--miscinfo", required=True, type=Path, help="Public\\MiscInfo.ENC")
@@ -627,7 +635,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.json_output is not None:
         payload = {
             "tool": "verify_saveenhance_candidate.py",
-            "version": "v0.1.0-test4",
+            "version": "v0.1.0-test5",
             "all_passed": all_ok,
             "results": [
                 {

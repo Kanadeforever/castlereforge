@@ -1,4 +1,4 @@
-# Castle_SaveEnhance v0.1.0-test4 安装与 INI 配置说明
+# Castle_SaveEnhance v0.1.0-test5 安装与 INI 配置说明
 
 ## 安装
 
@@ -144,3 +144,15 @@ mods\asi\Castle_SaveEnhance.log
 ```
 
 实机反馈时请同时提供日志和复现步骤。
+
+
+## test5 自动槽内部状态
+
+INI 新增由插件自动维护的 `[Internal] NextAutoSlot`。用户一般不需要修改。
+
+- 91~99 有空槽：忽略游标，优先填最低空槽；
+- 91~99 全满：覆盖 `NextAutoSlot`，成功并经游戏文件层回读确认后推进到下一槽；
+- 99 后回到 91；
+- 非 91~99 值自动按 91 处理。
+
+这个字段只是自动档轮换顺序，不包含任何游戏存档数据。

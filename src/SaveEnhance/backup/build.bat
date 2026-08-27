@@ -3,10 +3,10 @@ chcp 65001 >nul
 setlocal EnableExtensions
 
 set "SCRIPT_DIR=%~dp0"
-set "SRC_DIR=%SCRIPT_DIR%source_old"
-set "OUT_DIR=%SCRIPT_DIR%..\..\build"
+set "SRC_DIR=%SCRIPT_DIR%source"
+set "OUT_DIR=%SCRIPT_DIR%..\..\..\build"
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%" 2>nul
-rem 中间对象目录（不散落到运行目录）
+
 set "OBJ_DIR=%SCRIPT_DIR%_build"
 if not exist "%OBJ_DIR%" mkdir "%OBJ_DIR%" 2>nul
 

@@ -80,10 +80,6 @@ typedef DWORD* LPDWORD;
 #define INVALID_FILE_SIZE 0xFFFFFFFFu
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG)-1)
 
-// 文件时间查询只用于 91~99 自动档：有空槽先填空，全满后覆盖最后写入时间最旧的一个。
-#define ERROR_FILE_NOT_FOUND 2u
-#define ERROR_PATH_NOT_FOUND 3u
-
 // 键盘虚拟键。用户已经固定 F5=快速存档、F9=快速读档，所以不需要整张 VK 表。
 #define VK_F5 0x74
 #define VK_F9 0x78
@@ -96,22 +92,6 @@ typedef DWORD* LPDWORD;
 #define SND_MEMORY 0x0004u
 #define SND_FILENAME 0x00020000u
 
-
-// FILETIME 是 Windows 的 64 位时间戳，SDK 为了兼容 32 位 C 把它拆成两个 DWORD。
-typedef struct FILETIME_MINI {
-    DWORD dwLowDateTime;
-    DWORD dwHighDateTime;
-} FILETIME_MINI;
-
-// GetFileAttributesExW(GetFileExInfoStandard=0) 返回的最小标准结构。
-typedef struct WIN32_FILE_ATTRIBUTE_DATA_MINI {
-    DWORD dwFileAttributes;
-    FILETIME_MINI ftCreationTime;
-    FILETIME_MINI ftLastAccessTime;
-    FILETIME_MINI ftLastWriteTime;
-    DWORD nFileSizeHigh;
-    DWORD nFileSizeLow;
-} WIN32_FILE_ATTRIBUTE_DATA_MINI;
 
 // Windows 的 MEMORY_BASIC_INFORMATION 在 32 位进程中的最小布局。
 // VirtualQuery 会把某段地址所在内存区域的信息写进这里。
@@ -152,7 +132,6 @@ BOOL WINAPI WritePrivateProfileStringW(
 // ---- 时间 / 进程 ------------------------------------------------------------
 DWORD WINAPI GetTickCount(void);
 DWORD WINAPI GetCurrentProcessId(void);
-DWORD WINAPI GetLastError(void);
 HANDLE WINAPI GetCurrentProcess(void);
 BOOL WINAPI DisableThreadLibraryCalls(HMODULE module);
 
@@ -160,9 +139,6 @@ BOOL WINAPI DisableThreadLibraryCalls(HMODULE module);
 SIZE_T WINAPI VirtualQuery(LPCVOID address, MEMORY_BASIC_INFORMATION_MINI* info, SIZE_T length);
 BOOL WINAPI VirtualProtect(LPVOID address, SIZE_T size, DWORD newProtect, LPDWORD oldProtect);
 BOOL WINAPI FlushInstructionCache(HANDLE process, LPCVOID baseAddress, SIZE_T size);
-
-// ---- 文件状态（只读自动档时间） --------------------------------------------
-BOOL WINAPI GetFileAttributesExW(LPCWSTR filename, int infoLevelId, LPVOID fileInformation);
 
 // ---- 外置 WAV 只读装载 ------------------------------------------------------
 // SaveEnhance 不改磁盘上的 WAV。它只读完整文件，复制到进程堆，再对内存副本的 PCM 样本缩放。
