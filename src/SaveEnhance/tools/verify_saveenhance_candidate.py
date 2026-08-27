@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》Castle_SaveEnhance v0.1.0-test5 静态验证工具。
+《幽城幻剑录》Castle_SaveEnhance v0.1.0-test6 静态验证工具。
 
 这个工具只读取文件，不会修改 RPG.exe、MiscInfo.ENC 或 Castle_SaveEnhance.asi。
 它的目标是让任何接手者都能重复确认：当前候选是不是针对我们锁定的台湾第三版原版，
@@ -523,12 +523,14 @@ def verify_asi(path: Path) -> List[CheckResult]:
         # 所以不应该出现在 PE 静态 Import Table 中。
         required = {
             "CloseHandle",
+            "CreateDirectoryW",
             "CreateFileW",
             "DisableThreadLibraryCalls",
             "FlushInstructionCache",
             "GetCurrentProcess",
             "GetCurrentProcessId",
             "GetFileSize",
+            "GetLastError",
             "GetProcessHeap",
             "HeapAlloc",
             "HeapFree",
@@ -625,7 +627,7 @@ def print_group(title: str, results: Sequence[CheckResult]) -> None:
 
 def parser() -> argparse.ArgumentParser:
     command = argparse.ArgumentParser(
-        description="只读验证 Castle_SaveEnhance v0.1.0-test5 的目标 EXE、MiscInfo 与 ASI。"
+        description="只读验证 Castle_SaveEnhance v0.1.0-test6 的目标 EXE、MiscInfo 与 ASI。"
     )
     command.add_argument("--rpg", required=True, type=Path, help="锁定原版 RPG.exe")
     command.add_argument("--miscinfo", required=True, type=Path, help="Public\\MiscInfo.ENC")
@@ -658,7 +660,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.json_output is not None:
         payload = {
             "tool": "verify_saveenhance_candidate.py",
-            "version": "v0.1.0-test5",
+            "version": "v0.1.0-test6",
             "all_passed": all_ok,
             "results": [
                 {

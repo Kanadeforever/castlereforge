@@ -3,7 +3,7 @@
 #include "Castle_PadSupport_API.h"
 
 // ============================================================================
-// Castle_SaveEnhance.cpp  v0.1.0-test5
+// Castle_SaveEnhance.cpp  v0.1.0-test6
 // ----------------------------------------------------------------------------
 // 《幽城幻剑录》存档增强插件第一版完整实机候选。
 //
@@ -376,27 +376,34 @@ bool BuildIniPath(wchar_t* out, SIZE_T capacity) {
 }
 
 bool BuildAutoRingStatePath(wchar_t* out, SIZE_T capacity) {
-    // 状态文件必须跟着游戏存档走，而不是跟着 ASI/INI 走。因此这里传 nullptr 给
-    // GetModuleFileNameW，取得当前主程序 RPG.exe 的绝对路径，再把文件名替换成
-    // Save\.NEXTAUTOSLOT。即使 Mod Loader 从别的工作目录启动，最终位置也保持稳定。
-    if (out == nullptr || capacity < 32u) {
-        return false;
-    }
-    const DWORD length = GetModuleFileNameW(nullptr, out, static_cast<DWORD>(capacity));
-    if (length == 0u || static_cast<SIZE_T>(length) >= capacity) {
+    // 和日志共用同一条“模块路径 -> 所在目录 -> 追加目标名”路线。
+    // nullptr 表示以 RPG.exe 为模块，所以最终得到 <游戏根目录>\Save\.NEXTAUTOSLOT。
+    return ycrlog::BuildModuleFilePath(nullptr, L"Save\\.NEXTAUTOSLOT", out, capacity);
+}
+
+bool EnsureAutoRingStateDirectory() {
+    // CreateFileW 不会自动创建父目录。test5 实机的“无法创建”最可能就是 Save 目录在
+    // RPG.exe 旁并不存在，所以先用同一套路径构造出 <游戏根目录>\Save。
+    wchar_t directory[520];
+    if (!ycrlog::BuildModuleFilePath(nullptr, L"Save", directory, 520u)) {
+        ycrlog::Line("[自动槽状态] 无法构造游戏 Save 目录路径。");
         return false;
     }
 
-    // 从 RPG.exe 末尾向前找到最后一个路径分隔符，只保留游戏根目录和末尾反斜杠。
-    SIZE_T cut = static_cast<SIZE_T>(length);
-    while (cut > 0u && out[cut - 1u] != L'\\' && out[cut - 1u] != L'/') {
-        --cut;
+    if (CreateDirectoryW(directory, nullptr) != FALSE) {
+        // 返回非零表示本次刚刚成功创建目录，可以继续创建状态文件。
+        return true;
     }
-    if (cut == 0u) {
-        return false;
+
+    // 目录原本就存在时 CreateDirectoryW 也返回失败，但错误码 183 表示这是正常情况。
+    const DWORD error = GetLastError();
+    if (error == ERROR_ALREADY_EXISTS) {
+        return true;
     }
-    out[cut] = L'\0';
-    return AppendW(out, capacity, L"Save\\.NEXTAUTOSLOT");
+    ycrlog::Text("[自动槽状态] 无法准备游戏 Save 目录，Win32错误码=");
+    ycrlog::Unsigned(error);
+    ycrlog::Line("。");
+    return false;
 }
 
 bool IsValidWavFilename(const wchar_t* name) {
@@ -578,6 +585,11 @@ void LoadAutoRingState() {
 void SaveAutoRingState(DWORD nextSlot) {
     gNextAutoSlot = ClampAutoRingSlot(nextSlot);
 
+    if (!EnsureAutoRingStateDirectory()) {
+        ycrlog::Line("[自动槽状态] 本次存档仍有效；状态目录不可用，重启后从91开始。");
+        return;
+    }
+
     wchar_t path[520];
     if (!BuildAutoRingStatePath(path, 520u)) {
         ycrlog::Line("[自动槽状态] 无法构造 Save\\.NEXTAUTOSLOT 路径；本次存档仍有效，重启后从91开始。");
@@ -587,7 +599,10 @@ void SaveAutoRingState(DWORD nextSlot) {
     HANDLE file = CreateFileW(
         path, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file == INVALID_HANDLE_VALUE) {
-        ycrlog::Line("[自动槽状态] 无法创建 Save\\.NEXTAUTOSLOT；本次存档仍有效，重启后从91开始。");
+        const DWORD error = GetLastError();
+        ycrlog::Text("[自动槽状态] 无法创建 Save\\.NEXTAUTOSLOT，Win32错误码=");
+        ycrlog::Unsigned(error);
+        ycrlog::Line("；本次存档仍有效，重启后从91开始。");
         return;
     }
 
@@ -598,11 +613,20 @@ void SaveAutoRingState(DWORD nextSlot) {
         static_cast<BYTE>('0' + (gNextAutoSlot % 10u))};
     DWORD bytesWritten = 0u;
     const BOOL writeOk = WriteFile(file, raw, 3u, &bytesWritten, nullptr);
+    const DWORD writeError = writeOk == FALSE ? GetLastError() : 0u;
     CloseHandle(file);
     if (writeOk == FALSE || bytesWritten != 3u) {
         // 状态写失败不会把刚完成的游戏存档判成失败；当前进程仍继续使用内存里的正确游标。
-        ycrlog::Line("[自动槽状态] 写入 Save\\.NEXTAUTOSLOT 失败；本次存档仍有效，重启后可能从91开始。");
+        ycrlog::Text("[自动槽状态] 写入 Save\\.NEXTAUTOSLOT 失败，Win32错误码=");
+        ycrlog::Unsigned(writeError);
+        ycrlog::Text("，实际字节数=");
+        ycrlog::Unsigned(bytesWritten);
+        ycrlog::Line("；本次存档仍有效，重启后可能从91开始。");
+        return;
     }
+    ycrlog::Text("[自动槽状态] 已写入 Save\\.NEXTAUTOSLOT，下一候选=");
+    ycrlog::Unsigned(gNextAutoSlot);
+    ycrlog::Line("。");
 }
 
 DWORD NextAutoRingSlot(DWORD slot) {
@@ -2238,7 +2262,7 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
     // 从正式生命周期开始才打开/清空日志。这样日志中的“启动”就表示正式初始化确实已经进入，
     // 不再把“DLL 被映射进进程”误当成“SaveEnhance 已经安装”。
     ycrlog::Open(gSelfModule, L"Castle_SaveEnhance.log");
-    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.1.0-test5 启动。");
+    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.1.0-test6 启动。");
     ycrlog::Line("By Luminous with ChatGPT");
     ycrlog::Line("[装载] 已由 Castle Mod Loader 的 InitializeASI 生命周期进入正式初始化。");
     ycrlog::Line("[槽位] 0=Quick，1~90=Manual，91~99=Rolling Auto；普通菜单保留槽只读。");
@@ -2293,7 +2317,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) 
     if (reason == DLL_PROCESS_DETACH) {
         // 退出时只做纯内存状态恢复和日志句柄关闭；不会重新安装/卸载代码 Hook。
         EndSaveButtonOverride();
-        ycrlog::Line("[退出] Castle_SaveEnhance v0.1.0-test5 卸载。");
+        ycrlog::Line("[退出] Castle_SaveEnhance v0.1.0-test6 卸载。");
         ycrlog::Close();
     }
     return TRUE;

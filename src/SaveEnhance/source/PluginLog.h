@@ -144,12 +144,21 @@ inline void Hex(DWORD value) {
     WriteRaw(buffer, 10u);
 }
 
-inline bool Open(HMODULE module, const wchar_t* filename) {
-    // path 先装 ASI 自己的完整路径，例如：
-    // C:\Game\mods\asi\Castle_SaveEnhance.asi
-    wchar_t path[520];
-    const DWORD length = GetModuleFileNameW(module, path, 520u);
-    if (length == 0u || length >= 520u) {
+inline bool BuildModuleFilePath(
+    HMODULE module,
+    const wchar_t* filename,
+    wchar_t* path,
+    SIZE_T capacity) {
+    // 这是日志和小状态文件共用的路径构造路线：
+    // - module=ASI 模块时，从 ASI 自身目录开始；
+    // - module=nullptr 时，Windows 返回当前 RPG.exe，从游戏根目录开始。
+    // filename 可以是单个文件名，也可以是 Save\\.NEXTAUTOSLOT 这种相对后缀。
+    if (filename == nullptr || path == nullptr || capacity < 4u || capacity > 0xFFFFFFFFu) {
+        return false;
+    }
+
+    const DWORD length = GetModuleFileNameW(module, path, static_cast<DWORD>(capacity));
+    if (length == 0u || static_cast<SIZE_T>(length) >= capacity) {
         return false;
     }
 
@@ -163,7 +172,7 @@ inline bool Open(HMODULE module, const wchar_t* filename) {
     // 先确认“目录长度 + 新文件名 + 结尾 0”不会超过固定 path 数组。
     // 宁可没有日志，也不能因为日志路径太长写坏栈内存。
     const SIZE_T nameLength = StringLengthW(filename);
-    if (cut + nameLength + 1u >= 520u) {
+    if (cut + nameLength + 1u > capacity) {
         return false;
     }
 
@@ -172,6 +181,15 @@ inline bool Open(HMODULE module, const wchar_t* filename) {
         path[cut + i] = filename[i];
     }
     path[cut + nameLength] = L'\0';
+    return true;
+}
+
+inline bool Open(HMODULE module, const wchar_t* filename) {
+    // 日志继续使用上面的共用路径构造器，只是它的目标固定为 ASI 同目录的日志文件。
+    wchar_t path[520];
+    if (!BuildModuleFilePath(module, filename, path, 520u)) {
+        return false;
+    }
 
     // CREATE_ALWAYS 表示每次启动都重新创建日志，旧日志不会和本轮结果混在一起。
     // FILE_SHARE_READ 允许用户在游戏运行中直接打开日志查看，而不会阻止插件继续写。

@@ -77,6 +77,7 @@ typedef DWORD* LPDWORD;
 #define OPEN_EXISTING 3u
 #define CREATE_ALWAYS 2u
 #define FILE_ATTRIBUTE_NORMAL 0x00000080u
+#define ERROR_ALREADY_EXISTS 183u
 #define INVALID_FILE_SIZE 0xFFFFFFFFu
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG)-1)
 
@@ -148,6 +149,8 @@ LPVOID WINAPI HeapAlloc(HANDLE heap, DWORD flags, SIZE_T bytes);
 BOOL WINAPI HeapFree(HANDLE heap, DWORD flags, LPVOID memory);
 
 // ---- 日志文件 ---------------------------------------------------------------
+BOOL WINAPI CreateDirectoryW(LPCWSTR pathName, LPVOID securityAttributes);
+DWORD WINAPI GetLastError(void);
 HANDLE WINAPI CreateFileW(
     LPCWSTR filename,
     DWORD desiredAccess,
