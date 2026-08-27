@@ -51,6 +51,24 @@ jobs:
         # 各脚本内部自带 chcp 65001，无需外层处理
         run: build_all.bat < nul
 
+      - name: 获取 32 位 SDL3.dll（Controller 手柄模块运行时依赖）
+        shell: pwsh
+        run: |
+          # SDL3 官方 32 位运行时包，zip 根目录直接含 SDL3.dll
+          $url = 'https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14-win32-x86.zip'
+          $zip = Join-Path $env:RUNNER_TEMP 'SDL3-win32-x86.zip'
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          $extract = Join-Path $env:RUNNER_TEMP 'sdl3'
+          Expand-Archive -Path $zip -DestinationPath $extract -Force
+          $dll = Join-Path $extract 'SDL3.dll'
+          $license = Join-Path $extract 'LICENSE.txt'
+          if (-not (Test-Path $dll)) { throw 'SDL3 zip 内未找到 SDL3.dll' }
+          if (-not (Test-Path $license)) { throw 'SDL3 zip 内未找到 LICENSE.txt' }
+          # 与 ASI 插件同目录：发行包内 mods\asi\SDL3.dll（附 SDL 的 LICENSE.txt，遵守 zlib 许可）
+          Copy-Item $dll 'build\mods\asi\SDL3.dll' -Force
+          Copy-Item $license 'build\mods\asi\LICENSE.txt' -Force
+          Write-Host '[SDL3] SDL3.dll 与 LICENSE.txt 已放入 build\mods\asi\'
+
       - name: 校验产物（存在性 + 全部二进制为 PE32/x86）
         shell: pwsh
         run: |
@@ -69,7 +87,9 @@ jobs:
             'build\mods\asi\BUGFix.asi',
             'build\mods\asi\AnytimeSave.asi',
             'build\mods\asi\NoCD.asi',
-            'build\mods\asi\MaxGrowthAndDrop.asi'
+            'build\mods\asi\MaxGrowthAndDrop.asi',
+            'build\mods\asi\SDL3.dll',
+            'build\mods\asi\LICENSE.txt'
           )
           foreach ($p in $expected) {
             if (-not (Test-Path $p)) { throw "缺少产物：$p" }
