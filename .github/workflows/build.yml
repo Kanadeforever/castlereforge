@@ -170,6 +170,7 @@ jobs:
           gh release create dev-auto `
             --target $sha `
             --title 'dev-auto 开发版（自动构建）' `
+            --prerelease `
             --notes-file "$env:RUNNER_TEMP\release_notes.md" `
             (Join-Path $env:RUNNER_TEMP 'CastleReforge-dev-auto.zip')
           Write-Host '[发布] dev-auto Release 已更新，下载地址：'
