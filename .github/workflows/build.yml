@@ -112,14 +112,16 @@ jobs:
           $short = (git rev-parse --short HEAD).Trim()
           $date  = Get-Date -Format 'yyyy-MM-dd HH:mm'
           $log   = (git log -10 --oneline --no-decorate | Out-String).Trim()
-          $notes = @"
-自动构建的 dev-auto 开发版
-
-- 提交：$short（$date）
-
-最近更新：
-$log
-"@
+          # 用字符串数组拼接发布说明，不用 here-string
+          #（here-string 结束符必须顶格，与 YAML 块标量缩进要求冲突）
+          $notes = @(
+            '自动构建的 dev-auto 开发版',
+            '',
+            "- 提交：$short（$date）",
+            '',
+            '最近更新：',
+            $log
+          ) -join "`n"
           Set-Content -Path "$env:RUNNER_TEMP\release_notes.md" `
             -Value $notes -Encoding utf8
 
