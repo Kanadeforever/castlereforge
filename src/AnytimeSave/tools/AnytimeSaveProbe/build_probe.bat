@@ -13,7 +13,7 @@ rem ============================================================================
 
 set "SCRIPT_DIR=%~dp0"
 set "SRC_DIR=%SCRIPT_DIR%src"
-rem 输出统一到仓库根 build\（向上 4 级：AnytimeSaveProbe→tools→Extra→src→仓库根） 
+rem 输出统一到仓库根 build\（向上 4 级：AnytimeSaveProbe→tools→AnytimeSave→src→仓库根）
 set "OUT_DIR=%SCRIPT_DIR%..\..\..\..\build"
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%" 2>nul
 rem 中间对象目录（不散落到运行目录）

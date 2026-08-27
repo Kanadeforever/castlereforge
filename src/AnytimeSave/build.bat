@@ -3,9 +3,7 @@ chcp 65001 >nul
 setlocal EnableExtensions
 
 set "SCRIPT_DIR=%~dp0"
-set "BUGFIX_SRC_DIR=%SCRIPT_DIR%BUGFix\source"
-set "NOCD_SRC_DIR=%SCRIPT_DIR%NoCD\source"
-set "MAX_GROWTH_AND_DROP_SRC_DIR=%SCRIPT_DIR%MaxGrowthAndDrop\source"
+set "SRC_DIR=%SCRIPT_DIR%source"
 set "OUT_DIR=%SCRIPT_DIR%..\..\build"
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%" 2>nul
 rem 中间对象目录（不散落到运行目录）
@@ -40,27 +38,15 @@ if errorlevel 1 (
 set CFLAGS=/nologo /std:c++17 /utf-8 /O2 /Oi- /W4 /WX /GR- /GS- /Gs999999999 /Zl /LD
 set LFLAGS=/link /NOLOGO /NODEFAULTLIB /ENTRY:DllMain /SUBSYSTEM:WINDOWS /MACHINE:X86 kernel32.lib
 
-echo [1/3] BUGFix.asi - 已合并稳定 CrashFix test2 双调用路径修复
-cl.exe %CFLAGS% "%BUGFIX_SRC_DIR%\BUGFix.cpp" /Fo"%OBJ_DIR%\BUGFix.obj" %LFLAGS% /OUT:"%OUT_DIR%\BUGFix.asi"
+echo [1/1] AnytimeSave.asi - v0.3.1a Safe Fallback Save
+cl.exe %CFLAGS% "%SRC_DIR%\AnytimeSave.cpp" /Fo"%OBJ_DIR%\AnytimeSave.obj" %LFLAGS% /OUT:"%OUT_DIR%\AnytimeSave.asi"
 if errorlevel 1 goto :fail
-call :check_pe "%OUT_DIR%\BUGFix.asi"
-if errorlevel 1 goto :fail
-
-echo [2/3] NoCD.asi
-cl.exe %CFLAGS% "%NOCD_SRC_DIR%\NoCD.cpp" /Fo"%OBJ_DIR%\NoCD.obj" %LFLAGS% /OUT:"%OUT_DIR%\NoCD.asi"
-if errorlevel 1 goto :fail
-call :check_pe "%OUT_DIR%\NoCD.asi"
-if errorlevel 1 goto :fail
-
-echo [3/3] MaxGrowthAndDrop.asi
-cl.exe %CFLAGS% "%MAX_GROWTH_AND_DROP_SRC_DIR%\MaxGrowthAndDrop.cpp" /Fo"%OBJ_DIR%\MaxGrowthAndDrop.obj" %LFLAGS% /OUT:"%OUT_DIR%\MaxGrowthAndDrop.asi"
-if errorlevel 1 goto :fail
-call :check_pe "%OUT_DIR%\MaxGrowthAndDrop.asi"
+call :check_pe "%OUT_DIR%\AnytimeSave.asi"
 if errorlevel 1 goto :fail
 
 rmdir /s /q "%OBJ_DIR%" 2>nul
 echo.
-echo [成功] Extra 的三个 ASI 已输出到 build 目录，并且全部通过 x86 / DLL / 非零入口点检查。
+echo [成功] AnytimeSave.asi 已输出到 build 目录，并且通过 x86 / DLL / 非零入口点检查。
 pause
 exit /b 0
 
