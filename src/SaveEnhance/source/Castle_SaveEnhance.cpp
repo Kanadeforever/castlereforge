@@ -3,7 +3,7 @@
 #include "Castle_PadSupport_API.h"
 
 // ============================================================================
-// Castle_SaveEnhance.cpp  v0.1.0-test6
+// Castle_SaveEnhance.cpp  v0.1.0-test5
 // ----------------------------------------------------------------------------
 // 《幽城幻剑录》存档增强插件第一版完整实机候选。
 //
@@ -104,34 +104,7 @@ const DWORD kOriginalPostLoadFunctionRva = 0x0004B1F0u;  // 0x44B1F0
 const DWORD kGameFileCtorFunctionRva = 0x000416F0u; // 0x4416F0，this + 一个栈参数 archiveAware
 const DWORD kGameFileDtorFunctionRva = 0x00041710u; // 0x441710，析构并关闭文件
 const DWORD kGameFileOpenFunctionRva = 0x000417C0u; // 0x4417C0，this + path + mode + flags
-const DWORD kGameFileCloseFunctionRva = 0x00041A00u;// 0x441A00，关闭当前句柄
-const DWORD kGameFileReadFunctionRva = 0x00041A30u; // 0x441A30，按 offset/size 读取
-const DWORD kGameFileWriteFunctionRva = 0x00041AB0u;// 0x441AB0，按 offset/size 写入
 const SIZE_T kGameFileObjectBytes = 0x14u;
-const SIZE_T kGameFileLengthOffset = 0x04u;
-
-// 这六段短签名不用于改写机器码，只用于证明当前 EXE 的 File 对象仍是已经逆向确认的版本。
-// 如果游戏版本不同，与其用错误调用约定跳进去破坏存档，不如在安装前明确拒绝运行。
-const BYTE kGameFileCtorPrefix[14] = {
-    0x8A, 0x54, 0x24, 0x04, 0x8B, 0xC1, 0x33, 0xC9, 0xC7, 0x00, 0xFF, 0xFF, 0xFF, 0xFF};
-const BYTE kGameFileDtorPrefix[10] = {
-    0x56, 0x8B, 0xF1, 0x8B, 0x46, 0x0C, 0xC6, 0x46, 0x09, 0x00};
-const BYTE kGameFileOpenPrefix[16] = {
-    0x81, 0xEC, 0x2C, 0x01, 0x00, 0x00, 0x55, 0x56,
-    0x57, 0x8B, 0xBC, 0x24, 0x3C, 0x01, 0x00, 0x00};
-const BYTE kGameFileClosePrefix[16] = {
-    0x56, 0x8B, 0xF1, 0x8B, 0x06, 0x83, 0xF8, 0xFF,
-    0x74, 0x1F, 0x8A, 0x4E, 0x09, 0x84, 0xC9, 0x75};
-const BYTE kGameFileReadPrefix[16] = {
-    0x53, 0x8B, 0x5C, 0x24, 0x10, 0x56, 0x8B, 0xF1,
-    0x85, 0xDB, 0x74, 0x66, 0x80, 0x7E, 0x08, 0x01};
-const BYTE kGameFileWritePrefix[16] = {
-    0x56, 0x8B, 0xF1, 0x57, 0x80, 0x7E, 0x08, 0x02,
-    0x74, 0x07, 0x5F, 0x32, 0xC0, 0x5E, 0xC2, 0x0C};
-
-// Game File 接收 ANSI 相对路径。必须保持与原版 TSF 相同的 Save\ 前缀，才能进入游戏自己的
-// 搜索、重定向和写入层；不能再用 RPG.exe 目录拼 Win32 绝对路径。
-const char kAutoRingStatePath[] = "Save\\.NEXTAUTOSLOT";
 
 // ---- 普通/隐藏手动保存入口：用于保留槽二次写保护 -----------------------------
 const DWORD kMenuSaveCallRva = 0x00024DF2u; // 0x424DF2
@@ -271,11 +244,6 @@ typedef void* (__fastcall *GameFileCtorFunction)(void* fileObject, void* unusedE
 typedef void (__fastcall *GameFileDtorFunction)(void* fileObject, void* unusedEdx);
 typedef BOOL (__fastcall *GameFileOpenFunction)(
     void* fileObject, void* unusedEdx, const char* path, DWORD mode, DWORD flags);
-typedef void (__fastcall *GameFileCloseFunction)(void* fileObject, void* unusedEdx);
-typedef BOOL (__fastcall *GameFileReadFunction)(
-    void* fileObject, void* unusedEdx, LONG offset, DWORD size, void* buffer);
-typedef BOOL (__fastcall *GameFileWriteFunction)(
-    void* fileObject, void* unusedEdx, LONG offset, DWORD size, const void* buffer);
 
 BYTE* gExeBase = nullptr;
 HMODULE gSelfModule = nullptr;
@@ -295,12 +263,9 @@ OriginalSaveActionUpdateFunction gOriginalSaveActionUpdate = nullptr;
 GameFileCtorFunction gGameFileCtor = nullptr;
 GameFileDtorFunction gGameFileDtor = nullptr;
 GameFileOpenFunction gGameFileOpen = nullptr;
-GameFileCloseFunction gGameFileClose = nullptr;
-GameFileReadFunction gGameFileRead = nullptr;
-GameFileWriteFunction gGameFileWrite = nullptr;
 
 // 91~99 全部已存在后，NextAutoSlot 指示“下一次应该覆盖哪一个物理槽”。
-// 这个值只通过游戏 File 层写入 Save\.NEXTAUTOSLOT，不再污染玩家可能复制、重装或替换的 INI。
+// 这个值只写入 RPG.exe 旁边的 Save\.NEXTAUTOSLOT，不再污染玩家可能复制、重装或替换的 INI。
 // 文件只保存 091~099 三个 ASCII 字节，不含任何游戏进度；丢失或损坏时安全回到 91。
 // 如果用户删掉任一自动档，游戏文件层扫描仍优先填空槽，游标不会强行覆盖其它档。
 DWORD gNextAutoSlot = kAutoSlotFirst;
@@ -408,6 +373,30 @@ bool AppendW(wchar_t* path, SIZE_T capacity, const wchar_t* suffix) {
 
 bool BuildIniPath(wchar_t* out, SIZE_T capacity) {
     return GetSelfDirectory(out, capacity) && AppendW(out, capacity, L"Castle_SaveEnhance.ini");
+}
+
+bool BuildAutoRingStatePath(wchar_t* out, SIZE_T capacity) {
+    // 状态文件必须跟着游戏存档走，而不是跟着 ASI/INI 走。因此这里传 nullptr 给
+    // GetModuleFileNameW，取得当前主程序 RPG.exe 的绝对路径，再把文件名替换成
+    // Save\.NEXTAUTOSLOT。即使 Mod Loader 从别的工作目录启动，最终位置也保持稳定。
+    if (out == nullptr || capacity < 32u) {
+        return false;
+    }
+    const DWORD length = GetModuleFileNameW(nullptr, out, static_cast<DWORD>(capacity));
+    if (length == 0u || static_cast<SIZE_T>(length) >= capacity) {
+        return false;
+    }
+
+    // 从 RPG.exe 末尾向前找到最后一个路径分隔符，只保留游戏根目录和末尾反斜杠。
+    SIZE_T cut = static_cast<SIZE_T>(length);
+    while (cut > 0u && out[cut - 1u] != L'\\' && out[cut - 1u] != L'/') {
+        --cut;
+    }
+    if (cut == 0u) {
+        return false;
+    }
+    out[cut] = L'\0';
+    return AppendW(out, capacity, L"Save\\.NEXTAUTOSLOT");
 }
 
 bool IsValidWavFilename(const wchar_t* name) {
@@ -545,43 +534,34 @@ DWORD ClampAutoRingSlot(DWORD value) {
 }
 
 void LoadAutoRingState() {
-    // 先设置安全默认值。文件不存在、读取失败、长度不是 3 或内容超出 091~099，都保持 91，
-    // 不把损坏的元数据扩大成错误槽位写入。
+    // 先设置安全默认值。文件不存在、路径失败、读取失败、长度不是 3 或内容超出 091~099，
+    // 都保持 91，不把损坏的元数据扩大成错误槽位写入。
     gNextAutoSlot = kAutoSlotFirst;
 
-    if (gGameFileCtor == nullptr || gGameFileDtor == nullptr || gGameFileOpen == nullptr ||
-        gGameFileClose == nullptr || gGameFileRead == nullptr) {
-        ycrlog::Line("[自动槽状态] 游戏 File 读取函数未就绪；本轮从91开始。");
+    wchar_t path[520];
+    if (!BuildAutoRingStatePath(path, 520u)) {
+        ycrlog::Line("[自动槽状态] 无法构造 Save\\.NEXTAUTOSLOT 路径；本轮从91开始。");
         return;
     }
 
-    // File 对象本身只有 0x14 字节，放在当前函数栈上即可。ctor(1) 与原版 SaveSlot/LoadSlot
-    // 完全相同，表示允许使用游戏自己的文件搜索/重定向层。
-    BYTE fileObject[kGameFileObjectBytes];
-    memset(fileObject, 0, sizeof(fileObject));
-    gGameFileCtor(fileObject, nullptr, 1u);
-    const BOOL opened = gGameFileOpen(fileObject, nullptr, kAutoRingStatePath, 1u, 0u);
-    if (opened == FALSE) {
-        gGameFileDtor(fileObject, nullptr);
+    HANDLE file = CreateFileW(
+        path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
         // 第一次使用插件时文件本来就不存在。这不是功能失败，第一次成功自动存档后会创建。
-        ycrlog::Line("[自动槽状态] 游戏文件层中不存在 Save\\.NEXTAUTOSLOT；本轮从91开始。");
+        ycrlog::Line("[自动槽状态] Save\\.NEXTAUTOSLOT 不存在；本轮从91开始。");
         return;
     }
 
-    // Open 成功后 object+0x04 是原版自己记录的文件长度。必须恰好为 3，才能拒绝
-    // “091换行”、旧格式或其它尾随垃圾；之后再从 offset=0 读取三个字节。
-    const DWORD fileBytes = *reinterpret_cast<const DWORD*>(fileObject + kGameFileLengthOffset);
-    BYTE raw[3] = {};
-    const BOOL readOk = fileBytes == 3u
-        ? gGameFileRead(fileObject, nullptr, 0, 3u, raw)
-        : FALSE;
-    gGameFileClose(fileObject, nullptr);
-    gGameFileDtor(fileObject, nullptr);
-    if (readOk == FALSE ||
+    // 只接受恰好三个 ASCII 数字。多读一个字节是为了拒绝“091换行”或其它尾随垃圾。
+    BYTE raw[4] = {};
+    DWORD bytesRead = 0u;
+    const BOOL readOk = ReadFile(file, raw, 4u, &bytesRead, nullptr);
+    CloseHandle(file);
+    if (readOk == FALSE || bytesRead != 3u ||
         raw[0] < static_cast<BYTE>('0') || raw[0] > static_cast<BYTE>('9') ||
         raw[1] < static_cast<BYTE>('0') || raw[1] > static_cast<BYTE>('9') ||
         raw[2] < static_cast<BYTE>('0') || raw[2] > static_cast<BYTE>('9')) {
-        ycrlog::Line("[自动槽状态] 游戏文件层中的 Save\\.NEXTAUTOSLOT 内容无效；本轮从91开始。");
+        ycrlog::Line("[自动槽状态] Save\\.NEXTAUTOSLOT 内容无效；本轮从91开始。");
         return;
     }
 
@@ -598,9 +578,16 @@ void LoadAutoRingState() {
 void SaveAutoRingState(DWORD nextSlot) {
     gNextAutoSlot = ClampAutoRingSlot(nextSlot);
 
-    if (gGameFileCtor == nullptr || gGameFileDtor == nullptr || gGameFileOpen == nullptr ||
-        gGameFileClose == nullptr || gGameFileWrite == nullptr) {
-        ycrlog::Line("[自动槽状态] 游戏 File 写入函数未就绪；本次存档仍有效，重启后从91开始。");
+    wchar_t path[520];
+    if (!BuildAutoRingStatePath(path, 520u)) {
+        ycrlog::Line("[自动槽状态] 无法构造 Save\\.NEXTAUTOSLOT 路径；本次存档仍有效，重启后从91开始。");
+        return;
+    }
+
+    HANDLE file = CreateFileW(
+        path, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        ycrlog::Line("[自动槽状态] 无法创建 Save\\.NEXTAUTOSLOT；本次存档仍有效，重启后从91开始。");
         return;
     }
 
@@ -609,26 +596,13 @@ void SaveAutoRingState(DWORD nextSlot) {
         static_cast<BYTE>('0' + ((gNextAutoSlot / 100u) % 10u)),
         static_cast<BYTE>('0' + ((gNextAutoSlot / 10u) % 10u)),
         static_cast<BYTE>('0' + (gNextAutoSlot % 10u))};
-
-    // mode=2 是原版 Save Writer 自己使用的“创建/覆盖写入”模式。写 offset=0、size=3 后显式
-    // Close，再执行 dtor 释放 File 内部路径；整个顺序照搬 0x43B360 的成功路径。
-    BYTE fileObject[kGameFileObjectBytes];
-    memset(fileObject, 0, sizeof(fileObject));
-    gGameFileCtor(fileObject, nullptr, 1u);
-    const BOOL opened = gGameFileOpen(fileObject, nullptr, kAutoRingStatePath, 2u, 0u);
-    const BOOL writeOk = opened != FALSE
-        ? gGameFileWrite(fileObject, nullptr, 0, 3u, raw)
-        : FALSE;
-    gGameFileClose(fileObject, nullptr);
-    gGameFileDtor(fileObject, nullptr);
-    if (writeOk == FALSE) {
+    DWORD bytesWritten = 0u;
+    const BOOL writeOk = WriteFile(file, raw, 3u, &bytesWritten, nullptr);
+    CloseHandle(file);
+    if (writeOk == FALSE || bytesWritten != 3u) {
         // 状态写失败不会把刚完成的游戏存档判成失败；当前进程仍继续使用内存里的正确游标。
-        ycrlog::Line("[自动槽状态] 游戏文件层写入 Save\\.NEXTAUTOSLOT 失败；本次存档仍有效，重启后可能从91开始。");
-        return;
+        ycrlog::Line("[自动槽状态] 写入 Save\\.NEXTAUTOSLOT 失败；本次存档仍有效，重启后可能从91开始。");
     }
-    ycrlog::Text("[自动槽状态] 游戏文件层已写入 Save\\.NEXTAUTOSLOT，下一候选=");
-    ycrlog::Unsigned(gNextAutoSlot);
-    ycrlog::Line("。");
 }
 
 DWORD NextAutoRingSlot(DWORD slot) {
@@ -1966,21 +1940,6 @@ bool PrecheckAllHookSites() {
                            kPrevPageBaseReadBytes, 6u, true)) ok = false;
     if (!CheckOriginalSite("下一页循环page-base读取", kNextPageBaseReadRva,
                            kNextPageBaseReadBytes, 6u, true)) ok = false;
-
-    // 下面六个函数不被修改，但 SaveEnhance 会直接按已确认的 x86 thiscall ABI 调用。
-    // 所以它们和真正 Hook 点一样必须在启动时逐项核对，不能只依赖离线验证报告。
-    if (!CheckOriginalSite("Game File ctor前缀", kGameFileCtorFunctionRva,
-                           kGameFileCtorPrefix, sizeof(kGameFileCtorPrefix), false)) ok = false;
-    if (!CheckOriginalSite("Game File dtor前缀", kGameFileDtorFunctionRva,
-                           kGameFileDtorPrefix, sizeof(kGameFileDtorPrefix), false)) ok = false;
-    if (!CheckOriginalSite("Game File open前缀", kGameFileOpenFunctionRva,
-                           kGameFileOpenPrefix, sizeof(kGameFileOpenPrefix), false)) ok = false;
-    if (!CheckOriginalSite("Game File close前缀", kGameFileCloseFunctionRva,
-                           kGameFileClosePrefix, sizeof(kGameFileClosePrefix), false)) ok = false;
-    if (!CheckOriginalSite("Game File read前缀", kGameFileReadFunctionRva,
-                           kGameFileReadPrefix, sizeof(kGameFileReadPrefix), false)) ok = false;
-    if (!CheckOriginalSite("Game File write前缀", kGameFileWriteFunctionRva,
-                           kGameFileWritePrefix, sizeof(kGameFileWritePrefix), false)) ok = false;
     if (!CheckVtableSite()) ok = false;
 
     if (!ok) {
@@ -2071,9 +2030,6 @@ bool InstallAllHooks() {
     gGameFileCtor = reinterpret_cast<GameFileCtorFunction>(gExeBase + kGameFileCtorFunctionRva);
     gGameFileDtor = reinterpret_cast<GameFileDtorFunction>(gExeBase + kGameFileDtorFunctionRva);
     gGameFileOpen = reinterpret_cast<GameFileOpenFunction>(gExeBase + kGameFileOpenFunctionRva);
-    gGameFileClose = reinterpret_cast<GameFileCloseFunction>(gExeBase + kGameFileCloseFunctionRva);
-    gGameFileRead = reinterpret_cast<GameFileReadFunction>(gExeBase + kGameFileReadFunctionRva);
-    gGameFileWrite = reinterpret_cast<GameFileWriteFunction>(gExeBase + kGameFileWriteFunctionRva);
 
     if (!ycr::ApplyPatchSet(gExeBase, kFixedMenuPatches, kFixedMenuPatchCount)) goto fail;
     gFixedPatchesInstalled = true;
@@ -2282,7 +2238,7 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
     // 从正式生命周期开始才打开/清空日志。这样日志中的“启动”就表示正式初始化确实已经进入，
     // 不再把“DLL 被映射进进程”误当成“SaveEnhance 已经安装”。
     ycrlog::Open(gSelfModule, L"Castle_SaveEnhance.log");
-    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.1.0-test6 启动。");
+    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.1.0-test5 启动。");
     ycrlog::Line("By Luminous with ChatGPT");
     ycrlog::Line("[装载] 已由 Castle Mod Loader 的 InitializeASI 生命周期进入正式初始化。");
     ycrlog::Line("[槽位] 0=Quick，1~90=Manual，91~99=Rolling Auto；普通菜单保留槽只读。");
@@ -2299,6 +2255,7 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
     }
 
     LoadConfig();
+    LoadAutoRingState();
     ycrlog::Text("[配置] QuickLoadPresses=");
     ycrlog::Unsigned(gConfig.quickLoadPresses);
     ycrlog::Text(" WindowMs=");
@@ -2308,6 +2265,10 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
     ycrlog::Text(" SoundVolume=");
     ycrlog::Unsigned(gConfig.soundVolume);
     ycrlog::Line("。");
+    ycrlog::Text("[自动槽] 持久化环形候选=");
+    ycrlog::Unsigned(gNextAutoSlot);
+    ycrlog::Line("；若91~99存在空槽，仍优先填最低空槽。");
+
     // 增加两个阶段日志。即使以后某台机器仍在安装阶段异常停止，也能一眼知道停在“进入预检查”
     // 之前还是“已经开始机器码安装”之后，不再只剩一行配置日志。
     ycrlog::Line("[启动] 开始目标机器码预检查与兼容性检查。");
@@ -2315,12 +2276,6 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
         ycrlog::Line("[状态] SaveEnhance 未完整安装；为保护存档，本轮不提供增强功能。");
         return;
     }
-
-    // Game File 地址只有在上面的逐字节预检查通过后才允许使用，所以状态文件必须在安装成功后读取。
-    LoadAutoRingState();
-    ycrlog::Text("[自动槽] 持久化环形候选=");
-    ycrlog::Unsigned(gNextAutoSlot);
-    ycrlog::Line("；若91~99存在空槽，仍优先填最低空槽。");
 
     ycrlog::Line("[状态] SaveEnhance 已完整安装，可以开始实机功能测试。");
 }
@@ -2338,7 +2293,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) 
     if (reason == DLL_PROCESS_DETACH) {
         // 退出时只做纯内存状态恢复和日志句柄关闭；不会重新安装/卸载代码 Hook。
         EndSaveButtonOverride();
-        ycrlog::Line("[退出] Castle_SaveEnhance v0.1.0-test6 卸载。");
+        ycrlog::Line("[退出] Castle_SaveEnhance v0.1.0-test5 卸载。");
         ycrlog::Close();
     }
     return TRUE;
