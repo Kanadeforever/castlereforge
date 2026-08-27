@@ -1,6 +1,9 @@
 ﻿@echo off
 setlocal EnableExtensions DisableDelayedExpansion
-"%SystemRoot%\System32\chcp.com" 65001 >nul 2>nul
+chcp 65001 >nul
+
+@echo off
+
 cd /d "%~dp0"
 set "SCRIPT_DIR=%~dp0"
 set "OUT_DIR=%SCRIPT_DIR%..\..\build"
