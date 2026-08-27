@@ -342,11 +342,10 @@ SEALED_REFACTOR21_SKILLS_SHA256 = {
 # state4 已被用户持续增强，refactor26 又新增 D-Pad 左右翻页，因此不能再用旧整文件 SHA 阻止合法输入增强。
 # state4 的“不直接写装备数据/仍走真实 ButtonEvent”由后面的结构护栏继续机械验证。
 
-# 用户在 refactor25 实机确认 Battle Target 已经回到新排序实验之前的旧成熟方案，并决定验收通过、不再修改。
-# 因此 refactor25 起直接冻结 battle.c 整文件；若以后确实要改 Battle，必须先更新验收边界，不能顺手碰。
-SEALED_REFACTOR24_BATTLE_SHA256 = {
-    "battle.c": "05a6f7223bcbf4923c771fee45ddd339ed6022238ed8b08a8ca42c8d62ac1a97",
-}
+# 用户在refactor25确认Battle Target旧成熟方向规则；R43又明确报告“目标结束后鼠标不隐藏”。
+# 本轮只允许在Target收尾增加显式Cursor所有权，不改变目标排序/合法集合/事件协议。
+# 因此取消battle.c整文件SHA，改由下方Target结构护栏精确限制合法变化。
+SEALED_REFACTOR24_BATTLE_SHA256 = {}
 
 SEALED_REFACTOR11_DIALOGUE_SHA256 = {
     # refactor43 只在 dialogue_input.c 增加 SceneChoice 活动时清旧pending的模态隔离，
@@ -886,7 +885,7 @@ def check_target_exe(exe: Path, result: CheckResult) -> None:
     check_simple_group("炼化两层菜单", SYNTHESIS_SIGNATURES, SYNTHESIS_CALLS, "Ctor/Update锚点2/2 + ButtonEvent 8/8")
     check_simple_group("统一商店主体/数量窗", SHOP_CORE_SIGNATURES, SHOP_CORE_CALLS, "主类/数量窗锚点4/4 + ButtonEvent 11/11")
     check_simple_group("商店Y道具信息可选能力", SHOP_INFO_SIGNATURES, SHOP_INFO_CALLS, "信息窗锚点1/1 + ButtonEvent 1/1 + transition 2/2")
-    check_simple_group("剧情mode=3两项选择", SCENE_CHOICE_SIGNATURES, SCENE_CHOICE_CALLS, "分发/选择器锚点2/2 + 原版CALL 3/3")
+    check_simple_group("剧情mode=2/mode=3选择", SCENE_CHOICE_SIGNATURES, SCENE_CHOICE_CALLS, "分发/双选择器锚点3/3 + 原版CALL 5/5")
     check_simple_group("存档点独立包装层", SAVE_POINT_SIGNATURES, SAVE_POINT_CALLS, "包装构造1/1 + SaveSlot构造1/1 + 发布/绑定/Update锚点3/3")
     check_simple_group("探索调查原版resolver", INVESTIGATION_SIGNATURES, INVESTIGATION_CALLS, "结构/类型/距离锚点6/6 + resolver CALL 1/1")
 
@@ -979,9 +978,12 @@ SHOP_INFO_CALLS = [
 ]
 SCENE_CHOICE_SIGNATURES = [
     (0x00403E5A, bytes.fromhex("A1 40 F6 46 00 83 F8 03 77 21 FF 24 85 8C 3E 40 00"), "公共消息 mode 分发器"),
+    (0x004044F0, bytes.fromhex("83 EC 08 8D 44 24 00 53 50 FF 15 04 02 46 00"), "mode=2 多行鼠标选择器"),
     (0x00404600, bytes.fromhex("83 EC 08 8D 44 24 00 50 FF 15 04 02 46 00"), "mode=3 鼠标选择器"),
 ]
 SCENE_CHOICE_CALLS = [
+    (0x00403E79, 0x004044F0, "mode=2 -> 0x4044F0"),
+    (0x004045A9, 0x0044B0B0, "mode=2 行号结果提交"),
     (0x00403E80, 0x00404600, "mode=3 -> 0x404600"),
     (0x00404697, 0x0044B0B0, "第二项/结果2提交"),
     (0x004046AF, 0x0044B0B0, "第一项/结果1提交"),
@@ -1887,20 +1889,34 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     # state3 的“业务安全边界”仍由下方 Adapter 结构检查、原版协议预检和“不直接写状态字段”护栏保护。
     result.ok("state3 技能页已验收核心保护", "用户批准新增左右翻页；取消整文件SHA冻结，继续用协议/无直写/确认框护栏保护原版业务")
 
-    # Battle Target 已由用户接受旧成熟方向规则，refactor26 继续冻结，因此本轮整个 battle.c 不允许变化。
-    battle_sha_bad = []
-    for name, expected in SEALED_REFACTOR24_BATTLE_SHA256.items():
-        path = src / name
-        if not path.is_file():
-            battle_sha_bad.append(name + "(缺失)")
-            continue
-        actual = sha256(path)
-        if actual.lower() != expected.lower():
-            battle_sha_bad.append(name + "(SHA变化)")
-    if battle_sha_bad:
-        result.fail("Battle Target 用户PASS字节级冻结", ", ".join(battle_sha_bad))
+    # R43只允许为“Target结束后隐藏鼠标”补显式所有权收尾。
+    # 手柄确认/取消和手柄拥有的离层必须走finish；实体鼠标接管必须继续只hide，不能反向Claim。
+    target_finish_required = [
+        "static void target_cursor_finish_controller_navigation(void)",
+        "Cursor_ClaimForControllerNavigation();",
+        "Cursor_HideTargetImmediately();",
+        "if (g_nav_active) target_cursor_finish_controller_navigation();",
+    ]
+    target_finish_missing = [token for token in target_finish_required if token not in battle_text]
+    confirm_begin = battle_text.find("static void request_confirm(void)")
+    confirm_end = battle_text.find("static void request_top_shortcut", confirm_begin)
+    confirm_scope = battle_text[confirm_begin:confirm_end] if confirm_begin >= 0 and confirm_end > confirm_begin else ""
+    cancel_begin = battle_text.find("static void request_cancel(void)")
+    cancel_end = battle_text.find("static void request_confirm(void)", cancel_begin)
+    cancel_scope = battle_text[cancel_begin:cancel_end] if cancel_begin >= 0 and cancel_end > cancel_begin else ""
+    takeover_begin = battle_text.find("void Battle_OnPointerTakeover")
+    takeover_end = battle_text.find("int Battle_InstallHooks", takeover_begin)
+    takeover_scope = battle_text[takeover_begin:takeover_end] if takeover_begin >= 0 and takeover_end > takeover_begin else ""
+    target_finish_routes_ok = (
+        "target_cursor_finish_controller_navigation();" in confirm_scope and
+        "target_cursor_finish_controller_navigation();" in cancel_scope and
+        "target_cursor_hide_immediate();" in takeover_scope and
+        "target_cursor_finish_controller_navigation();" not in takeover_scope
+    )
+    if not target_finish_missing and target_finish_routes_ok:
+        result.ok("R43 Battle Target结束显式隐藏", "手柄确认/取消/离层显式保持所有权后隐藏；实体鼠标接管只清指示器，不反抢指针")
     else:
-        result.ok("Battle Target 用户PASS字节级冻结", "battle.c 与 refactor26 继续冻结的旧成熟Target方案字节完全一致")
+        result.fail("R43 Battle Target结束显式隐藏", f"缺少={target_finish_missing}，路由隔离={target_finish_routes_ok}")
 
     # refactor37 为命中提醒增加 SDL_RumbleGamepad，因此 pad_input 不能继续整文件 SHA 冻结。
     # 改用结构护栏：既有热插拔时序与新连接首帧边沿抑制必须完整保留，震动导出必须可选。
@@ -1938,7 +1954,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     if dialogue_sha_bad:
         result.fail("refactor11 已验收对话源码字节级保护", ", ".join(dialogue_sha_bad))
     else:
-        result.ok("refactor11 已验收对话源码字节级保护", "2/2 文件 SHA 完全一致")
+        result.ok("refactor11 已验收对话头文件保护", f"{len(SEALED_REFACTOR11_DIALOGUE_SHA256)}/{len(SEALED_REFACTOR11_DIALOGUE_SHA256)} 仍冻结；dialogue_input.c的R43模态隔离由结构护栏验证")
 
     tome_scope_bad = []
     for name, expected in SEALED_REFACTOR33_TOME_SCOPE_SHA256.items():
@@ -3272,6 +3288,7 @@ def check_artifact(root: Path, result: CheckResult) -> None:
             "Back不再自动回切".encode("utf-8"),
             "手柄warp不再误判实体鼠标".encode("utf-8"),
             "普通活动自动隐藏路径已删除".encode("utf-8"),
+            "Battle Target结束显式隐藏".encode("utf-8"),
         ]
         missing_markers = [marker.decode("utf-8") for marker in compiled_markers if marker not in data]
         if is_i386 and is_pe32 and is_dll and not missing_markers:

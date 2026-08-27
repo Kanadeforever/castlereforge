@@ -1239,6 +1239,22 @@ static void target_cursor_hide_immediate(void) {
     Cursor_HideTargetImmediately();
 }
 
+/*
+ * 手柄完成Target时使用的显式收尾。
+ *
+ * refactor43 删除了“任意普通手柄活动都会自动把controller_owner设回1”的旧通用路径。
+ * 这暴露出Battle原来的隐含依赖：Target虽然会清target_indicator_active，但如果相邻帧的
+ * 指针仲裁已经把所有权交回鼠标，Cursor就会按键鼠规则继续显示，玩家看到目标提交后鼠标不隐藏。
+ *
+ * 手柄确认/取消或手柄拥有的Target离层，本来就明确属于手柄导航，所以这里先显式Claim，
+ * 再清目标指示器。实体鼠标接管不能调用本函数，否则会和用户争夺指针；接管路径继续只调用
+ * target_cursor_hide_immediate()。
+ */
+static void target_cursor_finish_controller_navigation(void) {
+    Cursor_ClaimForControllerNavigation();
+    Cursor_HideTargetImmediately();
+}
+
 
 /*
  * 把 Battle Target 的四方向输入转换成纯几何层方向枚举。
@@ -1425,7 +1441,7 @@ static void request_cancel(void) {
             g_target_event_code=-1;
             Runtime_Log("[战斗目标事件] B 取消事务已排队，等待 Target 游戏线程消费。");
         }
-        target_cursor_hide_immediate();
+        target_cursor_finish_controller_navigation();
         return;
     }
     if (g_context==BCTX_CONFIRM) {
@@ -1559,7 +1575,7 @@ static void request_confirm(void) {
             g_target_event_code=1;
             Runtime_Log("[战斗目标事件] A 确认事务已排队，等待 Target 游戏线程消费。");
         }
-        target_cursor_hide_immediate();
+        target_cursor_finish_controller_navigation();
         return;
     }
     if (g_context==BCTX_CONFIRM) {
@@ -1832,7 +1848,10 @@ static void sync_context(void) {
     log_context_transition(g_prev_context,g_context);
     /* 取消标记只消费一次；如果目标不是合法父层也丢弃，避免污染后续新回合。 */
     if (g_cancel_return_from_context == old_ctx) g_cancel_return_from_context = BCTX_NONE;
-    if (g_prev_context==BCTX_TARGET && g_context!=BCTX_TARGET) target_cursor_hide_immediate();
+    if (g_prev_context==BCTX_TARGET && g_context!=BCTX_TARGET) {
+        if (g_nav_active) target_cursor_finish_controller_navigation();
+        else target_cursor_hide_immediate();
+    }
     UiBridge_ClearEventOwned(UI_EVENT_OWNER_BATTLE); g_target_event_code = 0;
     g_pending_page_context=0;
     g_pending_page_old=-1;
@@ -2213,7 +2232,8 @@ void Battle_Update(void) {
         if(g_battle_was_present) Runtime_Log("[战斗] 战斗主 UI 已离开，清理导航状态。");
         visual_latch_clear("战斗主 UI 已离开");
         return_visual_clear("战斗主 UI 已离开");
-        target_cursor_hide_immediate();
+        if (g_context == BCTX_TARGET && g_nav_active) target_cursor_finish_controller_navigation();
+        else target_cursor_hide_immediate();
         /* 战斗已经结束：把“本场战斗才有意义”的状态全部清回初始值。
            这里特意一项一项写开，避免以后新增状态时误以为这些变量彼此等价。 */
         g_battle_was_present = 0;

@@ -1,28 +1,28 @@
-> 当前权威版本：v0.3-refactor42（自动最近目标 + 确定/取消布局候选，2026-08-24）。实机稳定基线为 v0.3-refactor41：默认确定键按住/松开互动/取消键退出与 LT 兼容模式均已确认正常；R40目标轮盘及更早基线继续冻结。R42 新增两个默认开关：`Investigation.AutoFocusNearest=1` 在每次建立调查会话时复用R40距离第0项、肩键锁和resolver/25点probe自动尝试最近目标；`Controls.SwapConfirmCancel=0` 为南键确定/东键取消，设为1切换成东键（PS O）确定/南键（PS X）取消。确定/取消交换覆盖所有语义页面、调查激活和Back/RT鼠标左右键（确定=左键、取消=右键），但RB+ABXY战斗快捷键、X/Y专属功能等固定物理位置操作不变。用户补回的INI中文注释全部保留，新选项同样使用中文。PadInput、Cursor、RPG地址和业务UI冻结。下文更早“当前/候选”表述与本段冲突时按历史记录处理。
+> 当前权威版本：v0.3-refactor43（剧情mode=2多选 + 剧情RT临时鼠标 + 鼠标模式稳定化，2026-08-27）。R42及更早功能保持；R43还修复Back摇杆误退出与Battle Target结束后鼠标不隐藏。Public API仍为v1。目录固定为 `source/templete/tools`，输出统一到仓库根 `build/`；旧目录说明只按历史阅读。
 
-# refactor42 构建与部署
+# refactor43 构建与部署
 
-- 架构仍为 Win32 / x86 / PE32 ASI，**29 个独立 C 编译单元**。
+- 架构仍为 Win32 / x86 / PE32 ASI，**30 个独立 C 编译单元**。
 - Windows 正式入口：本目录 `build.bat`；x86 clang-cl/MSVC ABI；`/W4 /WX /utf-8 /GS- /Zl /nodefaultlib`。
-- 本轮没有新增 DLL 或第三方依赖；在R41完整INI上新增 `Investigation.AutoFocusNearest=1` 与 `Controls.SwapConfirmCancel=0`。
+- 本轮没有新增 DLL、第三方依赖或INI键；R42的 `AutoFocusNearest` 与 `SwapConfirmCancel` 保持原样。
 - 实机部署仍只替换 `Castle_PadSupport.asi` 与 `Castle_PadSupport.ini`；绝不覆盖 `RPG.exe`。
-- `源码/readme.md` 是面向 GitHub 的构建说明，允许保留英文名；`文档/` 不重复放构建说明，其余非代码文档全部使用简体中文名。
+- 本文件 `src/Controller/readme.md` 是面向 GitHub 的构建说明，允许保留英文名；`docs/Controller` 不重复放构建说明，其余非代码文档全部使用简体中文名。
 - `build.bat` 会生成 ASI、从 `templete/` 复制默认 INI 到仓库根 `build\`；任一复制失败都中止。
-- 用户补回的INI中文注释全部原样保留；新开关只在 `[Investigation]` 现有中文说明后追加两行中文解释和一个键。
+- 用户补回的INI中文注释和20个公开键全部原样保留，本轮只更新版本注释。
 - Swap=0为Xbox位置（南确定/东取消），Swap=1为PS传统布局（东/O确定、南/X取消）；菜单、调查和鼠标左右键跟随语义，RB+ABXY快捷与X/Y固定物理功能不变。
 - 自动聚焦只在会话 `active:0→1` 的第一帧执行一次，并复用R40 `inv_select_shoulder_target(+1)`；关闭时不进入该分支。
 - 最终构建大小、ASI/INI哈希和PASS计数以本轮《文件校验清单》为准；机器PASS不冒充实机PASS。
 
 ## 本轮部署后优先实机验证
 
-1. 默认 `AutoFocusNearest=1`：进入A模式或LT模式调查时立即尝试聚焦距离最近目标；原版确认后按既有规则短震。
-2. 进入时左杆仍偏置，最近目标不能下一帧被残留方向抢回；回中/明显转向后左杆接管。
-3. 自动目标之后连续LB/RB必须从它的距离位置继续；右杆移动立即人工接管。
-4. 没有目标、25点全部失败或透明中心时不点击、不空震、不循环重试每个tick。
-5. `AutoFocusNearest=0`：A/LT两种进入方式逐项恢复R41行为，等待玩家自己选择目标。
-6. `SwapConfirmCancel=1`：O/东键确定、X/南键取消；默认调查改为按住/松开确定语义键，取消语义键退出；菜单确认/取消和鼠标左右键同步交换。
-7. RB+南键攻击、RB+东键道具、RB+X/Y及其它固定物理功能在两种布局下完全一致。
-8. RT覆盖后恢复调查视为新会话，应按当前开关重新自动聚焦；R41双激活和所有旧业务快速回归。
+1. 到周崇、朱浩战后客房的mode=2回答：上/下切原版高亮，确定提交，取消不选；不得显示第二只鼠标。
+2. 普通剧情、mode=2和mode=3中按住RT都能临时使用鼠标；松开后不误恢复地图调查。
+3. Back模式移动任一摇杆不退出，剧情/菜单结束后继续保持，再按Back才退出。
+4. 实体鼠标真实移动仍无震动接管；手柄主动warp不得被误判成实体鼠标。
+5. 战斗Target用手柄确认或取消后，目标鼠标立即隐藏；实体鼠标操作时不反抢所有权。
+6. 普通地图只移动角色不再触发旧通用自动隐藏；战斗/菜单/调查等显式焦点仍正确显示或隐藏。
+7. R42自动最近目标、Swap布局、RB+ABXY固定快捷与全部旧菜单快速回归。
+8. SDL3缺失后5秒低频重试仍正常；该机制与鼠标隐藏无关。
 
 ---
 
@@ -34,7 +34,7 @@
 >
 > **边界与验证：** 不按装备店、道具店、药店名称分支，继续复用 opcode `0x36 -> 0x413FA0 -> 0x89FCD4` 的同一 Shop Adapter；价格、库存、页、行、数量与成交结果均不直接写。天书偶发跳焦点继续低优先级，Tome/SaveSlot/Cursor 六文件逐字节保持 refactor33。27/27 C 单元严格编译通过，两次无时间戳 PE32/i386 链接字节一致；无 EXE **73 PASS / 0 FAIL**，未修改 `RPG.exe.org`（SHA-256 `8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f`）**93 PASS / 0 FAIL**。ASI **153,600 bytes**，SHA-256 `05e7ef5e96f32d6a55a819a5cb590ac2302adb9441564495a3df62882af2ef0c`。机器 PASS 不冒充实机 PASS。
 >
-> **交付裁决：** 从本版起不再内置散装 `证据/` 树；源码、文档与检查器构成接档材料。若以后确有新增证据，只合并维护单一 `文档/验证汇总.md`。
+> **交付裁决：** 不内置散装证据树；`source`、`docs/Controller` 与 `tools` 构成接档材料。仓库根 `build/` 是统一二进制输出目录，不恢复旧“编译内容”镜像。
 >
 > **历史阅读规则：** refactor32 的存档点完整路由与客栈原位返回、refactor33 的地图十字键仅步行和统一商店主体均已验收并冻结；refactor34 的全局 Shop 形状硬门、refactor35 对共享 close Event 的重复 Hook 与对动画 mode 的稳态误判均已作废。当前修正以本文件顶部 refactor36 段落为准。
 
@@ -44,7 +44,7 @@
 - GCC 严格复核参数包含 `-m32 -std=c11 -O2 -ffreestanding -Wall -Wextra -Werror`，27/27 通过。
 - 两个全新对象目录分别链接，产物逐字节一致：153,600 bytes，SHA-256 `05e7ef5e96f32d6a55a819a5cb590ac2302adb9441564495a3df62882af2ef0c`。
 - 产物为 PE32/i386 DLL，固定 image base `0x10000000`，启用重定位、DynamicBase 与 NXCompat，无时间戳差异。
-- 完整包仅含源码、文档、检查器和编译内容，不再打包散装 `证据/`。
+- Controller包由 `source/templete/tools/readme.md`、`docs/Controller` 和仓库根 `build` 产物共同构成，不再打包散装证据目录。
 
 ## refactor35 构建增量（历史）
 
