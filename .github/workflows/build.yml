@@ -1,0 +1,151 @@
+# ============================================================
+# build.yml — CastleReforge 自动构建并发布 dev-auto 开发版
+# 触发：push 到 main；或手动触发（workflow_dispatch）
+# 流程：安装 LLVM → 一键构建 → 产物校验 → 打包 zip
+#       → 强制更新 dev-auto tag → 重建 dev-auto Release（覆盖旧资产）
+# 玩家始终从 dev-auto Release 下载最新构建
+# ============================================================
+name: 自动构建并发布 dev-auto 版
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 连续 push 时串行执行，避免多个 job 竞态 force-push 同一 tag
+concurrency:
+  group: castlereforge-dev-auto-build
+  cancel-in-progress: false
+
+permissions:
+  contents: write          # 允许 force-push tag、创建/删除 Release
+
+jobs:
+  build:
+    name: 构建并发布 dev-auto
+    runs-on: windows-2022   # 预装 VS2022 Enterprise（脚本搜索路径匹配）与 choco
+    timeout-minutes: 60
+    steps:
+      - name: 检出代码（完整历史，供生成更新日志）
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 安装 LLVM（提供 clang-cl 与 lld-link）
+        shell: pwsh
+        run: choco install llvm -y --no-progress
+        timeout-minutes: 20
+
+      - name: 将 LLVM 注入 PATH（choco 只写机器 PATH，当前会话不刷新）
+        shell: pwsh
+        run: |
+          if (-not (Test-Path 'C:\Program Files\LLVM\bin\clang-cl.exe')) {
+            throw 'LLVM 安装失败：缺少 C:\Program Files\LLVM\bin\clang-cl.exe'
+          }
+          # GITHUB_PATH 对后续所有 step 生效
+          'C:\Program Files\LLVM\bin' >> $env:GITHUB_PATH
+
+      - name: 一键构建全部子项目
+        shell: cmd
+        # 必须 < nul：所有 build.bat 末尾都有 pause，stdin 置为 EOF 后立即返回
+        # 各脚本内部自带 chcp 65001，无需外层处理
+        run: build_all.bat < nul
+
+      - name: 校验产物（存在性 + 全部二进制为 PE32/x86）
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $expected = @(
+            'build\CastleModLoader.exe',
+            'build\mods\CastleModLoader.ini',
+            'build\mods\CastleLocaleBootstrap.dll',
+            'build\mods\CastleModCore.dll',
+            'build\mods\asi\Castle_Backlog.asi',
+            'build\mods\asi\Castle_Backlog.ini',
+            'build\mods\asi\Castle_PadSupport.asi',
+            'build\mods\asi\Castle_PadSupport.ini',
+            'build\mods\asi\Castle_Widescreen.asi',
+            'build\mods\asi\Castle_Widescreen.ini',
+            'build\mods\asi\BUGFix.asi',
+            'build\mods\asi\AnytimeSave.asi',
+            'build\mods\asi\NoCD.asi',
+            'build\mods\asi\MaxGrowthAndDrop.asi'
+          )
+          foreach ($p in $expected) {
+            if (-not (Test-Path $p)) { throw "缺少产物：$p" }
+          }
+          if (-not (Test-Path 'build\mods\overrides\模板_复制后改名')) {
+            throw '缺少 overrides 模板目录'
+          }
+          # 校验每个 PE 的机器类型为 x86 (0x014C)，防止误配出 x64 产物
+          $binaries = Get-ChildItem -Recurse -File build |
+            Where-Object { $_.Extension -in '.asi', '.exe', '.dll' }
+          foreach ($f in $binaries) {
+            $b = [IO.File]::ReadAllBytes($f.FullName)
+            if ($b.Length -lt 64) { throw "$($f.Name) 过小，不是合法 PE" }
+            $pe = [BitConverter]::ToInt32($b, 0x3C)
+            $m = [BitConverter]::ToUInt16($b, $pe + 4)
+            if ($m -ne 0x014C) {
+              throw "$($f.Name) 不是 x86 PE（machine=0x$('{0:X4}' -f $m)）"
+            }
+          }
+          Write-Host "[校验] 通过：$($binaries.Count) 个二进制均为 x86 PE，产物齐全"
+
+      - name: 打包 zip（含中文目录名模板）
+        shell: pwsh
+        run: |
+          $zip = Join-Path $env:RUNNER_TEMP 'CastleReforge-dev-auto.zip'
+          if (Test-Path $zip) { Remove-Item $zip -Force }
+          # 压缩 build\ 下全部内容，zip 根 = 游戏目录根
+          # 用 Compress-Archive（.NET，UTF-8 编码条目名），不要用 7z 命令行
+          #（7z 默认按 ANSI 代码页写入中文名，在中文系统解压会乱码）
+          Compress-Archive -Path 'build\*' -DestinationPath $zip `
+            -CompressionLevel Optimal
+          Write-Host "[打包] $zip"
+          # 确认中文模板目录已正确写入
+          $hit = tar -tf $zip | Select-String '模板_复制后改名'
+          if (-not $hit) { throw 'zip 内缺少 模板_复制后改名 目录' }
+
+      - name: 生成更新日志
+        shell: pwsh
+        run: |
+          $short = (git rev-parse --short HEAD).Trim()
+          $date  = Get-Date -Format 'yyyy-MM-dd HH:mm'
+          $log   = (git log -10 --oneline --no-decorate | Out-String).Trim()
+          $notes = @"
+自动构建的 dev-auto 开发版
+
+- 提交：$short（$date）
+
+最近更新：
+$log
+"@
+          Set-Content -Path "$env:RUNNER_TEMP\release_notes.md" `
+            -Value $notes -Encoding utf8
+
+      - name: 强制更新 dev-auto tag 到最新提交
+        shell: pwsh
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -f dev-auto HEAD
+          # 用 x-access-token 显式认证，不依赖 checkout 写入的 extraheader
+          git push -f "https://x-access-token:$env:GITHUB_TOKEN@github.com/Kanadeforever/castlereforge.git" dev-auto
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 重建 dev-auto Release 并上传 zip（覆盖旧资产）
+        shell: pwsh
+        run: |
+          $sha = (git rev-parse HEAD).Trim()
+          # 删除重建保证资产集与当前产物精确一致（--clobber 无法清理残留旧资产）
+          gh release delete dev-auto --yes 2>$null
+          gh release create dev-auto `
+            --target $sha `
+            --title 'dev-auto 开发版（自动构建）' `
+            --notes-file "$env:RUNNER_TEMP\release_notes.md" `
+            (Join-Path $env:RUNNER_TEMP 'CastleReforge-dev-auto.zip')
+          Write-Host '[发布] dev-auto Release 已更新，下载地址：'
+          Write-Host 'https://github.com/Kanadeforever/castlereforge/releases/tag/dev-auto'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
