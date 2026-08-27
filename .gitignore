@@ -60,6 +60,8 @@ __pycache__/
 
 # Build directories
 build/
+.build/
+_build/
 Build/
 编译内容/
 编译/
