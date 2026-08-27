@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》Castle_SaveEnhance v0.1.0-test6 静态验证工具。
+《幽城幻剑录》Castle_SaveEnhance v0.1.0-test7 静态验证工具。
 
 这个工具只读取文件，不会修改 RPG.exe、MiscInfo.ENC 或 Castle_SaveEnhance.asi。
 它的目标是让任何接手者都能重复确认：当前候选是不是针对我们锁定的台湾第三版原版，
@@ -525,6 +525,7 @@ def verify_asi(path: Path) -> List[CheckResult]:
             "CloseHandle",
             "CreateDirectoryW",
             "CreateFileW",
+            "DeleteFileW",
             "DisableThreadLibraryCalls",
             "FlushInstructionCache",
             "GetCurrentProcess",
@@ -600,13 +601,12 @@ def verify_asi(path: Path) -> List[CheckResult]:
         )
     )
 
-    # C++ 源码使用宽字符 L"Save\\.NEXTAUTOSLOT" 调用 CreateFileW，所以最终 PE 中应该
-    # 保留对应 UTF-16LE 字节。导入表检查只能证明“不再写 INI”，这条再证明新状态文件路径
-    # 确实进入了本次构建产物，避免误打包迁移前的旧 ASI。
-    state_path_marker = "Save\\.NEXTAUTOSLOT".encode("utf-16le")
+    # test7 必须指向 RPG.exe 目录上一级的 multimedia/save。只检查短文件名会让 test6
+    # 错写 exe/Save 的旧产物也通过，所以这里检查完整相对后缀。
+    state_path_marker = "..\\multimedia\\save\\.NEXTAUTOSLOT".encode("utf-16le")
     results.append(
         CheckResult(
-            "ASI 含自动槽状态文件路径 Save\\.NEXTAUTOSLOT",
+            "ASI 含正确自动槽路径 ..\\multimedia\\save\\.NEXTAUTOSLOT",
             state_path_marker in pe.data,
             "存在" if state_path_marker in pe.data else "未找到",
         )
@@ -627,7 +627,7 @@ def print_group(title: str, results: Sequence[CheckResult]) -> None:
 
 def parser() -> argparse.ArgumentParser:
     command = argparse.ArgumentParser(
-        description="只读验证 Castle_SaveEnhance v0.1.0-test6 的目标 EXE、MiscInfo 与 ASI。"
+        description="只读验证 Castle_SaveEnhance v0.1.0-test7 的目标 EXE、MiscInfo 与 ASI。"
     )
     command.add_argument("--rpg", required=True, type=Path, help="锁定原版 RPG.exe")
     command.add_argument("--miscinfo", required=True, type=Path, help="Public\\MiscInfo.ENC")
@@ -660,7 +660,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.json_output is not None:
         payload = {
             "tool": "verify_saveenhance_candidate.py",
-            "version": "v0.1.0-test6",
+            "version": "v0.1.0-test7",
             "all_passed": all_ok,
             "results": [
                 {

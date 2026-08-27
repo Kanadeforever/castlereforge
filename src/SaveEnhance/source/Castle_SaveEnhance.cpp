@@ -3,7 +3,7 @@
 #include "Castle_PadSupport_API.h"
 
 // ============================================================================
-// Castle_SaveEnhance.cpp  v0.1.0-test6
+// Castle_SaveEnhance.cpp  v0.1.0-test7
 // ----------------------------------------------------------------------------
 // 《幽城幻剑录》存档增强插件第一版完整实机候选。
 //
@@ -265,7 +265,8 @@ GameFileDtorFunction gGameFileDtor = nullptr;
 GameFileOpenFunction gGameFileOpen = nullptr;
 
 // 91~99 全部已存在后，NextAutoSlot 指示“下一次应该覆盖哪一个物理槽”。
-// 这个值只写入 RPG.exe 旁边的 Save\.NEXTAUTOSLOT，不再污染玩家可能复制、重装或替换的 INI。
+// 这个值只写入真实存档目录 ..\multimedia\save\.NEXTAUTOSLOT，不再污染玩家可能复制、
+// 重装或替换的 INI。
 // 文件只保存 091~099 三个 ASCII 字节，不含任何游戏进度；丢失或损坏时安全回到 91。
 // 如果用户删掉任一自动档，游戏文件层扫描仍优先填空槽，游标不会强行覆盖其它档。
 DWORD gNextAutoSlot = kAutoSlotFirst;
@@ -377,16 +378,23 @@ bool BuildIniPath(wchar_t* out, SIZE_T capacity) {
 
 bool BuildAutoRingStatePath(wchar_t* out, SIZE_T capacity) {
     // 和日志共用同一条“模块路径 -> 所在目录 -> 追加目标名”路线。
-    // nullptr 表示以 RPG.exe 为模块，所以最终得到 <游戏根目录>\Save\.NEXTAUTOSLOT。
+    // RPG.exe 实际位于 exe 子目录，游戏存档位于它的 ../multimedia/save，所以不能再写 exe/Save。
+    return ycrlog::BuildModuleFilePath(
+        nullptr, L"..\\multimedia\\save\\.NEXTAUTOSLOT", out, capacity);
+}
+
+bool BuildLegacyAutoRingStatePath(wchar_t* out, SIZE_T capacity) {
+    // test6 曾把状态误写到 RPG.exe 旁的 Save。这里只为一次性兼容读取/清理旧文件，
+    // 新状态绝不能再写回这个路径。
     return ycrlog::BuildModuleFilePath(nullptr, L"Save\\.NEXTAUTOSLOT", out, capacity);
 }
 
 bool EnsureAutoRingStateDirectory() {
-    // CreateFileW 不会自动创建父目录。test5 实机的“无法创建”最可能就是 Save 目录在
-    // RPG.exe 旁并不存在，所以先用同一套路径构造出 <游戏根目录>\Save。
+    // CreateFileW 不会自动创建父目录。RPG.exe 在 exe 下，而真实存档目录是
+    // ../multimedia/save；multimedia 已随游戏存在，这里只确保最后一级 save 存在。
     wchar_t directory[520];
-    if (!ycrlog::BuildModuleFilePath(nullptr, L"Save", directory, 520u)) {
-        ycrlog::Line("[自动槽状态] 无法构造游戏 Save 目录路径。");
+    if (!ycrlog::BuildModuleFilePath(nullptr, L"..\\multimedia\\save", directory, 520u)) {
+        ycrlog::Line("[自动槽状态] 无法构造 multimedia\\save 目录路径。");
         return false;
     }
 
@@ -400,7 +408,7 @@ bool EnsureAutoRingStateDirectory() {
     if (error == ERROR_ALREADY_EXISTS) {
         return true;
     }
-    ycrlog::Text("[自动槽状态] 无法准备游戏 Save 目录，Win32错误码=");
+    ycrlog::Text("[自动槽状态] 无法准备 multimedia\\save 目录，Win32错误码=");
     ycrlog::Unsigned(error);
     ycrlog::Line("。");
     return false;
@@ -540,26 +548,21 @@ DWORD ClampAutoRingSlot(DWORD value) {
     return (value >= kAutoSlotFirst && value <= kAutoSlotLast) ? value : kAutoSlotFirst;
 }
 
-void LoadAutoRingState() {
-    // 先设置安全默认值。文件不存在、路径失败、读取失败、长度不是 3 或内容超出 091~099，
-    // 都保持 91，不把损坏的元数据扩大成错误槽位写入。
-    gNextAutoSlot = kAutoSlotFirst;
+enum AutoRingStateReadResult {
+    kAutoRingStateMissing = 0,
+    kAutoRingStateInvalid = 1,
+    kAutoRingStateValid = 2
+};
 
-    wchar_t path[520];
-    if (!BuildAutoRingStatePath(path, 520u)) {
-        ycrlog::Line("[自动槽状态] 无法构造 Save\\.NEXTAUTOSLOT 路径；本轮从91开始。");
-        return;
-    }
+AutoRingStateReadResult ReadAutoRingStateFile(const wchar_t* path, DWORD* slotOut) {
+    // 这个读取器只判断“指定完整路径里是否有合法三字节游标”，不决定它是新路径还是旧路径。
+    // 因此新旧两个位置可以复用完全相同的长度、数字和 91~99 范围验证。
+    if (path == nullptr || slotOut == nullptr) return kAutoRingStateInvalid;
 
     HANDLE file = CreateFileW(
         path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (file == INVALID_HANDLE_VALUE) {
-        // 第一次使用插件时文件本来就不存在。这不是功能失败，第一次成功自动存档后会创建。
-        ycrlog::Line("[自动槽状态] Save\\.NEXTAUTOSLOT 不存在；本轮从91开始。");
-        return;
-    }
+    if (file == INVALID_HANDLE_VALUE) return kAutoRingStateMissing;
 
-    // 只接受恰好三个 ASCII 数字。多读一个字节是为了拒绝“091换行”或其它尾随垃圾。
     BYTE raw[4] = {};
     DWORD bytesRead = 0u;
     const BOOL readOk = ReadFile(file, raw, 4u, &bytesRead, nullptr);
@@ -568,31 +571,77 @@ void LoadAutoRingState() {
         raw[0] < static_cast<BYTE>('0') || raw[0] > static_cast<BYTE>('9') ||
         raw[1] < static_cast<BYTE>('0') || raw[1] > static_cast<BYTE>('9') ||
         raw[2] < static_cast<BYTE>('0') || raw[2] > static_cast<BYTE>('9')) {
-        ycrlog::Line("[自动槽状态] Save\\.NEXTAUTOSLOT 内容无效；本轮从91开始。");
-        return;
+        return kAutoRingStateInvalid;
     }
 
     const DWORD parsed = static_cast<DWORD>(raw[0] - static_cast<BYTE>('0')) * 100u +
                          static_cast<DWORD>(raw[1] - static_cast<BYTE>('0')) * 10u +
                          static_cast<DWORD>(raw[2] - static_cast<BYTE>('0'));
-    if (parsed < kAutoSlotFirst || parsed > kAutoSlotLast) {
-        ycrlog::Line("[自动槽状态] Save\\.NEXTAUTOSLOT 不在091~099范围；本轮从91开始。");
+    if (parsed < kAutoSlotFirst || parsed > kAutoSlotLast) return kAutoRingStateInvalid;
+    *slotOut = parsed;
+    return kAutoRingStateValid;
+}
+
+void LoadAutoRingState() {
+    // 主路径固定为 ../multimedia/save。若它还没有合法状态，再兼容读取 test6 错写到
+    // exe/Save 的旧文件，避免升级以后明明已有 092 游标却重新从 91 开始。
+    gNextAutoSlot = kAutoSlotFirst;
+
+    wchar_t path[520];
+    if (!BuildAutoRingStatePath(path, 520u)) {
+        ycrlog::Line("[自动槽状态] 无法构造 multimedia\\save 状态路径；本轮从91开始。");
         return;
     }
-    gNextAutoSlot = parsed;
+
+    DWORD parsed = kAutoSlotFirst;
+    const AutoRingStateReadResult current = ReadAutoRingStateFile(path, &parsed);
+    if (current == kAutoRingStateValid) {
+        gNextAutoSlot = parsed;
+        ycrlog::Line("[自动槽状态] 已从 multimedia\\save 读取环形游标。");
+        return;
+    }
+
+    wchar_t legacyPath[520];
+    if (BuildLegacyAutoRingStatePath(legacyPath, 520u) &&
+        ReadAutoRingStateFile(legacyPath, &parsed) == kAutoRingStateValid) {
+        gNextAutoSlot = parsed;
+        ycrlog::Line("[自动槽状态] 已读取 test6 旧 exe\\Save 游标；下次成功写入后迁移到 multimedia\\save。");
+        return;
+    }
+
+    ycrlog::Line(current == kAutoRingStateInvalid
+        ? "[自动槽状态] multimedia\\save 中的状态内容无效；本轮从91开始。"
+        : "[自动槽状态] multimedia\\save 中不存在状态文件；本轮从91开始。");
+}
+
+void CleanupLegacyAutoRingStateFile() {
+    // 只有正确位置已经成功写入后才删旧错误文件。旧 exe/Save 目录本身绝不删除，
+    // 因为目录内可能还有用户自己放入的其它文件。
+    wchar_t legacyPath[520];
+    if (!BuildLegacyAutoRingStatePath(legacyPath, 520u)) return;
+    if (DeleteFileW(legacyPath) != FALSE) {
+        ycrlog::Line("[自动槽状态] 已删除 test6 旧 exe\\Save 状态文件。");
+        return;
+    }
+    const DWORD error = GetLastError();
+    if (error != ERROR_FILE_NOT_FOUND && error != ERROR_PATH_NOT_FOUND) {
+        ycrlog::Text("[自动槽状态] 正确状态已写入，但旧 exe\\Save 文件清理失败，Win32错误码=");
+        ycrlog::Unsigned(error);
+        ycrlog::Line("。");
+    }
 }
 
 void SaveAutoRingState(DWORD nextSlot) {
     gNextAutoSlot = ClampAutoRingSlot(nextSlot);
 
     if (!EnsureAutoRingStateDirectory()) {
-        ycrlog::Line("[自动槽状态] 本次存档仍有效；状态目录不可用，重启后从91开始。");
+        ycrlog::Line("[自动槽状态] 本次存档仍有效；multimedia\\save 不可用，重启后从91开始。");
         return;
     }
 
     wchar_t path[520];
     if (!BuildAutoRingStatePath(path, 520u)) {
-        ycrlog::Line("[自动槽状态] 无法构造 Save\\.NEXTAUTOSLOT 路径；本次存档仍有效，重启后从91开始。");
+        ycrlog::Line("[自动槽状态] 无法构造 multimedia\\save 状态路径；本次存档仍有效，重启后从91开始。");
         return;
     }
 
@@ -600,7 +649,7 @@ void SaveAutoRingState(DWORD nextSlot) {
         path, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file == INVALID_HANDLE_VALUE) {
         const DWORD error = GetLastError();
-        ycrlog::Text("[自动槽状态] 无法创建 Save\\.NEXTAUTOSLOT，Win32错误码=");
+        ycrlog::Text("[自动槽状态] 无法创建 multimedia\\save\\.NEXTAUTOSLOT，Win32错误码=");
         ycrlog::Unsigned(error);
         ycrlog::Line("；本次存档仍有效，重启后从91开始。");
         return;
@@ -617,14 +666,15 @@ void SaveAutoRingState(DWORD nextSlot) {
     CloseHandle(file);
     if (writeOk == FALSE || bytesWritten != 3u) {
         // 状态写失败不会把刚完成的游戏存档判成失败；当前进程仍继续使用内存里的正确游标。
-        ycrlog::Text("[自动槽状态] 写入 Save\\.NEXTAUTOSLOT 失败，Win32错误码=");
+        ycrlog::Text("[自动槽状态] 写入 multimedia\\save\\.NEXTAUTOSLOT 失败，Win32错误码=");
         ycrlog::Unsigned(writeError);
         ycrlog::Text("，实际字节数=");
         ycrlog::Unsigned(bytesWritten);
         ycrlog::Line("；本次存档仍有效，重启后可能从91开始。");
         return;
     }
-    ycrlog::Text("[自动槽状态] 已写入 Save\\.NEXTAUTOSLOT，下一候选=");
+    CleanupLegacyAutoRingStateFile();
+    ycrlog::Text("[自动槽状态] 已写入 multimedia\\save\\.NEXTAUTOSLOT，下一候选=");
     ycrlog::Unsigned(gNextAutoSlot);
     ycrlog::Line("。");
 }
@@ -2262,7 +2312,7 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
     // 从正式生命周期开始才打开/清空日志。这样日志中的“启动”就表示正式初始化确实已经进入，
     // 不再把“DLL 被映射进进程”误当成“SaveEnhance 已经安装”。
     ycrlog::Open(gSelfModule, L"Castle_SaveEnhance.log");
-    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.1.0-test6 启动。");
+    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.1.0-test7 启动。");
     ycrlog::Line("By Luminous with ChatGPT");
     ycrlog::Line("[装载] 已由 Castle Mod Loader 的 InitializeASI 生命周期进入正式初始化。");
     ycrlog::Line("[槽位] 0=Quick，1~90=Manual，91~99=Rolling Auto；普通菜单保留槽只读。");
@@ -2317,7 +2367,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) 
     if (reason == DLL_PROCESS_DETACH) {
         // 退出时只做纯内存状态恢复和日志句柄关闭；不会重新安装/卸载代码 Hook。
         EndSaveButtonOverride();
-        ycrlog::Line("[退出] Castle_SaveEnhance v0.1.0-test6 卸载。");
+        ycrlog::Line("[退出] Castle_SaveEnhance v0.1.0-test7 卸载。");
         ycrlog::Close();
     }
     return TRUE;

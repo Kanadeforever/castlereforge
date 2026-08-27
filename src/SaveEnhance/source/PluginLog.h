@@ -152,7 +152,7 @@ inline bool BuildModuleFilePath(
     // 这是日志和小状态文件共用的路径构造路线：
     // - module=ASI 模块时，从 ASI 自身目录开始；
     // - module=nullptr 时，Windows 返回当前 RPG.exe，从游戏根目录开始。
-    // filename 可以是单个文件名，也可以是 Save\\.NEXTAUTOSLOT 这种相对后缀。
+    // filename 可以是单个文件名，也可以是 ..\\multimedia\\save\\.NEXTAUTOSLOT 这种相对后缀。
     if (filename == nullptr || path == nullptr || capacity < 4u || capacity > 0xFFFFFFFFu) {
         return false;
     }
