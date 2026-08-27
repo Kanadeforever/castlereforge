@@ -96,9 +96,9 @@ if errorlevel 1 goto :package_fail
 rmdir /s /q "%OBJ_DIR%"
 if exist "%TOOLS_CACHE%" rmdir /s /q "%TOOLS_CACHE%"
 echo.
-echo [成功] ASI 与 INI 已输出到仓库根 build。
-echo [成功] 已确认 PE32、DLL、非零入口点及 InitializeASI 导出。
-echo [成功] 临时编译目录与 tools\__pycache__ 已清理。
+echo [成功] ASI 与 INI 已输出到仓库根 build。 
+echo [成功] 已确认 PE32、DLL、非零入口点及 InitializeASI 导出。 
+echo [成功] 临时编译目录与 tools\__pycache__ 已清理。 
 pause
 exit /b 0
 
