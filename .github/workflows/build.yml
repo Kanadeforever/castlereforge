@@ -64,9 +64,9 @@ jobs:
           $license = Join-Path $extract 'LICENSE.txt'
           if (-not (Test-Path $dll)) { throw 'SDL3 zip 内未找到 SDL3.dll' }
           if (-not (Test-Path $license)) { throw 'SDL3 zip 内未找到 LICENSE.txt' }
-          # 与 ASI 插件同目录：发行包内 mods\asi\SDL3.dll（附 SDL 的 LICENSE.txt，遵守 zlib 许可）
+          # 与 ASI 插件同目录：发行包内 mods\asi\SDL3.dll（附 SDL 的 LICENSE-SDL.txt，遵守 zlib 许可）
           Copy-Item $dll 'build\mods\asi\SDL3.dll' -Force
-          Copy-Item $license 'build\mods\asi\LICENSE.txt' -Force
+          Copy-Item $license 'build\mods\asi\LICENSE-SDL.txt' -Force
           Write-Host '[SDL3] SDL3.dll 与 LICENSE.txt 已放入 build\mods\asi\'
 
       - name: 校验产物（存在性 + 全部二进制为 PE32/x86）
@@ -89,7 +89,7 @@ jobs:
             'build\mods\asi\NoCD.asi',
             'build\mods\asi\MaxGrowthAndDrop.asi',
             'build\mods\asi\SDL3.dll',
-            'build\mods\asi\LICENSE.txt'
+            'build\mods\asi\LICENSE-SDL.txt'
           )
           foreach ($p in $expected) {
             if (-not (Test-Path $p)) { throw "缺少产物：$p" }
