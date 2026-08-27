@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》Castle_SaveEnhance v0.1.0-test5 静态验证工具。
+《幽城幻剑录》Castle_SaveEnhance v0.1.0-test6 静态验证工具。
 
 这个工具只读取文件，不会修改 RPG.exe、MiscInfo.ENC 或 Castle_SaveEnhance.asi。
 它的目标是让任何接手者都能重复确认：当前候选是不是针对我们锁定的台湾第三版原版，
@@ -69,6 +69,9 @@ GAME_FILE_PREFIXES: Sequence[Tuple[str, int, bytes]] = (
     ("Game File ctor 0x4416F0", 0x004416F0, bytes.fromhex("8A 54 24 04 8B C1 33 C9 C7 00 FF FF FF FF")),
     ("Game File dtor 0x441710", 0x00441710, bytes.fromhex("56 8B F1 8B 46 0C C6 46 09 00")),
     ("Game File open 0x4417C0", 0x004417C0, bytes.fromhex("81 EC 2C 01 00 00 55 56 57 8B BC 24 3C 01 00 00")),
+    ("Game File close 0x441A00", 0x00441A00, bytes.fromhex("56 8B F1 8B 06 83 F8 FF 74 1F 8A 4E 09 84 C9 75")),
+    ("Game File read 0x441A30", 0x00441A30, bytes.fromhex("53 8B 5C 24 10 56 8B F1 85 DB 74 66 80 7E 08 01")),
+    ("Game File write 0x441AB0", 0x00441AB0, bytes.fromhex("56 8B F1 57 80 7E 08 02 74 07 5F 32 C0 5E C2 0C")),
 )
 
 # ============================================================================
@@ -598,10 +601,9 @@ def verify_asi(path: Path) -> List[CheckResult]:
         )
     )
 
-    # C++ 源码使用宽字符 L"Save\\.NEXTAUTOSLOT" 调用 CreateFileW，所以最终 PE 中应该
-    # 保留对应 UTF-16LE 字节。导入表检查只能证明“不再写 INI”，这条再证明新状态文件路径
-    # 确实进入了本次构建产物，避免误打包迁移前的旧 ASI。
-    state_path_marker = "Save\\.NEXTAUTOSLOT".encode("utf-16le")
+    # C++ 源码现在把 ANSI 相对路径 "Save\\.NEXTAUTOSLOT" 交给游戏自己的 File::Open。
+    # 这条检查既能证明新路径进入了产物，也能防止误打包仍使用 Win32 宽字符绝对路径的旧 ASI。
+    state_path_marker = "Save\\.NEXTAUTOSLOT".encode("ascii")
     results.append(
         CheckResult(
             "ASI 含自动槽状态文件路径 Save\\.NEXTAUTOSLOT",
@@ -625,7 +627,7 @@ def print_group(title: str, results: Sequence[CheckResult]) -> None:
 
 def parser() -> argparse.ArgumentParser:
     command = argparse.ArgumentParser(
-        description="只读验证 Castle_SaveEnhance v0.1.0-test5 的目标 EXE、MiscInfo 与 ASI。"
+        description="只读验证 Castle_SaveEnhance v0.1.0-test6 的目标 EXE、MiscInfo 与 ASI。"
     )
     command.add_argument("--rpg", required=True, type=Path, help="锁定原版 RPG.exe")
     command.add_argument("--miscinfo", required=True, type=Path, help="Public\\MiscInfo.ENC")
@@ -658,7 +660,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.json_output is not None:
         payload = {
             "tool": "verify_saveenhance_candidate.py",
-            "version": "v0.1.0-test5",
+            "version": "v0.1.0-test6",
             "all_passed": all_ok,
             "results": [
                 {
