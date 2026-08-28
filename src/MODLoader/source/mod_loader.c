@@ -875,6 +875,7 @@ static int persist_new_items_atomic_(void) {
     WCHAR* p;
     WCHAR* asi_insert_before = NULL_PTR;
     WCHAR* override_insert_before = NULL_PTR;
+    WCHAR* trailing_blank = NULL_PTR;
     WCHAR temp_path[YCR_PATH_CAP];
     ConfigSection_ active = CONFIG_SECTION_NONE_;
     int asi_section_exists = 0;
@@ -892,36 +893,60 @@ static int persist_new_items_atomic_(void) {
         return 0;
     }
 
-    /* 第一遍定位最后一个同名节的结束位置；若该节就在 EOF，则 insert_before 保持 NULL。 */
+    /*
+     * 第一遍定位最后一个同名节的结束位置。
+     *
+     * 节与节之间通常会留一行空白，例如“最后一个 ASI 条目、空行、[Overrides]”。这行空白是两个节的
+     * 分隔符，不是应该排在 ASI 条目前面的内容。因此 trailing_blank 会记住“当前节末尾连续空行中的
+     * 第一行”：后面若遇到新表头或文件结尾，新条目就插到它前面；若节末尾没有空行，才直接插在下一
+     * 个表头前或文件末尾。这样空节也会从“[ASI]、空行”正确变成“[ASI]、新条目、空行”。
+     */
     p = text;
     while (*p) {
         WCHAR* line = p;
         WCHAR* end = p;
+        WCHAR* left;
+        WCHAR* right;
         while (*end && *end != (WCHAR)'\r' && *end != (WCHAR)'\n') ++end;
-        if (end > line) {
-            WCHAR* left = line;
-            WCHAR* right = end;
-            while (left < right && (*left == (WCHAR)' ' || *left == (WCHAR)'\t')) ++left;
-            while (right > left && (right[-1] == (WCHAR)' ' || right[-1] == (WCHAR)'\t')) --right;
-            if (left < right && *left == (WCHAR)'[') {
-                if (active == CONFIG_SECTION_ASI_) asi_insert_before = line;
-                else if (active == CONFIG_SECTION_OVERRIDES_) override_insert_before = line;
-                if (line_span_eq_i_(left, right, (const WCHAR*)L"[ASI]")) {
-                    asi_section_exists = 1;
-                    active = CONFIG_SECTION_ASI_;
-                    asi_insert_before = NULL_PTR;
-                } else if (line_span_eq_i_(left, right, (const WCHAR*)L"[Overrides]")) {
-                    override_section_exists = 1;
-                    active = CONFIG_SECTION_OVERRIDES_;
-                    override_insert_before = NULL_PTR;
-                } else {
-                    active = CONFIG_SECTION_NONE_;
-                }
+        left = line;
+        right = end;
+        while (left < right && (*left == (WCHAR)' ' || *left == (WCHAR)'\t')) ++left;
+        while (right > left && (right[-1] == (WCHAR)' ' || right[-1] == (WCHAR)'\t')) --right;
+
+        if (left < right && *left == (WCHAR)'[') {
+            /* 先封口旧节，再切换到新节；有分隔空行时，封口位置必须落在第一条分隔空行之前。 */
+            WCHAR* section_end = trailing_blank ? trailing_blank : line;
+            if (active == CONFIG_SECTION_ASI_) asi_insert_before = section_end;
+            else if (active == CONFIG_SECTION_OVERRIDES_) override_insert_before = section_end;
+
+            if (line_span_eq_i_(left, right, (const WCHAR*)L"[ASI]")) {
+                asi_section_exists = 1;
+                active = CONFIG_SECTION_ASI_;
+                asi_insert_before = NULL_PTR;
+            } else if (line_span_eq_i_(left, right, (const WCHAR*)L"[Overrides]")) {
+                override_section_exists = 1;
+                active = CONFIG_SECTION_OVERRIDES_;
+                override_insert_before = NULL_PTR;
+            } else {
+                active = CONFIG_SECTION_NONE_;
             }
+            trailing_blank = NULL_PTR;
+        } else if (left == right) {
+            /* 只记住连续空白块的第一行；第二、第三个空行不能覆盖它，否则仍会有空行跑到新条目前面。 */
+            if (active != CONFIG_SECTION_NONE_ && !trailing_blank) trailing_blank = line;
+        } else {
+            /* 注释或键值仍属于当前节的真实内容；它出现后，前面的空行就不再是“节尾空行”。 */
+            trailing_blank = NULL_PTR;
         }
         p = end;
         if (*p == (WCHAR)'\r') ++p;
         if (*p == (WCHAR)'\n') ++p;
+    }
+
+    /* 最后一个节没有后继表头，所以在扫描到文件结尾后单独把它的末尾空白块登记为插入点。 */
+    if (trailing_blank) {
+        if (active == CONFIG_SECTION_ASI_) asi_insert_before = trailing_blank;
+        else if (active == CONFIG_SECTION_OVERRIDES_) override_insert_before = trailing_blank;
     }
 
     if (!path_join_(temp_path, YCR_PATH_CAP, g_mods_root, (const WCHAR*)L"mods.ini.castle.tmp")) return 0;
@@ -934,7 +959,7 @@ static int persist_new_items_atomic_(void) {
     }
     if (!WriteFile(file, bom, 3u, &wrote, NULL_PTR) || wrote != 3u) goto write_failed;
 
-    /* 第二遍按原物理行顺序写回；在最后一个对应节结束以前插入本轮新项目。 */
+    /* 第二遍按原物理行顺序写回；新项目写在节尾分隔空行之前，因此表头下面不会再残留错误空行。 */
     p = text;
     while (*p) {
         WCHAR* line = p;

@@ -504,6 +504,16 @@ static int insert_line_(UINT at, const WCHAR* text) {
     return 1;
 }
 
+static int line_is_blank_(const WCHAR* text) {
+    /*
+     * g_lines 已经把换行符去掉，所以这里只需要跳过空格和制表符。
+     * 跳完就到字符串结尾，说明这一行在人眼看来是空行，也应该继续留在两个 INI 节之间充当分隔符。
+     */
+    if (!text) return 0;
+    while (*text == (WCHAR)' ' || *text == (WCHAR)'\t') ++text;
+    return *text == 0;
+}
+
 static int append_entry_to_section_(LauncherModKind_ kind, const WCHAR* name, int enabled) {
     /*
      * 新自动发现项必须复用“最后一个已有同名 section”。只有整份文件都没有该 section 才创建表头，
@@ -527,13 +537,20 @@ static int append_entry_to_section_(LauncherModKind_ kind, const WCHAR* name, in
         last_header = (int)(g_line_count - 1u);
     }
 
-    /* 从最后一个表头向下走到下一个 section 前，把新条目插在这一节的尾部，而不是插到表头下面打乱旧顺序。 */
+    /* 从最后一个表头向下走到下一个 section，先找到当前节在文档中的完整物理范围。 */
     insert_at = (UINT)last_header + 1u;
     while (insert_at < g_line_count) {
         DocSection_ h = section_from_header_(g_lines[insert_at].text);
         if (h != DOC_SECTION_NONE_) break;
         ++insert_at;
     }
+
+    /*
+     * 再从范围末尾越过连续空行，把条目放到这些分隔空行之前。
+     * 例如“[ASI]、空行、[Overrides]”会变成“[ASI]、新条目、空行、[Overrides]”，而不是把空行留在表头下。
+     * 每次追加都重新做这一步，因此一次扫描发现多个新 Mod 时，它们仍按扫描顺序连续排列在空行前面。
+     */
+    while (insert_at > (UINT)last_header + 1u && line_is_blank_(g_lines[insert_at - 1u].text)) --insert_at;
 
     line[0] = 0;
     if (!wcopy_(line, DOC_LINE_CAP_, name) || !wappend_(line, DOC_LINE_CAP_, enabled ? (const WCHAR*)L"=1" : (const WCHAR*)L"=0")) return 0;
