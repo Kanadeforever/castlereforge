@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-《幽城幻剑录》Mod Loader v0.3.0-dev9-about4 —— dev9 封存运行时 + About 自适应布局 + INI 自动换行回归检查工具。
+《幽城幻剑录》Mod Loader v0.3.0-dev9-about5 —— About 标准标题栏 + mods.ini 节间空行回归检查工具。
 
 本版最重要的回归边界不是“Hook 数量”，而是 Locale 启动时序：
 1. CastleLocaleBootstrap.dll 必须是 ntdll-only，绝不能静态依赖 KERNEL32；
@@ -15,14 +15,28 @@ r"""
 9. dev9 必须恢复 dev5 已实机成功的两段 SetDllDirectoryW(mods) 语义：Launcher CreateProcess 前临时设置并恢复父进程，Core 进入 RPG.exe 后长期设置；同时仍禁止 Launcher 管理 mods\ddraw.dll；
 10. ddraw.dll 必须重新进入 Core/Overrides/Locale/USER32/GDI 的 Win32 IAT 兼容桥目标，以恢复 dev5 的转区/截图调用链；
 11. GUI 只能给存在同名 INI 的 ASI 显示“编辑”，并使用系统 RichEdit 动态加载、语法分色、保存前通用 INI 结构校验与原子写回；
-12. dev9-about4 的改动只允许落在 Launcher GUI/About/INI 编辑器：About 必须是独立窗口、支持 about.cpp 中配置的可点击链接，并按正文实际折行高度自适应窗口，禁止正文与“相关链接”重叠；INI 必须真正按编辑区宽度自动换行，同时未保存与保存错误使用醒目红字；两个游戏运行时 DLL 必须继续继承已封存 dev9。
+12. about5 必须取消 About 的 WS_EX_TOOLWINDOW，让它使用普通 Windows 标题栏，同时保留正文自适应、链接和 INI 自动换行；
+13. Core 与 GUI 自动补全 mods.ini 时，都必须把新条目写在节尾连续空行之前，让空行继续分隔 [ASI] 与 [Overrides]。
 """
 from __future__ import annotations
 import hashlib, pathlib, struct, subprocess, sys, re
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SRC = ROOT / "源码"
-OUT = ROOT / "编译内容"
+
+# 同一份工具会出现在两种合法位置：
+#   1. Git 仓库：source / resources / templete，成品统一输出到仓库根目录 build；
+#   2. 中文发布包：源码 / 资源 / 配置模板，成品放在包内“编译内容”。
+# 先看实际存在的目录再选择，不能写死其中一种，否则工具在另一种布局里会在读取第一份源码前就退出。
+if (ROOT / "source").is_dir():
+    SRC = ROOT / "source"
+    OUT = ROOT.parents[1] / "build"
+    RESOURCE_ROOT = ROOT / "resources"
+    TEMPLATE_ROOT = ROOT / "templete"
+else:
+    SRC = ROOT / "源码"
+    OUT = ROOT / "编译内容"
+    RESOURCE_ROOT = ROOT / "资源"
+    TEMPLATE_ROOT = ROOT / "配置模板"
 # 当前用户实际提供并沿用到 v0.3.0-dev9 DLL 搜索环境修正版继续沿用的 RPG.exe.org。
 # v0.2.7 以前把历史 canonical Oracle 的 SHA-256 当成当前用户 EXE，这是接档记录错误；
 # 固化40 已确认当前文件在已覆盖代码/调用关系上与历史 Oracle 属于机器语义等价候选。
@@ -114,7 +128,7 @@ core=txt('core.c'); mod=txt('mod_loader.c'); ov=txt('override_loader.c'); loc=tx
 native=txt('native_locale.c'); user32loc=txt('user32_locale.c'); gdiloc=txt('gdi_locale.c'); audit=txt('game_audit.c')
 about_h=txt('about.h'); about_cpp=txt('about.cpp')
 build=(ROOT/'build.bat').read_text(encoding='utf-8')
-loader_ini_template=ROOT/'配置模板'/'CastleModLoader.ini'
+loader_ini_template=TEMPLATE_ROOT/'CastleModLoader.ini'
 compiled_loader_ini=OUT/'mods'/'CastleModLoader.ini'
 
 ck('CREATE_SUSPENDED_' in launcher, 'Launcher 仍以 CREATE_SUSPENDED 创建 RPG.exe')
@@ -125,7 +139,7 @@ ck('CreateRemoteThread(pi.' not in launcher and 'WaitForDebugEvent(' not in laun
 ck('SetCurrentDirectoryW(g_launcher_dir)' in launcher and 'L"RPG.exe"' in launcher, '仍保持同目录相对路径启动模型')
 ck('SetDllDirectoryW(g_mods)' in launcher and launcher.count('SetDllDirectoryW(NULL_PTR)') >= 2, 'Launcher 恢复 dev5 启动期 SetDllDirectoryW(mods)，并在 CreateProcess 成功/失败两条路径恢复父进程默认搜索环境')
 ck('g_mods, (const WCHAR*)L"CastleLocaleBootstrap.dll"' in launcher and 'g_mods, (const WCHAR*)L"CastleModCore.dll"' in launcher, 'Loader 自身 Bootstrap/Core 从 mods 根目录做存在性校验')
-ck('\"CastleLocaleBootstrap.dll\", \"CastleLocaleBootstrap_Bootstrap\"' in launcher and '\"CastleModCore.dll\", \"CastleModCore_Bootstrap\"' in launcher, 'Early Import DLL 名恢复 dev5 的纯文件名；由子进程继承的 mods DLL 搜索环境定位内部 DLL')
+ck('\"mods\\\\CastleLocaleBootstrap.dll\", \"CastleLocaleBootstrap_Bootstrap\"' in launcher and '\"mods\\\\CastleModCore.dll\", \"CastleModCore_Bootstrap\"' in launcher, 'Early Import 使用明确的 mods 相对路径，避免误中游戏根目录的同名旧 DLL')
 ck('ddraw_path' not in launcher and '(const WCHAR*)L"ddraw.dll"' not in launcher and 'path_join_(ddraw' not in launcher, r'Launcher 不探测、不复制、不选择 ddraw.dll；文档注释提到 mods\ddraw.dll 不视为运行时代码')
 
 
@@ -143,7 +157,7 @@ ck('show_about_dialog_' in gui and 'kAboutClass_' in gui and 'about_proc_' in gu
 ck('About_GetDialogText()' in gui and 'About_GetDialogTitle()' in gui and 'About_GetLinkCount()' in gui and 'About_GetLinkLabel(' in gui and 'About_GetLinkUrl(' in gui, 'About 窗口的正文和链接全部读取 about.cpp 数据，不在 GUI 中重复维护内容')
 ck('extern "C"' in about_h and all(x in about_h for x in ['About_GetDialogTitle','About_GetDialogText','About_GetLinkCount','About_GetLinkLabel','About_GetLinkUrl','ABOUT_MAX_LINKS']), 'about.h 以 C ABI 暴露正文与链接读取接口，C/C++ 源码可以稳定链接')
 ck('static const LPCWSTR kAboutDialogTitle_' in about_cpp and 'static const LPCWSTR kAboutDialogText_' in about_cpp and 'static const AboutLink_ kAboutLinks_' in about_cpp, 'about.cpp 集中保存可编辑 About 标题、正文与链接，不需要修改 GUI 代码')
-ck('v0.3.0-dev9-about4' in about_cpp and '运行时基线：v0.3.0-dev9' in about_cpp, '默认 About 明确显示 about4 前端版本与 dev9 封存运行时基线')
+ck('v0.3.0-dev9' in about_cpp and '运行时基线：v0.3.0-dev9' in about_cpp and 'dev9-about5' in gui, '默认 About 显示 dev9 运行时基线，GUI 源码明确标记 about5')
 ck('shell32.dll' in gui and 'ShellExecuteW' in gui and 'GetProcAddress' in gui and 'LoadLibraryW' in gui, 'About 点击链接时动态解析 ShellExecuteW，避免给 Launcher 增加静态 SHELL32 依赖')
 ck(all(x in gui for x in ['DT_CALCRECT_','measure_about_body_height_','get_about_required_outer_size_','GetDC','ReleaseDC']), 'about4 使用真实字体/宽度测量正文高度并按内容计算 About 外框，不再依赖固定正文高度')
 ck('body.bottom = body_bottom' in gui and 'label.top = label_top' in gui and 'links_top = about_links_top_' in gui, 'About 正文、相关链接标题与链接按钮按同一套实测坐标排列，不允许最后一行正文被链接区覆盖')
@@ -190,14 +204,14 @@ ck('layout.asi_card.top - scale_(hwnd, 10)' in gui and 'g_ui.FillRect(dc, &line,
 ck('g_ui.DrawTextW(dc, (const WCHAR*)L"《幽城幻剑录》Mod Loader"' not in gui, '客户区不再重复绘制程序大标题，程序名称只保留在 Windows 标题栏')
 resource_header=SRC/'resource.h'
 resource_script=SRC/'launcher.rc'
-resource_icon=ROOT/'资源'/'RPG.ico'
+resource_icon=RESOURCE_ROOT/'RPG.ico'
 ck(resource_header.exists() and resource_script.exists() and resource_icon.exists(), r'源码包自带 resource.h、launcher.rc 与用户提供的 资源\RPG.ico')
 if resource_header.exists() and resource_script.exists():
     resource_header_text=resource_header.read_text(encoding='utf-8')
     resource_script_text=resource_script.read_text(encoding='utf-8')
     ck('IDI_RPG_ICON 101' in resource_header_text and 'IDI_RPG_ICON ICON' in resource_script_text and 'RPG.ico' in resource_script_text, 'C/RC 共用同一个图标资源 ID，并把 RPG.ico 编译为 Launcher ICON 资源')
 ck('LoadIconW' in gui and 'IDI_RPG_ICON' in gui and 'wc.hIcon = app_icon' in gui and 'wc.hIconSm = app_icon' in gui, '窗口类从 EXE 资源加载 RPG.ico，同时设置大图标和小图标')
-ck('where rc.exe' in build and 'launcher.res' in build and 'launcher.rc' in build, 'Windows 正式 build.bat 明确编译并链接 RPG.ico 资源，不会生成无图标半成品')
+ck('where rc.exe' in build and 'launcher.res' in build and 'launcher_gen.rc' in build, 'Windows 正式 build.bat 明确生成、编译并链接 RPG.ico 资源，不会生成无图标半成品')
 
 # dev2 的用户反馈是“GUI 太丑”，dev3 又继续收到“拖动不明显、设置压框且过大、缺失项无法清理”的实机反馈。
 # dev5 只修最小尺寸与缩放完整重绘；下面继续钉住 dev2/dev3/dev4 已确认的视觉与交互基线。
@@ -250,7 +264,7 @@ ck(loader_ini_template.exists() and compiled_loader_ini.exists(), '源码包配�
 if loader_ini_template.exists():
     ini_text=loader_ini_template.read_text(encoding='utf-8-sig')
     ck('[Logging]' in ini_text and 'ModLoaderLog=1' in ini_text and 'GameLog=1' in ini_text, '默认 Loader 配置模板启用两个日志且职责分离')
-ck(r'配置模板\CastleModLoader.ini' in build and r'mods\CastleModLoader.ini' in build, '正式 build.bat 会把 Loader 默认配置复制到编译内容')
+ck((r'templete\CastleModLoader.ini' in build or r'配置模板\CastleModLoader.ini' in build) and r'mods\CastleModLoader.ini' in build, '正式 build.bat 会把 Loader 默认配置复制到编译内容')
 
 ck('RtlInitNlsTables' in bootstrap and 'RtlResetRtlTranslations' in bootstrap, 'CP950 真正 NLS 重建位于 LocaleBootstrap')
 ck('NtOpenFile' in bootstrap and 'NtReadFile' in bootstrap and 'NtAllocateVirtualMemory' in bootstrap, 'LocaleBootstrap 使用 Nt/Rtl 原语读取/映射 NLS')
@@ -378,17 +392,17 @@ ck('if exist "%OUT%\\CastleLocaleBootstrap.dll" del' in build and 'if exist "%OU
 ck('libvcruntime.lib' not in '\n'.join(x for x in build.splitlines() if not x.lstrip().lower().startswith('rem ')), '正式构建不引入 vcruntime')
 
 exe=OUT/'CastleModLoader.exe'; bootdll=OUT/'mods'/'CastleLocaleBootstrap.dll'; coredll=OUT/'mods'/'CastleModCore.dll'
-# about4 只允许改 Launcher GUI/About/INI 编辑器。为了让检查器在“用户用不同 MSVC/Windows SDK 重新构建”以后仍然有效，
+# 当前源码已经在 dev9 基线上追加 mods.ini 节间空行修复。为了让检查器在“用户用不同 MSVC/Windows SDK 重新构建”以后仍然有效，
 # 这里不把编译后二进制 SHA 当成永久规则，因为不同链接器版本即使源码相同也可能生成不同字节。
 # 更稳妥的做法是把所有影响 RPG.exe 运行时的源码按固定顺序拼接后计算一个聚合 SHA-256；
-# 只要这些源码没有动，about4 就没有把前端小改偷偷扩展成 Hook/Locale/ModCore 运行时改动。
-DEV9_RUNTIME_SOURCE_SHA256='369acf08a4353b8c083af989711d237c0a20fe193a7a81083ce709e56aab41a9'
+# 只要这些源码没有再动，就能确认后续工作没有把本次配置排版修复扩展到 Hook、Locale 或审计逻辑。
+CURRENT_RUNTIME_SOURCE_SHA256='8d9b713294a04d515add45d5801ce380f225732d822840f0fdc67c9012424bd9'
 _runtime_source_names=['core.c','entry_gate.c','mod_loader.c','override_loader.c','game_audit.c','locale_layer.c','native_locale.c','user32_locale.c','gdi_locale.c','locale_bootstrap.c','platform.h','runtime_support.c']
 _runtime_hash=hashlib.sha256()
 for _name in _runtime_source_names:
     _runtime_hash.update(_name.encode('utf-8')); _runtime_hash.update(b'\0')
     _runtime_hash.update((SRC/_name).read_bytes()); _runtime_hash.update(b'\0')
-ck(_runtime_hash.hexdigest()==DEV9_RUNTIME_SOURCE_SHA256, 'about4 的全部游戏运行时源码与封存 dev9 聚合 SHA-256 完全一致')
+ck(_runtime_hash.hexdigest()==CURRENT_RUNTIME_SOURCE_SHA256, '全部游戏运行时源码与 mods.ini 节间空行修复后的当前聚合 SHA-256 完全一致')
 ck(exe.exists(), '存在 CastleModLoader.exe')
 ck(bootdll.exists(), r'存在 mods\CastleLocaleBootstrap.dll')
 ck(coredll.exists(), r'存在 mods\CastleModCore.dll')
@@ -401,7 +415,7 @@ if exe.exists():
     b,e,m,magic,ep,imp,secs=pe_info(exe); ck(m==0x14c and magic==0x10b, 'Launcher 为 PE32/i386')
     imports=pe_imports(exe); mods={d.lower() for d,_ in imports}; names={n.lower() for _,ns in imports for n in ns}; ck(mods=={'kernel32.dll'}, 'Launcher 静态依赖仅 KERNEL32.dll'); ck('setdlldirectoryw' in names, 'Launcher 最终 PE 已恢复 dev5 启动期 SetDllDirectoryW(mods) 所需导入')
     exe_bytes=exe.read_bytes()
-    ck('v0.3.0-dev9-about4'.encode('utf-16le') in exe_bytes and '关于 - 《幽城幻剑录》Mod Loader'.encode('utf-16le') in exe_bytes, '最终 Launcher 已实际链接 about.cpp 的 about4 About 文本，不是只有源码没有进入 EXE')
+    ck('v0.3.0-dev9'.encode('utf-16le') in exe_bytes and '关于 - 《幽城幻剑录》Mod Loader'.encode('utf-16le') in exe_bytes, '最终 Launcher 已实际链接 about.cpp 的 dev9 About 文本，不是只有源码没有进入 EXE')
     resource_types=pe_resource_type_ids(exe)
     ck(3 in resource_types and 14 in resource_types, '最终 Launcher 仍包含 RPG.ico 的 RT_ICON / RT_GROUP_ICON 资源')
 if bootdll.exists():

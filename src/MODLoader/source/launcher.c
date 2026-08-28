@@ -458,14 +458,15 @@ static int create_and_prepare_game_(const WCHAR* game_exe, const WCHAR* game_dir
      * 这两个 DLL 是 Mod Loader 自己的内部组件，不是用户 Mod，但发布布局仍把它们放在 mods\ 根目录。
      * 这样卸载时只要删除 CastleModLoader.exe 和整个 mods\ 目录，就不会在游戏目录遗留 Loader DLL。
      *
-     * dev9 为了把 dev5 的“启动期装载图 + DLL 搜索环境”一起恢复，Early Import 名也恢复成 dev5 的纯文件名：
+     * 当前仓库为了让内存 Import Directory 与发布目录一一对应，Early Import 名直接写成游戏根目录下的
+     * mods 相对路径：
      *
-     *     CastleLocaleBootstrap.dll
-     *     CastleModCore.dll
+     *     mods\CastleLocaleBootstrap.dll
+     *     mods\CastleModCore.dll
      *
      * 在 ResumeThread 以前，Launcher 已经用 SetDllDirectoryW(mods) 建立子进程会继承的启动搜索目录，
-     * 因此 Windows Loader 会从 mods\ 找到这两个内部 DLL。这里仍先用完整路径做存在性检查，
-     * 只是写进 RPG.exe 内存 Import Directory 的名字恢复为 dev5 形式。
+     * 同时这里仍先用完整路径做存在性检查。显式 mods 相对路径避免只看文件名时误中游戏根目录里的
+     * 同名旧 DLL；SetDllDirectoryW 则继续保留 dev5 已实机验证的其它依赖搜索兼容环境。
      */
     if (!path_join_(bootstrap_path, CASTLE_PATH_CAP, g_mods, (const WCHAR*)L"CastleLocaleBootstrap.dll")) return 0;
     if (!file_exists_(bootstrap_path)) {
