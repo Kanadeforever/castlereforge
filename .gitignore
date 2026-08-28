@@ -66,6 +66,7 @@ Build/
 编译内容/
 编译/
 build-*/
+_build_*/
 
 # CMake generated files
 CMakeFiles/
