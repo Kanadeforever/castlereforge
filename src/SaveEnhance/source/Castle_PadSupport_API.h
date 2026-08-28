@@ -61,6 +61,36 @@ typedef enum CastlePadButton {
     CASTLE_PAD_BUTTON_COUNT
 } CastlePadButton;
 
+// 语义动作编号来自 PadSupport 的公开 InputRouter 快照。
+// 与物理按钮相比，CONFIRM/CANCEL 会自动遵守 SwapConfirmCancel，所以保留槽动作窗口必须用它。
+typedef enum CastlePadAction {
+    CASTLE_PAD_ACTION_CONFIRM = 0,
+    CASTLE_PAD_ACTION_CANCEL,
+    CASTLE_PAD_ACTION_SPECIAL_X,
+    CASTLE_PAD_ACTION_SPECIAL_Y,
+    CASTLE_PAD_ACTION_NAV_UP,
+    CASTLE_PAD_ACTION_NAV_DOWN,
+    CASTLE_PAD_ACTION_NAV_LEFT,
+    CASTLE_PAD_ACTION_NAV_RIGHT,
+    CASTLE_PAD_ACTION_CATEGORY_PREV,
+    CASTLE_PAD_ACTION_CATEGORY_NEXT,
+    CASTLE_PAD_ACTION_SUBTYPE_PREV,
+    CASTLE_PAD_ACTION_SUBTYPE_NEXT,
+    CASTLE_PAD_ACTION_SYSTEM_START,
+    CASTLE_PAD_ACTION_MOUSE_R3,
+    CASTLE_PAD_ACTION_MODIFIER_SHIFT,
+    CASTLE_PAD_ACTION_COUNT
+} CastlePadAction;
+
+// 这里只需要识别普通手柄模式。其它三个模式都属于鼠标/调查独占，不应强制动作焦点。
+typedef enum CastlePadControlMode {
+    CASTLE_PAD_CONTROL_CONTROLLER = 0,
+    CASTLE_PAD_CONTROL_PERSISTENT_MOUSE = 1,
+    CASTLE_PAD_CONTROL_TEMP_MOUSE = 2,
+    CASTLE_PAD_CONTROL_INVESTIGATION = 3,
+    CASTLE_PAD_CONTROL_UNKNOWN = 0x7FFFFFFF
+} CastlePadControlMode;
+
 // 这个结构体本身不保存某一帧的按钮值，而是一张“函数地址表”。
 // SaveEnhance 取得指针后，通过 api->ButtonDown(...) 去询问 Controller 当前快照。
 typedef struct CastlePadApiV1 {

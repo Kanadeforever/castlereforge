@@ -130,6 +130,14 @@ const DWORD kSaveActionUpdateVtableRva = 0x00060BA8u; // abs 0x460BA8
 const DWORD kSaveActionUpdateOriginalVa = 0x004262C0u;
 const BYTE kSaveActionUpdateVtableOriginalBytes[4] = {0xC0, 0x62, 0x42, 0x00};
 
+// SaveAction 内部两个 CALL 是保留槽手柄视觉/确认的唯一游戏级接入点。
+// SaveEnhance 不修改 PadSupport 模块；只在确认 Public API v1 可用后，把“当前 CALL 目标”保存为
+// next，再让自己的 wrapper 排在外层。普通槽始终完整调用 next，插件之间仍通过公开边界协作。
+const DWORD kSaveActionHitCallRva = 0x00026365u;   // abs 0x426365
+const DWORD kSaveActionEventCallRva = 0x00026387u; // abs 0x426387
+const DWORD kOriginalButtonHitVa = 0x00431310u;
+const DWORD kOriginalButtonEventVa = 0x00431380u;
+
 // ---- 100 槽固定机器码 -------------------------------------------------------
 const BYTE kLoadSlotIndexOriginal[4]       = {0x8D, 0x54, 0x01, 0x01};
 const BYTE kLoadSlotIndexZeroBased[4]      = {0x8D, 0x54, 0x01, 0x00};
@@ -218,6 +226,11 @@ const SIZE_T kSaveSlotPageBaseOffset = 0x598u;
 const SIZE_T kSaveSlotActionPointerOffset = 0x5A4u;
 
 // SaveAction 的三个按钮指针从 +0x58C 开始；index2 = “存档”，所以它就在 +0x594。
+const SIZE_T kSaveActionButtonsOffset = 0x58Cu;
+const DWORD kSaveActionButtonCount = 3u;
+const DWORD kSaveActionCancelIndex = 0u;
+const DWORD kSaveActionLoadIndex = 1u;
+const DWORD kSaveActionSaveIndex = 2u;
 const SIZE_T kSaveActionSaveButtonPointerOffset = 0x594u;
 const SIZE_T kButtonDisabledOffset = 0x04u;
 
@@ -237,6 +250,8 @@ typedef BOOL (__fastcall *OriginalSaveSlotFunction)(void* runtimeManager, void* 
 typedef BOOL (__fastcall *OriginalLoadSlotFunction)(void* runtimeManager, void* unusedEdx, DWORD slot);
 typedef void (__cdecl *OriginalNoArgFunction)(void);
 typedef void (__fastcall *OriginalSaveActionUpdateFunction)(void* action, void* unusedEdx);
+typedef BYTE (__fastcall *SaveActionHitFunction)(void* button, void* unusedEdx);
+typedef LONG (__fastcall *SaveActionEventFunction)(void* button, void* unusedEdx);
 
 // 游戏 File 对象是 MSVC x86 thiscall。源码用 __fastcall + 一个占位 EDX 来表达：
 // 第一个参数进 ECX，第二个 unusedEdx 进 EDX，剩余参数仍按原版顺序压栈。
@@ -1353,6 +1368,7 @@ bool GetWriterWorldBuffer(void* runtimeManager, BYTE** world) {
 // 十一、Controller API 可选接入
 // ============================================================================
 const CastlePadApiV1* gPadApi = nullptr;
+HMODULE gPadModule = nullptr;
 bool gPadPermanentFailure = false;
 bool gPadMissingLogged = false;
 DWORD gPadLastLookupTick = 0u;
@@ -1388,11 +1404,13 @@ void TryResolvePadApi() {
     if (api == nullptr || api->magic != CASTLE_PAD_API_MAGIC ||
         api->api_version != CASTLE_PAD_API_VERSION_1 ||
         api->struct_size < sizeof(CastlePadApiV1) || api->ButtonDown == nullptr ||
-        api->AllowsExternalUiInput == nullptr) {
+        api->ActionDown == nullptr || api->ActionPressed == nullptr ||
+        api->GetControlMode == nullptr || api->AllowsExternalUiInput == nullptr) {
         ycrlog::Line("[Controller] API v1 结构不完整/不兼容；本轮关闭手柄联动。");
         gPadPermanentFailure = true;
         return;
     }
+    gPadModule = pad;
     gPadApi = api;
     ycrlog::Line("[Controller] 已连接 Castle_PadSupport API v1：RB+R3=快速存档，RB+Start=快速读档请求。");
 }
@@ -1743,6 +1761,217 @@ void MaybeRunAutoSave() {
 }
 
 // ============================================================================
+// 十四点五、保留槽手柄焦点：只使用 PadSupport Public API v1
+// ============================================================================
+SaveActionHitFunction gSaveActionHitNext = nullptr;
+SaveActionEventFunction gSaveActionEventNext = nullptr;
+BYTE gSaveActionHitOriginalCall[5] = {};
+BYTE gSaveActionEventOriginalCall[5] = {};
+bool gSaveActionPadHooksInstalled = false;
+bool gSaveActionPadHookFailureLogged = false;
+
+// current 只在一次原版 SaveAction::Update 调用期间有效，wrapper 不会跨 UI 生命周期解引用它。
+BYTE* gCurrentReservedAction = nullptr;
+BYTE* gCurrentReservedButtons[kSaveActionButtonCount] = {};
+
+// tracked 只用来判断“是不是同一个动作窗口”，不直接解引用。真正按钮每帧都从当前 action 重取。
+BYTE* gTrackedReservedAction = nullptr;
+DWORD gReservedPadFocus = kSaveActionLoadIndex;
+LONG gReservedPadConfirmPending = -1;
+bool gReservedPadNavActive = false;
+bool gReservedPadInputArmed = false;
+
+extern "C" BYTE __fastcall ReservedSaveActionHitHook(void* button, void* unusedEdx);
+extern "C" LONG __fastcall ReservedSaveActionEventHook(void* button, void* unusedEdx);
+
+bool AddressBelongsToModule(const void* address, HMODULE module) {
+    // VirtualQuery 返回该地址所属整块映像的 AllocationBase。它等于 HMODULE 时，才能证明
+    // 当前 CALL 目标确实在 PadSupport 内，而不是另一个未知插件碰巧写了同一位置。
+    if (address == nullptr || module == nullptr) return false;
+    MEMORY_BASIC_INFORMATION_MINI info = {};
+    if (VirtualQuery(address, &info, sizeof(info)) == 0u) return false;
+    return info.AllocationBase == module;
+}
+
+void* ReadRelativeCallTarget(BYTE* site) {
+    if (site == nullptr || !IsReadableRange(site, 5u) || site[0] != 0xE8u) return nullptr;
+    const LONG displacement = *reinterpret_cast<const volatile LONG*>(site + 1u);
+    return site + 5u + displacement;
+}
+
+void BuildRelativeCall(BYTE* site, const void* target, BYTE out[5]) {
+    out[0] = 0xE8u;
+    const SIZE_T nextInstruction = reinterpret_cast<SIZE_T>(site + 5u);
+    const SIZE_T destination = reinterpret_cast<SIZE_T>(target);
+    *reinterpret_cast<DWORD*>(out + 1u) = static_cast<DWORD>(destination - nextInstruction);
+}
+
+bool PadHookTargetAllowed(void* target, DWORD originalVa) {
+    const DWORD address = static_cast<DWORD>(reinterpret_cast<SIZE_T>(target));
+    return address == originalVa || AddressBelongsToModule(target, gPadModule);
+}
+
+bool TryInstallReservedSaveActionPadHooks() {
+    // 没有公开 API 时，原版键鼠仍会尊重 disabled；因此绝不能为了手柄视觉把 PadSupport
+    // 变成强制依赖。只有 API 和模块都已确认后才尝试链式安装。
+    if (gSaveActionPadHooksInstalled) return true;
+    if (gPadApi == nullptr || gPadModule == nullptr || gExeBase == nullptr) return false;
+
+    BYTE* hitSite = gExeBase + kSaveActionHitCallRva;
+    BYTE* eventSite = gExeBase + kSaveActionEventCallRva;
+    void* hitTarget = ReadRelativeCallTarget(hitSite);
+    void* eventTarget = ReadRelativeCallTarget(eventSite);
+    if (!PadHookTargetAllowed(hitTarget, kOriginalButtonHitVa) ||
+        !PadHookTargetAllowed(eventTarget, kOriginalButtonEventVa)) {
+        if (!gSaveActionPadHookFailureLogged) {
+            ycrlog::Line("[保留槽手柄] SaveAction Hit/Event 当前目标不是原版或 PadSupport；不覆盖未知插件。");
+            gSaveActionPadHookFailureLogged = true;
+        }
+        return false;
+    }
+
+    // 先保存完整原 CALL 字节和 next 目标。普通槽 wrapper 会继续调用它们，绝不复制 PadSupport 逻辑。
+    for (SIZE_T i = 0u; i < 5u; ++i) {
+        gSaveActionHitOriginalCall[i] = hitSite[i];
+        gSaveActionEventOriginalCall[i] = eventSite[i];
+    }
+    gSaveActionHitNext = reinterpret_cast<SaveActionHitFunction>(hitTarget);
+    gSaveActionEventNext = reinterpret_cast<SaveActionEventFunction>(eventTarget);
+
+    BYTE hitPatch[5];
+    BYTE eventPatch[5];
+    BuildRelativeCall(hitSite, reinterpret_cast<const void*>(&ReservedSaveActionHitHook), hitPatch);
+    BuildRelativeCall(eventSite, reinterpret_cast<const void*>(&ReservedSaveActionEventHook), eventPatch);
+    if (!ycr::WriteBytes(hitSite, hitPatch, 5u)) {
+        gSaveActionHitNext = nullptr;
+        gSaveActionEventNext = nullptr;
+        return false;
+    }
+    if (!ycr::WriteBytes(eventSite, eventPatch, 5u)) {
+        ycr::WriteBytes(hitSite, gSaveActionHitOriginalCall, 5u);
+        gSaveActionHitNext = nullptr;
+        gSaveActionEventNext = nullptr;
+        return false;
+    }
+
+    gSaveActionPadHooksInstalled = true;
+    ycrlog::Line("[保留槽手柄] 已在 SaveEnhance 内接管保留槽两项焦点；普通槽继续链回原目标。");
+    return true;
+}
+
+void RestoreReservedSaveActionPadHooks() {
+    // 只在 CALL 仍然指向本插件时恢复。若后来又有其它插件合法接管，绝不能用旧字节盖回去。
+    if (!gSaveActionPadHooksInstalled || gExeBase == nullptr) return;
+    BYTE* hitSite = gExeBase + kSaveActionHitCallRva;
+    BYTE* eventSite = gExeBase + kSaveActionEventCallRva;
+    if (ReadRelativeCallTarget(hitSite) == reinterpret_cast<void*>(&ReservedSaveActionHitHook)) {
+        ycr::WriteBytes(hitSite, gSaveActionHitOriginalCall, 5u);
+    }
+    if (ReadRelativeCallTarget(eventSite) == reinterpret_cast<void*>(&ReservedSaveActionEventHook)) {
+        ycr::WriteBytes(eventSite, gSaveActionEventOriginalCall, 5u);
+    }
+    gSaveActionPadHooksInstalled = false;
+}
+
+void ResetReservedPadState() {
+    gCurrentReservedAction = nullptr;
+    for (DWORD i = 0u; i < kSaveActionButtonCount; ++i) gCurrentReservedButtons[i] = nullptr;
+    gTrackedReservedAction = nullptr;
+    gReservedPadFocus = kSaveActionLoadIndex;
+    gReservedPadConfirmPending = -1;
+    gReservedPadNavActive = false;
+    gReservedPadInputArmed = false;
+}
+
+bool ReservedPadActionsDown() {
+    if (gPadApi == nullptr || gPadApi->ActionDown == nullptr) return false;
+    return gPadApi->ActionDown(CASTLE_PAD_ACTION_CONFIRM) != 0 ||
+           gPadApi->ActionDown(CASTLE_PAD_ACTION_CANCEL) != 0 ||
+           gPadApi->ActionDown(CASTLE_PAD_ACTION_NAV_UP) != 0 ||
+           gPadApi->ActionDown(CASTLE_PAD_ACTION_NAV_DOWN) != 0;
+}
+
+void UpdateReservedPadInput(bool newAction) {
+    if (gCurrentReservedAction == nullptr) return;
+    if (!PadInputAllowed() || gPadApi->GetControlMode() != CASTLE_PAD_CONTROL_CONTROLLER) {
+        // PadSupport 已进入鼠标/调查独占模式时立即放弃强制焦点，让 wrapper 完整链回原目标。
+        gReservedPadNavActive = false;
+        gReservedPadConfirmPending = -1;
+        gReservedPadInputArmed = false;
+        return;
+    }
+
+    // 新窗口若由 A 打开，公开快照里 CONFIRM 可能仍处于按住状态。先取得两项导航所有权，
+    // 但必须等 A/方向全部释放后再武装，避免同一个 A 立即执行默认“读档”。
+    if (newAction) {
+        gReservedPadNavActive = ReservedPadActionsDown();
+        gReservedPadInputArmed = !ReservedPadActionsDown();
+        gReservedPadFocus = kSaveActionLoadIndex;
+        gReservedPadConfirmPending = -1;
+    }
+    if (!gReservedPadInputArmed) {
+        if (!ReservedPadActionsDown()) gReservedPadInputArmed = true;
+        return;
+    }
+
+    const bool up = gPadApi->ActionPressed(CASTLE_PAD_ACTION_NAV_UP) != 0;
+    const bool down = gPadApi->ActionPressed(CASTLE_PAD_ACTION_NAV_DOWN) != 0;
+    const bool confirm = gPadApi->ActionPressed(CASTLE_PAD_ACTION_CONFIRM) != 0;
+    const bool cancel = gPadApi->ActionPressed(CASTLE_PAD_ACTION_CANCEL) != 0;
+    if (up || down || confirm || cancel) gReservedPadNavActive = true;
+    if (up) gReservedPadFocus = kSaveActionLoadIndex;
+    if (down) gReservedPadFocus = kSaveActionCancelIndex;
+    if (confirm && gReservedPadNavActive) {
+        gReservedPadConfirmPending = static_cast<LONG>(gReservedPadFocus);
+    }
+    if (cancel) {
+        gReservedPadFocus = kSaveActionCancelIndex;
+        gReservedPadConfirmPending = static_cast<LONG>(kSaveActionCancelIndex);
+    }
+}
+
+bool CurrentReservedButtonIndex(void* button, DWORD* indexOut) {
+    if (button == nullptr || indexOut == nullptr || gCurrentReservedAction == nullptr) return false;
+    for (DWORD i = 0u; i < kSaveActionButtonCount; ++i) {
+        if (button == gCurrentReservedButtons[i]) {
+            *indexOut = i;
+            return true;
+        }
+    }
+    return false;
+}
+
+extern "C" BYTE __fastcall ReservedSaveActionHitHook(void* button, void* unusedEdx) {
+    DWORD index = 0u;
+    if (gReservedPadNavActive && CurrentReservedButtonIndex(button, &index)) {
+        // 保留槽只有“读档/取消”两项；index2=存档无论 PadSupport 私有焦点是什么都不会命中。
+        return static_cast<BYTE>(index == gReservedPadFocus && index != kSaveActionSaveIndex);
+    }
+    return gSaveActionHitNext != nullptr ? gSaveActionHitNext(button, unusedEdx) : 0u;
+}
+
+extern "C" LONG __fastcall ReservedSaveActionEventHook(void* button, void* unusedEdx) {
+    DWORD index = 0u;
+    if (gReservedPadNavActive && CurrentReservedButtonIndex(button, &index)) {
+        // 保留槽直接调用原版 ButtonEvent，绕开 PadSupport 私有 pending；真实鼠标事件仍由原版优先返回。
+        SaveActionEventFunction original = reinterpret_cast<SaveActionEventFunction>(
+            static_cast<SIZE_T>(kOriginalButtonEventVa));
+        const LONG real = original(button, unusedEdx);
+        if (real != 0) {
+            gReservedPadConfirmPending = -1;
+            return real;
+        }
+        if (gReservedPadConfirmPending == static_cast<LONG>(index) &&
+            index != kSaveActionSaveIndex && index == gReservedPadFocus) {
+            gReservedPadConfirmPending = -1;
+            return 2;
+        }
+        return 0;
+    }
+    return gSaveActionEventNext != nullptr ? gSaveActionEventNext(button, unusedEdx) : 0;
+}
+
+// ============================================================================
 // 十五、保留槽 UI：同时约束原版鼠标/键盘和 Controller SaveAction Event
 // ============================================================================
 bool IsReservedSlot(DWORD slot) {
@@ -1764,9 +1993,23 @@ BYTE* SaveSlotFromOwnerGlobal(DWORD ownerGlobalRva, SIZE_T saveSlotOffset) {
     if (!ReadExeDword(ownerGlobalRva, &ownerAddress) || ownerAddress == 0u) {
         return nullptr;
     }
+
+    // owner+offset 保存的是一个 32 位 SaveSlot* 指针字段，不是 SaveSlot 对象直接内嵌在 owner 中。
+    // 旧正式版错误地把“字段所在地址”当成 SaveSlot 起点，所以后续读取 +0x5A4 永远对不上
+    // 当前 SaveAction，最终就没有机会把 0/91~99 的存档按钮设成 disabled。
     BYTE* owner = reinterpret_cast<BYTE*>(static_cast<SIZE_T>(ownerAddress));
-    BYTE* saveSlot = owner + saveSlotOffset;
-    // 后面至少要读到 SaveSlot+0x5A4 的 action pointer，所以这里一次验证到该字段末尾。
+    if (!IsReadableRange(owner + saveSlotOffset, sizeof(DWORD))) {
+        return nullptr;
+    }
+
+    DWORD saveSlotAddress = 0u;
+    if (!ReadDword(owner + saveSlotOffset, &saveSlotAddress) || saveSlotAddress == 0u) {
+        return nullptr;
+    }
+
+    // 解引用以后得到的才是真正 SaveSlot 对象。再验证到 +0x5A4 字段末尾，避免 owner 正在
+    // 销毁或字段已经变成坏指针时继续读取游戏内存。
+    BYTE* saveSlot = reinterpret_cast<BYTE*>(static_cast<SIZE_T>(saveSlotAddress));
     if (!IsReadableRange(saveSlot, kSaveSlotActionPointerOffset + sizeof(DWORD))) {
         return nullptr;
     }
@@ -1806,36 +2049,59 @@ void EndSaveButtonOverride() {
     gOverriddenSaveButton = nullptr;
     gOverriddenSaveButtonOriginal = 0u;
     gSaveButtonOverrideActive = false;
+    gCurrentReservedAction = nullptr;
+    for (DWORD i = 0u; i < kSaveActionButtonCount; ++i) gCurrentReservedButtons[i] = nullptr;
 }
 
 void PrepareReservedSaveButtonState(void* action) {
     EndSaveButtonOverride();
 
     BYTE* parent = FindSaveSlotForAction(action);
-    if (parent == nullptr) return;
+    if (parent == nullptr) {
+        ResetReservedPadState();
+        return;
+    }
 
     DWORD row = 0u, page = 0u;
     if (!ReadDword(parent + kSaveSlotSelectedRowOffset, &row) ||
         !ReadDword(parent + kSaveSlotPageBaseOffset, &page) || row >= 4u || page > kLastPageBase) {
+        ResetReservedPadState();
         return;
     }
     const DWORD slotNumber = page + row;
-    if (!IsReservedSlot(slotNumber)) return;
-
-    DWORD buttonAddress = 0u;
-    BYTE* actionBytes = reinterpret_cast<BYTE*>(action);
-    if (!ReadDword(actionBytes + kSaveActionSaveButtonPointerOffset, &buttonAddress) ||
-        buttonAddress == 0u) {
+    if (!IsReservedSlot(slotNumber)) {
+        ResetReservedPadState();
         return;
     }
-    BYTE* button = reinterpret_cast<BYTE*>(static_cast<SIZE_T>(buttonAddress));
-    if (!IsReadableRange(button + kButtonDisabledOffset, 1u)) return;
 
-    gOverriddenSaveButton = button;
+    BYTE* actionBytes = reinterpret_cast<BYTE*>(action);
+    BYTE* buttons[kSaveActionButtonCount] = {};
+    for (DWORD i = 0u; i < kSaveActionButtonCount; ++i) {
+        DWORD buttonAddress = 0u;
+        if (!ReadDword(actionBytes + kSaveActionButtonsOffset + i * sizeof(DWORD), &buttonAddress) ||
+            buttonAddress == 0u) {
+            ResetReservedPadState();
+            return;
+        }
+        buttons[i] = reinterpret_cast<BYTE*>(static_cast<SIZE_T>(buttonAddress));
+        if (!IsReadableRange(buttons[i] + kButtonDisabledOffset, 1u)) {
+            ResetReservedPadState();
+            return;
+        }
+    }
+
+    const bool newAction = gTrackedReservedAction != actionBytes;
+    gTrackedReservedAction = actionBytes;
+    gCurrentReservedAction = actionBytes;
+    for (DWORD i = 0u; i < kSaveActionButtonCount; ++i) gCurrentReservedButtons[i] = buttons[i];
+
+    BYTE* saveButton = buttons[kSaveActionSaveIndex];
+    gOverriddenSaveButton = saveButton;
     gOverriddenSaveButtonOriginal =
-        *reinterpret_cast<const volatile BYTE*>(button + kButtonDisabledOffset);
-    *reinterpret_cast<volatile BYTE*>(button + kButtonDisabledOffset) = 1u;
+        *reinterpret_cast<const volatile BYTE*>(saveButton + kButtonDisabledOffset);
+    *reinterpret_cast<volatile BYTE*>(saveButton + kButtonDisabledOffset) = 1u;
     gSaveButtonOverrideActive = true;
+    UpdateReservedPadInput(newAction);
 }
 
 // ============================================================================
@@ -2241,8 +2507,14 @@ extern "C" BOOL __fastcall ProtectedManualSaveHook(
 
 extern "C" void __fastcall SaveActionUpdateHook(void* action, void* unusedEdx) {
     if (gOriginalSaveActionUpdate == nullptr) return;
-    // 一定要在原版 0x4262C0 之前写 disabled。Controller 当前正是在这个 Update 内 Hook
-    // Button HitTest/Event；它会看到 +0x04=1，从而和鼠标/键盘一样拒绝“存档”动作。
+
+    // 标题/天书里 Map Tick 不一定运行，所以这里也低频解析公开 API。等 PadSupport 自己完成
+    // 初始化和原有 Hook 后，SaveEnhance 才把自己的 wrapper 链在当前目标外层。
+    TryResolvePadApi();
+    if (gPadApi != nullptr) TryInstallReservedSaveActionPadHooks();
+
+    // 一定要在原版 0x4262C0 之前写 disabled。原版键鼠直接尊重它；若公开手柄 API 可用，
+    // SaveEnhance 自己的两项焦点 wrapper 会在同一次 Update 中处理读档/取消。
     PrepareReservedSaveButtonState(action);
     gOriginalSaveActionUpdate(action, unusedEdx);
     EndSaveButtonOverride();
@@ -2365,7 +2637,10 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) 
     }
 
     if (reason == DLL_PROCESS_DETACH) {
-        // 退出时只做纯内存状态恢复和日志句柄关闭；不会重新安装/卸载代码 Hook。
+        // 退出时只恢复本插件自己链入的两处 CALL、临时 disabled 和私有焦点，再关闭日志。
+        // 不修改 PadSupport 代码，也不重装任何业务 Hook。
+        RestoreReservedSaveActionPadHooks();
+        ResetReservedPadState();
         EndSaveButtonOverride();
         ycrlog::Line("[退出] Castle_SaveEnhance v0.1.0-test7 卸载。");
         ycrlog::Close();
