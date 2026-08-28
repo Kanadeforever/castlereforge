@@ -1,4 +1,4 @@
-# Castle_SaveEnhance v0.1.0-test6 安装与 INI 配置说明
+# Castle_SaveEnhance v0.1.0-test7 安装与 INI 配置说明
 
 ## 安装
 
@@ -156,16 +156,16 @@ mods\asi\Castle_SaveEnhance.log
 实机反馈时请同时提供日志和复现步骤。
 
 
-## test6 自动槽内部状态文件
+## test7 自动槽内部状态文件
 
 `NextAutoSlot` **不写入 INI**。插件把它保存到游戏存档目录：
 
 ```text
-游戏目录\Save\.NEXTAUTOSLOT
+游戏目录\multimedia\save\.NEXTAUTOSLOT
 ```
 
-- 路径由日志同款模块路径构造器生成：`RPG.exe` 所在目录加 `Save\.NEXTAUTOSLOT`；
-- 写入前用 `CreateDirectoryW` 创建缺失的 `Save` 目录；
+- `RPG.exe` 位于 `游戏目录\exe`，因此代码从 EXE 目录追加 `..\multimedia\save\.NEXTAUTOSLOT`；
+- 写入前用 `CreateDirectoryW` 创建缺失的 `multimedia\save` 最后一级目录；
 - 文件名以点开头、没有后缀；不会额外设置 Windows Hidden 属性；
 - 内容固定为 `091`~`099` 三个 ASCII 字节，没有换行；
 - 91~99 有空槽时忽略游标，优先填最低空槽；
@@ -174,12 +174,12 @@ mods\asi\Castle_SaveEnhance.log
 - 文件缺失、损坏或值超范围时安全回到 91；
 - 状态文件写失败不会否定刚完成的 TSF，但日志会提示重启后可能从 91 开始。
 
-test5 用户实机确认 TSF 保存成功后，插件仍报告“无法创建 Save\.NEXTAUTOSLOT”。第一版
-test6 曾尝试游戏内部 `File::Read/Write`，机器检查通过但实机崩溃，已经回退。当前 test6
-继续使用日志同款 Win32 文本写入，只补上父目录创建和错误码诊断。成功时日志应出现：
+test6 已实机确认 Win32 小文本写入本身成功，但错误写到了 `exe\Save`。test7 会在新路径无
+有效文件时兼容读取该旧游标；下一次正确写入后删除旧 `.NEXTAUTOSLOT`，但不会删除旧目录。
+成功时日志应出现：
 
 ```text
-[自动槽状态] 已写入 Save\.NEXTAUTOSLOT，下一候选=92。
+[自动槽状态] 已写入 multimedia\save\.NEXTAUTOSLOT，下一候选=92。
 ```
 
 这个文件只是自动档轮换顺序，不包含 TSF、剧情或 GameVar。不要再向 INI 添加

@@ -82,8 +82,9 @@ CALL_HOOK_SITES: Sequence[Tuple[str, int, bytes]] = (
     ("隐藏命令手动 SaveSlot", 0x0044A82D, bytes.fromhex("E8 EE 0A FF FF")),
 )
 
-# SaveAction vtable +0x18 原本指向 0x4262C0。SaveEnhance 只替换这个 Update 虚函数，
-# 不抢 Controller 已经使用的 SaveAction 内部 Button HitTest/Event CALL。
+# SaveAction vtable +0x18 原本指向 0x4262C0，SaveEnhance 固定替换这个 Update 虚函数。
+# test7 在 PadSupport Public API v1 就绪后，还会动态链住 Update 内部 Hit/Event 当前目标；
+# 目标 EXE 的静态基线仍必须是下面的原版 vtable 指针。
 SAVE_ACTION_VTABLE_SITE = (
     "SaveAction vtable Update 指针",
     0x00460BA8,
@@ -609,6 +610,17 @@ def verify_asi(path: Path) -> List[CheckResult]:
             "ASI 含正确自动槽路径 ..\\multimedia\\save\\.NEXTAUTOSLOT",
             state_path_marker in pe.data,
             "存在" if state_path_marker in pe.data else "未找到",
+        )
+    )
+
+    # 该 UTF-8 日志只存在于 test7 的 SaveEnhance 独立保留槽手柄 wrapper。
+    # 检查它可以抓到“路径已是 test7，但误链接了按钮屏蔽功能迁移前对象”的混包。
+    reserved_ui_marker = "[保留槽手柄] 已在 SaveEnhance 内接管保留槽两项焦点".encode("utf-8")
+    results.append(
+        CheckResult(
+            "ASI 含独立保留槽手柄焦点实现",
+            reserved_ui_marker in pe.data,
+            "存在" if reserved_ui_marker in pe.data else "未找到",
         )
     )
     results.append(CheckResult("ASI SHA-256（记录）", True, sha256_bytes(pe.data)))

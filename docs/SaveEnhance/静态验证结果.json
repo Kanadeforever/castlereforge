@@ -1,6 +1,6 @@
 {
   "tool": "verify_saveenhance_candidate.py",
-  "version": "v0.1.0-test6",
+  "version": "v0.1.0-test7",
   "all_passed": true,
   "results": [
     {
@@ -217,7 +217,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI 入口点非零",
       "ok": true,
-      "detail": "AddressOfEntryPoint=0x6F20"
+      "detail": "AddressOfEntryPoint=0x7990"
     },
     {
       "group": "Castle_SaveEnhance.asi",
@@ -235,7 +235,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI 必需 KERNEL32 导入齐全且未被装饰",
       "ok": true,
-      "detail": "缺少=无; 实际=CloseHandle, CreateDirectoryW, CreateFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetLastError, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile"
+      "detail": "缺少=无; 实际=CloseHandle, CreateDirectoryW, CreateFileW, DeleteFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetLastError, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile"
     },
     {
       "group": "Castle_SaveEnhance.asi",
@@ -263,7 +263,13 @@
     },
     {
       "group": "Castle_SaveEnhance.asi",
-      "name": "ASI 含自动槽状态文件路径 Save\\.NEXTAUTOSLOT",
+      "name": "ASI 含正确自动槽路径 ..\\multimedia\\save\\.NEXTAUTOSLOT",
+      "ok": true,
+      "detail": "存在"
+    },
+    {
+      "group": "Castle_SaveEnhance.asi",
+      "name": "ASI 含独立保留槽手柄焦点实现",
       "ok": true,
       "detail": "存在"
     },
@@ -271,7 +277,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI SHA-256（记录）",
       "ok": true,
-      "detail": "4ce3e9ac3aab599da882ccab5ba3ed31ef437791a6a9dfc18e124e996e09f555"
+      "detail": "db9ccdb1b3a2cfac6bd0d6f32b9a8f69d78a212bc3246f0ec43a935407ea5bed"
     }
   ]
 }
