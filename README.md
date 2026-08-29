@@ -14,6 +14,7 @@ CastleReforge 是一个面向 Windows 版《天地劫序传·幽城幻剑录》�
 * 基于并改进自久经考验的三合一、五合一补丁的BUG修复、免CD、最大成长与掉宝的独立 ASI；
 * 全新制作的安全扩展存档（防止随时存档死档）；
 * 与上述功能配套的逆向分析、地址记录、测试工具和实机验收文档。
+* 已进入设计阶段、用于协调多插件冲突并服务第三方 Mod 作者的运行时 SDK（尚未实现，不构成当前运行依赖）。
 
 > **本项目不会提供《幽城幻剑录》游戏本体、`RPG.exe` 或受版权保护的原版游戏资源。**
 
@@ -410,7 +411,10 @@ docs/
 ├─ Backlog/
 ├─ Controller/
 ├─ Extra/
+├─ FPSUnlock/
 ├─ MODLoader/
+├─ SaveEnhance/
+├─ runtime/
 └─ Widescreen/
 ```
 
@@ -438,6 +442,12 @@ docs/
 
 以及架构、地址和测试文档。
 
+项目级运行时协调 SDK 的未来目标、边界、降级规则和迁移顺序见：
+
+> [`docs/runtime/运行时协调系统总体设计.md`](docs/runtime/运行时协调系统总体设计.md)
+
+该文档当前只是设计基线。`CastleRuntime1.dll`、`src/RuntimeSDK` 和插件迁移尚未实现，不能把设计目标当成当前运行行为。
+
 ---
 
 ## 仓库结构
@@ -448,7 +458,9 @@ castlereforge/
 │  ├─ Backlog/
 │  ├─ Controller/
 │  ├─ Extra/
+│  ├─ FPSUnlock/
 │  ├─ MODLoader/
+│  ├─ SaveEnhance/
 │  ├─ Widescreen/
 │  └─ _toolbox/
 │
@@ -456,7 +468,10 @@ castlereforge/
 │  ├─ Backlog/
 │  ├─ Controller/
 │  ├─ Extra/
+│  ├─ FPSUnlock/
 │  ├─ MODLoader/
+│  ├─ SaveEnhance/
+│  ├─ runtime/
 │  └─ Widescreen/
 │
 ├─ build/          构建输出（git 忽略）
@@ -468,6 +483,8 @@ castlereforge/
 `src/` 保存源码、构建脚本以及相关开发工具。
 
 `docs/` 保存逆向分析、设计说明、测试记录和接档资料。
+
+未来公共 SDK 的规范源码计划放在 `src/RuntimeSDK/`。该目录尚未创建；在总体设计评审和 ABI v1 边界冻结前，不提前加入占位代码。
 
 ---
 
