@@ -450,6 +450,33 @@ static int interface_shell_request_exit(u8* i) {
 }
 
 /*
+ * 给页面Adapter使用的窄入口：请求“退出整个主Interface”，不是退出页面内部子窗口。
+ *
+ * 为什么需要公开这一小步：state7天书的根内容本身就是一份SaveSlot。共享SaveSlot会把B解释成
+ * 自己的取消按钮并先消费，Shell因此永远看不到退出主菜单的意图。天书Adapter必须在调用
+ * SaveSlot_Update之前把这颗B交给Shell，但又不能复制退出Button地址或直接写Interface状态。
+ *
+ * 这里复用Shell原有队列：动画期间也不会丢键，等root_ready后仍由interface_shell_request_exit()
+ * 点击原版真实退出Button。深层弹窗存在时直接拒绝，B继续留给页面自己的模态控制器。
+ */
+int InterfaceShell_RequestRootExitFromPage(void) {
+    u8* i = interface_shell_ptr();
+
+    if (!Runtime_PtrOk(i)) return 0;
+    if (*(i32*)(i + INTERFACE_CLOSE_STATE) != 0) return 0;
+    if (interface_shell_modal_blocked(i)) return 0;
+
+    /* 退出优先级最高：丢弃尚未提交的切大类/切角色意图，只保留这一颗明确的返回。 */
+    interface_shell_clear_action_queue();
+    if (!interface_shell_enqueue_action(INTERFACE_SHELL_ACTION_EXIT)) return 0;
+
+    InputRouter_Consume(INPUT_CANCEL);
+    Cursor_ClaimForControllerNavigation();
+    Runtime_Log("[主界面] 页面根层取消：已排队原版退出Button，等待主界面动画门开放。");
+    return 1;
+}
+
+/*
  * 判断“普通探索 Y 打开主 Interface”现在是否允许。
  *
  * 这里只做插件自己的 Context 隔离；真正与键盘 Space 完全相同的地图业务门控，
@@ -577,11 +604,7 @@ static void interface_shell_capture_root_actions(u8* i) {
          * 体感会像 B 完全没反应。这里先丢弃尚未提交的大类/角色动作，再只保留这一次退出请求。
          * 已经提交给原版并正在播放的那一次动画不会被强行打断，仍等原版安全门重新开放。
          */
-        interface_shell_clear_action_queue();
-        if (interface_shell_enqueue_action(INTERFACE_SHELL_ACTION_EXIT)) {
-            InputRouter_Consume(INPUT_CANCEL);
-            Cursor_ClaimForControllerNavigation();
-        }
+        InterfaceShell_RequestRootExitFromPage();
         return;
     }
 

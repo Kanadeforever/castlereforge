@@ -3,6 +3,8 @@
 #include "game_addresses.h"
 #include "save_slot.h"
 #include "cursor.h"
+#include "input_router.h"
+#include "interface_shell.h"
 
 /*
  * interface_tome.c
@@ -70,7 +72,8 @@ int InterfaceTome_Active(void) {
 /*
  * 三项动作窗口或任一 Yes/No 出现时，天书已经不再是“根层 SaveSlot”。
  * 这时 LB/RB/B 若继续落进 Shell，会造成“一边确认存档、一边切大类/退出”的穿透，所以必须报告 modal。
- * 普通槽位列表返回 0：那里 B 仍由 SaveSlot 自己处理，LB/RB 仍允许 Shell 切主大类。
+ * 普通槽位列表返回 0：那里LB/RB仍允许Shell切主大类；从本轮起B由天书Adapter先交给Shell，
+ * 表示退出整个主Interface，而不是落进共享SaveSlot自己的取消按钮。
  */
 int InterfaceTome_ModalActive(void) {
     u8* save = tome_save_slot();
@@ -118,7 +121,20 @@ void InterfaceTome_Update(void) {
         Runtime_Log("[天书页] 已进入 state7；槽位与三项动作窗口直接复用共享 SaveSlot Controller。");
     }
 
-    /* 所有槽位、翻页、三项动作窗口的输入都由同一个共享 Controller 处理。 */
+    /*
+     * 只有state7根槽位层把取消语义解释成“退出整个主Interface”。
+     * 三项动作、直接确认框和二次Yes/No都属于更深模态层，B必须继续交给SaveSlot/ConfirmDialog。
+     * 这里运行在SaveSlot_Update之前；Shell入口成功后会消费本tick取消键，所以共享SaveSlot不会
+     * 再把同一颗B排给自己的取消Button。真正关闭仍由稍后InterfaceShell_Update按原版动画门提交。
+     */
+    if (SaveSlot_DetectView(save) == SAVE_VIEW_SLOTS &&
+        InputRouter_PressedOn(INPUT_CTX_INTERFACE_SHELL, INPUT_CANCEL, INPUT_LAYER_OVERLAY)) {
+        if (InterfaceShell_RequestRootExitFromPage()) {
+            Runtime_Log("[天书页] 根层取消：请求退出整个主界面，不进入SaveSlot取消路径。");
+        }
+    }
+
+    /* 槽位、翻页、三项动作窗口的其余输入继续由同一个共享 Controller 处理。 */
     SaveSlot_Update(save);
 }
 

@@ -30,6 +30,13 @@ int InterfaceShell_InstallHooks(void);
  */
 void InterfaceShell_Update(void);
 
+/*
+ * 页面Adapter发现“根页面的取消语义应该关闭整个主Interface”时调用。
+ * 本函数只把退出动作放入Shell既有队列，并消费本tick取消键；真正退出仍等待原版动画门，
+ * 再点击顶部主导航自己的真实退出Button。页面不能自己复制Button偏移或直接写关闭状态。
+ */
+int InterfaceShell_RequestRootExitFromPage(void);
+
 
 /*
  * Exploration 模块的游戏线程 Hook 每帧调用一次。
