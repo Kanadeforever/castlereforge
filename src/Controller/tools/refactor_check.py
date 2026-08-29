@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》手柄操控模组 v0.3-refactor43 综合静态检查工具。
+《幽城幻剑录》手柄操控模组 v0.3-refactor44 综合静态检查工具。
 
 这个工具只使用 Python 标准库，不修改 RPG.exe，也不修改源码。
 它把这次重构最容易发生的“大回归”变成可以重复执行的机械检查：
@@ -17,7 +17,7 @@
 9. 检查 dev20 的 INI 对外键名仍然完整；
 10. 检查地图十字键只提供八方向步行，且松开后保留左摇杆既有全向走跑阈值；
 11. 检查统一 Shop Adapter 保留 refactor36 已实机通过的连续翻页、Y 信息窗与列标记；
-12. 检查 refactor43 的剧情mode=2多行选择、剧情RT鼠标、Back常驻边界、主动warp防误判与普通活动自动隐藏路径删除；
+12. 检查 refactor44 的SaveAction原生disabled三位mask、最近可用焦点、上下跳过、确认双检、鼠标清理及零插件耦合；并保留refactor43剧情/鼠标稳定边界；
 13. 检查 build.bat 逐个编译 30 个独立 .c（含Public API、ControlModes与Investigation），并保留 x86、/W4 /WX、UTF-8、无 CRT 约束；
 14. 检查编译产物确实是 PE32 / i386 DLL；
 15. 检查源码文件名均为英文/ASCII，并给出注释覆盖率，帮助持续遵守“项目圣经”；
@@ -353,12 +353,11 @@ SEALED_REFACTOR11_DIALOGUE_SHA256 = {
     "dialogue_input.h": "6e848df4c366e74dc6c4aee30ddc1a5290396b926a3259217c322fe1a51811c1",
 }
 
-# 天书与共享 SaveSlot 继续逐字节冻结；Cursor 是 refactor37 明确批准改造的模块，
-# 因此不再错误地把它锁回 refactor33。
+# R44按用户授权修改共享SaveSlot的SaveAction disabled导航，因此save_slot.c不再整文件冻结。
+# 天书页面、SaveSlot公开头和其它旧范围继续逐字节冻结；save_slot.c改由下方专项结构护栏保护。
 SEALED_REFACTOR33_TOME_SCOPE_SHA256 = {
     "interface_tome.c": "713e659127ce84469213929b5e8094a2d19524d686fc29633ef6ac620bda0257",
     "interface_tome.h": "39790bf6b288695165e3dd0327e18895bf8e6651d5fe990ff7342663fac28618",
-    "save_slot.c": "7a1453b4d1e5129af51baf185a04b15888ab5bbdfc2d3fc1e669a4886e003ed9",
     "save_slot.h": "7904d2bca6eb19ed971e2bae6abf7733f5310bf620e5e30c17b1208b70d77639",
 }
 
@@ -1964,9 +1963,9 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         elif sha256(path).lower() != expected.lower():
             tome_scope_bad.append(name + "(SHA变化)")
     if tome_scope_bad:
-        result.fail("refactor41旧天书/SaveSlot冻结范围", ", ".join(tome_scope_bad))
+        result.fail("旧天书/SaveSlot公开头冻结范围", ", ".join(tome_scope_bad))
     else:
-        result.ok("refactor41旧天书/SaveSlot冻结范围", "天书与共享SaveSlot 4/4 文件逐字节保持旧验收版本；R41不进入这些模块")
+        result.ok("旧天书/SaveSlot公开头冻结范围", f"{len(SEALED_REFACTOR33_TOME_SCOPE_SHA256)}/{len(SEALED_REFACTOR33_TOME_SCOPE_SHA256)} 文件保持旧验收版本；save_slot.c由R44专项护栏验证")
 
     # R3 复合状态机被新需求明确删除，但可靠的 48ms Windows消息 + GetKeyState 双通道桥必须保留，
     # 供 RT 的 A/B 与 LT 的 A 共同复用。
@@ -2694,7 +2693,8 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
 
     # refactor27：state7 必须是真正复用 SaveSlot，而不是复制一套槽位；三项窗口与二次 Yes/No 有明确分层。
     tome_source = read_utf8(src / "interface_tome.c")
-    tome_text = tome_source + read_utf8(src / "interface_tome.h") + read_utf8(src / "save_slot.c") + bridge_text + runtime_shell_text + plugin_text
+    save_slot_source = read_utf8(src / "save_slot.c")
+    tome_text = tome_source + read_utf8(src / "interface_tome.h") + save_slot_source + bridge_text + runtime_shell_text + plugin_text
     tome_required = [
         "Runtime_InterfaceTomeProtocolOk", "Runtime_SaveSlotActionProtocolOk", "SaveSlot_InstallActionHooks", "SaveSlot_Begin", "SaveSlot_Update", "SaveSlot_End",
         "SAVE_VIEW_ACTION", "SAVE_VIEW_ACTION_POPUP", "INPUT_CTX_SAVE_ACTION", "CALL_SAVE_ACTION_HIT", "CALL_SAVE_ACTION_EVENT",
@@ -2707,6 +2707,85 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         result.ok("state7天书页面Adapter", "只管理state7 owner；共享三项动作Hook不再依赖天书；不直接读写存档文件/槽位字段")
     else:
         result.fail("state7天书页面Adapter", f"缺少={tome_missing}，禁止直接业务={tome_forbidden}，动作Hook仍耦合天书={action_owner_coupled}")
+
+    # R44：SaveAction必须通用尊重原版Button disabled，而不是认识SaveEnhance或保留槽号。
+    # 游戏线程现有Hit/Event Hook发布完整三位mask，worker只按mask导航；确认在worker和Event两层复核。
+    save_slot_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", save_slot_source, flags=re.S)
+    action_disabled_required = [
+        "volatile u32 action_allowed_state",
+        "SAVE_ACTION_ALLOWED_MASK_ALL",
+        "SAVE_ACTION_ALLOWED_STATE_VALID 0x80000000u",
+        "save_action_collect_allowed_mask",
+        "save_action_read_allowed_mask",
+        "save_action_focus_allowed",
+        "save_action_nearest_allowed",
+        "save_action_normalize_focus",
+        "save_action_publish_allowed_mask",
+        "save_action_move_allowed",
+        "g_save.action_allowed_state = SAVE_ACTION_ALLOWED_STATE_VALID | mask",
+        "if (pending >= 0 && !save_action_focus_allowed(mask, pending))",
+        "g_save.action_nav_active = 0",
+        "save_action_move_allowed(allowed_mask, g_save.action_focus, +1)",
+        "save_action_move_allowed(allowed_mask, g_save.action_focus, -1)",
+        "save_action_focus_allowed(allowed_mask, g_save.action_focus)",
+        "save_action_focus_allowed(allowed_mask, index)",
+        "save_button_accepts_event(button)",
+        "action_allowed_state = 0u",
+    ]
+    action_disabled_missing = [token for token in action_disabled_required if token not in save_slot_source]
+
+    hit_begin = save_slot_source.find("static u8 FASTCALL SaveSlot_HookActionHit")
+    event_begin = save_slot_source.find("static i32 FASTCALL SaveSlot_HookActionEvent", hit_begin)
+    install_begin = save_slot_source.find("int SaveSlot_InstallHooks", event_begin)
+    hit_scope = save_slot_source[hit_begin:event_begin] if 0 <= hit_begin < event_begin else ""
+    event_scope = save_slot_source[event_begin:install_begin] if 0 <= event_begin < install_begin else ""
+    game_thread_capture_ok = (
+        "save_action_publish_allowed_mask(g_save.object);" in hit_scope and
+        "save_action_publish_allowed_mask(g_save.object);" in event_scope and
+        "save_action_collect_allowed_mask" not in save_slot_source[save_slot_source.find("static void save_update_action"):]
+    )
+
+    # 同距离时从index0向上扫描且只在严格更近时替换，所以自然优先较小index。
+    tie_break_ok = (
+        "for (index = 0; index < SAVE_ACTION_COUNT; ++index)" in save_slot_source and
+        "if (distance < best_distance)" in save_slot_source and
+        "if (distance <= best_distance)" not in save_slot_source
+    )
+
+    begin_scope_start = save_slot_source.find("void SaveSlot_Begin")
+    end_scope_start = save_slot_source.find("void SaveSlot_End", begin_scope_start)
+    takeover_scope_start = save_slot_source.find("void SaveSlot_OnPointerTakeover", end_scope_start)
+    active_scope_start = save_slot_source.find("int SaveSlot_IsControllerActive", takeover_scope_start)
+    begin_scope = save_slot_source[begin_scope_start:end_scope_start]
+    end_scope = save_slot_source[end_scope_start:takeover_scope_start]
+    takeover_scope = save_slot_source[takeover_scope_start:active_scope_start]
+    lifecycle_clear_ok = all(
+        "g_save.action_allowed_state = 0u;" in scope and
+        "g_save.action_confirm_pending = -1;" in scope
+        for scope in [begin_scope, end_scope, takeover_scope]
+    ) and "g_save.action_nav_active = 0;" in takeover_scope
+
+    hook_count_ok = (
+        save_slot_code.count("Runtime_PatchCall(CALL_SAVE_ACTION_HIT") == 1 and
+        save_slot_code.count("Runtime_PatchCall(CALL_SAVE_ACTION_EVENT") == 1
+    )
+    plugin_specific_forbidden = [
+        token for token in ["SaveEnhance", "Castle_SaveEnhance", "SAVE_ENHANCE"]
+        if token in save_slot_code
+    ]
+    hardcoded_slot_forbidden = re.search(r"\b(?:91|92|93|94|95|96|97|98|99)\b", save_slot_code) is not None
+
+    if (
+        not action_disabled_missing and game_thread_capture_ok and tie_break_ok and
+        lifecycle_clear_ok and hook_count_ok and not plugin_specific_forbidden and
+        not hardcoded_slot_forbidden
+    ):
+        result.ok("R44 SaveAction原生disabled导航", "游戏线程发布三位mask；最近可用焦点/上下跳过/确认双检/鼠标清理完整；无插件名、保留槽号或新增Hook")
+    else:
+        result.fail(
+            "R44 SaveAction原生disabled导航",
+            f"缺少={action_disabled_missing}，游戏线程捕获={game_thread_capture_ok}，同距小index={tie_break_ok}，生命周期清理={lifecycle_clear_ok}，Hook唯一={hook_count_ok}，插件耦合={plugin_specific_forbidden}，槽号硬编码={hardcoded_slot_forbidden}",
+        )
 
     # refactor31：原版 Oracle 证明地图存档点不是 Interface state7。
     # 事件 opcode 0x3E 会发布 0x89FCD0 独立包装层，而包装层 +0x580 才是标准 SaveSlot。
@@ -3138,6 +3217,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "cursor.c": 0.12,
         "cursor.h": 0.35,
         "dialogue_input.c": 0.20,
+        "save_slot.c": 0.18,
     }
     beginner_ratio_bad = []
     for name, minimum in beginner_minimums.items():
@@ -3165,10 +3245,15 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "mode=2：MSG 文本里的 /q",
         "Windows 最终落点可能和请求值差1像素",
         "不再使用“任意普通手柄活动就隐藏鼠标”的旧通用机制",
+        "最高位表示“本数值已经由",
+        "同距离自然保留较小index",
+        "disabled只在本次原版Update窗口内可靠存在",
+        "worker绝不重新解引用Button的disabled字段",
+        "禁止按钮恢复后补发旧确认",
     ]
     beginner_joined = (
         runtime_text + control_text + investigation_text + plugin_text_r37 + input_router_c +
-        scene_choice_text + cursor_text + dialogue_text
+        scene_choice_text + cursor_text + dialogue_text + save_slot_source
     )
     beginner_explanation_missing = [
         token for token in beginner_explanation_tokens if token not in beginner_joined
@@ -3180,9 +3265,9 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "source\\%1",
     ])
     if not beginner_ratio_bad and not beginner_explanation_missing and build_comment_ok:
-        result.ok("R43初学者级详细注释", "修改文件注释比例达标；mode=2行命中、剧情RT、Back常驻、warp实际落点和新目录构建均有逐步中文解释")
+        result.ok("R44初学者级详细注释", "修改文件注释比例达标；SaveAction mask/焦点/双检与R43剧情鼠标边界均有逐步中文解释")
     else:
-        result.fail("R43初学者级详细注释", f"比例不足={beginner_ratio_bad}，解释缺少={beginner_explanation_missing}，构建注释={build_comment_ok}")
+        result.fail("R44初学者级详细注释", f"比例不足={beginner_ratio_bad}，解释缺少={beginner_explanation_missing}，构建注释={build_comment_ok}")
 
 
 def compiled_content_dir(root: Path) -> Path:
@@ -3282,17 +3367,15 @@ def check_artifact(root: Path, result: CheckResult) -> None:
         is_pe32 = magic == 0x010B
         is_dll = bool(characteristics & 0x2000)
         compiled_markers = [
-            b"refactor43",
-            "剧情mode=2多选支持上下/确定".encode("utf-8"),
-            "剧情可用RT鼠标".encode("utf-8"),
-            "Back不再自动回切".encode("utf-8"),
-            "手柄warp不再误判实体鼠标".encode("utf-8"),
-            "普通活动自动隐藏路径已删除".encode("utf-8"),
-            "Battle Target结束显式隐藏".encode("utf-8"),
+            b"refactor44",
+            "SaveAction按原生disabled发布三位mask".encode("utf-8"),
+            "焦点迁移/上下跳过/确认双检/鼠标清理".encode("utf-8"),
+            "不识别插件名或槽号".encode("utf-8"),
+            "R43功能保持".encode("utf-8"),
         ]
         missing_markers = [marker.decode("utf-8") for marker in compiled_markers if marker not in data]
         if is_i386 and is_pe32 and is_dll and not missing_markers:
-            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + refactor43剧情多选、剧情RT、Back常驻与warp防误判标记，SHA-256={sha256(asi)}")
+            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + refactor44 SaveAction disabled通用导航与R43保留标记，SHA-256={sha256(asi)}")
         else:
             result.fail("ASI PE 结构/本轮编译标记", f"machine=0x{machine:04X}, magic=0x{magic:04X}, DLL={is_dll}，缺编译标记={missing_markers}")
     except Exception as exc:
@@ -3437,13 +3520,13 @@ def check_documents(
     # 用户明确要求从本版起不再内置逐版证据；旧证据树即使内容正确也不能继续塞进交付包。
     evidence_dir = root / "证据"
     if evidence_dir.exists():
-        result.fail("refactor43精简证据策略", "Controller包仍包含证据目录；必要结论应合并进docs/Controller现行文档")
+        result.fail("refactor44精简证据策略", "Controller包仍包含证据目录；必要结论应合并进docs/Controller现行文档")
     else:
-        result.ok("refactor43精简证据策略", "未内置逐版证据树；source、docs/Controller与tools构成交接依据")
+        result.ok("refactor44精简证据策略", "未内置逐版证据树；source、docs/Controller与tools构成交接依据")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 refactor43：校验剧情mode=2多选、剧情RT鼠标、Back常驻、warp防误判、R42/R41基线、新目录结构与目标RPG.exe")
+    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 refactor44：校验SaveAction原生disabled导航、R43剧情/鼠标基线、新目录结构与目标RPG.exe")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent, help="包根目录；默认自动取工具目录的上一层")
     parser.add_argument("--exe", type=Path, help="可选：待验证的 RPG.exe。提供后先检查双样本 SHA 白名单，再执行既有冻结协议以及主 Interface state2～state8 页面协议；state3 治疗目标的 +0x768 短锚点与两处新 Event CALL、以及既有 state7/state8 协议也必须通过")
     parser.add_argument("--source-only", action="store_true", help="仓库开发模式：检查src/Controller/source、templete、build.bat、仓库根build产物、docs/Controller和可选RPG.exe Oracle")

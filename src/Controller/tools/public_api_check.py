@@ -5,7 +5,7 @@ Castle PadSupport Public API v1 静态检查器。
 这个工具只做“公共接口有没有被正确接进当前源码/二进制”的检查，不替代原来的
 refactor_check.py。两者分工如下：
 
-- refactor_check.py：继续验证 refactor43 的游戏功能、地址、页面适配和历史基线；
+- refactor_check.py：继续验证 refactor44 的游戏功能、地址、页面适配和历史基线；
 - public_api_check.py：只验证 CastlePad_GetApi v1 的源码、构建脚本和 PE 导出。
 
 工具只使用 Python 标准库，不需要 pefile。

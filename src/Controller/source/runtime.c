@@ -1482,7 +1482,7 @@ int Runtime_Initialize(HMODULE self_module) {
     rt_load_config();
     rt_open_log();
 
-    Runtime_Log("[启动] 幽城幻剑录手柄支持：v0.3-refactor43（剧情多选 + 剧情RT鼠标 + 鼠标模式稳定化）");
+    Runtime_Log("[启动] 幽城幻剑录手柄支持：v0.3-refactor44（SaveAction原生disabled导航 + R43稳定基线）");
     Runtime_Log("[启动] By Luminou with ChatGPT");
     Runtime_LogModule("ASI 插件", g_self_module, NULL);
 

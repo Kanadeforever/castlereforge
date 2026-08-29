@@ -35,10 +35,23 @@ typedef struct SaveSlotState {
     int action_nav_active;
     int action_hooks_enabled; /* 共享三项窗口协议/Hook 是否独立通过。 */
     volatile int action_confirm_pending;
+
+    /*
+     * 游戏线程发布的三项按钮可用状态。
+     *
+     * 低三位分别对应index0取消、index1读档、index2存档；最高位表示“本数值已经由
+     * SaveAction::Update里的真实Hit/Event Hook完整扫描过”。把valid和mask合并进同一个
+     * 32位整数，只需要一次对齐写入，worker就不会读到“valid已更新但mask还是上一帧”的半状态。
+     */
+    volatile u32 action_allowed_state;
     SaveSlotView last_view;
 } SaveSlotState;
 
 static SaveSlotState g_save;
+
+/* 三个按钮正好使用低三位；最高位单独充当跨线程发布完成标记。 */
+#define SAVE_ACTION_ALLOWED_MASK_ALL ((1u << SAVE_ACTION_COUNT) - 1u)
+#define SAVE_ACTION_ALLOWED_STATE_VALID 0x80000000u
 
 /* 复刻原版 ButtonEvent 的可用条件；不可用按钮只让原版处理，手柄不硬注入。 */
 static int save_button_accepts_event(void* button) {
@@ -151,6 +164,142 @@ static void* save_action_button(u8* s, int index) {
 }
 
 /*
+ * 只在游戏线程的SaveAction Hit/Event Hook中调用：一次扫描三只真实Button，生成低三位掩码。
+ * 这里复用save_button_accepts_event()，所以判据和原版0x431380完全相同：+0x45非0且+0x04为0。
+ * 不询问是谁改了disabled，也不认识保留槽号；任何插件或游戏本体造成的原生状态都会得到同样结果。
+ */
+static u32 save_action_collect_allowed_mask(u8* s) {
+    u32 mask = 0u;
+    int index;
+
+    for (index = 0; index < SAVE_ACTION_COUNT; ++index) {
+        void* button = save_action_button(s, index);
+        if (save_button_accepts_event(button)) mask |= 1u << (u32)index;
+    }
+    return mask;
+}
+
+/* worker只读取一次32位发布值；最高位没置上时，说明游戏线程尚未完成本窗口的第一次扫描。 */
+static int save_action_read_allowed_mask(u32* out_mask) {
+    u32 state;
+
+    if (!out_mask) return 0;
+    state = g_save.action_allowed_state;
+    if ((state & SAVE_ACTION_ALLOWED_STATE_VALID) == 0u) return 0;
+    *out_mask = state & SAVE_ACTION_ALLOWED_MASK_ALL;
+    return 1;
+}
+
+/* 单独封装位判断，避免每个导航分支重复写移位表达式并忘记范围检查。 */
+static int save_action_focus_allowed(u32 mask, int focus) {
+    if (focus < 0 || focus >= SAVE_ACTION_COUNT) return 0;
+    return (mask & (1u << (u32)focus)) != 0u;
+}
+
+/*
+ * 当前项被禁用时，选择数字距离最近的可用index。
+ * 原版屏幕顺序是2→1→0，所以index差的绝对值也正好等于相隔几行。
+ * 循环从小index开始，只有距离严格更小时才替换；因此同距离自然保留较小index，
+ * 也就是需求指定的屏幕下方项目。
+ */
+static int save_action_nearest_allowed(u32 mask, int from_focus) {
+    int best = -1;
+    int best_distance = 999;
+    int index;
+
+    for (index = 0; index < SAVE_ACTION_COUNT; ++index) {
+        int distance;
+        if (!save_action_focus_allowed(mask, index)) continue;
+        distance = index - from_focus;
+        if (distance < 0) distance = -distance;
+        if (distance < best_distance) {
+            best = index;
+            best_distance = distance;
+        }
+    }
+    return best;
+}
+
+/* 当前焦点仍可用就不动；不可用时才迁移。返回1表示焦点真的发生了变化。 */
+static int save_action_normalize_focus(u32 mask, int fallback_focus) {
+    int old_focus = g_save.action_focus;
+    int origin = old_focus;
+    int next;
+
+    if (save_action_focus_allowed(mask, old_focus)) return 0;
+    if (origin < 0 || origin >= SAVE_ACTION_COUNT) origin = fallback_focus;
+
+    next = save_action_nearest_allowed(mask, origin);
+    if (next < 0) return 0;
+    g_save.action_focus = next;
+    return next != old_focus;
+}
+
+/*
+ * 游戏线程把完整mask作为一次32位状态发布，并立即修正强制焦点。
+ *
+ * 为什么在Hook里也做焦点归一化：外部插件可能只在原版SaveAction::Update调用期间临时设置disabled，
+ * worker在Update外重新读Button会错过状态；而原版本帧马上就会根据HitTest画高亮。游戏线程先修正后，
+ * 保留槽第一次展开就能直接高亮“读档”，不会先画一个空焦点再等下一次方向输入。
+ */
+static void save_action_publish_allowed_mask(u8* s) {
+    u32 old_state = g_save.action_allowed_state;
+    u32 old_mask = old_state & SAVE_ACTION_ALLOWED_MASK_ALL;
+    u32 mask = save_action_collect_allowed_mask(s);
+    int state_changed =
+        (old_state & SAVE_ACTION_ALLOWED_STATE_VALID) == 0u || old_mask != mask;
+    int focus_changed = 0;
+    int pending = g_save.action_confirm_pending;
+
+    /* 对齐32位单次写入就是发布点；worker只在看到VALID后使用低三位。 */
+    g_save.action_allowed_state = SAVE_ACTION_ALLOWED_STATE_VALID | mask;
+
+    /* pending指向的按钮一旦不再可用，立刻作废，禁止按钮恢复后补发旧确认。 */
+    if (pending >= 0 && !save_action_focus_allowed(mask, pending)) {
+        g_save.action_confirm_pending = -1;
+        if (state_changed) Runtime_Log("[存读档动作] 已拒绝指向禁用按钮的陈旧确认。");
+    }
+
+    if (mask == 0u) {
+        /* 没有任何可用项时必须退出强制HitTest，让原版鼠标逻辑自行处理，不能伪造一条高亮。 */
+        g_save.action_nav_active = 0;
+        if (state_changed) Runtime_Log("[存读档动作] 当前没有可用按钮，停止强制焦点。");
+        return;
+    }
+
+    /* 从手柄槽位层刚进入Action时默认仍从index2存档开始，再按mask向最近项归一化。 */
+    if (!g_save.action_nav_active && g_save.nav_active) {
+        g_save.action_focus = 2;
+        g_save.action_nav_active = 1;
+        g_save.action_confirm_pending = -1;
+    }
+
+    if (g_save.action_nav_active) {
+        focus_changed = save_action_normalize_focus(mask, 2);
+    }
+
+    if (state_changed && focus_changed) {
+        Runtime_Log(g_save.action_focus == 1
+            ? "[存读档动作] 当前焦点按钮已禁用，自动迁移到读档。"
+            : "[存读档动作] 当前焦点按钮已禁用，自动迁移到最近可用按钮。");
+    }
+}
+
+/*
+ * 按屏幕方向寻找下一项：上就是index递增，下就是index递减。
+ * while会跳过任意数量的disabled；到边界仍找不到时返回原焦点，不循环、不制造空焦点。
+ */
+static int save_action_move_allowed(u32 mask, int current, int direction) {
+    int candidate = current + direction;
+
+    while (candidate >= 0 && candidate < SAVE_ACTION_COUNT) {
+        if (save_action_focus_allowed(mask, candidate)) return candidate;
+        candidate += direction;
+    }
+    return current;
+}
+
+/*
  * SaveSlot 现在暴露五种明确视图。识别顺序必须从最深子层往外：
  * action popup > action > direct popup > slots。
  * 这样 worker 永远不会在一个模态窗口已经打开时继续把 ↑↓ 当槽位导航。
@@ -191,6 +340,7 @@ void SaveSlot_Begin(u8* save_slot, int from_pad) {
     g_save.action_nav_active = 0;
     g_save.action_focus = 2;
     g_save.action_confirm_pending = -1;
+    g_save.action_allowed_state = 0u;
     g_save.last_view = SAVE_VIEW_SLOTS;
     g_save.row_confirm_pending = -1;
     g_save.page_pending = 0;
@@ -214,6 +364,7 @@ void SaveSlot_End(void) {
     g_save.popup_nav_active = 0;
     g_save.action_nav_active = 0;
     g_save.action_confirm_pending = -1;
+    g_save.action_allowed_state = 0u;
     g_save.last_view = SAVE_VIEW_NONE;
     g_save.visual_apply_pending = 0;
     g_save.row_confirm_pending = -1;
@@ -228,6 +379,7 @@ void SaveSlot_OnPointerTakeover(void) {
     g_save.popup_nav_active = 0;
     g_save.action_nav_active = 0;
     g_save.action_confirm_pending = -1;
+    g_save.action_allowed_state = 0u;
     g_save.row_confirm_pending = -1;
     g_save.page_pending = 0;
     g_save.cancel_pending = 0;
@@ -405,13 +557,25 @@ static i32 FASTCALL SaveSlot_HookPageNext(void* button, void* unused_edx) {
  */
 static u8 FASTCALL SaveSlot_HookActionHit(void* button, void* unused_edx) {
     PFN_ButtonHitFast orig = (PFN_ButtonHitFast)FN_BUTTON_HITTEST;
+    u32 allowed_mask = 0u;
     int index;
     (void)unused_edx;
 
-    if (g_save.action_nav_active && SaveSlot_DetectView(g_save.object) == SAVE_VIEW_ACTION) {
+    if (SaveSlot_DetectView(g_save.object) == SAVE_VIEW_ACTION) {
+        /*
+         * disabled只在本次原版Update窗口内可靠存在，所以每个Hit调用都先扫描三只按钮并发布完整mask。
+         * 同一帧后两次调用得到相同mask，publish函数会识别“状态未变化”并保持静默。
+         */
+        save_action_publish_allowed_mask(g_save.object);
+
+        if (!g_save.action_nav_active || !save_action_read_allowed_mask(&allowed_mask) || allowed_mask == 0u) {
+            return orig(button, NULL);
+        }
+
         for (index = 0; index < SAVE_ACTION_COUNT; ++index) {
             if (button == save_action_button(g_save.object, index)) {
-                return (u8)(index == g_save.action_focus);
+                /* disabled项即使碰巧等于旧focus也必须返回0，绝不能画出一个原版Event会拒绝的假焦点。 */
+                return (u8)(save_action_focus_allowed(allowed_mask, index) && index == g_save.action_focus);
             }
         }
     }
@@ -424,9 +588,15 @@ static u8 FASTCALL SaveSlot_HookActionHit(void* button, void* unused_edx) {
  */
 static i32 FASTCALL SaveSlot_HookActionEvent(void* button, void* unused_edx) {
     PFN_ButtonEventThis orig = (PFN_ButtonEventThis)FN_BUTTON_EVENT;
+    u32 allowed_mask = 0u;
     i32 real;
     int index;
     (void)unused_edx;
+
+    /* Event阶段再次捕获同一Update窗口内的真实状态，不能只相信稍早Hit阶段的快照。 */
+    if (SaveSlot_DetectView(g_save.object) == SAVE_VIEW_ACTION) {
+        save_action_publish_allowed_mask(g_save.object);
+    }
 
     real = orig(button);
     if (real != 0) {
@@ -437,12 +607,25 @@ static i32 FASTCALL SaveSlot_HookActionEvent(void* button, void* unused_edx) {
     index = g_save.action_confirm_pending;
     if (index >= 0 && index < SAVE_ACTION_COUNT && g_save.action_nav_active &&
         SaveSlot_DetectView(g_save.object) == SAVE_VIEW_ACTION &&
+        save_action_read_allowed_mask(&allowed_mask) &&
+        save_action_focus_allowed(allowed_mask, index) &&
         button == save_action_button(g_save.object, index) && save_button_accepts_event(button)) {
         g_save.action_confirm_pending = -1;
         Runtime_Log(index == SAVE_ACTION_CANCEL_INDEX
                     ? "[存读档动作] 三项窗口：原版取消按钮已由手柄触发。"
                     : "[存读档动作] 三项窗口：存档/读档原版按钮已由手柄触发，等待原版二次询问。");
         return 2;
+    }
+
+    /*
+     * 只有扫描到pending真正对应的Button时才判断失败；循环前两个其它按钮不能提前清掉后面的目标。
+     * 若目标此刻disabled或窗口已经结束，清除陈旧pending，禁止它在未来恢复可用后补发。
+     */
+    if (index >= 0 && index < SAVE_ACTION_COUNT &&
+        (SaveSlot_DetectView(g_save.object) != SAVE_VIEW_ACTION ||
+         button == save_action_button(g_save.object, index))) {
+        g_save.action_confirm_pending = -1;
+        Runtime_Log("[存读档动作] 已拒绝指向禁用或失效按钮的陈旧确认。");
     }
     return real;
 }
@@ -462,6 +645,7 @@ int SaveSlot_InstallHooks(void) {
     }
     g_save.row_confirm_pending = -1;
     g_save.action_confirm_pending = -1;
+    g_save.action_allowed_state = 0u;
     g_save.action_hooks_enabled = 0;
     return 1;
 }
@@ -538,36 +722,67 @@ static void save_update_popup(u8* s) {
  */
 static void save_update_action(u8* s) {
     u8* a = save_action(s);
+    u32 allowed_mask = 0u;
     int old_focus;
     void* button;
 
     if (!a) return;
 
     /*
-     * 从槽位用手柄 A 进入时，槽位导航所有权仍在，所以第一次看到 action 就默认高亮最上面的 index2。
-     * 如果是鼠标打开，先尊重原版 +0x598 当前 hover；只有用户真正按手柄以后才接管。
+     * worker绝不重新解引用Button的disabled字段，只读取游戏线程发布的单个32位状态。
+     * 如果第一帧Hit Hook还没来得及发布，就暂时不建立强制焦点；输入仍在函数末尾被模态消费，
+     * 下一帧拿到真实mask后再开始导航，避免用猜测的111覆盖短暂disabled。
+     */
+    if (!save_action_read_allowed_mask(&allowed_mask) || allowed_mask == 0u) {
+        g_save.action_nav_active = 0;
+        g_save.action_confirm_pending = -1;
+        goto consume_inputs;
+    }
+
+    /*
+     * 从槽位用手柄确定键进入时，游戏线程通常已经把action_nav_active和正确默认焦点准备好。
+     * 这里仍保留worker兜底：手柄父层默认从index2开始，再按allowed mask迁到最近可用项；
+     * 鼠标打开则先尊重原版+0x598，只有用户真正按手柄后才接管。
      */
     if (!g_save.action_nav_active) {
         int native_index = *(i32*)(a + SAVE_ACTION_SELECTED_INDEX);
-        if (native_index >= 0 && native_index < SAVE_ACTION_COUNT) g_save.action_focus = native_index;
+        if (save_action_focus_allowed(allowed_mask, native_index)) g_save.action_focus = native_index;
+        else save_action_normalize_focus(allowed_mask, 2);
         if (g_save.nav_active) {
             g_save.action_focus = 2;
+            save_action_normalize_focus(allowed_mask, 2);
             g_save.action_nav_active = 1;
+            g_save.action_confirm_pending = -1;
             Cursor_ClaimForControllerNavigation();
         }
+    } else {
+        /* 按钮可能在获得焦点后变disabled；每个worker tick再按最新快照做一次无指针归一化。 */
+        save_action_normalize_focus(allowed_mask, 2);
     }
 
     if (InputRouter_PressedOn(INPUT_CTX_SAVE_ACTION, INPUT_NAV_UP, INPUT_LAYER_OVERLAY)) {
         old_focus = g_save.action_focus;
-        if (!g_save.action_nav_active) g_save.action_nav_active = 1;
-        if (g_save.action_focus < 2) ++g_save.action_focus;
+        if (!g_save.action_nav_active) {
+            int native_index = *(i32*)(a + SAVE_ACTION_SELECTED_INDEX);
+            if (save_action_focus_allowed(allowed_mask, native_index)) g_save.action_focus = native_index;
+            else save_action_normalize_focus(allowed_mask, 2);
+            g_save.action_nav_active = 1;
+            g_save.action_confirm_pending = -1;
+        }
+        g_save.action_focus = save_action_move_allowed(allowed_mask, g_save.action_focus, +1);
         Cursor_ClaimForControllerNavigation();
         if (old_focus != g_save.action_focus) Runtime_Log("[存读档动作] 三项窗口：焦点向上移动。");
     }
     if (InputRouter_PressedOn(INPUT_CTX_SAVE_ACTION, INPUT_NAV_DOWN, INPUT_LAYER_OVERLAY)) {
         old_focus = g_save.action_focus;
-        if (!g_save.action_nav_active) g_save.action_nav_active = 1;
-        if (g_save.action_focus > 0) --g_save.action_focus;
+        if (!g_save.action_nav_active) {
+            int native_index = *(i32*)(a + SAVE_ACTION_SELECTED_INDEX);
+            if (save_action_focus_allowed(allowed_mask, native_index)) g_save.action_focus = native_index;
+            else save_action_normalize_focus(allowed_mask, 2);
+            g_save.action_nav_active = 1;
+            g_save.action_confirm_pending = -1;
+        }
+        g_save.action_focus = save_action_move_allowed(allowed_mask, g_save.action_focus, -1);
         Cursor_ClaimForControllerNavigation();
         if (old_focus != g_save.action_focus) Runtime_Log("[存读档动作] 三项窗口：焦点向下移动。");
     }
@@ -575,25 +790,33 @@ static void save_update_action(u8* s) {
     if (InputRouter_PressedOn(INPUT_CTX_SAVE_ACTION, INPUT_CONFIRM, INPUT_LAYER_OVERLAY)) {
         if (!g_save.action_nav_active) {
             int native_index = *(i32*)(a + SAVE_ACTION_SELECTED_INDEX);
-            if (native_index >= 0 && native_index < SAVE_ACTION_COUNT) g_save.action_focus = native_index;
+            if (save_action_focus_allowed(allowed_mask, native_index)) g_save.action_focus = native_index;
+            else save_action_normalize_focus(allowed_mask, 2);
             g_save.action_nav_active = 1;
+            g_save.action_confirm_pending = -1;
         }
         Cursor_ClaimForControllerNavigation();
         button = save_action_button(s, g_save.action_focus);
-        if (button && save_button_accepts_event(button)) {
+        if (save_action_focus_allowed(allowed_mask, g_save.action_focus) &&
+            button && save_button_accepts_event(button)) {
             g_save.action_confirm_pending = g_save.action_focus;
             Runtime_Log("[存读档动作] A：等待三项窗口当前原版 ButtonEvent。");
         }
     }
 
     if (InputRouter_PressedOn(INPUT_CTX_SAVE_ACTION, INPUT_CANCEL, INPUT_LAYER_OVERLAY)) {
-        g_save.action_focus = SAVE_ACTION_CANCEL_INDEX;
         g_save.action_nav_active = 1;
+        g_save.action_confirm_pending = -1;
         Cursor_ClaimForControllerNavigation();
         button = save_action_button(s, SAVE_ACTION_CANCEL_INDEX);
-        if (button && save_button_accepts_event(button)) {
+        if (save_action_focus_allowed(allowed_mask, SAVE_ACTION_CANCEL_INDEX) &&
+            button && save_button_accepts_event(button)) {
+            g_save.action_focus = SAVE_ACTION_CANCEL_INDEX;
             g_save.action_confirm_pending = SAVE_ACTION_CANCEL_INDEX;
             Runtime_Log("[存读档动作] B：等待三项窗口原版取消 ButtonEvent。");
+        } else {
+            /* 取消按钮也必须遵守同一原生disabled规则；不可用时保持当前最近可用焦点且不注入。 */
+            save_action_normalize_focus(allowed_mask, g_save.action_focus);
         }
     }
 
@@ -601,6 +824,7 @@ static void save_update_action(u8* s) {
      * 三项窗口是模态层。除 Start/R3/Back 系统能力外，当前帧所有菜单键都不能继续穿透给 InterfaceShell。
      * 这里显式 Consume 而不是依赖“调用顺序碰巧在前”，以后即使调度顺序调整也仍然安全。
      */
+consume_inputs:
     InputRouter_Consume(INPUT_CONFIRM);
     InputRouter_Consume(INPUT_CANCEL);
     InputRouter_Consume(INPUT_SPECIAL_X);
@@ -677,6 +901,7 @@ void SaveSlot_Update(u8* s) {
     g_save.popup_nav_active = 0;
     g_save.action_nav_active = 0;
     g_save.action_confirm_pending = -1;
+    g_save.action_allowed_state = 0u;
     g_save.last_view = view;
 
     if (InputRouter_PressedOn(INPUT_CTX_SAVE_SLOT, INPUT_NAV_UP, INPUT_LAYER_OVERLAY) || InputRouter_PressedOn(INPUT_CTX_SAVE_SLOT, INPUT_NAV_DOWN, INPUT_LAYER_OVERLAY)) {

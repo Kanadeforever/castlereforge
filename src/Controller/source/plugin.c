@@ -166,7 +166,7 @@ static int plugin_install_all_hooks(void) {
      * 用来拒绝“源码已经是R41，但编译内容仍误放R40旧二进制”的打包错误。
      * 两种模式的数字含义也写进成品，现场只拿到日志时仍能判断用户到底应按 A 还是 LT。
      */
-    Runtime_Log("[启动] refactor43 + Public API v1：剧情mode=2多选支持上下/确定；剧情可用RT鼠标；Back不再自动回切；手柄warp不再误判实体鼠标；普通活动自动隐藏路径已删除；Battle Target结束显式隐藏。");
+    Runtime_Log("[启动] refactor44 + Public API v1：SaveAction按原生disabled发布三位mask；焦点迁移/上下跳过/确认双检/鼠标清理；不识别插件名或槽号；R43功能保持。");
     return 1;
 }
 
