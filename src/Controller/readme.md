@@ -1,4 +1,4 @@
-> 当前权威版本：v0.3-refactor44（SaveAction原生disabled导航，2026-08-29）。三项窗口按真实Button状态迁移焦点、跳过禁用项并双重校验确认；不识别外部插件或槽号。R43及更早功能、Public API v1和目录结构保持。
+> 当前权威版本：v0.3-refactor44（SaveAction原生disabled导航 + 天书根层B退出候选，2026-08-29）。天书根槽位层取消键经Shell原版退出队列关闭整个主Interface；深层三项/YesNo不变。Controller Public API v1冻结，未来公共能力转为项目级SDK设计。
 
 # refactor44 构建与部署
 
@@ -11,6 +11,8 @@
 - 用户补回的INI中文注释和20个公开键全部原样保留，本轮只更新版本注释。
 - SaveAction可用状态只在现有游戏线程Hit/Event Hook内捕获；不新增Hook、地址或外部插件依赖。
 - Public API v1头、实现、DEF与ABI不变；本需求通过原版Button disabled协作。
+- 天书B代码提交为 `90054c6`，30/30严格编译通过；按用户指令暂未更新或运行专项验证工具。
+- 不继续扩展Controller Public API；未来项目级SDK另行立项。
 - Swap=0为Xbox位置（南确定/东取消），Swap=1为PS传统布局（东/O确定、南/X取消）；菜单、调查和鼠标左右键跟随语义，RB+ABXY快捷与X/Y固定物理功能不变。
 - 自动聚焦只在会话 `active:0→1` 的第一帧执行一次，并复用R40 `inv_select_shoulder_target(+1)`；关闭时不进入该分支。
 - 最终构建大小、ASI/INI哈希和PASS计数以本轮《文件校验清单》为准；机器PASS不冒充实机PASS。
