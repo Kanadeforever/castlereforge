@@ -112,7 +112,7 @@ Loader 自身不会接管或实现 DirectDraw。
 * [模组目录与配置说明](docs/MODLoader/模组目录与配置说明.md)
 * [文件覆写说明](docs/MODLoader/文件覆写说明.md)
 * [插件 INI 编辑器说明](docs/MODLoader/插件INI编辑器说明.md)
-* [第三方研究与许可证说明](docs/MODLoader/第三方研究与许可证说明.md)
+* [关于页面与第三方说明](docs/MODLoader/关于页面说明.md)
 
 ---
 
@@ -446,7 +446,7 @@ docs/
 
 > [`docs/runtime/运行时协调系统总体设计.md`](docs/runtime/运行时协调系统总体设计.md)
 
-该文档当前只是设计基线。`CastleRuntime1.dll`、`src/RuntimeSDK` 和插件迁移尚未实现，不能把设计目标当成当前运行行为。
+该文档当前只是设计基线。`Castle_Runtime.dll`、`src/RuntimeSDK` 和插件迁移尚未实现，不能把设计目标当成当前运行行为。
 
 ---
 
