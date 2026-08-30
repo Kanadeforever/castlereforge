@@ -18,7 +18,10 @@ int ModLoader_Begin(HMODULE self_module);
  */
 int ModLoader_PrepareOverrides(void);
 
-/* 只做 [ASI] 按配置顺序 LoadLibrary；必须在 Overrides 和 Locale 都准备好以后调用。 */
+/*
+ * 按配置顺序完成两阶段 ASI 启动：先全部 LoadLibrary+IAT，再按同顺序调用可选 InitializeASI。
+ * 必须在 Overrides 和 Locale 都准备好以后调用；本函数不加载 Castle_Runtime.dll。
+ */
 void ModLoader_LoadAsi(void);
 
 /* 返回 Launcher 已经解析并传入的 GameLog 开关；1=启用原版游戏审计，0=完全不安装审计层。 */

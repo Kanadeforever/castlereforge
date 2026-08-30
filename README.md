@@ -446,7 +446,7 @@ docs/
 
 > [`docs/runtime/运行时协调系统总体设计.md`](docs/runtime/运行时协调系统总体设计.md)
 
-该文档当前只是设计基线。`Castle_Runtime.dll`、`src/RuntimeSDK` 和插件迁移尚未实现，不能把设计目标当成当前运行行为。
+RuntimeSDK 已进入第一代码里程碑：`src/RuntimeSDK` 中已有公共 ABI 头、导出合同和布局检查器；`Castle_Runtime.dll`、Entry Gate、运行时实现和插件迁移仍未完成，不能把设计目标当成当前运行行为。
 
 ---
 
@@ -460,6 +460,7 @@ castlereforge/
 │  ├─ Extra/
 │  ├─ FPSUnlock/
 │  ├─ MODLoader/
+│  ├─ RuntimeSDK/
 │  ├─ SaveEnhance/
 │  ├─ Widescreen/
 │  └─ _toolbox/
@@ -484,7 +485,7 @@ castlereforge/
 
 `docs/` 保存逆向分析、设计说明、测试记录和接档资料。
 
-未来公共 SDK 的规范源码计划放在 `src/RuntimeSDK/`。该目录尚未创建；在总体设计评审和 ABI v1 边界冻结前，不提前加入占位代码。
+公共 SDK 的规范源码位于 `src/RuntimeSDK/`。当前只完成第一批 ABI 头与机械检查，不生成 Runtime DLL，也没有接入现有插件。
 
 ---
 

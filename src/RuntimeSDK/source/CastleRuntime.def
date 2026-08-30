@@ -1,0 +1,8 @@
+; Castle_Runtime.dll 的公共导出表。
+; 第一里程碑只冻结导出名称，不在本文件加入任何测试或内部函数。
+; x86 下必须保持未修饰名称，第三方才能稳定使用 GetProcAddress 查询。
+
+LIBRARY Castle_Runtime
+
+EXPORTS
+    CastleRuntime_GetApi

@@ -43,6 +43,12 @@ typedef struct ConfigEntry_ {
     int enabled;
 } ConfigEntry_;
 
+typedef struct LoadedAsi_ {
+    /* 模块句柄与配置项都在本轮进程内长期有效，第二阶段只按原顺序读取。 */
+    HMODULE module;
+    const ConfigEntry_* entry;
+} LoadedAsi_;
+
 typedef enum ConfigSection_ {
     CONFIG_SECTION_NONE_ = 0,
     CONFIG_SECTION_ASI_ = 1,
@@ -83,6 +89,8 @@ static UINT g_new_override_count;
 static UINT g_last_empty_override_dirs;
 static ConfigEntry_ g_asi_entries[MAX_MOD_ITEMS_];
 static ConfigEntry_ g_override_entries[MAX_MOD_ITEMS_];
+static LoadedAsi_ g_loaded_asi[MAX_MOD_ITEMS_];
+static UINT g_loaded_asi_count;
 static UINT g_asi_count;
 static UINT g_override_count;
 static BYTE g_ini_bytes[MAX_INI_BYTES_ + 4u];
@@ -1171,21 +1179,47 @@ static void load_one_asi_(const ConfigEntry_* entry, UINT* loaded, UINT* skipped
     }
 
     /*
-     * LoadLibraryExW 返回时 ASI 的 DllMain 已执行。随后立刻把它的普通运行期 IAT 接入 Locale/Overrides，
-     * 再调用可选 InitializeASI；因此插件正式业务初始化会看到和游戏一致的环境。
+     * LoadLibraryExW 返回时 ASI 的 DllMain 已执行。第一阶段只把它的普通运行期 IAT
+     * 接入 Locale/Overrides，并保存句柄；所有 ASI 都完成这一步以后，第二阶段才统一
+     * 调用 InitializeASI。这样 SDK Bootstrap 能看见完整插件集合，传统 ASI 也仍会收到
+     * 原兼容回调，只是回调时机从“本插件刚加载”变成“全部插件已经加载并接好 IAT”。
      */
     OverrideLoader_PatchModule(module);
     LocaleLayer_PatchModule(module);
     ModLoader_LogTwo((const WCHAR*)L"[ASI成功] ", path);
-    {
-        FARPROC init = GetProcAddress(module, "InitializeASI");
-        if (init) {
-            typedef void (__cdecl *PFN_InitializeASI_)(void);
-            ((PFN_InitializeASI_)init)();
-            ModLoader_LogTwo((const WCHAR*)L"[ASI兼容] 已调用 InitializeASI：", entry->name);
-        }
+    if (g_loaded_asi_count >= MAX_MOD_ITEMS_) {
+        ModLoader_LogTwo((const WCHAR*)L"[ASI失败] 已加载模块表达到上限，无法进入第二阶段：",
+                         entry->name);
+        if (failed) ++*failed;
+        return;
     }
+    g_loaded_asi[g_loaded_asi_count].module = module;
+    g_loaded_asi[g_loaded_asi_count].entry = entry;
+    ++g_loaded_asi_count;
     if (loaded) ++*loaded;
+}
+
+/*
+ * 第二阶段严格复用第一阶段成功加载的顺序。
+ * 本函数不加载 Castle_Runtime.dll；若某个 SDK ASI 需要 Runtime，它自己的 Client 会在
+ * Loader Lock 外从 ASI 同目录主动加载。第一个 SDK InitializeASI 会触发全局 Bootstrap，
+ * 后续 SDK 插件得到幂等“已完成”，传统插件则照常执行自己的兼容入口。
+ */
+static UINT initialize_loaded_asi_(void) {
+    UINT index;
+    UINT initialized = 0u;
+    typedef void (__cdecl *PFN_InitializeASI_)(void);
+
+    ModLoader_Log((const WCHAR*)L"[ASI阶段2] 全部 LoadLibrary 与 IAT 接入完成，开始按原顺序调用 InitializeASI。");
+    for (index = 0u; index < g_loaded_asi_count; ++index) {
+        FARPROC init = GetProcAddress(g_loaded_asi[index].module, "InitializeASI");
+        if (!init) continue;
+        ((PFN_InitializeASI_)init)();
+        ++initialized;
+        ModLoader_LogTwo((const WCHAR*)L"[ASI兼容] 第二阶段已调用 InitializeASI：",
+                         g_loaded_asi[index].entry->name);
+    }
+    return initialized;
 }
 
 static void log_config_order_(void) {
@@ -1383,10 +1417,14 @@ int ModLoader_PrepareOverrides(void) {
 void ModLoader_LoadAsi(void) {
     UINT i;
     UINT loaded = 0u, skipped = 0u, failed = 0u;
+    UINT initialized = 0u;
     WCHAR num[32], line[512];
 
+    g_loaded_asi_count = 0u;
     for (i = 0; i < g_asi_count; ++i)
         load_one_asi_(&g_asi_entries[i], &loaded, &skipped, &failed);
+
+    initialized = initialize_loaded_asi_();
 
     line[0] = 0;
     wcopy_(line, 512u, (const WCHAR*)L"[完成] ASI 加载：成功=");
@@ -1395,6 +1433,8 @@ void ModLoader_LoadAsi(void) {
     u32_to_w_(skipped, num, 32u); wappend_(line, 512u, num);
     wappend_(line, 512u, (const WCHAR*)L"，失败=");
     u32_to_w_(failed, num, 32u); wappend_(line, 512u, num);
+    wappend_(line, 512u, (const WCHAR*)L"，InitializeASI=");
+    u32_to_w_(initialized, num, 32u); wappend_(line, 512u, num);
     ModLoader_Log(line);
 }
 

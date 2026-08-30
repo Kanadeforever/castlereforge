@@ -5,6 +5,7 @@ setlocal EnableExtensions
 rem 本脚本只构建 NoCD，不依赖 src\Extra 根目录中的其它构建脚本。
 set "SCRIPT_DIR=%~dp0"
 set "SRC_DIR=%SCRIPT_DIR%source"
+set "SDK_DIR=%SCRIPT_DIR%..\..\RuntimeSDK"
 set "OUT_DIR=%SCRIPT_DIR%..\..\..\build"
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%" 2>nul
 
@@ -37,12 +38,21 @@ if errorlevel 1 (
     goto :fail
 )
 
-rem 沿用拆分前的编译与链接参数，不改变优化、警告、CRT 或 DLL 入口策略。
-set CFLAGS=/nologo /std:c++17 /utf-8 /O2 /Oi- /W4 /WX /GR- /GS- /Gs999999999 /Zl /LD
-set LFLAGS=/link /NOLOGO /NODEFAULTLIB /ENTRY:DllMain /SUBSYSTEM:WINDOWS /MACHINE:X86 kernel32.lib
+rem 业务单元保持 C++17；SDK Client 以纯 C 编译，最后统一无 CRT 链接。  
+set CXXFLAGS=/nologo /c /std:c++17 /utf-8 /O2 /Oi- /W4 /WX /GR- /GS- /Gs999999999 /Zl /I"%SDK_DIR%\include"
+set CLIENT_CFLAGS=/nologo /c /TC /utf-8 /O2 /Oi- /W4 /WX /GS- /Gs999999999 /Zl /I"%SDK_DIR%\include" /I"%SDK_DIR%\client"
+set LFLAGS=/NOLOGO /DLL /NODEFAULTLIB /ENTRY:DllMain@12 /SUBSYSTEM:WINDOWS /MACHINE:X86 /DYNAMICBASE /NXCOMPAT
 
 echo [1/1] NoCD.asi
-cl.exe %CFLAGS% "%SRC_DIR%\NoCD.cpp" /Fo"%OBJ_DIR%\NoCD.obj" %LFLAGS% /OUT:"%OUT_DIR%\NoCD.asi"
+cl.exe %CXXFLAGS% "%SRC_DIR%\NoCD.cpp" /Fo"%OBJ_DIR%\NoCD.obj"
+if errorlevel 1 goto :fail
+cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_client.c" /Fo"%OBJ_DIR%\runtime_client.obj"
+if errorlevel 1 goto :fail
+cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_entry_gate.c" /Fo"%OBJ_DIR%\runtime_entry_gate.obj"
+if errorlevel 1 goto :fail
+cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_client_support.c" /Fo"%OBJ_DIR%\runtime_client_support.obj"
+if errorlevel 1 goto :fail
+link.exe %LFLAGS% /DEF:"%SRC_DIR%\NoCD.def" /OUT:"%OUT_DIR%\NoCD.asi" "%OBJ_DIR%\NoCD.obj" "%OBJ_DIR%\runtime_client.obj" "%OBJ_DIR%\runtime_entry_gate.obj" "%OBJ_DIR%\runtime_client_support.obj" kernel32.lib
 if errorlevel 1 goto :fail
 call :check_pe "%OUT_DIR%\NoCD.asi"
 if errorlevel 1 goto :fail

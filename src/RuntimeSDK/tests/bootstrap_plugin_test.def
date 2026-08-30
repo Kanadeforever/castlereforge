@@ -1,0 +1,5 @@
+EXPORTS
+    CastlePlugin_Query
+    RuntimeTest_GetBootstrapCount
+    RuntimeTest_GetBootstrapMode
+    RuntimeTest_GetBootstrapHandle

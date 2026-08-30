@@ -376,6 +376,24 @@ ck('if (directory_exists_(template_root)) return 1;' in mod, 'Overrides 模板�
 ck('ASI跳过' in mod and '磁盘文件不存在' in mod and 'if (skipped) ++*skipped' in mod, 'INI 中存在但磁盘缺失的 ASI 仅跳过本轮，不删除配置也不计为加载失败')
 ck('Overrides跳过' in mod and '目录存在但递归没有任何普通文件' in mod, 'INI 中存在但缺失/为空的 Overrides 仅跳过本轮，保留配置顺序')
 ck('成功=' in mod and '跳过=' in mod and '失败=' in mod, 'ASI 汇总区分成功、跳过与真正加载失败')
+ck('LoadedAsi_' in mod and 'g_loaded_asi_count' in mod and 'initialize_loaded_asi_' in mod,
+   'ASI 成功模块先进入固定表，全部加载后再执行第二阶段')
+_load_one_start=mod.find('static void load_one_asi_')
+_phase_two_start=mod.find('static UINT initialize_loaded_asi_')
+_load_all_start=mod.find('void ModLoader_LoadAsi')
+ck(_load_one_start >= 0 and _phase_two_start > _load_one_start and
+   'GetProcAddress(module, "InitializeASI")' not in mod[_load_one_start:_phase_two_start],
+   '第一阶段 LoadLibrary/IAT 路径不再立即调用 InitializeASI')
+ck(_load_all_start >= 0 and
+   mod.find('load_one_asi_', _load_all_start) < mod.find('initialize_loaded_asi_()', _load_all_start),
+   'ModLoader_LoadAsi 明确先完成全部第一阶段，再统一进入第二阶段')
+ck('[ASI阶段2]' in mod and '第二阶段已调用 InitializeASI' in mod,
+   '两阶段切换和逐插件兼容回调均有明确日志')
+ck('LoadLibraryW((const WCHAR*)L"Castle_Runtime.dll")' not in mod and
+   'LoadLibraryExW((const WCHAR*)L"Castle_Runtime.dll"' not in mod and
+   'GetModuleHandleW((const WCHAR*)L"Castle_Runtime.dll")' not in mod and
+   'CastleRuntime_GetApi' not in mod,
+   'MODLoader 不加载、不查询也不拥有 Castle_Runtime.dll')
 ck('OVERRIDE_TEMPLATE_NAME_' in mod and '模板_复制后改名' in mod, 'Overrides 模板仍不进入配置')
 ck('i > 0u' in ov and '--i;' in ov, 'Overrides 仍按配置逆序命中：下面覆盖上面')
 ck('GENERIC_WRITE_' in ov and 'OPEN_EXISTING_' in ov, 'Overrides 仍只重定向读取型 OPEN_EXISTING')
@@ -396,13 +414,13 @@ exe=OUT/'CastleModLoader.exe'; bootdll=OUT/'mods'/'CastleLocaleBootstrap.dll'; c
 # 这里不把编译后二进制 SHA 当成永久规则，因为不同链接器版本即使源码相同也可能生成不同字节。
 # 更稳妥的做法是把所有影响 RPG.exe 运行时的源码按固定顺序拼接后计算一个聚合 SHA-256；
 # 只要这些源码没有再动，就能确认后续工作没有把本次配置排版修复扩展到 Hook、Locale 或审计逻辑。
-CURRENT_RUNTIME_SOURCE_SHA256='8d9b713294a04d515add45d5801ce380f225732d822840f0fdc67c9012424bd9'
+CURRENT_RUNTIME_SOURCE_SHA256='89fb7b1502a1eb39f9d1ea94dbe92bbfa13585a0746f80aec1af1399e4279042'
 _runtime_source_names=['core.c','entry_gate.c','mod_loader.c','override_loader.c','game_audit.c','locale_layer.c','native_locale.c','user32_locale.c','gdi_locale.c','locale_bootstrap.c','platform.h','runtime_support.c']
 _runtime_hash=hashlib.sha256()
 for _name in _runtime_source_names:
     _runtime_hash.update(_name.encode('utf-8')); _runtime_hash.update(b'\0')
     _runtime_hash.update((SRC/_name).read_bytes()); _runtime_hash.update(b'\0')
-ck(_runtime_hash.hexdigest()==CURRENT_RUNTIME_SOURCE_SHA256, '全部游戏运行时源码与 mods.ini 节间空行修复后的当前聚合 SHA-256 完全一致')
+ck(_runtime_hash.hexdigest()==CURRENT_RUNTIME_SOURCE_SHA256, '全部游戏运行时源码与 ASI 两阶段启动后的当前聚合 SHA-256 完全一致')
 ck(exe.exists(), '存在 CastleModLoader.exe')
 ck(bootdll.exists(), r'存在 mods\CastleLocaleBootstrap.dll')
 ck(coredll.exists(), r'存在 mods\CastleModCore.dll')
