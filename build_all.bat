@@ -1,8 +1,13 @@
-﻿chcp 65001 >nul
-setlocal EnableExtensions
-set "ROOT=%~dp0"
+﻿setlocal EnableExtensions DisableDelayedExpansion
+set "PATH=%SystemRoot%\System32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0;%PATH%"
+chcp 65001 >nul
 
 @echo off
+
+rem 先补齐 Windows 自带工具目录，同时保留 GitHub Actions 或用户已经加入 PATH 的 LLVM、Python 等工具。  
+rem 每个子项目都从这份完整环境继承工具路径，避免前一个构建初始化 Visual Studio 后影响下一个构建。  
+set "ROOT=%~dp0"
+
 echo [1/9] RuntimeSDK 核心  
 call "%ROOT%src\RuntimeSDK\build.bat" < nul || goto :fail
 cls

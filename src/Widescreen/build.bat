@@ -1,6 +1,9 @@
 ﻿@echo off
 setlocal DisableDelayedExpansion
-chcp 65001 >nul
+set "PATH=%SystemRoot%\System32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0;%PATH%"
+"%SystemRoot%\System32\chcp.com" 65001 >nul
+rem 不能假定启动本脚本的终端已经包含 System32；VsDevCmd 自己也会使用 findstr 等系统工具。  
+rem 只在 PATH 前面补齐系统目录，不覆盖 GitHub Actions 或本机已经配置好的 LLVM 路径。  
 
 set "ROOT=%~dp0"
 set "OUT=%ROOT%_build"

@@ -100,9 +100,12 @@ cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_hook.obj" "%ROOT%source\runtime_hook.c
 if errorlevel 1 goto :fail
 cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_api.obj" "%ROOT%source\runtime_api.c"
 if errorlevel 1 goto :fail
+rem 不同 MSVC 版本可能把结构赋值折叠成 memcpy；无 CRT DLL 必须显式提供本地实现。  
+cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_crt_support.obj" "%ROOT%client\runtime_client_support.c"
+if errorlevel 1 goto :fail
 
 echo [6/10] 链接PE32无CRT Castle_Runtime.dll...  
-link.exe /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 /subsystem:windows /dynamicbase /nxcompat /def:"%ROOT%source\CastleRuntime.def" /out:"%OUT%\Castle_Runtime.dll" "%OUT%\runtime_entry.obj" "%OUT%\runtime_support.obj" "%OUT%\runtime_path.obj" "%OUT%\runtime_schedule.obj" "%OUT%\runtime_symbols.obj" "%OUT%\runtime_display.obj" "%OUT%\runtime_window.obj" "%OUT%\runtime_render.obj" "%OUT%\runtime_memory.obj" "%OUT%\runtime_diagnostics.obj" "%OUT%\runtime_registry.obj" "%OUT%\runtime_bootstrap.obj" "%OUT%\runtime_hook.obj" "%OUT%\runtime_api.obj" kernel32.lib
+link.exe /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 /subsystem:windows /dynamicbase /nxcompat /def:"%ROOT%source\CastleRuntime.def" /out:"%OUT%\Castle_Runtime.dll" "%OUT%\runtime_entry.obj" "%OUT%\runtime_support.obj" "%OUT%\runtime_path.obj" "%OUT%\runtime_schedule.obj" "%OUT%\runtime_symbols.obj" "%OUT%\runtime_display.obj" "%OUT%\runtime_window.obj" "%OUT%\runtime_render.obj" "%OUT%\runtime_memory.obj" "%OUT%\runtime_diagnostics.obj" "%OUT%\runtime_registry.obj" "%OUT%\runtime_bootstrap.obj" "%OUT%\runtime_hook.obj" "%OUT%\runtime_api.obj" "%OUT%\runtime_crt_support.obj" kernel32.lib
 if errorlevel 1 goto :fail
 
 echo [7/10] 编译Client、Entry Gate和无CRT x86测试宿主...  
@@ -110,8 +113,6 @@ set "CLIENT_CFLAGS=/nologo /c /TC /O2 /Oi- /utf-8 /W4 /WX /GS- /Gs999999999 /Zl 
 cl.exe %CLIENT_CFLAGS% /Fo"%OUT%\runtime_client.obj" "%ROOT%client\runtime_client.c"
 if errorlevel 1 goto :fail
 cl.exe %CLIENT_CFLAGS% /Fo"%OUT%\runtime_entry_gate.obj" "%ROOT%client\runtime_entry_gate.c"
-if errorlevel 1 goto :fail
-cl.exe %CLIENT_CFLAGS% /Fo"%OUT%\runtime_client_support.obj" "%ROOT%client\runtime_client_support.c"
 if errorlevel 1 goto :fail
 cl.exe %CLIENT_CFLAGS% /Fo"%OUT%\entry_gate_test.obj" "%ENTRY_GATE_TEST%"
 if errorlevel 1 goto :fail

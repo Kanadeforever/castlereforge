@@ -5,11 +5,102 @@ typedef struct ClientCandidate {
     const CastlePluginExportV1* plugin_export;
 } ClientCandidate;
 
+/*
+ * Windows 7 以后可以只改变当前线程的系统错误对话框策略。这里动态查询函数，而不是静态
+ * 导入它：这样 SDK Client 仍能在缺少该函数的旧系统上进入下面的 SetErrorMode 兼容路径。
+ */
+typedef BOOL (WINAPI *ClientSetThreadErrorModeFn)(DWORD new_mode,
+                                                  LPDWORD old_mode);
+
+typedef struct ClientErrorModeGuard {
+    ClientSetThreadErrorModeFn set_thread_error_mode;
+    DWORD previous_mode;
+    int uses_thread_mode;
+    int uses_process_mode;
+} ClientErrorModeGuard;
+
 HMODULE g_client_module;
 CastlePluginExportV1* g_client_export;
 volatile LONG g_client_state;
 BYTE* g_client_entry;
 BYTE* g_client_entry_after;
+
+/*
+ * 临时关闭 LoadLibraryW 的“损坏映像/关键错误”系统对话框。
+ *
+ * Runtime 缺失时 Client 会走独立模式；Runtime 文件存在却损坏时 Client 必须安静地进入
+ * Fault 模式。如果不加这层保护，Windows 会在 LoadLibraryW 返回 NULL 之前弹出 0xc000012f
+ * 对话框，自动测试和无人值守启动都会被卡住。
+ */
+static void client_begin_silent_runtime_load_(ClientErrorModeGuard* guard) {
+    static const WCHAR kernel32_name[] = L"kernel32.dll";
+    static const char set_thread_error_mode_name[] = "SetThreadErrorMode";
+    const DWORD suppressed_modes =
+        SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX;
+    HMODULE kernel32_module;
+    FARPROC function_address;
+
+    if (!guard) return;
+    /* 不依赖 CRT 清零；先明确设置每个字段，结束函数才能安全判断采用了哪条路径。 */
+    guard->set_thread_error_mode = NULL;
+    guard->previous_mode = 0u;
+    guard->uses_thread_mode = 0;
+    guard->uses_process_mode = 0;
+
+    kernel32_module = GetModuleHandleW(kernel32_name);
+    function_address = kernel32_module ?
+        GetProcAddress(kernel32_module, set_thread_error_mode_name) : NULL;
+    if (function_address) {
+        DWORD previous_mode = 0u;
+        ClientSetThreadErrorModeFn set_thread_error_mode =
+            (ClientSetThreadErrorModeFn)function_address;
+        /*
+         * 第一次调用取得原模式。第二次把原模式与抑制位合并，避免临时关闭调用方已经设置的
+         * SEM_NOGPFAULTERRORBOX 等其它保护。两次调用之间不执行任何可能失败的加载操作。
+         */
+        if (set_thread_error_mode(suppressed_modes, &previous_mode)) {
+            set_thread_error_mode(previous_mode | suppressed_modes, NULL);
+            guard->set_thread_error_mode = set_thread_error_mode;
+            guard->previous_mode = previous_mode;
+            guard->uses_thread_mode = 1;
+            return;
+        }
+    }
+
+    /*
+     * 旧版 Windows 没有线程级接口，只能短暂使用进程级 SetErrorMode。先取得旧值，再把旧值
+     * 与抑制位合并；加载结束后立即恢复。现代系统不会进入这条会影响其它线程的兼容路径。
+     */
+    guard->previous_mode = SetErrorMode(suppressed_modes);
+    SetErrorMode(guard->previous_mode | suppressed_modes);
+    guard->uses_process_mode = 1;
+}
+
+static void client_end_silent_runtime_load_(ClientErrorModeGuard* guard) {
+    if (!guard) return;
+    if (guard->uses_thread_mode && guard->set_thread_error_mode) {
+        /* 只恢复当前加载线程，不碰游戏中其它线程的错误处理策略。 */
+        guard->set_thread_error_mode(guard->previous_mode, NULL);
+    } else if (guard->uses_process_mode) {
+        /* 兼容路径也必须恢复进入函数前的完整进程模式。 */
+        SetErrorMode(guard->previous_mode);
+    }
+}
+
+static HMODULE client_load_runtime_silently_(const WCHAR* runtime_path) {
+    ClientErrorModeGuard guard;
+    HMODULE runtime_module;
+    DWORD load_error;
+
+    if (!runtime_path) return NULL;
+    client_begin_silent_runtime_load_(&guard);
+    runtime_module = LoadLibraryW(runtime_path);
+    /* 恢复错误模式的 API 可能改写 LastError，所以先保存真正的 DLL 加载错误。 */
+    load_error = runtime_module ? ERROR_SUCCESS : GetLastError();
+    client_end_silent_runtime_load_(&guard);
+    if (!runtime_module) SetLastError(load_error);
+    return runtime_module;
+}
 
 static int client_view_compare_(CastleStringView left, CastleStringView right) {
     CastleU32 index;
@@ -315,13 +406,15 @@ CastleResult CASTLE_RUNTIME_CALL CastleRuntimeClient_BootstrapAll(
                                        CASTLE_ERROR_RUNTIME_FAULT);
     }
 
-    runtime_module = LoadLibraryW(runtime_path);
+    runtime_module = client_load_runtime_silently_(runtime_path);
     if (!runtime_module) {
         return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,
                                        CASTLE_ERROR_RUNTIME_FAULT);
     }
     get_api_address = GetProcAddress(runtime_module, "CastleRuntime_GetApi");
     if (!get_api_address) {
+        /* 只撤销本次 Client 增加的引用计数；其它插件已经持有的引用不会受影响。 */
+        FreeLibrary(runtime_module);
         return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,
                                        CASTLE_ERROR_ABI_MISMATCH);
     }
@@ -330,6 +423,8 @@ CastleResult CASTLE_RUNTIME_CALL CastleRuntimeClient_BootstrapAll(
     if (!runtime_api || runtime_api->magic != CASTLE_RUNTIME_API_MAGIC ||
         runtime_api->struct_size < CASTLE_SIZEOF_RUNTIME_API_V1 ||
         !runtime_api->BootstrapLoadedPlugins) {
+        /* ABI 不兼容的同名 DLL 不能继续由当前 Client 保持加载。 */
+        FreeLibrary(runtime_module);
         return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,
                                        CASTLE_ERROR_ABI_MISMATCH);
     }

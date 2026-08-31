@@ -911,6 +911,33 @@ static void sdk_publish_geometry(u32 display_mode_value, u32 projection_scope,
     ++g_sdk_geometry_sequence;
 }
 
+static int sdk_copy_geometry_snapshot(CastleDisplayGeometryV1* output) {
+    u32 attempt;
+    /* 调用方没有提供接收结构时，不能写内存，也不能声称复制成功。 */
+    if (!output) return 0;
+    /*
+     * 不在游戏绘制路径和其它插件之间加一把会睡眠的锁。这里最多尝试八次：通常第一次
+     * 就成功；如果恰好撞上游戏线程发布画面，则短暂重试。八次后仍不稳定就返回“未就绪”，
+     * 让消费者跳过这一帧，避免为了一个 Marker 卡住整场游戏。
+     */
+    for (attempt = 0u; attempt < 8u; ++attempt) {
+        u32 before = g_sdk_geometry_sequence;
+        u32 after;
+        /* 奇数说明游戏线程仍在逐字段写入；此时不能复制。 */
+        if ((before & 1u) != 0u) continue;
+        /*
+         * 先复制整张表，再重新读取序号。复制途中即使发布线程开始更新，下面的第二次
+         * 序号检查也会发现变化并丢弃这份半旧半新的结果。
+         */
+        Runtime_MemCopy(output, &g_sdk_geometry, sizeof(*output));
+        after = g_sdk_geometry_sequence;
+        /* 前后同为同一个偶数，才能证明整张快照来自一次完整发布。 */
+        if (before == after && (after & 1u) == 0u) return 1;
+    }
+    /* 连续八次都撞上发布时不返回猜测值，由上层转换成 CASTLE_ERROR_NOT_READY。 */
+    return 0;
+}
+
 /*
  * 从队列对象取得 vtable[1]，也就是 0x434710 真正会 CALL 的 draw 方法地址。
  *
@@ -1900,56 +1927,61 @@ static i32 WINAPI Hook_BinkCopyToBuffer(
  * 这样 Quest 等消费者不会各自复制宽屏算法，也不会读到游戏随后恢复的原 Camera。
  */
 static CastleResult CASTLE_RUNTIME_CALL sdk_display_get_state(CastleDisplayStateV1* state) {
+    CastleDisplayGeometryV1 geometry;
     if (!state) return CASTLE_ERROR_INVALID_ARGUMENT;
+    if (!sdk_copy_geometry_snapshot(&geometry)) return CASTLE_ERROR_NOT_READY;
     state->flags = 0u;
     state->ready = g_sdk_services_ready;
-    state->generation = g_sdk_geometry.generation;
+    state->generation = geometry.generation;
     state->backend_plugin = g_sdk_plugin_handle;
-    state->display_mode = g_sdk_geometry.display_mode;
+    state->display_mode = geometry.display_mode;
     return CASTLE_OK;
 }
 
 static CastleResult CASTLE_RUNTIME_CALL sdk_display_copy_geometry(CastleDisplayGeometryV1* geometry) {
     if (!geometry || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
-    *geometry = g_sdk_geometry;
-    return CASTLE_OK;
+    return sdk_copy_geometry_snapshot(geometry) ? CASTLE_OK : CASTLE_ERROR_NOT_READY;
 }
 
 static CastleResult CASTLE_RUNTIME_CALL sdk_world_to_screen(
     const CastleWorldToScreenRequestV1* request, CastleScreenProjectionV1* output) {
+    CastleDisplayGeometryV1 geometry;
     if (!request || !output || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
+    if (!sdk_copy_geometry_snapshot(&geometry)) return CASTLE_ERROR_NOT_READY;
     /* 非零代次表示调用方要求“必须还是我刚才读取的那一帧”，变化后不能硬算。 */
-    if (request->requested_generation && request->requested_generation != g_sdk_geometry.generation)
+    if (request->requested_generation && request->requested_generation != geometry.generation)
         return CASTLE_ERROR_STALE_GENERATION;
     output->flags = 0u;
-    output->actual_generation = g_sdk_geometry.generation;
+    output->actual_generation = geometry.generation;
     /* 世界坐标先减掉本帧真正使用的安全 Camera，再加中央 640 在输出中的左上角。 */
-    output->screen_x = request->world_x - g_sdk_geometry.effective_camera_x + g_sdk_geometry.center_x;
-    output->screen_y = request->world_y - g_sdk_geometry.effective_camera_y + g_sdk_geometry.center_y;
-    output->projection_scope = g_sdk_geometry.projection_scope;
+    output->screen_x = request->world_x - geometry.effective_camera_x + geometry.center_x;
+    output->screen_y = request->world_y - geometry.effective_camera_y + geometry.center_y;
+    output->projection_scope = geometry.projection_scope;
     /* 对白、Battle、硬4:3和过渡帧主动返回不可投影，Marker 应隐藏而不是猜。 */
-    if (g_sdk_geometry.projection_scope == CASTLE_PROJECTION_NONE)
+    if (geometry.projection_scope == CASTLE_PROJECTION_NONE)
         output->visibility = CASTLE_VISIBILITY_NOT_PROJECTABLE;
     else if (output->screen_x < 0) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_LEFT;
-    else if ((u32)output->screen_x >= g_sdk_geometry.output_width) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_RIGHT;
+    else if ((u32)output->screen_x >= geometry.output_width) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_RIGHT;
     else if (output->screen_y < 0) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_TOP;
-    else if ((u32)output->screen_y >= g_sdk_geometry.output_height) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_BOTTOM;
+    else if ((u32)output->screen_y >= geometry.output_height) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_BOTTOM;
     else output->visibility = CASTLE_VISIBILITY_VISIBLE;
     return CASTLE_OK;
 }
 
 static CastleResult CASTLE_RUNTIME_CALL sdk_screen_to_world(
     const CastleScreenToWorldRequestV1* request, CastleWorldProjectionV1* output) {
+    CastleDisplayGeometryV1 geometry;
     if (!request || !output || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
-    if (request->requested_generation && request->requested_generation != g_sdk_geometry.generation)
+    if (!sdk_copy_geometry_snapshot(&geometry)) return CASTLE_ERROR_NOT_READY;
+    if (request->requested_generation && request->requested_generation != geometry.generation)
         return CASTLE_ERROR_STALE_GENERATION;
     output->flags = 0u;
-    output->actual_generation = g_sdk_geometry.generation;
+    output->actual_generation = geometry.generation;
     /* 这是上面公式的严格逆运算，只在同一代次内成立。 */
-    output->world_x = request->screen_x - g_sdk_geometry.center_x + g_sdk_geometry.effective_camera_x;
-    output->world_y = request->screen_y - g_sdk_geometry.center_y + g_sdk_geometry.effective_camera_y;
-    output->projection_scope = g_sdk_geometry.projection_scope;
-    output->visibility = g_sdk_geometry.projection_scope == CASTLE_PROJECTION_NONE ?
+    output->world_x = request->screen_x - geometry.center_x + geometry.effective_camera_x;
+    output->world_y = request->screen_y - geometry.center_y + geometry.effective_camera_y;
+    output->projection_scope = geometry.projection_scope;
+    output->visibility = geometry.projection_scope == CASTLE_PROJECTION_NONE ?
         CASTLE_VISIBILITY_NOT_PROJECTABLE : CASTLE_VISIBILITY_VISIBLE;
     return CASTLE_OK;
 }
@@ -1961,10 +1993,12 @@ static const CastleDisplayProviderV1 g_sdk_display_provider_api = {
 };
 
 static CastleResult CASTLE_RUNTIME_CALL sdk_render_get_state(CastleRenderStateV1* state) {
+    CastleDisplayGeometryV1 geometry;
     if (!state) return CASTLE_ERROR_INVALID_ARGUMENT;
+    if (!sdk_copy_geometry_snapshot(&geometry)) return CASTLE_ERROR_NOT_READY;
     state->flags = 0u;
     state->ready = g_sdk_services_ready;
-    state->generation = g_sdk_geometry.generation;
+    state->generation = geometry.generation;
     state->backend_plugin = g_sdk_plugin_handle;
     state->provider_handle = g_sdk_render_provider;
     /* Provider 不伪造 Runtime 的租约所有者；这两个字段由 Runtime 门面统一补充。 */

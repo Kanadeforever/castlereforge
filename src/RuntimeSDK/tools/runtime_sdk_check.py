@@ -81,6 +81,8 @@ def check_required_files(ctx: CheckContext, sdk_root: Path) -> dict[str, str]:
         "tests/entry_gate_test.c",
         "tests/client_state_test.c",
         "tests/client_bootstrap_test.c",
+        "client/runtime_client.c",
+        "client/runtime_entry_gate.c",
         "client/runtime_client_support.c",
         "build.bat",
         "readme.md",
@@ -165,12 +167,45 @@ def check_tokens(ctx: CheckContext, loaded: dict[str, str]) -> None:
             "RegisterRenderProvider",
             "GetRenderProviderState",
         ),
+        "build.bat": (
+            "runtime_crt_support.obj",
+            "client\\runtime_client_support.c",
+            "vswhere.exe",
+            "where clang-cl.exe",
+            "where python.exe",
+        ),
+        "client/runtime_client_support.c": (
+            "__cdecl memset",
+            "__cdecl memcpy",
+            "volatile CastleU8*",
+        ),
+        "client/runtime_client.c": (
+            "client_load_runtime_silently_",
+            "SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX",
+            "FreeLibrary(runtime_module);",
+        ),
+        "tests/client_bootstrap_test.c": (
+            "observed_error_mode != SEM_NOGPFAULTERRORBOX",
+        ),
     }
 
     for relative, tokens in requirements.items():
         text = loaded.get(relative, "")
         for token in tokens:
             ctx.check(token in text, f"冻结符号存在：{relative} :: {token}")
+
+    # 只检查“脚本里出现过对象名”不够：对象可能被编译，却忘记放进 Runtime 的链接命令。
+    # 这里直接定位生成 Castle_Runtime.dll 的那一行，防止 GitHub Actions 的 _memcpy 错误回归。
+    build_lines = loaded.get("build.bat", "").splitlines()
+    runtime_link_lines = [
+        line for line in build_lines
+        if "link.exe" in line.lower() and "castle_runtime.dll" in line.lower()
+    ]
+    ctx.check(
+        len(runtime_link_lines) == 1
+        and "runtime_crt_support.obj" in runtime_link_lines[0],
+        "Runtime正式链接命令包含无CRT memcpy/memset对象",
+    )
 
 
 def remove_comments(text: str) -> str:

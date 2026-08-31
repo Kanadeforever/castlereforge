@@ -120,6 +120,16 @@ __declspec(noreturn) void __stdcall ClientBootstrapTestEntry(void) {
     CastleU32 index;
     CastleU32 expected_mode;
     CastleResult result;
+    DWORD original_error_mode;
+    DWORD observed_error_mode;
+
+    /*
+     * 先放入一个不会抑制“损坏映像”的哨兵模式。Client 可以在 LoadLibraryW 周围临时增加
+     * SEM_FAILCRITICALERRORS，但返回前必须精确恢复这个哨兵，不能永久改变宿主线程。
+     */
+    if (!SetThreadErrorMode(SEM_NOGPFAULTERRORBOX, &original_error_mode)) {
+        ExitProcess(9u);
+    }
 
     if (GetModuleFileNameW(NULL, module_path, 1024u) == 0u) ExitProcess(1u);
     if (client_wide_contains_(module_path, integrated_marker)) {
@@ -149,6 +159,16 @@ __declspec(noreturn) void __stdcall ClientBootstrapTestEntry(void) {
 
     result = CastleRuntimeClient_BootstrapAll(CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE,
         (CastleModule)(ULONG_PTR)g_client_module);
+
+    /*
+     * SetThreadErrorMode 在设置新值的同时返回旧值。这里再次写入相同哨兵，并检查旧值仍等于
+     * 哨兵，就能证明 Client 没把临时抑制位泄漏到后续游戏代码。随后恢复测试进程原模式。
+     */
+    if (!SetThreadErrorMode(SEM_NOGPFAULTERRORBOX, &observed_error_mode) ||
+        observed_error_mode != SEM_NOGPFAULTERRORBOX ||
+        !SetThreadErrorMode(original_error_mode, NULL)) {
+        ExitProcess(9u);
+    }
     if (expected_mode == CASTLE_CLIENT_BOOTSTRAP_INTEGRATED) {
         if (result < 0 || g_test_context.integrated_count != 1 ||
             g_test_context.standalone_count != 0 || g_test_context.fault_count != 0 ||

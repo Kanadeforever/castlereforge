@@ -64,10 +64,11 @@ build.bat
 8. 两个逆序测试 ASI 的稳定 ID Bootstrap；
 9. Entry Gate Owner/Follower/冲突/晚注入测试；
 10. Client 并发状态机测试；
-11. 正常 Runtime、无 Runtime、损坏 Runtime 三目录测试；
+11. 正常 Runtime、无 Runtime、损坏 Runtime 三目录测试，包括损坏映像无系统弹窗和线程错误模式恢复；
 12. 公共头、DEF、PE 和静态导入机械检查。
 
-当前 RuntimeSDK 机械检查为 `122 PASS / 0 FAIL`。完整 build_all 后可运行：
+当前 RuntimeSDK 机械检查为 `142 PASS / 0 FAIL`。完整 `build_all.bat` 的发行检查为
+`172 PASS / 0 FAIL`，也可以单独运行：
 
 ```bat
 python tools\runtime_sdk_check.py --require-release

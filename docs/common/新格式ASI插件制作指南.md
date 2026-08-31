@@ -53,6 +53,9 @@ ASI 同目录存在可用的 `Castle_Runtime.dll`。任意 SDK ASI 的 Client �
 文件存在，但 LoadLibrary、稳定导出、ABI 或 Runtime 初始化失败。Client 调用
 `runtime_fault`，插件只能记录诊断，不得调用 StandaloneHost 安装补丁。
 
+SDK Client 会在加载探测期间临时抑制 Windows 的损坏映像对话框，并在返回前恢复宿主原错误
+模式。插件不要自行永久调用 `SetErrorMode`，也不要用测试程序全局关闭弹窗来掩盖 Client 回归。
+
 这是防止同一进程同时出现“受管理 Hook”和“绕过 Runtime 的私有 Hook”的关键规则。
 
 ## 3. 推荐源码结构
