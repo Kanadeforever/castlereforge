@@ -29,7 +29,9 @@ INI 来自 `src\SaveEnhance\templete\Castle_SaveEnhance.ini`。脚本不复制 M
 
 ## test3 启动生命周期
 
-从 test3 开始，`DllMain` 不再执行正式业务初始化。Castle Mod Loader 完成 `LoadLibraryExW`、Locale/Overrides IAT 补挂后，会调用 ASI 导出的：
+从 RuntimeSDK 适配版开始，`DllMain` 不执行正式业务初始化。Castle Mod Loader 在全部 ASI
+完成 LoadLibrary/IAT 后第二遍调用下列导出；其它普通 ASI Loader 由 SDK Entry Gate 触发同一
+幂等 Bootstrap：
 
 ```text
 InitializeASI

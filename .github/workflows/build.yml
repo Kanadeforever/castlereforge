@@ -23,7 +23,7 @@ permissions:
 jobs:
   build:
     name: 构建并发布 dev-auto
-    runs-on: windows-2022   # 预装 VS2022 Enterprise（脚本搜索路径匹配）与 choco
+    runs-on: windows-2022   # 预装 VS2022 Enterprise、vswhere 与 choco；脚本不依赖固定安装目录
     timeout-minutes: 60
     steps:
       - name: 检出代码（完整历史，供生成更新日志）
@@ -82,8 +82,11 @@ jobs:
             'build\mods\asi\Castle_Backlog.ini',
             'build\mods\asi\Castle_PadSupport.asi',
             'build\mods\asi\Castle_PadSupport.ini',
+            'build\mods\asi\Castle_Runtime.dll',
             'build\mods\asi\Castle_SaveEnhance.asi',
             'build\mods\asi\Castle_SaveEnhance.ini',
+            'build\mods\asi\Castle_SaveEnhance\音效放置与INI配置说明.md',
+            'build\mods\asi\Castle_SaveEnhance\SaveEnhance实机测试清单.md',
             'build\mods\asi\Castle_Widescreen.asi',
             'build\mods\asi\Castle_Widescreen.ini',
             'build\mods\asi\BUGFix.asi',
@@ -94,6 +97,11 @@ jobs:
           )
           foreach ($p in $expected) {
             if (-not (Test-Path $p)) { throw "缺少产物：$p" }
+          }
+          $compilerGarbage = Get-ChildItem -Recurse -File build |
+            Where-Object { $_.Extension -in '.obj', '.lib', '.exp', '.ilk', '.pdb' }
+          if ($compilerGarbage) {
+            throw "build 发行目录含编译垃圾：$($compilerGarbage.FullName -join ', ')"
           }
           if (-not (Test-Path 'build\mods\overrides\模板_复制后改名')) {
             throw '缺少 overrides 模板目录'

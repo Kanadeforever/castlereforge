@@ -14,7 +14,7 @@ CastleReforge 是一个面向 Windows 版《天地劫序传·幽城幻剑录》�
 * 基于并改进自久经考验的三合一、五合一补丁的BUG修复、免CD、最大成长与掉宝的独立 ASI；
 * 全新制作的安全扩展存档（防止随时存档死档）；
 * 与上述功能配套的逆向分析、地址记录、测试工具和实机验收文档。
-* 已进入设计阶段、用于协调多插件冲突并服务第三方 Mod 作者的运行时 SDK（尚未实现，不构成当前运行依赖）。
+* 已实现的 RuntimeSDK：在保留每个 ASI 独立运行能力的同时，统一协调 Hook、路径、调度、窗口、显示和渲染；
 
 > **本项目不会提供《幽城幻剑录》游戏本体、`RPG.exe` 或受版权保护的原版游戏资源。**
 
@@ -446,7 +446,9 @@ docs/
 
 > [`docs/runtime/运行时协调系统总体设计.md`](docs/runtime/运行时协调系统总体设计.md)
 
-RuntimeSDK 已进入第一代码里程碑：`src/RuntimeSDK` 中已有公共 ABI 头、导出合同和布局检查器；`Castle_Runtime.dll`、Entry Gate、运行时实现和插件迁移仍未完成，不能把设计目标当成当前运行行为。
+RuntimeSDK v1、Entry Gate、通用服务、MODLoader 两阶段和七个首批 ASI 适配均已完成静态/构建验证。
+`Castle_Runtime.dll` 与 ASI 同目录时自动整合；完全缺失时各插件独立运行；文件损坏时安全停用写入。
+目标游戏联合实机仍待执行，因此当前属于发布候选。
 
 ---
 
@@ -485,7 +487,8 @@ castlereforge/
 
 `docs/` 保存逆向分析、设计说明、测试记录和接档资料。
 
-公共 SDK 的规范源码位于 `src/RuntimeSDK/`。当前只完成第一批 ABI 头与机械检查，不生成 Runtime DLL，也没有接入现有插件。
+公共 SDK 的规范源码位于 `src/RuntimeSDK/`，构建输出 `Castle_Runtime.dll`。第三方开发与迁移指南见
+`docs/common/`；FPSUnlock 仍未完成且没有纳入本轮 build_all。
 
 ---
 
@@ -515,7 +518,8 @@ build.bat
 
 即可按照该模块规定的参数构建。
 
-也可以在仓库根运行 `build_all.bat` 一键编译全部子项目，产物统一输出到 `build\`（ASI 与同名 INI 会进一步移入 `build\mods\asi`）。
+也可以在仓库根运行 `build_all.bat` 一键编译全部子项目。Runtime、ASI、同名 INI 和插件资源位于
+`build\mods\asi`；`build` 会拒绝保留 obj/lib/exp/ilk/pdb 等编译垃圾。
 
 项目中的游戏内插件普遍采用较严格的最小依赖策略，很多模块：
 

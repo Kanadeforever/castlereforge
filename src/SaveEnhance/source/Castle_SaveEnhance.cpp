@@ -2422,6 +2422,13 @@ fail:
     return false;
 }
 
+/*
+ * RuntimeHost 安装层
+ *
+ * 下方只替换“谁拥有内存写入”，不复制安全存档业务。固定菜单字节、分页 helper、
+ * 五条存档 CALL、SaveAction vtable 和两个按钮 CALL 全部先进入同一个 Runtime 事务。
+ * 事务提交后，原来的 SafeSaveGateHook/ProtectedManualSaveHook 等业务函数照常工作。
+ */
 CastleStringView SdkView(const char* text, CastleU32 length) {
     CastleStringView view{};
     view.data = text;
@@ -2459,6 +2466,7 @@ CastleResult AddRuntimeCall(const CastleHookApiV1* hookApi,
     claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
     claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
     claim.hook_kind = CASTLE_HOOK_REL32_CALL;
+    /* Runtime 使用“游戏模块 + RVA”，不把当前机器的绝对地址写进公共资源身份。 */
     claim.target = {gameModule, rva, 5u};
     claim.expected_original_target = originalTarget;
     claim.replacement_hook = static_cast<CastleAddress>(
@@ -2490,6 +2498,7 @@ CastleResult AddRuntimeExclusive(const CastleHookApiV1* hookApi,
 }
 
 void BuildRuntimeCall6(BYTE* site, const void* target, BYTE output[6]) {
+    /* 五字节 CALL 后补一个 NOP，完整替换原来的六字节指令且不移动后续地址。 */
     output[0] = 0xE8u;
     *reinterpret_cast<DWORD*>(output + 1u) = static_cast<DWORD>(
         reinterpret_cast<SIZE_T>(target) - reinterpret_cast<SIZE_T>(site + 5u));
@@ -2565,6 +2574,7 @@ bool InstallAllHooksIntegrated(const CastleRuntimeApiV1* runtimeApi,
         0u, &transaction);
     if (result < 0) return false;
 
+    /* 每个固定点都允许“原版/已启用”两种已知状态，拒绝第三种陌生机器码。 */
     for (SIZE_T index = 0u; index < kFixedMenuPatchCount; ++index) {
         CastleStatePatchClaimV1 claim{};
         claim.magic = CASTLE_STATE_PATCH_MAGIC;
@@ -2597,6 +2607,7 @@ bool InstallAllHooksIntegrated(const CastleRuntimeApiV1* runtimeApi,
         nextLabel, static_cast<CastleU32>(sizeof(nextLabel) - 1u), &temporaryClaim);
     if (result < 0) goto fail_runtime_install;
 
+    /* 五个核心 CALL 各自声明真实原函数，Runtime 可以据此识别未知外部 Hook。 */
     result = AddRuntimeCall(hookApi, transaction, info.game_module,
         kNormalMenuSaveGateCallRva,
         static_cast<CastleAddress>(reinterpret_cast<SIZE_T>(gExeBase + kOriginalSaveGateFunctionRva)),
@@ -2641,6 +2652,10 @@ bool InstallAllHooksIntegrated(const CastleRuntimeApiV1* runtimeApi,
         result = hookApi->AddPointerHook(transaction, &claim, &vtableClaim);
         if (result < 0) goto fail_runtime_install;
     }
+    /*
+     * SaveAction 两个共享 CALL 使用与 Controller 完全相同的签名字符串。
+     * SaveEnhance=NORMAL、Controller=POST，所以执行顺序稳定为 SaveEnhance -> Controller -> 原版。
+     */
     result = AddRuntimeCall(hookApi, transaction, info.game_module,
         kSaveActionHitCallRva, kOriginalButtonHitVa,
         reinterpret_cast<const void*>(&ReservedSaveActionHitHook),

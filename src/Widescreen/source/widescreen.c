@@ -102,6 +102,8 @@ static CastleProviderHandle g_sdk_display_provider;
 static CastleProviderHandle g_sdk_render_provider;
 static CastleDisplayGeometryV1 g_sdk_geometry;
 static u32 g_sdk_services_ready;
+/* 奇数表示游戏线程正在发布，偶数表示整张几何快照已经写完。 */
+static volatile u32 g_sdk_geometry_sequence;
 
 /*
  * v0.11 新增的侧区样式开关。
@@ -877,6 +879,8 @@ static void sdk_publish_geometry(u32 display_mode_value, u32 projection_scope,
                                  u32 right_world_width) {
     CastleU32 runtime_generation = 0u;
     if (!g_sdk_services_ready || !g_sdk_display_api || !g_sdk_display_provider) return;
+    /* 单一游戏线程先把序号改成奇数，读线程看到奇数就不会使用中间状态。 */
+    ++g_sdk_geometry_sequence;
     Runtime_MemZero(&g_sdk_geometry, sizeof(g_sdk_geometry));
     g_sdk_geometry.magic = CASTLE_DISPLAY_GEOMETRY_MAGIC;
     g_sdk_geometry.struct_size = CASTLE_SIZEOF_DISPLAY_GEOMETRY_V1;
@@ -903,6 +907,8 @@ static void sdk_publish_geometry(u32 display_mode_value, u32 projection_scope,
             &g_sdk_geometry, &runtime_generation) == CASTLE_OK) {
         g_sdk_geometry.generation = runtime_generation;
     }
+    /* 全部字段（包括 Runtime 分配的 generation）完成后再恢复偶数。 */
+    ++g_sdk_geometry_sequence;
 }
 
 /*
@@ -1886,9 +1892,17 @@ static i32 WINAPI Hook_BinkCopyToBuffer(
     return result;
 }
 
+/*
+ * RuntimeSDK Display/Render Provider
+ *
+ * 下面这些函数不重新计算 CameraPlan。Hook_RenderQueue 已经在真正绘制发生的那一刻
+ * 把权威结果复制进 g_sdk_geometry；Provider 只负责把这份同帧快照交给其它插件。
+ * 这样 Quest 等消费者不会各自复制宽屏算法，也不会读到游戏随后恢复的原 Camera。
+ */
 static CastleResult CASTLE_RUNTIME_CALL sdk_display_get_state(CastleDisplayStateV1* state) {
     if (!state) return CASTLE_ERROR_INVALID_ARGUMENT;
-    state->flags = 0u; state->ready = g_sdk_services_ready;
+    state->flags = 0u;
+    state->ready = g_sdk_services_ready;
     state->generation = g_sdk_geometry.generation;
     state->backend_plugin = g_sdk_plugin_handle;
     state->display_mode = g_sdk_geometry.display_mode;
@@ -1904,12 +1918,16 @@ static CastleResult CASTLE_RUNTIME_CALL sdk_display_copy_geometry(CastleDisplayG
 static CastleResult CASTLE_RUNTIME_CALL sdk_world_to_screen(
     const CastleWorldToScreenRequestV1* request, CastleScreenProjectionV1* output) {
     if (!request || !output || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
+    /* 非零代次表示调用方要求“必须还是我刚才读取的那一帧”，变化后不能硬算。 */
     if (request->requested_generation && request->requested_generation != g_sdk_geometry.generation)
         return CASTLE_ERROR_STALE_GENERATION;
-    output->flags = 0u; output->actual_generation = g_sdk_geometry.generation;
+    output->flags = 0u;
+    output->actual_generation = g_sdk_geometry.generation;
+    /* 世界坐标先减掉本帧真正使用的安全 Camera，再加中央 640 在输出中的左上角。 */
     output->screen_x = request->world_x - g_sdk_geometry.effective_camera_x + g_sdk_geometry.center_x;
     output->screen_y = request->world_y - g_sdk_geometry.effective_camera_y + g_sdk_geometry.center_y;
     output->projection_scope = g_sdk_geometry.projection_scope;
+    /* 对白、Battle、硬4:3和过渡帧主动返回不可投影，Marker 应隐藏而不是猜。 */
     if (g_sdk_geometry.projection_scope == CASTLE_PROJECTION_NONE)
         output->visibility = CASTLE_VISIBILITY_NOT_PROJECTABLE;
     else if (output->screen_x < 0) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_LEFT;
@@ -1925,7 +1943,9 @@ static CastleResult CASTLE_RUNTIME_CALL sdk_screen_to_world(
     if (!request || !output || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
     if (request->requested_generation && request->requested_generation != g_sdk_geometry.generation)
         return CASTLE_ERROR_STALE_GENERATION;
-    output->flags = 0u; output->actual_generation = g_sdk_geometry.generation;
+    output->flags = 0u;
+    output->actual_generation = g_sdk_geometry.generation;
+    /* 这是上面公式的严格逆运算，只在同一代次内成立。 */
     output->world_x = request->screen_x - g_sdk_geometry.center_x + g_sdk_geometry.effective_camera_x;
     output->world_y = request->screen_y - g_sdk_geometry.center_y + g_sdk_geometry.effective_camera_y;
     output->projection_scope = g_sdk_geometry.projection_scope;
@@ -1942,16 +1962,20 @@ static const CastleDisplayProviderV1 g_sdk_display_provider_api = {
 
 static CastleResult CASTLE_RUNTIME_CALL sdk_render_get_state(CastleRenderStateV1* state) {
     if (!state) return CASTLE_ERROR_INVALID_ARGUMENT;
-    state->flags = 0u; state->ready = g_sdk_services_ready;
+    state->flags = 0u;
+    state->ready = g_sdk_services_ready;
     state->generation = g_sdk_geometry.generation;
     state->backend_plugin = g_sdk_plugin_handle;
     state->provider_handle = g_sdk_render_provider;
-    state->display_provider_generation = 0u; state->extra_frame_owner = 0u;
+    /* Provider 不伪造 Runtime 的租约所有者；这两个字段由 Runtime 门面统一补充。 */
+    state->display_provider_generation = 0u;
+    state->extra_frame_owner = 0u;
     return CASTLE_OK;
 }
 
 static CastleResult CASTLE_RUNTIME_CALL sdk_render_queue(const CastleRenderCallV1* call) {
     if (!call || !call->render_context || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
+    /* 复用正式 Hook 的多 Camera 业务；这里不复制第二套宽屏绘制算法。 */
     Hook_RenderQueue((void*)(SIZE_T)call->render_context, NULL);
     return CASTLE_OK;
 }
@@ -1970,11 +1994,16 @@ static const CastleRenderProviderV1 g_sdk_render_provider_api = {
 
 static const void* sdk_query_interface(const CastleRuntimeApiV1* runtime_api,
     const char* id, CastleU32 id_length, CastleU32 version, CastleU32 minimum_size) {
-    CastleInterfaceQueryV1 query = {0}; CastleInterfaceResultV1 result_value = {0};
-    query.magic = CASTLE_QUERY_MAGIC; query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 result_value = {0};
+    /* 调用方填写 magic/大小/版本，Runtime 才能确认双方看到的是同一 ABI 结构。 */
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
     query.request_version = CASTLE_QUERY_VERSION_1;
-    query.interface_id.data = id; query.interface_id.length = id_length;
-    query.requested_version = version; query.minimum_struct_size = minimum_size;
+    query.interface_id.data = id;
+    query.interface_id.length = id_length;
+    query.requested_version = version;
+    query.minimum_struct_size = minimum_size;
     result_value.magic = CASTLE_INTERFACE_API_MAGIC;
     result_value.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
     result_value.result_version = CASTLE_QUERY_VERSION_1;
@@ -1988,8 +2017,11 @@ int Widescreen_RegisterRuntimeServices(const CastleRuntimeApiV1* runtime_api,
     static const char render_id[] = CASTLE_RENDER_INTERFACE_ID;
     static const char display_provider_id[] = "org.castlereforge.widescreen.display";
     static const char render_provider_id[] = "org.castlereforge.widescreen.render";
-    CastleStringView provider_id; CastleResult result_value;
-    g_sdk_runtime_api = runtime_api; g_sdk_plugin_handle = plugin_handle;
+    CastleStringView provider_id;
+    CastleResult result_value;
+    g_sdk_runtime_api = runtime_api;
+    g_sdk_plugin_handle = plugin_handle;
+    /* 第一步只取得 Runtime 的稳定门面，绝不缓存具体后端插件私有地址。 */
     g_sdk_display_api = (const CastleDisplayApiV1*)sdk_query_interface(runtime_api,
         display_id, (CastleU32)(sizeof(display_id) - 1u),
         CASTLE_DISPLAY_API_VERSION_1, CASTLE_SIZEOF_DISPLAY_API_V1);
@@ -1997,6 +2029,7 @@ int Widescreen_RegisterRuntimeServices(const CastleRuntimeApiV1* runtime_api,
         render_id, (CastleU32)(sizeof(render_id) - 1u),
         CASTLE_RENDER_API_VERSION_1, CASTLE_SIZEOF_RENDER_API_V1);
     if (!g_sdk_display_api || !g_sdk_render_api) return 0;
+    /* 第二步先登记 Display，并发布一份“过渡/不可投影”初始快照后再标记就绪。 */
     provider_id.data = display_provider_id;
     provider_id.length = (CastleU32)(sizeof(display_provider_id) - 1u);
     result_value = g_sdk_display_api->RegisterDisplayProvider(plugin_handle, provider_id,
@@ -2006,6 +2039,7 @@ int Widescreen_RegisterRuntimeServices(const CastleRuntimeApiV1* runtime_api,
     sdk_publish_geometry(CASTLE_DISPLAY_TRANSITION, CASTLE_PROJECTION_NONE,
         *(volatile i32*)GLOBAL_CAMERA_X, *(volatile i32*)GLOBAL_CAMERA_X, 0u, 0u);
     if (g_sdk_display_api->SetDisplayProviderReady(g_sdk_display_provider, 1u) < 0) return 0;
+    /* 第三步把 Render Provider 与刚才同插件的 Display Provider 句柄绑定。 */
     provider_id.data = render_provider_id;
     provider_id.length = (CastleU32)(sizeof(render_provider_id) - 1u);
     result_value = g_sdk_render_api->RegisterRenderProvider(plugin_handle, provider_id,

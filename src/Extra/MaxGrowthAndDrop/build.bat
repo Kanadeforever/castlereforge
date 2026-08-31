@@ -52,7 +52,7 @@ cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_entry_gate.c" /Fo"%OBJ_DIR%\run
 if errorlevel 1 goto :fail
 cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_client_support.c" /Fo"%OBJ_DIR%\runtime_client_support.obj"
 if errorlevel 1 goto :fail
-link.exe %LFLAGS% /DEF:"%SRC_DIR%\MaxGrowthAndDrop.def" /OUT:"%OUT_DIR%\MaxGrowthAndDrop.asi" "%OBJ_DIR%\MaxGrowthAndDrop.obj" "%OBJ_DIR%\runtime_client.obj" "%OBJ_DIR%\runtime_entry_gate.obj" "%OBJ_DIR%\runtime_client_support.obj" kernel32.lib
+link.exe %LFLAGS% /DEF:"%SRC_DIR%\MaxGrowthAndDrop.def" /IMPLIB:"%OBJ_DIR%\MaxGrowthAndDrop.lib" /OUT:"%OUT_DIR%\MaxGrowthAndDrop.asi" "%OBJ_DIR%\MaxGrowthAndDrop.obj" "%OBJ_DIR%\runtime_client.obj" "%OBJ_DIR%\runtime_entry_gate.obj" "%OBJ_DIR%\runtime_client_support.obj" kernel32.lib
 if errorlevel 1 goto :fail
 call :check_pe "%OUT_DIR%\MaxGrowthAndDrop.asi"
 if errorlevel 1 goto :fail

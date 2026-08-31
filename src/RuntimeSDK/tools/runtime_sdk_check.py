@@ -77,6 +77,11 @@ def check_required_files(ctx: CheckContext, sdk_root: Path) -> dict[str, str]:
         "include/CastleRender_API.h",
         "source/CastleRuntime.def",
         "tests/abi_layout_test.c",
+        "tests/runtime_host_test.c",
+        "tests/entry_gate_test.c",
+        "tests/client_state_test.c",
+        "tests/client_bootstrap_test.c",
+        "client/runtime_client_support.c",
         "build.bat",
         "readme.md",
         "tools/工具详细说明.md",
@@ -353,6 +358,63 @@ def check_runtime_pe(ctx: CheckContext, sdk_root: Path, required: bool) -> None:
         ctx.check(False, f"Runtime PE解析成功：{error}")
 
 
+def check_release_artifacts(ctx: CheckContext, project_root: Path, required: bool) -> None:
+    """检查 build 交付树：标准导出、PE32 形状、随包说明和零编译垃圾。"""
+
+    if not required:
+        return
+    release_root = project_root / "build"
+    asi_root = release_root / "mods" / "asi"
+    expected_exports: dict[str, list[str]] = {
+        "Castle_Runtime.dll": ["CastleRuntime_GetApi"],
+        "Castle_Backlog.asi": ["CastlePlugin_Query", "InitializeASI"],
+        "Castle_PadSupport.asi": ["CastlePad_GetApi", "CastlePlugin_Query", "InitializeASI"],
+        "Castle_SaveEnhance.asi": ["CastlePlugin_Query", "InitializeASI"],
+        "Castle_Widescreen.asi": ["CastlePlugin_Query", "InitializeASI"],
+        "BUGFix.asi": ["CastlePlugin_Query", "InitializeASI"],
+        "NoCD.asi": ["CastlePlugin_Query", "InitializeASI"],
+        "MaxGrowthAndDrop.asi": ["CastlePlugin_Query", "InitializeASI"],
+    }
+
+    for name, expected in expected_exports.items():
+        path = asi_root / name
+        ctx.check(path.is_file(), f"发行文件存在：build/mods/asi/{name}")
+        if not path.is_file():
+            continue
+        try:
+            data = path.read_bytes()
+            pe_offset = read_u32(data, 0x3C)
+            optional_offset = pe_offset + 24
+            machine = read_u16(data, pe_offset + 4)
+            characteristics = read_u16(data, pe_offset + 22)
+            optional_magic = read_u16(data, optional_offset)
+            entry_rva = read_u32(data, optional_offset + 16)
+            exports = parse_export_names(data, pe_offset, optional_offset)
+            ctx.check(machine == 0x014C and optional_magic == 0x010B,
+                      f"发行二进制为PE32/i386：{name}")
+            ctx.check((characteristics & 0x2000) != 0 and entry_rva != 0,
+                      f"发行二进制具有DLL标志和非零入口：{name}")
+            ctx.check(exports == sorted(expected),
+                      f"发行导出表正确：{name} :: {exports}")
+        except (OSError, UnicodeError, ValueError) as error:
+            ctx.check(False, f"发行PE解析成功：{name} :: {error}")
+
+    packaged_docs = (
+        asi_root / "Castle_SaveEnhance" / "音效放置与INI配置说明.md",
+        asi_root / "Castle_SaveEnhance" / "SaveEnhance实机测试清单.md",
+    )
+    for path in packaged_docs:
+        ctx.check(path.is_file(), f"SaveEnhance随包说明存在：{path.name}")
+
+    garbage_suffixes = {".obj", ".lib", ".exp", ".ilk", ".pdb"}
+    garbage = sorted(
+        str(path.relative_to(release_root))
+        for path in release_root.rglob("*")
+        if path.is_file() and path.suffix.lower() in garbage_suffixes
+    ) if release_root.is_dir() else []
+    ctx.check(not garbage, f"build发行目录不含编译垃圾：{garbage}")
+
+
 def main() -> int:
     configure_output_encoding()
 
@@ -372,6 +434,7 @@ def main() -> int:
     check_export_table(ctx, loaded)
     check_batch_trailing_spaces(ctx, loaded)
     check_runtime_pe(ctx, sdk_root, "--require-dll" in sys.argv[1:])
+    check_release_artifacts(ctx, project_root, "--require-release" in sys.argv[1:])
 
     print()
     print(f"[汇总] PASS={ctx.pass_count} FAIL={len(ctx.failures)}")

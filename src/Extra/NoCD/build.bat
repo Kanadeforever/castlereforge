@@ -52,7 +52,7 @@ cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_entry_gate.c" /Fo"%OBJ_DIR%\run
 if errorlevel 1 goto :fail
 cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_client_support.c" /Fo"%OBJ_DIR%\runtime_client_support.obj"
 if errorlevel 1 goto :fail
-link.exe %LFLAGS% /DEF:"%SRC_DIR%\NoCD.def" /OUT:"%OUT_DIR%\NoCD.asi" "%OBJ_DIR%\NoCD.obj" "%OBJ_DIR%\runtime_client.obj" "%OBJ_DIR%\runtime_entry_gate.obj" "%OBJ_DIR%\runtime_client_support.obj" kernel32.lib
+link.exe %LFLAGS% /DEF:"%SRC_DIR%\NoCD.def" /IMPLIB:"%OBJ_DIR%\NoCD.lib" /OUT:"%OUT_DIR%\NoCD.asi" "%OBJ_DIR%\NoCD.obj" "%OBJ_DIR%\runtime_client.obj" "%OBJ_DIR%\runtime_entry_gate.obj" "%OBJ_DIR%\runtime_client_support.obj" kernel32.lib
 if errorlevel 1 goto :fail
 call :check_pe "%OUT_DIR%\NoCD.asi"
 if errorlevel 1 goto :fail

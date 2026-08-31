@@ -158,6 +158,10 @@ int MouseInput_Initialize(void) {
     return mouse_try_install();
 }
 
+/*
+ * RuntimeHost 不再改 GWLP_WNDPROC。Observer 只累计消息，Filter 只在 Backlog 已打开时
+ * 消费同一条鼠标消息；二者职责分开，第三方窗口客户端仍能获得稳定顺序。
+ */
 int MouseInput_InitializeIntegrated(const CastleRuntimeApiV1* runtime_api,
                                     CastlePluginHandle plugin_handle) {
     static const char interface_id[] = CASTLE_WINDOW_INTERFACE_ID;
@@ -203,14 +207,26 @@ int MouseInput_InitializeIntegrated(const CastleRuntimeApiV1* runtime_api,
     client.label = mouse_sdk_view(filter_label,
         (CastleU32)(sizeof(filter_label) - 1u));
     if (g_runtime_window_api->RegisterMessageFilter(plugin_handle, &client,
-            &g_runtime_filter) != CASTLE_OK) return 0;
+            &g_runtime_filter) != CASTLE_OK) {
+        g_runtime_window_api->UnregisterWindowClient(g_runtime_observer);
+        g_runtime_observer = 0u;
+        return 0;
+    }
+    /* ready=1 表示允许分发；窗口尚未创建只返回 NOT_READY，登记本身仍然保留。 */
     ready_result = g_runtime_window_api->SetWindowClientReady(g_runtime_observer, 1u);
-    if (ready_result < 0 && ready_result != CASTLE_ERROR_NOT_READY) return 0;
+    if (ready_result < 0 && ready_result != CASTLE_ERROR_NOT_READY) goto fail_runtime_clients;
     ready_result = g_runtime_window_api->SetWindowClientReady(g_runtime_filter, 1u);
-    if (ready_result < 0 && ready_result != CASTLE_ERROR_NOT_READY) return 0;
+    if (ready_result < 0 && ready_result != CASTLE_ERROR_NOT_READY) goto fail_runtime_clients;
     g_runtime_window_mode = 1;
     Runtime_Log("[鼠标] 已登记 Runtime Window Observer/Filter；窗口稍后出现时自动接入。");
     return 1;
+
+fail_runtime_clients:
+    g_runtime_window_api->UnregisterWindowClient(g_runtime_filter);
+    g_runtime_window_api->UnregisterWindowClient(g_runtime_observer);
+    g_runtime_filter = 0u;
+    g_runtime_observer = 0u;
+    return 0;
 }
 
 void MouseInput_Poll(void) {

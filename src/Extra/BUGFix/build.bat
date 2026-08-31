@@ -50,7 +50,7 @@ cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_client.c" /Fo"%OBJ_DIR%\runtime
 if errorlevel 1 goto :fail
 cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_entry_gate.c" /Fo"%OBJ_DIR%\runtime_entry_gate.obj"
 if errorlevel 1 goto :fail
-link.exe %LFLAGS% /DEF:"%SRC_DIR%\BUGFix.def" /OUT:"%OUT_DIR%\BUGFix.asi" "%OBJ_DIR%\BUGFix.obj" "%OBJ_DIR%\runtime_client.obj" "%OBJ_DIR%\runtime_entry_gate.obj" kernel32.lib
+link.exe %LFLAGS% /DEF:"%SRC_DIR%\BUGFix.def" /IMPLIB:"%OBJ_DIR%\BUGFix.lib" /OUT:"%OUT_DIR%\BUGFix.asi" "%OBJ_DIR%\BUGFix.obj" "%OBJ_DIR%\runtime_client.obj" "%OBJ_DIR%\runtime_entry_gate.obj" kernel32.lib
 if errorlevel 1 goto :fail
 call :check_pe "%OUT_DIR%\BUGFix.asi"
 if errorlevel 1 goto :fail

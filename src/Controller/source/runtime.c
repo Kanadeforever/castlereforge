@@ -1414,6 +1414,13 @@ int Runtime_ConfirmDialogProtocolOk(void) {
     return 1;
 }
 
+/*
+ * RuntimeHost 补丁批次
+ *
+ * Controller 上层仍按原来顺序调用 Runtime_PatchCall/Pointer/Jmp6。区别只在这里：
+ * StandaloneHost 立即使用 VirtualProtect 写入；RuntimeHost 先把每一项登记到同一事务，
+ * 等全部业务模块声明完毕后统一预检和提交。任一点冲突都不会留下“前半套已写”状态。
+ */
 static CastleStringView sdk_view_(const char* text, CastleU32 length) {
     CastleStringView view;
     view.data = text;
@@ -1448,6 +1455,7 @@ int Runtime_BeginSdkHookBatch(const CastleRuntimeApiV1* runtime_api,
     static const char hook_id[] = CASTLE_HOOK_INTERFACE_ID;
     static const char transaction_label[] = "Controller complete hook batch";
     CastleRuntimeInfoV1 info = {0};
+    /* 保存的是 Runtime 稳定根门面和本插件句柄，不保存其它插件模块地址。 */
     g_sdk_runtime_api = runtime_api;
     g_sdk_plugin_handle = plugin_handle;
     g_sdk_hook_api = (const CastleHookApiV1*)sdk_query_interface_(runtime_api,
@@ -1458,6 +1466,7 @@ int Runtime_BeginSdkHookBatch(const CastleRuntimeApiV1* runtime_api,
     info.info_version = CASTLE_RUNTIME_INFO_VERSION_1;
     if (!g_sdk_hook_api || !runtime_api ||
         runtime_api->GetRuntimeInfo(&info) != CASTLE_OK) return 0;
+    /* 以后所有绝对地址都会减去这个基址，转换成 module+rva 公共写法。 */
     g_sdk_game_module = info.game_module;
     g_sdk_binding_count = 0u;
     g_sdk_transaction = 0u;
@@ -1473,12 +1482,17 @@ int Runtime_CommitSdkHookBatch(void) {
     u32 index;
     CastleResult result;
     if (!g_sdk_batch_building || !g_sdk_hook_api || !g_sdk_transaction) return 0;
+    /* Preflight 只检查；Commit 才真正改游戏。两步之间 Runtime 仍会二次核对字节。 */
     result = g_sdk_hook_api->PreflightTransaction(g_sdk_transaction);
     if (result >= 0) result = g_sdk_hook_api->CommitTransaction(g_sdk_transaction);
     if (result < 0) {
         g_sdk_batch_building = 0;
         return 0;
     }
+    /*
+     * vtable/IAT wrapper 需要知道“下一层是谁”。提交后 Runtime 才能给出稳定 next 槽，
+     * 所以这里再把槽内当前目标写回旧业务层的 original 指针。
+     */
     for (index = 0u; index < g_sdk_binding_count; ++index) {
         CastleHookBindingV1 binding = {0};
         binding.magic = CASTLE_HOOK_BINDING_MAGIC;
@@ -1534,6 +1548,7 @@ int Runtime_PatchIatPointer(u32 slot, void* replacement, void** original_out) {
         CastleResult result;
         if (!g_sdk_batch_building || !g_sdk_hook_api || !replacement ||
             g_sdk_binding_count >= 64u) return 0;
+        /* 这里只读取当前原目标用于声明；真正覆盖指针仍由 Commit 统一完成。 */
         original = *p;
         if (!Runtime_PtrOk(original)) return 0;
         claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
@@ -1547,6 +1562,7 @@ int Runtime_PatchIatPointer(u32 slot, void* replacement, void** original_out) {
         claim.replacement_hook = (CastleAddress)(SIZE_T)replacement;
         claim.signature_id = sdk_view_(pointer_signature,
             (CastleU32)(sizeof(pointer_signature) - 1u));
+        /* Controller 放在 POST，SaveEnhance 的 NORMAL SaveAction wrapper 会先执行并链到这里。 */
         claim.phase = CASTLE_HOOK_PHASE_POST;
         claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
         claim.label = sdk_view_(label, (CastleU32)(sizeof(label) - 1u));
@@ -1580,6 +1596,7 @@ int Runtime_PatchCall(u32 call_address, void* replacement, u32 expected_target) 
         CastleChainHookClaimV1 claim = {0};
         CastleClaimHandle claim_handle = 0u;
         if (!g_sdk_batch_building || !g_sdk_hook_api || !replacement) return 0;
+        /* CALL 不在这里写 rel32，只把地址、原函数、wrapper 和签名完整交给 Runtime。 */
         claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
         claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
         claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;

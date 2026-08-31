@@ -18,15 +18,28 @@ set "ENTRY_GATE_TEST_DEF=%ROOT%tests\entry_gate_test.def"
 set "CLIENT_STATE_TEST=%ROOT%tests\client_state_test.c"
 set "CLIENT_BOOTSTRAP_TEST=%ROOT%tests\client_bootstrap_test.c"
 set "CLIENT_BOOTSTRAP_TEST_DEF=%ROOT%tests\client_bootstrap_test.def"
-set "VSDEV=C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat"
-set "CLANG_C=C:\msys64\clang64\bin\clang.exe"
-set "CLANG_CPP=C:\msys64\clang64\bin\clang++.exe"
-set "PYTHON_EXE=C:\Program Files\Python314\python.exe"
+set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+set "VSINSTALL="
+if exist "%VSWHERE%" for /f "usebackq tokens=*" %%I in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALL=%%I"
+if defined VSINSTALL (
+    call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -no_logo -arch=x86 -host_arch=x64 >nul
+    if errorlevel 1 goto :tool_fail
+)
+where cl.exe >nul 2>nul || goto :tool_fail
+where link.exe >nul 2>nul || goto :tool_fail
 
-if not exist "%VSDEV%" goto :tool_fail
-if not exist "%CLANG_C%" goto :tool_fail
-if not exist "%CLANG_CPP%" goto :tool_fail
-if not exist "%PYTHON_EXE%" goto :tool_fail
+set "CLANG_CL="
+for /f "delims=" %%I in ('where clang-cl.exe 2^>nul') do if not defined CLANG_CL set "CLANG_CL=%%I"
+if not defined CLANG_CL goto :tool_fail
+
+set "PYTHON_EXE="
+set "PYTHON_ARGS="
+for /f "delims=" %%I in ('where python.exe 2^>nul') do if not defined PYTHON_EXE set "PYTHON_EXE=%%I"
+if not defined PYTHON_EXE (
+    for /f "delims=" %%I in ('where py.exe 2^>nul') do if not defined PYTHON_EXE set "PYTHON_EXE=%%I"
+    if defined PYTHON_EXE set "PYTHON_ARGS=-3"
+)
+if not defined PYTHON_EXE goto :tool_fail
 if not exist "%TEST_FILE%" goto :file_fail
 if not exist "%HOST_TEST%" goto :file_fail
 if not exist "%HOST_TEST_DEF%" goto :file_fail
@@ -41,9 +54,6 @@ if not exist "%CLIENT_BOOTSTRAP_TEST_DEF%" goto :file_fail
 if exist "%OUT%" rmdir /s /q "%OUT%"
 mkdir "%OUT%" || goto :fail
 
-call "%VSDEV%" -no_logo -arch=x86 -host_arch=x64 >nul
-if errorlevel 1 goto :tool_fail
-
 echo [1/10] MSVC x86 C布局检查...  
 cl.exe /nologo /c /TC /utf-8 /W4 /WX /Zl /I"%INCLUDE_DIR%" /Fo"%OUT%\abi_msvc_c.obj" "%TEST_FILE%"
 if errorlevel 1 goto :fail
@@ -53,11 +63,11 @@ cl.exe /nologo /c /TP /std:c++17 /utf-8 /W4 /WX /Zl /I"%INCLUDE_DIR%" /Fo"%OUT%\
 if errorlevel 1 goto :fail
 
 echo [3/10] Clang x86 C布局检查...  
-"%CLANG_C%" --target=i686-pc-windows-msvc -fms-compatibility -Wall -Wextra -Werror -c -x c -I"%INCLUDE_DIR%" -o "%OUT%\abi_clang_c.obj" "%TEST_FILE%"
+"%CLANG_CL%" /nologo /c /TC /W4 /WX /Zl /clang:--target=i686-pc-windows-msvc /I"%INCLUDE_DIR%" /Fo"%OUT%\abi_clang_c.obj" "%TEST_FILE%"
 if errorlevel 1 goto :fail
 
 echo [4/10] Clang x86 C++17布局检查...  
-"%CLANG_CPP%" --target=i686-pc-windows-msvc -fms-compatibility -std=c++17 -Wall -Wextra -Werror -c -x c++ -I"%INCLUDE_DIR%" -o "%OUT%\abi_clang_cpp.obj" "%TEST_FILE%"
+"%CLANG_CL%" /nologo /c /TP /std:c++17 /W4 /WX /Zl /clang:--target=i686-pc-windows-msvc /I"%INCLUDE_DIR%" /Fo"%OUT%\abi_clang_cpp.obj" "%TEST_FILE%"
 if errorlevel 1 goto :fail
 
 echo [5/10] 编译Castle_Runtime核心对象...  
@@ -156,7 +166,7 @@ if errorlevel 1 goto :client_standalone_fail
 if errorlevel 1 goto :client_fault_fail
 
 echo [9/10] RuntimeSDK文本与PE合同检查...  
-"%PYTHON_EXE%" "%ROOT%tools\runtime_sdk_check.py" --require-dll
+"%PYTHON_EXE%" %PYTHON_ARGS% "%ROOT%tools\runtime_sdk_check.py" --require-dll
 if errorlevel 1 goto :fail
 
 echo [10/10] 复制Castle_Runtime.dll到仓库build目录...  
@@ -172,7 +182,7 @@ exit /b 0
 
 :tool_fail
 if exist "%OUT%" rmdir /s /q "%OUT%"
-echo [失败] 找不到设计规定的x86编译器或Python，请核对C:\Project\编译器地址记录.txt。  
+echo [失败] 找不到 MSVC x86、clang-cl 或 Python。请先安装构建依赖并加入 PATH。  
 exit /b 1
 
 :file_fail

@@ -11,14 +11,13 @@ if exist "%OUT%" rmdir /s /q "%OUT%"
 mkdir "%OUT%" || goto :fail
 if not exist "%ROOT%..\..\build\" mkdir "%ROOT%..\..\build\" || goto :fail
 
-set "VSDEV=C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat"
-if not exist "%VSDEV%" set "VSDEV=C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat"
-if not exist "%VSDEV%" (
-    echo [构建] 未找到 Visual Studio x86 开发环境。  
-    goto :fail
+set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+set "VSINSTALL="
+if exist "%VSWHERE%" for /f "usebackq tokens=*" %%I in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALL=%%I"
+if defined VSINSTALL (
+    call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -no_logo -arch=x86 -host_arch=x64 >nul
+    if errorlevel 1 goto :fail
 )
-call "%VSDEV%" -no_logo -arch=x86 -host_arch=x64 >nul
-if errorlevel 1 goto :fail
 
 set "CLANG_CL="
 set "LLD_LINK="
