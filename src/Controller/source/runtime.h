@@ -2,6 +2,7 @@
 #define CASTLE_PAD_RUNTIME_H
 
 #include "platform.h"
+#include "CastleRuntime_API.h"
 
 /*
  * runtime.h
@@ -209,6 +210,12 @@ int Runtime_PatchJmp6(u32 address, void* replacement, const u8 expected[6]);
  * 用于 refactor10/refactor11 公共消息引擎两处局部 GetAsyncKeyState 函数指针装载。
  */
 int Runtime_PatchMovEsiFunction(u32 address, void* replacement, const u8 expected[6]);
+
+/* RuntimeHost 在业务安装前建立一个全插件 Hook 批次，成功后一次提交。 */
+int Runtime_BeginSdkHookBatch(const CastleRuntimeApiV1* runtime_api,
+                              CastlePluginHandle plugin_handle);
+int Runtime_CommitSdkHookBatch(void);
+void Runtime_AbortSdkHookBatch(void);
 
 /* 供 SDL3 等运行时依赖在成功加载后 PIN，防止被意外 FreeLibrary。 */
 void Runtime_PinModuleFromAddress(const char* label, const void* address);

@@ -27,6 +27,8 @@
 #include "synthesis.h"
 #include "shop.h"
 #include "scene_choice.h"
+#include "CastleRuntime_Client.h"
+#include "CastleSchedule_API.h"
 
 /*
  * plugin.c
@@ -45,6 +47,10 @@
 
 static HMODULE g_plugin_module;
 static volatile int g_worker_running;
+static int g_controller_initialized;
+static int g_runtime_schedule_mode;
+static const CastleScheduleApiV1* g_schedule_api;
+static CastleTaskHandle g_schedule_task;
 
 /*
  * 安装阶段按“真实依赖”组织，而不是为了形式去机械复刻某个旧版本的全部顺序：
@@ -170,6 +176,67 @@ static int plugin_install_all_hooks(void) {
     return 1;
 }
 
+static CastleStringView plugin_sdk_view(const char* text, CastleU32 length) {
+    CastleStringView view;
+    view.data = text;
+    view.length = length;
+    return view;
+}
+
+static const CastleScheduleApiV1* plugin_query_schedule(
+    const CastleRuntimeApiV1* runtime_api) {
+    static const char interface_id[] = CASTLE_SCHEDULE_INTERFACE_ID;
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 result = {0};
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = plugin_sdk_view(interface_id,
+        (CastleU32)(sizeof(interface_id) - 1u));
+    query.requested_version = CASTLE_SCHEDULE_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_SCHEDULE_API_V1;
+    query.required_capabilities_low = CASTLE_SCHEDULE_CAP_BACKGROUND;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (!runtime_api || runtime_api->QueryInterface(&query, &result) != CASTLE_OK) {
+        return NULL;
+    }
+    return (const CastleScheduleApiV1*)result.api_pointer;
+}
+
+static int plugin_initialize_controller(const CastleRuntimeApiV1* runtime_api,
+                                        CastlePluginHandle plugin_handle,
+                                        int integrated) {
+    if (!Runtime_Initialize(g_plugin_module)) return 0;
+    if (integrated && !Runtime_BeginSdkHookBatch(runtime_api, plugin_handle)) {
+        Runtime_Log("[致命] 无法建立 RuntimeSDK Hook 批次。");
+        return 0;
+    }
+    if (!plugin_install_all_hooks()) {
+        if (integrated) Runtime_AbortSdkHookBatch();
+        Runtime_Log("[致命] Hook 声明过程中出现失败，不进入输入循环。");
+        return 0;
+    }
+    if (integrated && !Runtime_CommitSdkHookBatch()) {
+        Runtime_Log("[致命] RuntimeSDK Hook 批次预检/提交失败。");
+        return 0;
+    }
+    MovieSkip_Initialize();
+    if (!PadInput_Initialize()) {
+        Runtime_Log("[警告] SDL3 当前不可用；原版键鼠保持工作，等待 SDL3 可用。");
+    }
+    ControlModes_Initialize();
+    CastlePad_PublicApiReset();
+    Runtime_Log("[公共API] CastlePad_GetApi v1 已启用；外部只读取版本化快照。");
+    g_worker_running = 1;
+    g_controller_initialized = 1;
+    Runtime_Log(integrated
+        ? "[启动] Controller RuntimeHost 已就绪。"
+        : "[启动] Controller StandaloneHost 已就绪。");
+    return 1;
+}
+
 /*
  * worker 每一轮的处理顺序也有明确目的：
  *
@@ -190,39 +257,9 @@ static DWORD WINAPI PluginWorker(void* unused) {
     int save_point_active;
     (void)unused;
 
-    if (!Runtime_Initialize(g_plugin_module)) return 0;
+    if (!g_controller_initialized &&
+        !plugin_initialize_controller(NULL, 0u, 0)) return 0;
     api = Runtime_Api();
-
-    if (!plugin_install_all_hooks()) {
-        Runtime_Log("[致命] Hook 安装过程中出现失败，工作线程不会进入输入循环。");
-        return 0;
-    }
-
-    /*
-     * Start=ESC 没有任何机器码 Hook，只做独立协议校验。
-     * 即使电影能力失败，refactor4 已封版的 Hook 和其它手柄功能仍然继续运行。
-     */
-    MovieSkip_Initialize();
-
-    /*
-     * SDL3 缺失时不撤销已经安装的原版 Hook：Hook 本身在没有 pending 输入时会继续调用原函数。
-     * 这样日志仍然能明确告诉用户“插件加载成功，但 SDL3 失败”，而不是表现成神秘的整 DLL 未加载。
-     */
-    if (!PadInput_Initialize()) {
-        Runtime_Log("[警告] SDL3 当前不可用；原版键鼠仍保持工作，手柄功能等待 SDL3 可用。");
-    }
-    ControlModes_Initialize();
-
-    /*
-     * Public API 的导出入口从 ASI 被加载时就存在，但内部输入线程可能还没完成初始化。
-     * 这里先发布一份“未就绪”的全零快照。这样其它 ASI 即使更早找到 CastlePad_GetApi，
-     * 也只会得到 IsReady()==0，而不会读取尚未初始化的 PadInput / ControlModes 内部状态。
-     */
-    CastlePad_PublicApiReset();
-    Runtime_Log("[公共API] CastlePad_GetApi v1 已启用；第三方 ASI 只读取版本化只读快照。");
-
-    g_worker_running = 1;
-    Runtime_Log("[启动] 手柄工作线程已开始运行。");
 
     while (g_worker_running) {
         PadInput_Poll();
@@ -331,6 +368,8 @@ static DWORD WINAPI PluginWorker(void* unused) {
         }
 
         Runtime_AdvanceTick();
+        /* Runtime Schedule 每次只要求执行一个业务 tick，休眠由统一调度器负责。 */
+        if (g_runtime_schedule_mode) return 0u;
         if (api->sleep) api->sleep(WORKER_SLEEP_MS);
         else {
             /*
@@ -364,31 +403,117 @@ static DWORD WINAPI PluginWorker(void* unused) {
  * 2. 从 RPG.exe 已有 IAT 读取最早期 API 地址；
  * 3. 创建独立 worker，真正初始化工作在线程里完成。
  */
-BOOL WINAPI DllMain(void* module, DWORD reason, void* reserved) {
+static CastleResult CASTLE_RUNTIME_CALL Controller_ScheduledTick(
+    CastleTaskHandle task, void* user_context) {
+    (void)task;
+    (void)user_context;
+    PluginWorker(NULL);
+    return CASTLE_OK;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL Controller_Integrated(
+    const CastleRuntimeApiV1* runtime_api, CastlePluginHandle plugin_handle,
+    void* user_context) {
+    static const char task_label[] = "Controller ordered 8ms tick";
+    CastleScheduledTaskV1 task = {0};
+    (void)user_context;
+    g_runtime_schedule_mode = 1;
+    if (!plugin_initialize_controller(runtime_api, plugin_handle, 1)) {
+        return CASTLE_ERROR_EXPECTED_BYTES;
+    }
+    g_schedule_api = plugin_query_schedule(runtime_api);
+    if (!g_schedule_api) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    task.magic = CASTLE_SCHEDULE_TASK_MAGIC;
+    task.struct_size = CASTLE_SIZEOF_SCHEDULED_TASK_V1;
+    task.version = CASTLE_SCHEDULE_STRUCTURE_VERSION_1;
+    task.flags = CASTLE_SCHEDULE_TASK_START_ENABLED;
+    task.period_ms = WORKER_SLEEP_MS;
+    task.budget_ms = WORKER_SLEEP_MS;
+    task.phase = CASTLE_SCHEDULE_PHASE_NORMAL;
+    task.priority = CASTLE_SCHEDULE_PRIORITY_EARLY;
+    task.callback = Controller_ScheduledTick;
+    task.label = plugin_sdk_view(task_label,
+        (CastleU32)(sizeof(task_label) - 1u));
+    if (g_schedule_api->RegisterPeriodicTask(plugin_handle, &task,
+            &g_schedule_task) != CASTLE_OK) return CASTLE_ERROR_RESOURCE_CONFLICT;
+    return CASTLE_OK;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL Controller_Standalone(void* user_context) {
     HANDLE thread;
     const RuntimeApi* api;
-    (void)reserved;
+    (void)user_context;
+    g_runtime_schedule_mode = 0;
+    if (!plugin_initialize_controller(NULL, 0u, 0)) {
+        return CASTLE_ERROR_EXPECTED_BYTES;
+    }
+    api = Runtime_Api();
+    if (!api->create_thread) return CASTLE_ERROR_RUNTIME_FAULT;
+    thread = api->create_thread(NULL, 0u, PluginWorker, NULL, 0u, NULL);
+    if (!thread) return CASTLE_ERROR_RUNTIME_FAULT;
+    if (api->close_handle) api->close_handle(thread);
+    return CASTLE_OK;
+}
 
+static void CASTLE_RUNTIME_CALL Controller_RuntimeFault(CastleResult failure,
+                                                        void* user_context) {
+    (void)failure;
+    (void)user_context;
+    Runtime_Initialize(g_plugin_module);
+    Runtime_Log("[失败] Castle_Runtime.dll 存在但不可用；Controller 未安装私有 Hook/线程。");
+}
+
+static void CASTLE_RUNTIME_CALL Controller_ProcessExit(void* user_context) {
+    (void)user_context;
+    g_worker_running = 0;
+    CastlePad_PublicApiReset();
+}
+
+static const char g_plugin_id[] = "org.castlereforge.controller";
+static const char g_display_name[] = "Castle Controller";
+static const char g_version_text[] = "0.4.0";
+static const char g_build_id[] = "runtimesdk-v1";
+static const CastlePluginDescriptorV1 g_plugin_descriptor = {
+    CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,
+    CASTLE_PLUGIN_DESCRIPTOR_V1,
+    CASTLE_PLUGIN_FLAG_SUPPORTS_STANDALONE | CASTLE_PLUGIN_FLAG_REQUESTS_HOOKS |
+        CASTLE_PLUGIN_FLAG_PROVIDES_BACKEND | CASTLE_PLUGIN_FLAG_OFFICIAL_MODULE,
+    0u,
+    {g_plugin_id, (CastleU32)(sizeof(g_plugin_id) - 1u)},
+    {g_display_name, (CastleU32)(sizeof(g_display_name) - 1u)},
+    {g_version_text, (CastleU32)(sizeof(g_version_text) - 1u)},
+    {g_build_id, (CastleU32)(sizeof(g_build_id) - 1u)}
+};
+static const CastleRuntimeClientConfigV1 g_client_config = {
+    CASTLE_CLIENT_CONFIG_MAGIC, CASTLE_SIZEOF_CLIENT_CONFIG_V1,
+    CASTLE_CLIENT_CONFIG_VERSION_1, 0u,
+    Controller_Integrated, Controller_Standalone, Controller_RuntimeFault,
+    Controller_ProcessExit, NULL
+};
+static CastlePluginExportV1 g_plugin_export = {
+    CASTLE_PLUGIN_QUERY_MAGIC, CASTLE_SIZEOF_PLUGIN_EXPORT_V1,
+    CASTLE_PLUGIN_EXPORT_VERSION_1, 0u,
+    &g_plugin_descriptor, &g_client_config, 0u, NULL
+};
+
+const CastlePluginExportV1* CASTLE_RUNTIME_CALL CastlePlugin_Query(
+    CastleU32 requested_version) {
+    return requested_version == CASTLE_PLUGIN_EXPORT_VERSION_1 ?
+        &g_plugin_export : NULL;
+}
+
+void __cdecl InitializeASI(void) {
+    CastleRuntimeClient_RunNow();
+}
+
+BOOL WINAPI DllMain(void* module, DWORD reason, void* reserved) {
     if (reason == 1u) {
         g_plugin_module = (HMODULE)module;
         Runtime_BindEarlyApi();
-        api = Runtime_Api();
-
-        if (api->create_thread) {
-            thread = api->create_thread(NULL, 0u, PluginWorker, NULL, 0u, NULL);
-            /*
-             * CloseHandle 只关闭“我们手里的线程句柄”，不会结束线程。
-             * 真正线程仍会继续执行 PluginWorker。
-             */
-            if (thread && api->close_handle) api->close_handle(thread);
-        }
-        /*
-         * 不在这里做“没有 CreateThread 就直接安装 Hook”的 fallback。
-         * 因为那会重新把 LoadLibrary/日志/文件 I/O 拉回 Loader Lock，风险比少一个兼容兜底更大。
-         */
+        CastleRuntimeClient_OnProcessAttach((CastleModule)(SIZE_T)module,
+                                             &g_plugin_export);
     } else if (reason == 0u) {
-        /* ASI 正常生命周期通常跟 RPG.exe 一样长；这里主要为理论上的主动卸载留下停止信号。 */
-        g_worker_running = 0;
+        CastleRuntimeClient_OnProcessDetach(reserved);
     }
     return TRUE;
 }

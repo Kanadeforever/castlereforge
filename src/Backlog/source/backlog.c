@@ -3,6 +3,8 @@
 #include "game_addresses.h"
 #include "mouse_input.h"
 #include "pad_bridge.h"
+#include "CastleRuntime_API.h"
+#include "CastleHook_API.h"
 
 /*
  * backlog.c
@@ -233,6 +235,31 @@ static PFN_DialoguePanelDraw g_previous_panel_draw;
 static PFN_DialoguePanelDraw g_previous_name_panel_draw;
 static PFN_DialogueTextDraw g_previous_name_text_draw;
 static PFN_DialogueTextDraw g_previous_text_draw;
+/* Runtime 模式缓存的是地址稳定的 next 槽；后续链重排只改槽内容，不改槽地址。 */
+static void* volatile* g_scene_next_slot;
+static void* volatile* g_speaker_portrait_next_slot;
+static void* volatile* g_panel_next_slot;
+static void* volatile* g_name_panel_next_slot;
+static void* volatile* g_name_text_next_slot;
+static void* volatile* g_text_next_slot;
+
+static PFN_DialoguePanelDraw backlog_panel_next(void* volatile* slot,
+                                                PFN_DialoguePanelDraw fallback) {
+    void* current = slot ? *slot : (void*)fallback;
+    return (PFN_DialoguePanelDraw)current;
+}
+
+static PFN_DialogueTextDraw backlog_text_next(void* volatile* slot,
+                                              PFN_DialogueTextDraw fallback) {
+    void* current = slot ? *slot : (void*)fallback;
+    return (PFN_DialogueTextDraw)current;
+}
+
+static PFN_SceneWorldUpdate backlog_scene_next(void) {
+    void* current = g_scene_next_slot ? *g_scene_next_slot :
+                                        (void*)g_previous_scene_update;
+    return (PFN_SceneWorldUpdate)current;
+}
 
 static int g_hook_installed;
 static int g_speaker_portrait_hook_installed;
@@ -609,9 +636,11 @@ static void* backlog_original_name_panel(void) {
 static void BACKLOG_THISCALL Backlog_HookCurrentSpeakerPortraitDraw(void* panel,
                                                                     i32 arg1, i32 arg2, i32 arg3,
                                                                     i32 arg4, i32 arg5) {
-    if (!g_previous_speaker_portrait_draw) return;
+    PFN_DialoguePanelDraw previous = backlog_panel_next(
+        g_speaker_portrait_next_slot, g_previous_speaker_portrait_draw);
+    if (!previous) return;
     if (g_active) return;
-    g_previous_speaker_portrait_draw(panel, arg1, arg2, arg3, arg4, arg5);
+    previous(panel, arg1, arg2, arg3, arg4, arg5);
 }
 
 /*
@@ -624,9 +653,11 @@ static void BACKLOG_THISCALL Backlog_HookCurrentSpeakerPortraitDraw(void* panel,
 static void BACKLOG_THISCALL Backlog_HookCurrentNamePanelDraw(void* panel,
                                                                i32 arg1, i32 arg2, i32 arg3,
                                                                i32 arg4, i32 arg5) {
-    if (!g_previous_name_panel_draw) return;
+    PFN_DialoguePanelDraw previous = backlog_panel_next(
+        g_name_panel_next_slot, g_previous_name_panel_draw);
+    if (!previous) return;
     if (g_active) return;
-    g_previous_name_panel_draw(panel, arg1, arg2, arg3, arg4, arg5);
+    previous(panel, arg1, arg2, arg3, arg4, arg5);
 }
 
 /*
@@ -640,10 +671,12 @@ static void BACKLOG_THISCALL Backlog_HookCurrentNameTextDraw(void* font,
                                                               void* surface, i32 x, i32 y,
                                                               i32 draw_mode, const u8* text,
                                                               i32 draw_flags) {
-    if (!g_previous_name_text_draw) return;
+    PFN_DialogueTextDraw previous = backlog_text_next(
+        g_name_text_next_slot, g_previous_name_text_draw);
+    if (!previous) return;
     if (g_active) return;
-    g_previous_name_text_draw(font, origin_x, origin_y, surface,
-                              x, y, draw_mode, text, draw_flags);
+    previous(font, origin_x, origin_y, surface,
+             x, y, draw_mode, text, draw_flags);
 }
 
 /*
@@ -661,6 +694,10 @@ static void BACKLOG_THISCALL Backlog_HookCurrentNameTextDraw(void* font,
 static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
                                                     i32 arg1, i32 arg2, i32 arg3,
                                                     i32 arg4, i32 arg5) {
+    PFN_DialoguePanelDraw previous_panel = backlog_panel_next(
+        g_panel_next_slot, g_previous_panel_draw);
+    PFN_DialoguePanelDraw previous_name_panel = backlog_panel_next(
+        g_name_panel_next_slot, g_previous_name_panel_draw);
     u8* original_name_panel;
     Sf2DrawCursor talk_cursor;
     Sf2DrawCursor name_cursor;
@@ -673,14 +710,14 @@ static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
     u32 visible;
     u32 order;
 
-    if (!g_previous_panel_draw) return;
+    if (!previous_panel) return;
 
     /*
      * Backlog 没打开时，这个 Hook 必须表现得像不存在一样。
      * 正常剧情仍只执行原来 0x40486E 那一次 F-Talk 绘制。
      */
     if (!g_active) {
-        g_previous_panel_draw(panel, arg1, arg2, arg3, arg4, arg5);
+        previous_panel(panel, arg1, arg2, arg3, arg4, arg5);
         return;
     }
 
@@ -689,13 +726,13 @@ static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
      * 若条件不满足，就不做多框展开，直接把原调用交回前一层。
      */
     if (!Runtime_MemoryRangeReadable(panel, 0x60u)) {
-        g_previous_panel_draw(panel, arg1, arg2, arg3, arg4, arg5);
+        previous_panel(panel, arg1, arg2, arg3, arg4, arg5);
         return;
     }
 
     talk_cursor_saved = backlog_save_sf2_cursor(panel, &talk_cursor);
     if (!talk_cursor_saved) {
-        g_previous_panel_draw(panel, arg1, arg2, arg3, arg4, arg5);
+        previous_panel(panel, arg1, arg2, arg3, arg4, arg5);
         return;
     }
 
@@ -729,7 +766,7 @@ static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
         backlog_restore_sf2_cursor(panel, &talk_cursor);
         *(i32*)((u8*)panel + 0u) = original_x;
         *(i32*)((u8*)panel + 4u) = original_y + shift_y;
-        g_previous_panel_draw(panel, arg1, arg2, arg3, arg4, arg5);
+        previous_panel(panel, arg1, arg2, arg3, arg4, arg5);
 
         /*
          * speaker!=0 且姓名缓冲不只是原版结束标记 00 02，才需要姓名牌。
@@ -740,7 +777,7 @@ static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
             !(entry->speaker_name[0] == 0u &&
               entry->speaker_name[1] == 0x02u);
 
-        if (has_name && g_previous_name_panel_draw) {
+        if (has_name && previous_name_panel) {
             if (original_name_panel) {
                 i32 name_target_x = original_x;
 
@@ -760,7 +797,7 @@ static void BACKLOG_THISCALL Backlog_HookPanelDraw(void* panel,
                  * 姓名框仍走真正的 0x404899 当前 CALL 目标。
                  * 如果宽屏等插件已经链在该调用点，我们继续尊重它的 wrapper。
                  */
-                g_previous_name_panel_draw(original_name_panel, arg1, arg2, arg3, arg4, arg5);
+                previous_name_panel(original_name_panel, arg1, arg2, arg3, arg4, arg5);
             } else if (!g_missing_name_panel_logged) {
                 g_missing_name_panel_logged = 1;
                 Runtime_Log(
@@ -805,15 +842,19 @@ static void BACKLOG_THISCALL Backlog_HookTextDraw(void* font,
                                                    void* surface, i32 x, i32 y,
                                                    i32 draw_mode, const u8* text,
                                                    i32 draw_flags) {
+    PFN_DialogueTextDraw previous_text = backlog_text_next(
+        g_text_next_slot, g_previous_text_draw);
+    PFN_DialogueTextDraw previous_name_text = backlog_text_next(
+        g_name_text_next_slot, g_previous_name_text_draw);
     u32 visible;
     u32 order;
 
-    if (!g_previous_text_draw) return;
+    if (!previous_text) return;
 
     /* 正常游戏状态完全透传。 */
     if (!g_active) {
-        g_previous_text_draw(font, origin_x, origin_y, surface, x, y,
-                             draw_mode, text, draw_flags);
+        previous_text(font, origin_x, origin_y, surface, x, y,
+                      draw_mode, text, draw_flags);
         return;
     }
 
@@ -830,7 +871,7 @@ static void BACKLOG_THISCALL Backlog_HookTextDraw(void* font,
         shift_y = backlog_panel_shift_y(panel_slot);
 
         /* 有姓名时，姓名独立画在正文上方，不占正文宽度。 */
-        if (backlog_entry_has_speaker_name(entry) && g_previous_name_text_draw) {
+        if (backlog_entry_has_speaker_name(entry) && previous_name_text) {
             i32 name_x;
             i32 name_y;
 
@@ -845,18 +886,18 @@ static void BACKLOG_THISCALL Backlog_HookTextDraw(void* font,
             if (name_y < 0) name_y = 0;
 
             /* 姓名走原版 0x4048E6 的前一目标，不借用正文 CALL 的插件链。 */
-            g_previous_name_text_draw(font, origin_x, origin_y, surface,
-                                      name_x, name_y, draw_mode,
-                                      entry->speaker_name, draw_flags);
+            previous_name_text(font, origin_x, origin_y, surface,
+                               name_x, name_y, draw_mode,
+                               entry->speaker_name, draw_flags);
         }
 
         /*
          * 核心修复：正文始终使用原版 x。
          * 不再有 body_x，也不再 +96。
          */
-        g_previous_text_draw(font, origin_x, origin_y, surface,
-                             x, y + shift_y, draw_mode,
-                             entry->text, draw_flags);
+        previous_text(font, origin_x, origin_y, surface,
+                      x, y + shift_y, draw_mode,
+                      entry->text, draw_flags);
     }
 }
 
@@ -1235,7 +1276,10 @@ static void BACKLOG_THISCALL Backlog_HookSceneUpdate(void* scene_world) {
         return;
     }
 
-    if (g_previous_scene_update) g_previous_scene_update(scene_world);
+    {
+        PFN_SceneWorldUpdate previous = backlog_scene_next();
+        if (previous) previous(scene_world);
+    }
 }
 
 /* 检查一个函数地址所在内存是否有执行权限，避免链到普通数据或空指针。 */
@@ -1305,6 +1349,12 @@ int Backlog_Install(void) {
 
     if (!Runtime_Config()->enabled) return 1;
     if (g_hook_installed) return 1;
+    g_scene_next_slot = NULL;
+    g_speaker_portrait_next_slot = NULL;
+    g_panel_next_slot = NULL;
+    g_name_panel_next_slot = NULL;
+    g_name_text_next_slot = NULL;
+    g_text_next_slot = NULL;
 
     /*
      * 安装顺序按原版 0x404800 的绘制顺序排列。
@@ -1412,6 +1462,172 @@ fail_calls:
         g_speaker_portrait_hook_installed = 0;
     }
     return 0;
+}
+
+static CastleStringView backlog_sdk_view(const char* text, CastleU32 length) {
+    CastleStringView view;
+    view.data = text;
+    view.length = length;
+    return view;
+}
+
+static const CastleHookApiV1* backlog_query_hook_api(
+    const CastleRuntimeApiV1* runtime_api) {
+    static const char interface_id[] = CASTLE_HOOK_INTERFACE_ID;
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 result = {0};
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = backlog_sdk_view(interface_id,
+        (CastleU32)(sizeof(interface_id) - 1u));
+    query.requested_version = CASTLE_HOOK_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_HOOK_API_V1;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (!runtime_api || runtime_api->QueryInterface(&query, &result) != CASTLE_OK) {
+        return NULL;
+    }
+    return (const CastleHookApiV1*)result.api_pointer;
+}
+
+static CastleResult backlog_add_runtime_hook(const CastleHookApiV1* hook_api,
+    CastleTransactionHandle transaction, CastleModule game_module,
+    CastleU32 target_rva, CastleU32 hook_kind, CastleAddress original_target,
+    CastleAddress replacement, CastleStringView signature,
+    CastleStringView label, CastleClaimHandle* out_claim) {
+    CastleChainHookClaimV1 claim = {0};
+    claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
+    claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
+    claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+    claim.hook_kind = hook_kind;
+    claim.target.module = game_module;
+    claim.target.rva = target_rva;
+    claim.target.size = hook_kind == CASTLE_HOOK_REL32_CALL ? 5u : 4u;
+    claim.expected_original_target = original_target;
+    claim.replacement_hook = replacement;
+    claim.signature_id = signature;
+    claim.phase = CASTLE_HOOK_PHASE_NORMAL;
+    claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
+    claim.label = label;
+    return hook_kind == CASTLE_HOOK_REL32_CALL ?
+        hook_api->AddRelativeCallHook(transaction, &claim, out_claim) :
+        hook_api->AddPointerHook(transaction, &claim, out_claim);
+}
+
+static CastleResult backlog_get_next_slot(const CastleHookApiV1* hook_api,
+    CastleClaimHandle claim, void* volatile** out_slot) {
+    CastleHookBindingV1 binding = {0};
+    binding.magic = CASTLE_HOOK_BINDING_MAGIC;
+    binding.struct_size = CASTLE_SIZEOF_HOOK_BINDING_V1;
+    binding.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+    if (hook_api->GetHookBinding(claim, &binding) != CASTLE_OK ||
+        !binding.next_slot) return CASTLE_ERROR_NOT_READY;
+    *out_slot = binding.next_slot;
+    return CASTLE_OK;
+}
+
+/* Runtime 模式把五个 CALL 和 SceneWorld vtable[0] 作为一个原子链事务提交。 */
+CastleResult Backlog_InstallIntegrated(const CastleRuntimeApiV1* runtime_api,
+                                       CastlePluginHandle plugin_handle) {
+    static const char transaction_label[] = "Backlog render/update chains";
+    static const char panel_signature_text[] =
+        "org.castlereforge.signature.dialogue-panel-draw.v1";
+    static const char text_signature_text[] =
+        "org.castlereforge.signature.dialogue-text-draw.v1";
+    static const char scene_signature_text[] =
+        "org.castlereforge.signature.scene-world-update.v1";
+    static const char speaker_label[] = "current speaker portrait draw";
+    static const char panel_label[] = "F-Talk panel draw";
+    static const char name_panel_label[] = "F-Name panel draw";
+    static const char name_text_label[] = "speaker name text draw";
+    static const char text_label[] = "dialogue text draw";
+    static const char scene_label[] = "SceneWorld update";
+    CastleRuntimeInfoV1 info = {0};
+    CastleTransactionHandle transaction = 0u;
+    CastleClaimHandle claims[6] = {0};
+    const CastleHookApiV1* hook_api = backlog_query_hook_api(runtime_api);
+    CastleStringView panel_signature = backlog_sdk_view(panel_signature_text,
+        (CastleU32)(sizeof(panel_signature_text) - 1u));
+    CastleStringView text_signature = backlog_sdk_view(text_signature_text,
+        (CastleU32)(sizeof(text_signature_text) - 1u));
+    CastleStringView scene_signature = backlog_sdk_view(scene_signature_text,
+        (CastleU32)(sizeof(scene_signature_text) - 1u));
+    CastleResult result;
+
+    if (!Runtime_Config()->enabled) return CASTLE_OK;
+    if (!hook_api || !runtime_api) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    info.magic = CASTLE_RUNTIME_INFO_MAGIC;
+    info.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
+    info.info_version = CASTLE_RUNTIME_INFO_VERSION_1;
+    if (runtime_api->GetRuntimeInfo(&info) != CASTLE_OK) return CASTLE_ERROR_RUNTIME_FAULT;
+    result = hook_api->BeginTransaction(plugin_handle,
+        backlog_sdk_view(transaction_label,
+            (CastleU32)(sizeof(transaction_label) - 1u)), 0u, &transaction);
+    if (result < 0) return result;
+
+#define BACKLOG_ADD_CALL_(index_value, address_value, original_value, hook_value, signature_value, label_value) \
+    do { \
+        result = backlog_add_runtime_hook(hook_api, transaction, info.game_module, \
+            (CastleU32)((address_value) - 0x00400000u), CASTLE_HOOK_REL32_CALL, \
+            (CastleAddress)(original_value), (CastleAddress)(SIZE_T)(hook_value), \
+            (signature_value), backlog_sdk_view((label_value), \
+                (CastleU32)(sizeof(label_value) - 1u)), &claims[(index_value)]); \
+        if (result < 0) goto fail_runtime_transaction; \
+    } while (0)
+
+    BACKLOG_ADD_CALL_(0u, CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW,
+        FN_DIALOGUE_PANEL_DRAW, Backlog_HookCurrentSpeakerPortraitDraw,
+        panel_signature, speaker_label);
+    BACKLOG_ADD_CALL_(1u, CALL_DIALOGUE_PANEL_DRAW,
+        FN_DIALOGUE_PANEL_DRAW, Backlog_HookPanelDraw,
+        panel_signature, panel_label);
+    BACKLOG_ADD_CALL_(2u, CALL_DIALOGUE_NAME_PANEL_DRAW,
+        FN_DIALOGUE_PANEL_DRAW, Backlog_HookCurrentNamePanelDraw,
+        panel_signature, name_panel_label);
+    BACKLOG_ADD_CALL_(3u, CALL_DIALOGUE_NAME_TEXT_DRAW,
+        FN_DIALOGUE_TEXT_DRAW, Backlog_HookCurrentNameTextDraw,
+        text_signature, name_text_label);
+    BACKLOG_ADD_CALL_(4u, CALL_DIALOGUE_TEXT_DRAW,
+        FN_DIALOGUE_TEXT_DRAW, Backlog_HookTextDraw,
+        text_signature, text_label);
+    result = backlog_add_runtime_hook(hook_api, transaction, info.game_module,
+        (CastleU32)(VTABLE_SCENE_WORLD - 0x00400000u),
+        CASTLE_HOOK_VTABLE_POINTER, (CastleAddress)FN_SCENE_WORLD_UPDATE,
+        (CastleAddress)(SIZE_T)Backlog_HookSceneUpdate, scene_signature,
+        backlog_sdk_view(scene_label, (CastleU32)(sizeof(scene_label) - 1u)),
+        &claims[5]);
+    if (result < 0) goto fail_runtime_transaction;
+    result = hook_api->PreflightTransaction(transaction);
+    if (result < 0) goto fail_runtime_transaction;
+    result = hook_api->CommitTransaction(transaction);
+    if (result < 0) return result;
+
+    if (backlog_get_next_slot(hook_api, claims[0], &g_speaker_portrait_next_slot) < 0 ||
+        backlog_get_next_slot(hook_api, claims[1], &g_panel_next_slot) < 0 ||
+        backlog_get_next_slot(hook_api, claims[2], &g_name_panel_next_slot) < 0 ||
+        backlog_get_next_slot(hook_api, claims[3], &g_name_text_next_slot) < 0 ||
+        backlog_get_next_slot(hook_api, claims[4], &g_text_next_slot) < 0 ||
+        backlog_get_next_slot(hook_api, claims[5], &g_scene_next_slot) < 0) {
+        return CASTLE_ERROR_RUNTIME_FAULT;
+    }
+    g_speaker_portrait_hook_installed = 1;
+    g_panel_hook_installed = 1;
+    g_name_panel_hook_installed = 1;
+    g_name_text_hook_installed = 1;
+    g_text_hook_installed = 1;
+    g_hook_installed = 1;
+    g_accept_input = 1;
+    Runtime_Log("[Hook] Runtime 已原子提交五个绘制 CALL 和 SceneWorld vtable 链。");
+#undef BACKLOG_ADD_CALL_
+    return CASTLE_OK;
+
+fail_runtime_transaction:
+#undef BACKLOG_ADD_CALL_
+    hook_api->AbortTransaction(transaction);
+    Runtime_Log("[致命] Runtime 拒绝 Backlog Hook 事务；没有留下半套链。");
+    return result;
 }
 
 /* 返回按键这一刻是否按下；Win32 高位 0x8000 表示当前物理按住。 */

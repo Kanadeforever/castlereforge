@@ -2,6 +2,7 @@
 #define CASTLE_BACKLOG_RUNTIME_H
 
 #include "platform.h"
+#include "CastleRuntime_API.h"
 
 /*
  * RuntimeConfig 是从 Castle_Backlog.ini 读取后的最终配置快照。
@@ -29,6 +30,11 @@ typedef struct RuntimeConfig {
 
 /* 绑定模块路径、读取 INI、打开日志并执行精确游戏协议预检。 */
 int Runtime_Initialize(HMODULE plugin_module);
+
+/* 整合模式从 Runtime Path 取得插件路径，并把共享 Hook 点交给 Hook 事务预检。 */
+int Runtime_InitializeIntegrated(HMODULE plugin_module,
+                                 const CastleRuntimeApiV1* runtime_api,
+                                 CastlePluginHandle plugin_handle);
 
 /* 只读取得已经裁剪到安全范围的配置。 */
 const RuntimeConfig* Runtime_Config(void);

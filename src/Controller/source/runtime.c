@@ -1,5 +1,7 @@
 ﻿#include "runtime.h"
 #include "game_addresses.h"
+#include "CastleHook_API.h"
+#include "CastlePath_API.h"
 
 /*
  * runtime.c
@@ -11,6 +13,20 @@
 
 static RuntimeApi g_api;
 static RuntimeConfig g_cfg;
+
+typedef struct RuntimeSdkBindingRequest {
+    CastleClaimHandle claim;
+    void** original_out;
+} RuntimeSdkBindingRequest;
+
+static const CastleRuntimeApiV1* g_sdk_runtime_api;
+static const CastleHookApiV1* g_sdk_hook_api;
+static CastlePluginHandle g_sdk_plugin_handle;
+static CastleModule g_sdk_game_module;
+static CastleTransactionHandle g_sdk_transaction;
+static RuntimeSdkBindingRequest g_sdk_bindings[64];
+static u32 g_sdk_binding_count;
+static int g_sdk_batch_building;
 
 /*
  * 原版 Space 当前真正调用到的地图动作业务函数。
@@ -1398,10 +1414,150 @@ int Runtime_ConfirmDialogProtocolOk(void) {
     return 1;
 }
 
+static CastleStringView sdk_view_(const char* text, CastleU32 length) {
+    CastleStringView view;
+    view.data = text;
+    view.length = length;
+    return view;
+}
+
+static const void* sdk_query_interface_(const CastleRuntimeApiV1* runtime_api,
+                                        const char* interface_id,
+                                        CastleU32 interface_length,
+                                        CastleU32 version,
+                                        CastleU32 minimum_size) {
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 result = {0};
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = sdk_view_(interface_id, interface_length);
+    query.requested_version = version;
+    query.minimum_struct_size = minimum_size;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (!runtime_api || runtime_api->QueryInterface(&query, &result) != CASTLE_OK) {
+        return NULL;
+    }
+    return result.api_pointer;
+}
+
+int Runtime_BeginSdkHookBatch(const CastleRuntimeApiV1* runtime_api,
+                              CastlePluginHandle plugin_handle) {
+    static const char hook_id[] = CASTLE_HOOK_INTERFACE_ID;
+    static const char transaction_label[] = "Controller complete hook batch";
+    CastleRuntimeInfoV1 info = {0};
+    g_sdk_runtime_api = runtime_api;
+    g_sdk_plugin_handle = plugin_handle;
+    g_sdk_hook_api = (const CastleHookApiV1*)sdk_query_interface_(runtime_api,
+        hook_id, (CastleU32)(sizeof(hook_id) - 1u),
+        CASTLE_HOOK_API_VERSION_1, CASTLE_SIZEOF_HOOK_API_V1);
+    info.magic = CASTLE_RUNTIME_INFO_MAGIC;
+    info.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
+    info.info_version = CASTLE_RUNTIME_INFO_VERSION_1;
+    if (!g_sdk_hook_api || !runtime_api ||
+        runtime_api->GetRuntimeInfo(&info) != CASTLE_OK) return 0;
+    g_sdk_game_module = info.game_module;
+    g_sdk_binding_count = 0u;
+    g_sdk_transaction = 0u;
+    if (g_sdk_hook_api->BeginTransaction(plugin_handle,
+            sdk_view_(transaction_label,
+                (CastleU32)(sizeof(transaction_label) - 1u)),
+            0u, &g_sdk_transaction) != CASTLE_OK) return 0;
+    g_sdk_batch_building = 1;
+    return 1;
+}
+
+int Runtime_CommitSdkHookBatch(void) {
+    u32 index;
+    CastleResult result;
+    if (!g_sdk_batch_building || !g_sdk_hook_api || !g_sdk_transaction) return 0;
+    result = g_sdk_hook_api->PreflightTransaction(g_sdk_transaction);
+    if (result >= 0) result = g_sdk_hook_api->CommitTransaction(g_sdk_transaction);
+    if (result < 0) {
+        g_sdk_batch_building = 0;
+        return 0;
+    }
+    for (index = 0u; index < g_sdk_binding_count; ++index) {
+        CastleHookBindingV1 binding = {0};
+        binding.magic = CASTLE_HOOK_BINDING_MAGIC;
+        binding.struct_size = CASTLE_SIZEOF_HOOK_BINDING_V1;
+        binding.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        if (g_sdk_hook_api->GetHookBinding(g_sdk_bindings[index].claim,
+                &binding) != CASTLE_OK || !binding.next_slot) {
+            g_sdk_batch_building = 0;
+            return 0;
+        }
+        if (g_sdk_bindings[index].original_out) {
+            *g_sdk_bindings[index].original_out = *binding.next_slot;
+        }
+    }
+    g_sdk_batch_building = 0;
+    Runtime_Log("[RuntimeSDK] Controller 全部 Hook 已作为一个事务提交。");
+    return 1;
+}
+
+void Runtime_AbortSdkHookBatch(void) {
+    if (g_sdk_batch_building && g_sdk_hook_api && g_sdk_transaction) {
+        g_sdk_hook_api->AbortTransaction(g_sdk_transaction);
+    }
+    g_sdk_batch_building = 0;
+}
+
+static CastleStringView sdk_call_signature_(u32 expected_target) {
+    static const char button_event[] =
+        "org.castlereforge.signature.button-event-this.v1";
+    static const char button_hit[] =
+        "org.castlereforge.signature.button-hit-fast.v1";
+    static const char generic_call[] =
+        "org.castlereforge.signature.controller-call.v1";
+    if (expected_target == FN_BUTTON_EVENT) {
+        return sdk_view_(button_event, (CastleU32)(sizeof(button_event) - 1u));
+    }
+    if (expected_target == FN_BUTTON_HITTEST) {
+        return sdk_view_(button_hit, (CastleU32)(sizeof(button_hit) - 1u));
+    }
+    return sdk_view_(generic_call, (CastleU32)(sizeof(generic_call) - 1u));
+}
+
 int Runtime_PatchIatPointer(u32 slot, void* replacement, void** original_out) {
     void** p = (void**)slot;
     DWORD old_protect = 0, ignored = 0;
     void* original;
+    if (g_sdk_runtime_api) {
+        static const char pointer_signature[] =
+            "org.castlereforge.signature.controller-pointer.v1";
+        static const char label[] = "Controller IAT/vtable pointer";
+        CastleChainHookClaimV1 claim = {0};
+        CastleClaimHandle claim_handle = 0u;
+        CastleResult result;
+        if (!g_sdk_batch_building || !g_sdk_hook_api || !replacement ||
+            g_sdk_binding_count >= 64u) return 0;
+        original = *p;
+        if (!Runtime_PtrOk(original)) return 0;
+        claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
+        claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
+        claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        claim.hook_kind = CASTLE_HOOK_VTABLE_POINTER;
+        claim.target.module = g_sdk_game_module;
+        claim.target.rva = slot - (u32)g_sdk_game_module;
+        claim.target.size = 4u;
+        claim.expected_original_target = (CastleAddress)(SIZE_T)original;
+        claim.replacement_hook = (CastleAddress)(SIZE_T)replacement;
+        claim.signature_id = sdk_view_(pointer_signature,
+            (CastleU32)(sizeof(pointer_signature) - 1u));
+        claim.phase = CASTLE_HOOK_PHASE_POST;
+        claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
+        claim.label = sdk_view_(label, (CastleU32)(sizeof(label) - 1u));
+        result = g_sdk_hook_api->AddPointerHook(g_sdk_transaction, &claim,
+                                                &claim_handle);
+        if (result < 0) return 0;
+        g_sdk_bindings[g_sdk_binding_count].claim = claim_handle;
+        g_sdk_bindings[g_sdk_binding_count].original_out = original_out;
+        ++g_sdk_binding_count;
+        return 1;
+    }
     if (!g_api.virtual_protect || !replacement) return 0;
     original = *p;
     if (!Runtime_PtrOk(original)) return 0;
@@ -1419,6 +1575,27 @@ int Runtime_PatchCall(u32 call_address, void* replacement, u32 expected_target) 
     i32 old_rel, new_rel;
     u32 old_target;
     DWORD old_protect = 0, ignored = 0;
+    if (g_sdk_runtime_api) {
+        static const char label[] = "Controller rel32 CALL";
+        CastleChainHookClaimV1 claim = {0};
+        CastleClaimHandle claim_handle = 0u;
+        if (!g_sdk_batch_building || !g_sdk_hook_api || !replacement) return 0;
+        claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
+        claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
+        claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        claim.hook_kind = CASTLE_HOOK_REL32_CALL;
+        claim.target.module = g_sdk_game_module;
+        claim.target.rva = call_address - (u32)g_sdk_game_module;
+        claim.target.size = 5u;
+        claim.expected_original_target = expected_target;
+        claim.replacement_hook = (CastleAddress)(SIZE_T)replacement;
+        claim.signature_id = sdk_call_signature_(expected_target);
+        claim.phase = CASTLE_HOOK_PHASE_POST;
+        claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
+        claim.label = sdk_view_(label, (CastleU32)(sizeof(label) - 1u));
+        return g_sdk_hook_api->AddRelativeCallHook(g_sdk_transaction, &claim,
+            &claim_handle) >= 0;
+    }
     if (!g_api.virtual_protect || !replacement || p[0] != 0xE8u) return 0;
     old_rel = *(i32*)(p + 1);
     old_target = call_address + 5u + (u32)old_rel;
@@ -1435,6 +1612,35 @@ int Runtime_PatchJmp6(u32 address, void* replacement, const u8 expected[6]) {
     u8* p = (u8*)address;
     i32 rel;
     DWORD old_protect = 0, ignored = 0;
+    if (g_sdk_runtime_api) {
+        static const char label[] = "Controller JMP6";
+        CastleExclusivePatchClaimV1 claim = {0};
+        CastleClaimHandle claim_handle = 0u;
+        u8 desired[6];
+        i32 sdk_rel;
+        if (!g_sdk_batch_building || !g_sdk_hook_api || !replacement || !expected) return 0;
+        sdk_rel = (i32)((u32)replacement - (address + 5u));
+        desired[0] = 0xE9u;
+        desired[1] = (u8)((u32)sdk_rel & 0xFFu);
+        desired[2] = (u8)(((u32)sdk_rel >> 8u) & 0xFFu);
+        desired[3] = (u8)(((u32)sdk_rel >> 16u) & 0xFFu);
+        desired[4] = (u8)(((u32)sdk_rel >> 24u) & 0xFFu);
+        desired[5] = 0x90u;
+        claim.magic = CASTLE_EXCLUSIVE_PATCH_MAGIC;
+        claim.struct_size = CASTLE_SIZEOF_EXCLUSIVE_PATCH_V1;
+        claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        claim.flags = CASTLE_PATCH_FLAG_CODE | CASTLE_PATCH_FLAG_KEEP_ON_PROCESS_EXIT;
+        claim.target.module = g_sdk_game_module;
+        claim.target.rva = address - (u32)g_sdk_game_module;
+        claim.target.size = 6u;
+        claim.expected_bytes = expected;
+        claim.expected_size = 6u;
+        claim.replacement_bytes = desired;
+        claim.replacement_size = 6u;
+        claim.label = sdk_view_(label, (CastleU32)(sizeof(label) - 1u));
+        return g_sdk_hook_api->AddExclusivePatch(g_sdk_transaction, &claim,
+            &claim_handle) >= 0;
+    }
     if (!g_api.virtual_protect || !replacement || !expected) return 0;
     if (!Runtime_MemEq(p, expected, 6u)) return 0;
     rel = (i32)((u32)replacement - (address + 5u));
@@ -1458,6 +1664,34 @@ int Runtime_PatchMovEsiFunction(u32 address, void* replacement, const u8 expecte
     u8* p = (u8*)address;
     DWORD old_protect = 0, ignored = 0;
 
+    if (g_sdk_runtime_api) {
+        static const char label[] = "Controller MOV ESI function";
+        CastleExclusivePatchClaimV1 claim = {0};
+        CastleClaimHandle claim_handle = 0u;
+        u8 desired[6];
+        u32 target = (u32)replacement;
+        if (!g_sdk_batch_building || !g_sdk_hook_api || !replacement || !expected) return 0;
+        desired[0] = 0xBEu;
+        desired[1] = (u8)(target & 0xFFu);
+        desired[2] = (u8)((target >> 8u) & 0xFFu);
+        desired[3] = (u8)((target >> 16u) & 0xFFu);
+        desired[4] = (u8)((target >> 24u) & 0xFFu);
+        desired[5] = 0x90u;
+        claim.magic = CASTLE_EXCLUSIVE_PATCH_MAGIC;
+        claim.struct_size = CASTLE_SIZEOF_EXCLUSIVE_PATCH_V1;
+        claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        claim.flags = CASTLE_PATCH_FLAG_CODE | CASTLE_PATCH_FLAG_KEEP_ON_PROCESS_EXIT;
+        claim.target.module = g_sdk_game_module;
+        claim.target.rva = address - (u32)g_sdk_game_module;
+        claim.target.size = 6u;
+        claim.expected_bytes = expected;
+        claim.expected_size = 6u;
+        claim.replacement_bytes = desired;
+        claim.replacement_size = 6u;
+        claim.label = sdk_view_(label, (CastleU32)(sizeof(label) - 1u));
+        return g_sdk_hook_api->AddExclusivePatch(g_sdk_transaction, &claim,
+            &claim_handle) >= 0;
+    }
     if (!g_api.virtual_protect || !replacement || !expected) return 0;
     if (!Runtime_MemEq(p, expected, 6u)) return 0;
     if (!g_api.virtual_protect(p, 6u, PAGE_READWRITE_, &old_protect)) return 0;

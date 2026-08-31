@@ -4,6 +4,7 @@ chcp 65001 >nul
 rem 统一输出目录：仓库根 build\
 set "ROOT=%~dp0"
 set "OUT=%ROOT%..\..\build"
+set "SDK=%ROOT%..\RuntimeSDK"
 set "VSDEV="
 
 if exist "C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat" set "VSDEV=C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat"
@@ -45,7 +46,7 @@ if not exist "%OUT%" mkdir "%OUT%"
 if exist "%ROOT%_build" rmdir /s /q "%ROOT%_build"
 mkdir "%ROOT%_build"
 
-set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-void-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast"
+set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-void-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast /I%SDK%\include /I%SDK%\client"
 
 call :compile runtime.c runtime.obj || goto :fail
 call :compile pad_input.c pad_input.obj || goto :fail
@@ -77,6 +78,13 @@ call :compile save_point.c save_point.obj || goto :fail
 call :compile frontend.c frontend.obj || goto :fail
 call :compile battle.c battle.obj || goto :fail
 call :compile plugin.c plugin.obj || goto :fail
+echo [编译] RuntimeSDK Client
+clang-cl %CFLAGS% "%SDK%\client\runtime_client.c" /Fo:"%ROOT%_build\runtime_client.obj"
+if errorlevel 1 goto :fail
+clang-cl %CFLAGS% "%SDK%\client\runtime_entry_gate.c" /Fo:"%ROOT%_build\runtime_entry_gate.obj"
+if errorlevel 1 goto :fail
+clang-cl %CFLAGS% "%SDK%\client\runtime_client_support.c" /Fo:"%ROOT%_build\runtime_client_support.obj"
+if errorlevel 1 goto :fail
 
 echo [链接] Castle_PadSupport.asi
 link /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 /def:"%ROOT%source\Castle_PadSupport.def" ^
@@ -85,6 +93,8 @@ link /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 /def:"%RO
   "%ROOT%_build\cursor.obj" "%ROOT%_build\exploration.obj" "%ROOT%_build\investigation.obj" "%ROOT%_build\control_modes.obj" "%ROOT%_build\ui_bridge.obj" "%ROOT%_build\interface_shell.obj" "%ROOT%_build\interface_items.obj" "%ROOT%_build\interface_skills.obj" "%ROOT%_build\interface_equipment.obj" "%ROOT%_build\interface_inner_stats.obj" "%ROOT%_build\spatial_neighbor.obj" "%ROOT%_build\interface_formation.obj" "%ROOT%_build\interface_tome.obj" "%ROOT%_build\interface_options.obj" ^
   "%ROOT%_build\inn.obj" "%ROOT%_build\synthesis.obj" "%ROOT%_build\shop.obj" "%ROOT%_build\scene_choice.obj" ^
   "%ROOT%_build\save_slot.obj" "%ROOT%_build\save_point.obj" "%ROOT%_build\frontend.obj" "%ROOT%_build\battle.obj" "%ROOT%_build\plugin.obj" ^
+  "%ROOT%_build\runtime_client.obj" "%ROOT%_build\runtime_entry_gate.obj" "%ROOT%_build\runtime_client_support.obj" ^
+  kernel32.lib ^
   /out:"%OUT%\Castle_PadSupport.asi"
 if errorlevel 1 goto :fail
 

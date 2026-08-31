@@ -4,3 +4,5 @@
 LIBRARY Castle_PadSupport
 EXPORTS
     CastlePad_GetApi
+    CastlePlugin_Query
+    InitializeASI

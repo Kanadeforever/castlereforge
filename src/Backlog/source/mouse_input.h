@@ -2,6 +2,7 @@
 #define CASTLE_BACKLOG_MOUSE_INPUT_H
 
 #include "platform.h"
+#include "CastleRuntime_API.h"
 
 /*
  * mouse_input.h
@@ -18,6 +19,10 @@
 
 /* 尝试安装窗口过程观察器。窗口还没出现时返回 0，后续可以继续重试。 */
 int MouseInput_Initialize(void);
+
+/* 整合模式向 Runtime Window 注册 Observer/Filter，不再私自 SetWindowLongPtr。 */
+int MouseInput_InitializeIntegrated(const CastleRuntimeApiV1* runtime_api,
+                                    CastlePluginHandle plugin_handle);
 
 /* worker 每个 tick 调一次；如果游戏窗口稍后才出现，会在这里自动补装。 */
 void MouseInput_Poll(void);

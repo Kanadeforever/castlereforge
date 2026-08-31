@@ -1,10 +1,11 @@
-@echo off
+﻿@echo off
 setlocal DisableDelayedExpansion
 "%SystemRoot%\System32\chcp.com" 65001 >nul
 
 rem 统一输出目录：仓库根 build\
 set "ROOT=%~dp0"
 set "OUT=%ROOT%..\..\build"
+set "SDK=%ROOT%..\RuntimeSDK"
 
 set "VSDEV="
 if exist "C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat" set "VSDEV=C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat"
@@ -42,18 +43,27 @@ if not exist "%OUT%" mkdir "%OUT%"
 if exist "%ROOT%_build" rmdir /s /q "%ROOT%_build"
 mkdir "%ROOT%_build"
 
-set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-cast-function-type-mismatch"
+set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-cast-function-type-mismatch /I%SDK%\include /I%SDK%\client"
 
 call :compile runtime.c runtime.obj || goto :fail
 call :compile mouse_input.c mouse_input.obj || goto :fail
 call :compile pad_bridge.c pad_bridge.obj || goto :fail
 call :compile backlog.c backlog.obj || goto :fail
 call :compile plugin.c plugin.obj || goto :fail
+echo [编译] RuntimeSDK Client
+clang-cl %CFLAGS% "%SDK%\client\runtime_client.c" /Fo:"%ROOT%_build\runtime_client.obj"
+if errorlevel 1 goto :fail
+clang-cl %CFLAGS% "%SDK%\client\runtime_entry_gate.c" /Fo:"%ROOT%_build\runtime_entry_gate.obj"
+if errorlevel 1 goto :fail
+clang-cl %CFLAGS% "%SDK%\client\runtime_client_support.c" /Fo:"%ROOT%_build\runtime_client_support.obj"
+if errorlevel 1 goto :fail
 
 echo [链接] Castle_Backlog.asi
 link /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 ^
   "%ROOT%_build\runtime.obj" "%ROOT%_build\mouse_input.obj" "%ROOT%_build\pad_bridge.obj" ^
-  "%ROOT%_build\backlog.obj" "%ROOT%_build\plugin.obj" ^
+  "%ROOT%_build\backlog.obj" "%ROOT%_build\plugin.obj" "%ROOT%_build\runtime_client.obj" ^
+  "%ROOT%_build\runtime_entry_gate.obj" "%ROOT%_build\runtime_client_support.obj" ^
+  /def:"%ROOT%source\Backlog.def" ^
   kernel32.lib user32.lib /out:"%OUT%\Castle_Backlog.asi"
 if errorlevel 1 goto :fail
 

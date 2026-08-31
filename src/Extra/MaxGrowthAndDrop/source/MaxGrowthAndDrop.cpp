@@ -1,5 +1,8 @@
 #include "PatchUtil.h"
 #include "PluginLog.h"
+#include "CastleRuntime_Client.h"
+#include "CastleHook_API.h"
+#include "CastlePath_API.h"
 
 // ============================================================================
 // MaxGrowthAndDrop.asi
@@ -16,6 +19,8 @@
 // ============================================================================
 
 namespace {
+
+HMODULE gPluginModule = nullptr;
 
 // ------------------------------- 最大掉宝 -------------------------------------
 // 原版掉落判断在 0x00443A1D 附近：
@@ -158,72 +163,243 @@ bool ReadSwitch(const wchar_t* iniPath, const wchar_t* key) {
     return GetPrivateProfileIntW(kIniSection, key, 1, iniPath) != 0u;
 }
 
+CastleStringView View(const char* text, CastleU32 length) {
+    CastleStringView value{};
+    value.data = text;
+    value.length = length;
+    return value;
+}
+
+const void* QueryInterface(const CastleRuntimeApiV1* runtimeApi,
+                           const char* interfaceId, CastleU32 interfaceLength,
+                           CastleU32 version, CastleU32 minimumSize) {
+    CastleInterfaceQueryV1 query{};
+    CastleInterfaceResultV1 result{};
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = View(interfaceId, interfaceLength);
+    query.requested_version = version;
+    query.minimum_struct_size = minimumSize;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    return runtimeApi && runtimeApi->QueryInterface(&query, &result) == CASTLE_OK
+        ? result.api_pointer : nullptr;
+}
+
+void OpenStartupLog(const char* mode) {
+    ycrlog::Open(gPluginModule, L"MaxGrowthAndDrop.log");
+    ycrlog::Line("《幽城幻剑录》最大成长 / 最大掉宝插件 v0.4.0 RuntimeSDK 启动。");
+    ycrlog::Line("ASI插件化 By Luminous with ChatGPT");
+    ycrlog::Line("原始文件来自“汉堂之家”坛友武英仲分享的五合一补丁");
+    ycrlog::Text("[启动模式] ");
+    ycrlog::Line(mode);
+}
+
+void LogConfiguration(bool enableGrowth, bool enableDrop) {
+    ycrlog::Text("[配置] 最大成长：");
+    ycrlog::Line(enableGrowth ? "开启" : "关闭");
+    ycrlog::Text("[配置] 最大掉宝：");
+    ycrlog::Line(enableDrop ? "开启" : "关闭");
+}
+
+CastleResult ApplyRuntimePatchSet(const CastleHookApiV1* hookApi,
+                                  CastleModule gameModule,
+                                  CastlePluginHandle pluginHandle,
+                                  const ycr::Patch* patches, SIZE_T patchCount,
+                                  bool enable, const char* transactionLabel,
+                                  CastleU32 transactionLabelLength) {
+    CastleTransactionHandle transaction = 0u;
+    CastleResult result = hookApi->BeginTransaction(pluginHandle,
+        View(transactionLabel, transactionLabelLength), 0u, &transaction);
+    if (result < 0) return result;
+
+    for (SIZE_T index = 0u; index < patchCount; ++index) {
+        CastleStatePatchClaimV1 claim{};
+        CastleClaimHandle claimHandle = 0u;
+        claim.magic = CASTLE_STATE_PATCH_MAGIC;
+        claim.struct_size = CASTLE_SIZEOF_STATE_PATCH_V1;
+        claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        claim.flags = CASTLE_PATCH_FLAG_CODE | CASTLE_PATCH_FLAG_KEEP_ON_PROCESS_EXIT;
+        claim.target.module = gameModule;
+        claim.target.rva = patches[index].rva;
+        claim.target.size = static_cast<CastleU32>(patches[index].size);
+        claim.original_bytes = patches[index].original;
+        claim.original_size = static_cast<CastleU32>(patches[index].size);
+        claim.enabled_bytes = patches[index].patched;
+        claim.enabled_size = static_cast<CastleU32>(patches[index].size);
+        claim.desired_state = enable ? CASTLE_PATCH_STATE_ENABLED :
+                                       CASTLE_PATCH_STATE_ORIGINAL;
+        claim.label = View(transactionLabel, transactionLabelLength);
+        result = hookApi->AddStatePatch(transaction, &claim, &claimHandle);
+        if (result < 0) {
+            hookApi->AbortTransaction(transaction);
+            return result;
+        }
+    }
+    result = hookApi->PreflightTransaction(transaction);
+    if (result < 0) {
+        hookApi->AbortTransaction(transaction);
+        return result;
+    }
+    return hookApi->CommitTransaction(transaction);
+}
+
+CastleResult InitializeStandalone() {
+    wchar_t iniPath[1024]{};
+    bool enableGrowth = true;
+    bool enableDrop = true;
+    OpenStartupLog("Standalone：使用插件本地 Path 与双态补丁器。");
+    if (BuildIniPath(gPluginModule, iniPath, 1024u)) {
+        CreateDefaultIniIfMissing(iniPath);
+        enableGrowth = ReadSwitch(iniPath, kGrowthKey);
+        enableDrop = ReadSwitch(iniPath, kDropKey);
+    } else {
+        ycrlog::Line("[警告] 无法构造 INI 路径，按默认值开启两项。");
+    }
+    LogConfiguration(enableGrowth, enableDrop);
+    const bool growthOk = ycr::SetPatchSetState(kGrowthPatches,
+        sizeof(kGrowthPatches) / sizeof(kGrowthPatches[0]), enableGrowth);
+    const bool dropOk = ycr::SetPatchSetState(kDropPatches,
+        sizeof(kDropPatches) / sizeof(kDropPatches[0]), enableDrop);
+    ycrlog::Line(growthOk ? "[补丁] 最大成长状态已应用。" :
+        "[失败] 最大成长机器码未知或写入失败。");
+    ycrlog::Line(dropOk ? "[补丁] 最大掉宝状态已应用。" :
+        "[失败] 最大掉宝机器码未知或写入失败。");
+    if (!growthOk && !dropOk) return CASTLE_ERROR_EXPECTED_BYTES;
+    return growthOk && dropOk ? CASTLE_OK : CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
+}
+
+CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
+                                  CastlePluginHandle pluginHandle) {
+    static const char hookId[] = CASTLE_HOOK_INTERFACE_ID;
+    static const char pathId[] = CASTLE_PATH_INTERFACE_ID;
+    static const char growthLabel[] = "MaxGrowth transaction";
+    static const char dropLabel[] = "MaxDrop transaction";
+    CastleRuntimeInfoV1 runtimeInfo{};
+    wchar_t iniPath[1024]{};
+    CastleU32 iniLength = 0u;
+    bool enableGrowth;
+    bool enableDrop;
+    const auto* hookApi = static_cast<const CastleHookApiV1*>(QueryInterface(runtimeApi,
+        hookId, static_cast<CastleU32>(sizeof(hookId) - 1u),
+        CASTLE_HOOK_API_VERSION_1, CASTLE_SIZEOF_HOOK_API_V1));
+    const auto* pathApi = static_cast<const CastlePathApiV1*>(QueryInterface(runtimeApi,
+        pathId, static_cast<CastleU32>(sizeof(pathId) - 1u),
+        CASTLE_PATH_API_VERSION_1, CASTLE_SIZEOF_PATH_API_V1));
+    OpenStartupLog("Integrated：Runtime Path + 两个独立 Hook 事务。");
+    runtimeInfo.magic = CASTLE_RUNTIME_INFO_MAGIC;
+    runtimeInfo.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
+    runtimeInfo.info_version = CASTLE_RUNTIME_INFO_VERSION_1;
+    CastleWideStringView relativeIni{};
+    relativeIni.data = reinterpret_cast<const CastleU16*>(kIniFileName);
+    relativeIni.length = static_cast<CastleU32>(ycr::WideLength(kIniFileName));
+    if (!hookApi || !pathApi || runtimeApi->GetRuntimeInfo(&runtimeInfo) != CASTLE_OK ||
+        pathApi->BuildPluginRelativePathWide(pluginHandle, relativeIni,
+            reinterpret_cast<CastleU16*>(iniPath), 1024u, &iniLength) != CASTLE_OK) {
+        ycrlog::Line("[失败] Runtime Hook/Path 不可用；未回退到私有游戏写入。");
+        return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    }
+    CreateDefaultIniIfMissing(iniPath);
+    enableGrowth = ReadSwitch(iniPath, kGrowthKey);
+    enableDrop = ReadSwitch(iniPath, kDropKey);
+    LogConfiguration(enableGrowth, enableDrop);
+
+    const CastleResult growthResult = ApplyRuntimePatchSet(hookApi,
+        runtimeInfo.game_module, pluginHandle, kGrowthPatches,
+        sizeof(kGrowthPatches) / sizeof(kGrowthPatches[0]), enableGrowth,
+        growthLabel, static_cast<CastleU32>(sizeof(growthLabel) - 1u));
+    const CastleResult dropResult = ApplyRuntimePatchSet(hookApi,
+        runtimeInfo.game_module, pluginHandle, kDropPatches,
+        sizeof(kDropPatches) / sizeof(kDropPatches[0]), enableDrop,
+        dropLabel, static_cast<CastleU32>(sizeof(dropLabel) - 1u));
+    ycrlog::Line(growthResult >= 0 ? "[补丁] Runtime 已提交最大成长事务。" :
+        "[失败] Runtime 拒绝最大成长事务；该组未改变。");
+    ycrlog::Line(dropResult >= 0 ? "[补丁] Runtime 已提交最大掉宝事务。" :
+        "[失败] Runtime 拒绝最大掉宝事务；该组未改变。");
+    if (growthResult < 0 && dropResult < 0) return CASTLE_ERROR_EXPECTED_BYTES;
+    return growthResult >= 0 && dropResult >= 0 ? CASTLE_OK :
+        CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
+}
+
+void RuntimeFault(CastleResult failure) {
+    OpenStartupLog("Fault：Runtime 文件存在但不可安全使用。");
+    ycrlog::Text("[失败] Runtime 故障码=");
+    ycrlog::Unsigned(static_cast<DWORD>(-failure));
+    ycrlog::Line("；未读取配置后私自修改游戏。");
+}
+
 }  // namespace
 
+static CastleResult CASTLE_RUNTIME_CALL MaxGrowth_Integrated(
+    const CastleRuntimeApiV1* runtimeApi, CastlePluginHandle pluginHandle,
+    void* userContext) {
+    (void)userContext;
+    return InitializeIntegrated(runtimeApi, pluginHandle);
+}
+
+static CastleResult CASTLE_RUNTIME_CALL MaxGrowth_Standalone(void* userContext) {
+    (void)userContext;
+    return InitializeStandalone();
+}
+
+static void CASTLE_RUNTIME_CALL MaxGrowth_RuntimeFault(CastleResult failure,
+                                                       void* userContext) {
+    (void)userContext;
+    RuntimeFault(failure);
+}
+
+static void CASTLE_RUNTIME_CALL MaxGrowth_ProcessExit(void* userContext) {
+    (void)userContext;
+    ycrlog::Line("[退出] 最大成长 / 最大掉宝插件随进程结束。");
+    ycrlog::Close();
+}
+
+static const char kPluginId[] = "org.castlereforge.extra.maxgrowthanddrop";
+static const char kDisplayName[] = "Castle Max Growth And Drop";
+static const char kVersionText[] = "0.4.0";
+static const char kBuildId[] = "runtimesdk-v1";
+static const CastlePluginDescriptorV1 gPluginDescriptor = {
+    CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,
+    CASTLE_PLUGIN_DESCRIPTOR_V1,
+    CASTLE_PLUGIN_FLAG_SUPPORTS_STANDALONE | CASTLE_PLUGIN_FLAG_REQUESTS_HOOKS |
+        CASTLE_PLUGIN_FLAG_OFFICIAL_MODULE,
+    0u,
+    {kPluginId, static_cast<CastleU32>(sizeof(kPluginId) - 1u)},
+    {kDisplayName, static_cast<CastleU32>(sizeof(kDisplayName) - 1u)},
+    {kVersionText, static_cast<CastleU32>(sizeof(kVersionText) - 1u)},
+    {kBuildId, static_cast<CastleU32>(sizeof(kBuildId) - 1u)}
+};
+static const CastleRuntimeClientConfigV1 gClientConfig = {
+    CASTLE_CLIENT_CONFIG_MAGIC, CASTLE_SIZEOF_CLIENT_CONFIG_V1,
+    CASTLE_CLIENT_CONFIG_VERSION_1, 0u,
+    MaxGrowth_Integrated, MaxGrowth_Standalone, MaxGrowth_RuntimeFault,
+    MaxGrowth_ProcessExit, nullptr
+};
+static CastlePluginExportV1 gPluginExport = {
+    CASTLE_PLUGIN_QUERY_MAGIC, CASTLE_SIZEOF_PLUGIN_EXPORT_V1,
+    CASTLE_PLUGIN_EXPORT_VERSION_1, 0u,
+    &gPluginDescriptor, &gClientConfig, 0u, nullptr
+};
+
+extern "C" const CastlePluginExportV1* CASTLE_RUNTIME_CALL CastlePlugin_Query(
+    CastleU32 requestedVersion) {
+    return requestedVersion == CASTLE_PLUGIN_EXPORT_VERSION_1 ? &gPluginExport : nullptr;
+}
+
+extern "C" void __cdecl InitializeASI(void) {
+    CastleRuntimeClient_RunNow();
+}
+
 extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) {
-    (void)reserved;
-
     if (reason == DLL_PROCESS_ATTACH) {
+        gPluginModule = module;
         DisableThreadLibraryCalls(module);
-
-        // 与其它插件统一：每次启动先清空 MaxGrowthAndDrop.log，再写本轮配置和补丁结果。
-        ycrlog::Open(module, L"MaxGrowthAndDrop.log");
-        ycrlog::Line("《幽城幻剑录》最大成长 / 最大掉宝插件 v0.3.1a 启动。");
-        ycrlog::Line("ASI插件化 By Luminous with ChatGPT");
-        ycrlog::Line("原始文件来自“汉堂之家”坛友武英仲分享的五合一补丁");
-
-        wchar_t iniPath[1024];
-        iniPath[0] = L'\0';
-        if (BuildIniPath(module, iniPath, 1024u)) {
-            // INI 不存在时自动生成；已经存在时绝不覆盖用户设置。
-            CreateDefaultIniIfMissing(iniPath);
-
-            const bool enableGrowth = ReadSwitch(iniPath, kGrowthKey);
-            const bool enableDrop   = ReadSwitch(iniPath, kDropKey);
-
-            ycrlog::Text("[配置] 最大成长：");
-            ycrlog::Line(enableGrowth ? "开启" : "关闭");
-            ycrlog::Text("[配置] 最大掉宝：");
-            ycrlog::Line(enableDrop ? "开启" : "关闭");
-
-            // 这里不是“开启时才写，关闭时什么都不做”，而是主动切换状态：
-            // - 开启：把原始机器码改成旧五合一的目标机器码；
-            // - 关闭：如果用户的 EXE 本身已经带旧五合一修改，也会在内存中恢复原版。
-            // 因此两个开关在原始 EXE 和旧五合一 EXE 上都具有明确语义。
-            const bool growthOk = ycr::SetPatchSetState(
-                kGrowthPatches,
-                sizeof(kGrowthPatches) / sizeof(kGrowthPatches[0]),
-                enableGrowth);
-
-            const bool dropOk = ycr::SetPatchSetState(
-                kDropPatches,
-                sizeof(kDropPatches) / sizeof(kDropPatches[0]),
-                enableDrop);
-
-            ycrlog::Line(growthOk
-                ? "[补丁] 最大成长状态已按 INI 成功应用。"
-                : "[失败] 最大成长目标机器码不匹配或写入失败，未盲目覆盖。");
-            ycrlog::Line(dropOk
-                ? "[补丁] 最大掉宝状态已按 INI 成功应用。"
-                : "[失败] 最大掉宝目标机器码不匹配或写入失败，未盲目覆盖。");
-        } else {
-            // 极端情况下拿不到 ASI 路径时，仍遵守“默认两项开启”。
-            ycrlog::Line("[警告] 无法构造 MaxGrowthAndDrop.ini 路径，按默认值：两项全部开启。");
-            const bool growthOk = ycr::SetPatchSetState(
-                kGrowthPatches,
-                sizeof(kGrowthPatches) / sizeof(kGrowthPatches[0]),
-                true);
-            const bool dropOk = ycr::SetPatchSetState(
-                kDropPatches,
-                sizeof(kDropPatches) / sizeof(kDropPatches[0]),
-                true);
-            ycrlog::Line(growthOk ? "[补丁] 最大成长已按默认值开启。" : "[失败] 最大成长补丁未能安全应用。");
-            ycrlog::Line(dropOk ? "[补丁] 最大掉宝已按默认值开启。" : "[失败] 最大掉宝补丁未能安全应用。");
-        }
+        CastleRuntimeClient_OnProcessAttach(
+            static_cast<CastleModule>(reinterpret_cast<SIZE_T>(module)), &gPluginExport);
     } else if (reason == DLL_PROCESS_DETACH) {
-        ycrlog::Line("[退出] 最大成长 / 最大掉宝插件卸载。");
-        ycrlog::Close();
+        CastleRuntimeClient_OnProcessDetach(reserved);
     }
-
     return TRUE;
 }

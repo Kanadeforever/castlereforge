@@ -1,5 +1,6 @@
 #include "runtime.h"
 #include "game_addresses.h"
+#include "CastlePath_API.h"
 
 /*
  * runtime.c
@@ -515,7 +516,7 @@ static int runtime_bytes_equal(u32 address, const u8* expected, u32 size) {
  * vtable[0] 允许已经被另一个兼容插件换成同调用约定的包装函数；Backlog 安装时会保存
  * 当前值并链式调用。这样不会因为加载顺序而覆盖别人的场景更新 Hook。
  */
-static int runtime_exact_game_protocol_ok(void) {
+static int runtime_exact_game_protocol_ok(int managed_hook_sites) {
     HMODULE game = GetModuleHandleA(NULL);
     IMAGE_DOS_HEADER* dos;
     IMAGE_NT_HEADERS32* nt;
@@ -581,22 +582,22 @@ static int runtime_exact_game_protocol_ok(void) {
         Runtime_Log("[预检失败] 原版消息绘制入口 0x404800 身份不一致。");
         return 0;
     }
-    if (!runtime_bytes_equal(CALL_DIALOGUE_PANEL_DRAW, panel_draw_call,
+    if (!managed_hook_sites && !runtime_bytes_equal(CALL_DIALOGUE_PANEL_DRAW, panel_draw_call,
                              (u32)sizeof(panel_draw_call))) {
         Runtime_Log("[预检失败] F-Talk 绘制 CALL 0x40486E 已变化，不能安全建立多框列表。");
         return 0;
     }
-    if (!runtime_bytes_equal(CALL_DIALOGUE_NAME_PANEL_DRAW, name_panel_draw_call,
+    if (!managed_hook_sites && !runtime_bytes_equal(CALL_DIALOGUE_NAME_PANEL_DRAW, name_panel_draw_call,
                              (u32)sizeof(name_panel_draw_call))) {
         Runtime_Log("[预检失败] F-Name 绘制 CALL 0x404899 已变化，不能安全建立带姓名历史框。");
         return 0;
     }
-    if (!runtime_bytes_equal(CALL_DIALOGUE_TEXT_DRAW, text_draw_call,
+    if (!managed_hook_sites && !runtime_bytes_equal(CALL_DIALOGUE_TEXT_DRAW, text_draw_call,
                              (u32)sizeof(text_draw_call))) {
         Runtime_Log("[预检失败] 正文绘制 CALL 0x4049FF 已变化，不能安全建立多条文字列表。");
         return 0;
     }
-    if (!runtime_bytes_equal(CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW,
+    if (!managed_hook_sites && !runtime_bytes_equal(CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW,
                              speaker_portrait_draw_call,
                              (u32)sizeof(speaker_portrait_draw_call))) {
         Runtime_Log("[预检失败] 人物图绘制 CALL 0x404859 已变化，不能安全只屏蔽人物图。");
@@ -607,7 +608,7 @@ static int runtime_exact_game_protocol_ok(void) {
         Runtime_Log("[预检失败] 绘制队列登记函数 0x434500 身份不一致；不能安全冻结逻辑并保留显示。");
         return 0;
     }
-    if (!runtime_bytes_equal(CALL_DIALOGUE_NAME_TEXT_DRAW, name_text_draw_call,
+    if (!managed_hook_sites && !runtime_bytes_equal(CALL_DIALOGUE_NAME_TEXT_DRAW, name_text_draw_call,
                              (u32)sizeof(name_text_draw_call))) {
         Runtime_Log("[预检失败] 姓名文字绘制 CALL 0x4048E6 已变化，不能安全复用原版姓名布局。");
         return 0;
@@ -615,15 +616,8 @@ static int runtime_exact_game_protocol_ok(void) {
     return 1;
 }
 
-int Runtime_Initialize(HMODULE plugin_module) {
+static int runtime_finish_initialize(int managed_hook_sites) {
     char log_path[MAX_PATH];
-    DWORD path_length;
-
-    g_plugin_module = plugin_module;
-    g_plugin_path[0] = '\0';
-    path_length = GetModuleFileNameA(g_plugin_module, g_plugin_path, MAX_PATH);
-    if (path_length == 0u || path_length >= MAX_PATH) return 0;
-    g_plugin_path[MAX_PATH - 1] = '\0';
 
     if (Runtime_BuildSiblingPath("Castle_Backlog.log", log_path, MAX_PATH)) {
         g_log_file = CreateFileA(log_path, GENERIC_WRITE, FILE_SHARE_READ, NULL,
@@ -638,11 +632,52 @@ int Runtime_Initialize(HMODULE plugin_module) {
         return 1;
     }
 
-    if (!runtime_exact_game_protocol_ok()) {
+    if (!runtime_exact_game_protocol_ok(managed_hook_sites)) {
         Runtime_Log("[致命] 当前 RPG.exe 未通过能力预检；未写入任何 Hook。");
         return 0;
     }
 
     Runtime_Log("[预检] 对话文本、原版 F-Name/F-Talk 组合框、绘制队列登记、场景更新和输入协议全部一致。");
     return 1;
+}
+
+int Runtime_Initialize(HMODULE plugin_module) {
+    DWORD path_length;
+    g_plugin_module = plugin_module;
+    g_plugin_path[0] = '\0';
+    path_length = GetModuleFileNameA(g_plugin_module, g_plugin_path, MAX_PATH);
+    if (path_length == 0u || path_length >= MAX_PATH) return 0;
+    g_plugin_path[MAX_PATH - 1] = '\0';
+    return runtime_finish_initialize(0);
+}
+
+int Runtime_InitializeIntegrated(HMODULE plugin_module,
+                                 const CastleRuntimeApiV1* runtime_api,
+                                 CastlePluginHandle plugin_handle) {
+    static const char interface_id[] = CASTLE_PATH_INTERFACE_ID;
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 result = {0};
+    const CastlePathApiV1* path_api;
+    CastleU32 path_length = 0u;
+    g_plugin_module = plugin_module;
+    g_plugin_path[0] = '\0';
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id.data = interface_id;
+    query.interface_id.length = (CastleU32)(sizeof(interface_id) - 1u);
+    query.requested_version = CASTLE_PATH_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_PATH_API_V1;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (!runtime_api || runtime_api->QueryInterface(&query, &result) != CASTLE_OK) {
+        return 0;
+    }
+    path_api = (const CastlePathApiV1*)result.api_pointer;
+    if (!path_api || path_api->GetPluginModulePathUtf8(plugin_handle,
+            g_plugin_path, MAX_PATH, &path_length) != CASTLE_OK ||
+        path_length == 0u) return 0;
+    g_plugin_path[MAX_PATH - 1] = '\0';
+    return runtime_finish_initialize(1);
 }

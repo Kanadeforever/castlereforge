@@ -1,6 +1,8 @@
 #include "mouse_input.h"
 #include "backlog.h"
 #include "runtime.h"
+#include "CastleRuntime_API.h"
+#include "CastleWindow_API.h"
 
 /*
  * mouse_input.c
@@ -22,6 +24,46 @@ static WNDPROC g_previous_wndproc;
 static volatile LONG g_wheel_steps;
 static volatile LONG g_right_pressed;
 static u32 g_retry_ticks;
+static const CastleWindowApiV1* g_runtime_window_api;
+static CastleLeaseHandle g_runtime_observer;
+static CastleLeaseHandle g_runtime_filter;
+static int g_runtime_window_mode;
+
+static CastleStringView mouse_sdk_view(const char* text, CastleU32 length) {
+    CastleStringView view;
+    view.data = text;
+    view.length = length;
+    return view;
+}
+
+static void CASTLE_RUNTIME_CALL MouseInput_RuntimeObserver(
+    const CastleWindowMessageV1* message, void* user_context) {
+    (void)user_context;
+    if (!message) return;
+    if (message->message == WM_MOUSEWHEEL) {
+        SHORT delta = (SHORT)((message->w_param >> 16u) & 0xFFFFu);
+        if (delta > 0) InterlockedIncrement(&g_wheel_steps);
+        else if (delta < 0) InterlockedDecrement(&g_wheel_steps);
+    } else if (message->message == WM_RBUTTONDOWN) {
+        InterlockedIncrement(&g_right_pressed);
+    }
+}
+
+static CastleResult CASTLE_RUNTIME_CALL MouseInput_RuntimeFilter(
+    const CastleWindowMessageV1* message,
+    CastleWindowFilterDecisionV1* decision,
+    void* user_context) {
+    (void)user_context;
+    if (!message || !decision) return CASTLE_ERROR_INVALID_ARGUMENT;
+    if (Backlog_IsActive() &&
+        (message->message == WM_MOUSEWHEEL ||
+         message->message == WM_RBUTTONDOWN ||
+         message->message == WM_RBUTTONUP)) {
+        decision->consume = 1u;
+        decision->result = 0;
+    }
+    return CASTLE_OK;
+}
 
 /*
  * 判断一个窗口是不是当前 RPG.exe 自己的窗口。
@@ -104,6 +146,10 @@ int MouseInput_Initialize(void) {
     g_wheel_steps = 0;
     g_right_pressed = 0;
     g_retry_ticks = 0u;
+    g_runtime_window_api = NULL;
+    g_runtime_observer = 0u;
+    g_runtime_filter = 0u;
+    g_runtime_window_mode = 0;
 
     /*
      * 初始化时窗口可能还没成为前台，所以第一次失败不是错误。
@@ -112,7 +158,73 @@ int MouseInput_Initialize(void) {
     return mouse_try_install();
 }
 
+int MouseInput_InitializeIntegrated(const CastleRuntimeApiV1* runtime_api,
+                                    CastlePluginHandle plugin_handle) {
+    static const char interface_id[] = CASTLE_WINDOW_INTERFACE_ID;
+    static const char observer_label[] = "Backlog mouse observer";
+    static const char filter_label[] = "Backlog active mouse filter";
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 query_result = {0};
+    CastleWindowClientV1 client = {0};
+    CastleResult ready_result;
+    g_game_window = NULL;
+    g_previous_wndproc = NULL;
+    g_wheel_steps = 0;
+    g_right_pressed = 0;
+    g_retry_ticks = 0u;
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = mouse_sdk_view(interface_id,
+        (CastleU32)(sizeof(interface_id) - 1u));
+    query.requested_version = CASTLE_WINDOW_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_WINDOW_API_V1;
+    query.required_capabilities_low = CASTLE_WINDOW_CAP_OBSERVER |
+                                      CASTLE_WINDOW_CAP_FILTER;
+    query_result.magic = CASTLE_INTERFACE_API_MAGIC;
+    query_result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    query_result.result_version = CASTLE_QUERY_VERSION_1;
+    if (!runtime_api || runtime_api->QueryInterface(&query, &query_result) != CASTLE_OK) {
+        return 0;
+    }
+    g_runtime_window_api = (const CastleWindowApiV1*)query_result.api_pointer;
+    client.magic = CASTLE_WINDOW_CLIENT_MAGIC;
+    client.struct_size = CASTLE_SIZEOF_WINDOW_CLIENT_V1;
+    client.version = CASTLE_WINDOW_STRUCTURE_VERSION_1;
+    client.phase = CASTLE_WINDOW_PHASE_NORMAL;
+    client.priority = CASTLE_WINDOW_PRIORITY_DEFAULT;
+    client.observer = MouseInput_RuntimeObserver;
+    client.label = mouse_sdk_view(observer_label,
+        (CastleU32)(sizeof(observer_label) - 1u));
+    if (g_runtime_window_api->RegisterMessageObserver(plugin_handle, &client,
+            &g_runtime_observer) != CASTLE_OK) return 0;
+    client.observer = NULL;
+    client.filter = MouseInput_RuntimeFilter;
+    client.label = mouse_sdk_view(filter_label,
+        (CastleU32)(sizeof(filter_label) - 1u));
+    if (g_runtime_window_api->RegisterMessageFilter(plugin_handle, &client,
+            &g_runtime_filter) != CASTLE_OK) return 0;
+    ready_result = g_runtime_window_api->SetWindowClientReady(g_runtime_observer, 1u);
+    if (ready_result < 0 && ready_result != CASTLE_ERROR_NOT_READY) return 0;
+    ready_result = g_runtime_window_api->SetWindowClientReady(g_runtime_filter, 1u);
+    if (ready_result < 0 && ready_result != CASTLE_ERROR_NOT_READY) return 0;
+    g_runtime_window_mode = 1;
+    Runtime_Log("[鼠标] 已登记 Runtime Window Observer/Filter；窗口稍后出现时自动接入。");
+    return 1;
+}
+
 void MouseInput_Poll(void) {
+    if (g_runtime_window_mode) {
+        ++g_retry_ticks;
+        if ((g_retry_ticks & 63u) == 0u && g_runtime_window_api) {
+            CastleWindowStateV1 state = {0};
+            state.magic = CASTLE_WINDOW_STATE_MAGIC;
+            state.struct_size = CASTLE_SIZEOF_WINDOW_STATE_V1;
+            state.version = CASTLE_WINDOW_STRUCTURE_VERSION_1;
+            g_runtime_window_api->GetGameWindow(&state);
+        }
+        return;
+    }
     if (g_game_window && IsWindow(g_game_window) && g_previous_wndproc) return;
 
     /* 8ms worker 下每 64 tick 约 0.5 秒重试一次，不需要每帧调用 SetWindowLongPtr。 */
@@ -131,6 +243,23 @@ u32 MouseInput_TakeRightPressed(void) {
 }
 
 void MouseInput_Shutdown(void) {
+    if (g_runtime_window_mode && g_runtime_window_api) {
+        if (g_runtime_observer) {
+            g_runtime_window_api->SetWindowClientReady(g_runtime_observer, 0u);
+            g_runtime_window_api->UnregisterWindowClient(g_runtime_observer);
+        }
+        if (g_runtime_filter) {
+            g_runtime_window_api->SetWindowClientReady(g_runtime_filter, 0u);
+            g_runtime_window_api->UnregisterWindowClient(g_runtime_filter);
+        }
+        g_runtime_observer = 0u;
+        g_runtime_filter = 0u;
+        g_runtime_window_mode = 0;
+        g_runtime_window_api = NULL;
+        g_wheel_steps = 0;
+        g_right_pressed = 0;
+        return;
+    }
     if (g_game_window && IsWindow(g_game_window) && g_previous_wndproc) {
         /*
          * 只有当前 WndProc 仍然是我们自己时才恢复。

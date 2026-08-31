@@ -2,6 +2,7 @@
 #define CASTLE_BACKLOG_H
 
 #include "platform.h"
+#include "CastleRuntime_API.h"
 
 /*
  * backlog.h
@@ -12,6 +13,10 @@
 
 /* 把场景 vtable[0] 换成链式包装器；失败时不进入输入循环。 */
 int Backlog_Install(void);
+
+/* 整合模式使用 Runtime Hook 事务安装同一组业务包装器。 */
+CastleResult Backlog_InstallIntegrated(const CastleRuntimeApiV1* runtime_api,
+                                       CastlePluginHandle plugin_handle);
 
 /* worker 调用：读取键盘、鼠标事件和可选 PadSupport 桥，把动作记成线程安全的计数请求。 */
 void Backlog_PollInput(void);

@@ -1,5 +1,7 @@
 #include "PatchUtil.h"
 #include "PluginLog.h"
+#include "CastleRuntime_Client.h"
+#include "CastleHook_API.h"
 
 // ============================================================================
 // 无 CRT 构建时给优化器提供的最小 memcpy / memset
@@ -54,6 +56,9 @@ extern "C" __declspec(noinline) void* __cdecl memcpy(void* destination, const vo
 // ============================================================================
 
 namespace {
+
+HMODULE gPluginModule = nullptr;
+bool gStandaloneCrashFixActive = false;
 
 // ============================================================================
 // 第一部分：两个历史固定字节 BUG 修复
@@ -445,6 +450,31 @@ bool InstallRouteJump(CrashRoute& route) {
     return true;
 }
 
+// Runtime 整合模式只在插件内构造目标字节，真正写入交给 Hook 事务统一完成。
+bool BuildRouteReplacement(CrashRoute& route, BYTE replacement[16]) {
+    BYTE* exeBase = ycr::GetExeBase();
+    if (exeBase == nullptr || route.stub == nullptr || route.patchBytes < 5u ||
+        route.patchBytes > 16u || replacement == nullptr) {
+        return false;
+    }
+    route.target = exeBase + route.patchRva;
+    for (SIZE_T index = 0u; index < route.patchBytes; ++index) {
+        replacement[index] = 0x90u;
+        route.original[index] = route.expected[index];
+    }
+    replacement[0] = 0xE9u;
+    const DWORD nextInstruction =
+        static_cast<DWORD>(reinterpret_cast<SIZE_T>(route.target + 5u));
+    const DWORD destination =
+        static_cast<DWORD>(reinterpret_cast<SIZE_T>(route.stub));
+    const DWORD relative = destination - nextInstruction;
+    replacement[1] = static_cast<BYTE>((relative >> 0u) & 0xFFu);
+    replacement[2] = static_cast<BYTE>((relative >> 8u) & 0xFFu);
+    replacement[3] = static_cast<BYTE>((relative >> 16u) & 0xFFu);
+    replacement[4] = static_cast<BYTE>((relative >> 24u) & 0xFFu);
+    return true;
+}
+
 // 正常 FreeLibrary 时恢复 CrashFix 的 E9 Hook。
 // 只有当前位置仍然是“指向我们自己 stub 的 E9”才恢复，避免覆盖后加载 MOD 的修改。
 void RestoreRoute(CrashRoute& route) {
@@ -537,53 +567,274 @@ void UninstallMergedCrashFix() {
     FreeRouteStub(gRouteA);
 }
 
+CastleStringView View(const char* text, CastleU32 length) {
+    CastleStringView value{};
+    value.data = text;
+    value.length = length;
+    return value;
+}
+
+const CastleHookApiV1* QueryHookApi(const CastleRuntimeApiV1* runtimeApi) {
+    static const char interfaceId[] = CASTLE_HOOK_INTERFACE_ID;
+    CastleInterfaceQueryV1 query{};
+    CastleInterfaceResultV1 result{};
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = View(interfaceId,
+        static_cast<CastleU32>(sizeof(interfaceId) - 1u));
+    query.requested_version = CASTLE_HOOK_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_HOOK_API_V1;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (!runtimeApi || runtimeApi->QueryInterface(&query, &result) != CASTLE_OK) {
+        return nullptr;
+    }
+    return static_cast<const CastleHookApiV1*>(result.api_pointer);
+}
+
+void OpenStartupLog(const char* mode) {
+    ycrlog::Open(gPluginModule, L"BUGFix.log");
+    ycrlog::Line("《幽城幻剑录》BUG 修复插件 v0.4.0 RuntimeSDK 启动。");
+    ycrlog::Line("ASI插件化 By Luminous with ChatGPT");
+    ycrlog::Line("BUG修复来自“汉堂之家”坛友武英仲分享的三合一补丁");
+    ycrlog::Line("包含已稳定验证的读档返回标题后再新游戏崩溃修复。");
+    ycrlog::Text("[启动模式] ");
+    ycrlog::Line(mode);
+}
+
+CastleResult ApplyHistoricalRuntime(const CastleHookApiV1* hookApi,
+                                    CastleModule gameModule,
+                                    CastlePluginHandle pluginHandle) {
+    static const char label[] = "BUGFix historical seven patches";
+    CastleTransactionHandle transaction = 0u;
+    CastleResult result = hookApi->BeginTransaction(pluginHandle,
+        View(label, static_cast<CastleU32>(sizeof(label) - 1u)), 0u, &transaction);
+    if (result < 0) return result;
+    for (SIZE_T index = 0u;
+         index < sizeof(kHistoricalBugFixPatches) / sizeof(kHistoricalBugFixPatches[0]);
+         ++index) {
+        CastleStatePatchClaimV1 claim{};
+        CastleClaimHandle claimHandle = 0u;
+        claim.magic = CASTLE_STATE_PATCH_MAGIC;
+        claim.struct_size = CASTLE_SIZEOF_STATE_PATCH_V1;
+        claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        claim.flags = CASTLE_PATCH_FLAG_CODE | CASTLE_PATCH_FLAG_KEEP_ON_PROCESS_EXIT;
+        claim.target.module = gameModule;
+        claim.target.rva = kHistoricalBugFixPatches[index].rva;
+        claim.target.size = static_cast<CastleU32>(kHistoricalBugFixPatches[index].size);
+        claim.original_bytes = kHistoricalBugFixPatches[index].original;
+        claim.original_size = static_cast<CastleU32>(kHistoricalBugFixPatches[index].size);
+        claim.enabled_bytes = kHistoricalBugFixPatches[index].patched;
+        claim.enabled_size = static_cast<CastleU32>(kHistoricalBugFixPatches[index].size);
+        claim.desired_state = CASTLE_PATCH_STATE_ENABLED;
+        claim.label = View(label, static_cast<CastleU32>(sizeof(label) - 1u));
+        result = hookApi->AddStatePatch(transaction, &claim, &claimHandle);
+        if (result < 0) {
+            hookApi->AbortTransaction(transaction);
+            return result;
+        }
+    }
+    result = hookApi->PreflightTransaction(transaction);
+    if (result < 0) {
+        hookApi->AbortTransaction(transaction);
+        return result;
+    }
+    return hookApi->CommitTransaction(transaction);
+}
+
+CastleResult InstallCrashRuntime(const CastleHookApiV1* hookApi,
+                                 CastleModule gameModule,
+                                 CastlePluginHandle pluginHandle) {
+    static const char transactionLabel[] = "BUGFix crash routes";
+    static const char routeALabel[] = "Legacy Background route A";
+    static const char routeBLabel[] = "Legacy Background route B";
+    BYTE replacementA[16]{};
+    BYTE replacementB[16]{};
+    BYTE* exeBase = ycr::GetExeBase();
+    CastleTransactionHandle transaction = 0u;
+    CastleClaimHandle claimA = 0u;
+    CastleClaimHandle claimB = 0u;
+    CastleExclusivePatchClaimV1 routeAClaim{};
+    CastleExclusivePatchClaimV1 routeBClaim{};
+    if (!exeBase || !ycr::BytesEqual(exeBase + kBackgroundUpdaterRva,
+            kUpdaterExpected, sizeof(kUpdaterExpected)) ||
+        !ycr::BytesEqual(exeBase + kRouteAPatchRva,
+            kRouteAExpected, kRouteAPatchBytes) ||
+        !ycr::BytesEqual(exeBase + kRouteBPatchRva,
+            kRouteBExpected, kRouteBPatchBytes)) {
+        return CASTLE_ERROR_EXPECTED_BYTES;
+    }
+    if (!BuildRouteStub(gRouteA, reinterpret_cast<const BYTE*>(&ValidateRouteA)) ||
+        !BuildRouteStub(gRouteB, reinterpret_cast<const BYTE*>(&ValidateRouteB)) ||
+        !BuildRouteReplacement(gRouteA, replacementA) ||
+        !BuildRouteReplacement(gRouteB, replacementB)) {
+        FreeRouteStub(gRouteA);
+        FreeRouteStub(gRouteB);
+        return CASTLE_ERROR_RUNTIME_FAULT;
+    }
+    CastleResult result = hookApi->BeginTransaction(pluginHandle,
+        View(transactionLabel,
+             static_cast<CastleU32>(sizeof(transactionLabel) - 1u)),
+        0u, &transaction);
+    if (result < 0) {
+        FreeRouteStub(gRouteA);
+        FreeRouteStub(gRouteB);
+        return result;
+    }
+    routeAClaim.magic = CASTLE_EXCLUSIVE_PATCH_MAGIC;
+    routeAClaim.struct_size = CASTLE_SIZEOF_EXCLUSIVE_PATCH_V1;
+    routeAClaim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+    routeAClaim.flags = CASTLE_PATCH_FLAG_CODE | CASTLE_PATCH_FLAG_KEEP_ON_PROCESS_EXIT;
+    routeAClaim.target = {gameModule, kRouteAPatchRva,
+                          static_cast<CastleU32>(kRouteAPatchBytes)};
+    routeAClaim.expected_bytes = kRouteAExpected;
+    routeAClaim.expected_size = static_cast<CastleU32>(kRouteAPatchBytes);
+    routeAClaim.replacement_bytes = replacementA;
+    routeAClaim.replacement_size = static_cast<CastleU32>(kRouteAPatchBytes);
+    routeAClaim.label = View(routeALabel,
+        static_cast<CastleU32>(sizeof(routeALabel) - 1u));
+    routeBClaim = routeAClaim;
+    routeBClaim.target = {gameModule, kRouteBPatchRva,
+                          static_cast<CastleU32>(kRouteBPatchBytes)};
+    routeBClaim.expected_bytes = kRouteBExpected;
+    routeBClaim.expected_size = static_cast<CastleU32>(kRouteBPatchBytes);
+    routeBClaim.replacement_bytes = replacementB;
+    routeBClaim.replacement_size = static_cast<CastleU32>(kRouteBPatchBytes);
+    routeBClaim.label = View(routeBLabel,
+        static_cast<CastleU32>(sizeof(routeBLabel) - 1u));
+    result = hookApi->AddExclusivePatch(transaction, &routeAClaim, &claimA);
+    if (result >= 0) result = hookApi->AddExclusivePatch(transaction, &routeBClaim, &claimB);
+    if (result >= 0) result = hookApi->PreflightTransaction(transaction);
+    if (result >= 0) result = hookApi->CommitTransaction(transaction);
+    if (result < 0) {
+        hookApi->AbortTransaction(transaction);
+        FreeRouteStub(gRouteA);
+        FreeRouteStub(gRouteB);
+        return result;
+    }
+    gRouteA.installed = true;
+    gRouteB.installed = true;
+    return CASTLE_OK;
+}
+
+CastleResult InitializeStandalone() {
+    OpenStartupLog("Standalone：使用原插件本地补丁与双路径回滚器。");
+    const bool historicalApplied = ycr::SetPatchSetState(kHistoricalBugFixPatches,
+        sizeof(kHistoricalBugFixPatches) / sizeof(kHistoricalBugFixPatches[0]), true);
+    gStandaloneCrashFixActive = InstallMergedCrashFix();
+    ycrlog::Line(historicalApplied ? "[修复] 历史 7 点固定修复已生效。" :
+        "[失败] 历史 7 点存在未知机器码；该组未盲写。");
+    ycrlog::Line(gStandaloneCrashFixActive ? "[修复] Crash 双路径修复已生效。" :
+        "[失败] Crash 双路径修复未安装。");
+    if (!historicalApplied && !gStandaloneCrashFixActive) {
+        return CASTLE_ERROR_EXPECTED_BYTES;
+    }
+    return historicalApplied && gStandaloneCrashFixActive ? CASTLE_OK :
+        CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
+}
+
+CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
+                                  CastlePluginHandle pluginHandle) {
+    CastleRuntimeInfoV1 runtimeInfo{};
+    const CastleHookApiV1* hookApi = QueryHookApi(runtimeApi);
+    OpenStartupLog("Integrated：历史修复与 Crash 双路径分别由 Runtime 事务拥有。");
+    runtimeInfo.magic = CASTLE_RUNTIME_INFO_MAGIC;
+    runtimeInfo.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
+    runtimeInfo.info_version = CASTLE_RUNTIME_INFO_VERSION_1;
+    if (!hookApi || runtimeApi->GetRuntimeInfo(&runtimeInfo) != CASTLE_OK) {
+        return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    }
+    const CastleResult historicalResult = ApplyHistoricalRuntime(hookApi,
+        runtimeInfo.game_module, pluginHandle);
+    const CastleResult crashResult = InstallCrashRuntime(hookApi,
+        runtimeInfo.game_module, pluginHandle);
+    ycrlog::Line(historicalResult >= 0 ? "[修复] Runtime 已提交历史 7 点事务。" :
+        "[失败] Runtime 拒绝历史 7 点事务。");
+    ycrlog::Line(crashResult >= 0 ? "[修复] Runtime 已提交 Crash 双路径事务。" :
+        "[失败] Runtime 拒绝 Crash 双路径事务。");
+    if (historicalResult < 0 && crashResult < 0) return CASTLE_ERROR_EXPECTED_BYTES;
+    return historicalResult >= 0 && crashResult >= 0 ? CASTLE_OK :
+        CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
+}
+
+void RuntimeFault(CastleResult failure) {
+    OpenStartupLog("Fault：Runtime 文件存在但不可安全使用。");
+    ycrlog::Text("[失败] Runtime 故障码=");
+    ycrlog::Unsigned(static_cast<DWORD>(-failure));
+    ycrlog::Line("；本轮 BUGFix 未写入游戏。");
+}
+
 } // namespace
 
+static CastleResult CASTLE_RUNTIME_CALL BUGFix_Integrated(
+    const CastleRuntimeApiV1* runtimeApi, CastlePluginHandle pluginHandle,
+    void* userContext) {
+    (void)userContext;
+    return InitializeIntegrated(runtimeApi, pluginHandle);
+}
+static CastleResult CASTLE_RUNTIME_CALL BUGFix_Standalone(void* userContext) {
+    (void)userContext;
+    return InitializeStandalone();
+}
+static void CASTLE_RUNTIME_CALL BUGFix_RuntimeFault(CastleResult failure,
+                                                    void* userContext) {
+    (void)userContext;
+    RuntimeFault(failure);
+}
+static void CASTLE_RUNTIME_CALL BUGFix_ProcessExit(void* userContext) {
+    (void)userContext;
+    ycrlog::Line("[退出] BUGFix 随进程结束。");
+    ycrlog::Close();
+}
+
+static const char kPluginId[] = "org.castlereforge.extra.bugfix";
+static const char kDisplayName[] = "Castle BUG Fix";
+static const char kVersionText[] = "0.4.0";
+static const char kBuildId[] = "runtimesdk-v1";
+static const CastlePluginDescriptorV1 gPluginDescriptor = {
+    CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,
+    CASTLE_PLUGIN_DESCRIPTOR_V1,
+    CASTLE_PLUGIN_FLAG_SUPPORTS_STANDALONE | CASTLE_PLUGIN_FLAG_REQUESTS_HOOKS |
+        CASTLE_PLUGIN_FLAG_OFFICIAL_MODULE,
+    0u,
+    {kPluginId, static_cast<CastleU32>(sizeof(kPluginId) - 1u)},
+    {kDisplayName, static_cast<CastleU32>(sizeof(kDisplayName) - 1u)},
+    {kVersionText, static_cast<CastleU32>(sizeof(kVersionText) - 1u)},
+    {kBuildId, static_cast<CastleU32>(sizeof(kBuildId) - 1u)}
+};
+static const CastleRuntimeClientConfigV1 gClientConfig = {
+    CASTLE_CLIENT_CONFIG_MAGIC, CASTLE_SIZEOF_CLIENT_CONFIG_V1,
+    CASTLE_CLIENT_CONFIG_VERSION_1, 0u,
+    BUGFix_Integrated, BUGFix_Standalone, BUGFix_RuntimeFault,
+    BUGFix_ProcessExit, nullptr
+};
+static CastlePluginExportV1 gPluginExport = {
+    CASTLE_PLUGIN_QUERY_MAGIC, CASTLE_SIZEOF_PLUGIN_EXPORT_V1,
+    CASTLE_PLUGIN_EXPORT_VERSION_1, 0u,
+    &gPluginDescriptor, &gClientConfig, 0u, nullptr
+};
+
+extern "C" const CastlePluginExportV1* CASTLE_RUNTIME_CALL CastlePlugin_Query(
+    CastleU32 requestedVersion) {
+    return requestedVersion == CASTLE_PLUGIN_EXPORT_VERSION_1 ? &gPluginExport : nullptr;
+}
+extern "C" void __cdecl InitializeASI(void) {
+    CastleRuntimeClient_RunNow();
+}
 extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) {
     if (reason == DLL_PROCESS_ATTACH) {
-        // 不需要线程 attach/detach 通知。关闭它们可以减少 DllMain 额外调用。
+        gPluginModule = module;
         DisableThreadLibraryCalls(module);
-
-        // BUGFix.log 每次启动都 CREATE_ALWAYS 清空；正文 UTF-8 BOM + CRLF + 简体中文。
-        // 即使日志打开失败，下面修复仍继续执行，日志永远不是核心功能前置条件。
-        ycrlog::Open(module, L"BUGFix.log");
-        ycrlog::Line("《幽城幻剑录》BUG 修复插件 v0.3.2 启动。");
-        ycrlog::Line("ASI插件化 By Luminous with ChatGPT");
-        ycrlog::Line("BUG修复来自“汉堂之家”坛友武英仲分享的三合一补丁");
-        ycrlog::Line("新增win11上出现的读档后返回标题再开始新游戏必定崩溃的修复");
-        ycrlog::Line("[日志] 本次启动已清空旧日志；编码=UTF-8，换行=CRLF。");
-
-        // 第一组：历史两个固定字节 BUG 修复。
-        const bool historicalApplied = ycr::SetPatchSetState(
-            kHistoricalBugFixPatches,
-            sizeof(kHistoricalBugFixPatches) / sizeof(kHistoricalBugFixPatches[0]),
-            true);
-
-        if (historicalApplied) {
-            ycrlog::Line("[修复] ‘冥狱杀阵可被习得’修复：已生效。");
-            ycrlog::Line("[修复] 菜单操作后实际抗性与显示抗性不一致修复：已生效。");
-        } else {
-            ycrlog::Line("[失败] 历史 7 个固定补丁点出现未知机器码；两个固定 BUG 修复均未盲目写入。");
-        }
-
-        // 第二组：原 CrashFix test2。它有自己的三重签名和双路径回滚，不受上面结果影响。
-        if (InstallMergedCrashFix()) {
-            ycrlog::Line("[修复] 读档返回标题后再新游戏的 Legacy Background Controller 崩溃修复：已生效。");
-        } else {
-            ycrlog::Line("[失败] Crash 双调用路径修复未安装；保持 fail-closed，不影响其它已确认 BUG 修复。");
-        }
+        CastleRuntimeClient_OnProcessAttach(
+            static_cast<CastleModule>(reinterpret_cast<SIZE_T>(module)), &gPluginExport);
     } else if (reason == DLL_PROCESS_DETACH) {
-        // reserved==nullptr 表示正常 FreeLibrary：这时 DLL 代码真的可能被卸载，所以必须先把
-        // 指向 DLL helper/stub 的 E9 Hook 恢复，避免 RPG.exe 之后跳进已经不存在的代码。
-        // reserved!=nullptr 表示整个进程正在终止，整个地址空间马上销毁，不再修改代码页。
-        if (reserved == nullptr) {
+        if (reserved == nullptr && gStandaloneCrashFixActive) {
             UninstallMergedCrashFix();
-            ycrlog::Line("[退出] BUGFix 正常卸载；Crash 双路径 Hook 已尝试恢复，固定字节 BUG 修复保留到进程结束。");
-        } else {
-            ycrlog::Line("[退出] 游戏进程正在结束；不做没有意义的 Hook 回写。");
+            gStandaloneCrashFixActive = false;
         }
-        ycrlog::Close();
+        CastleRuntimeClient_OnProcessDetach(reserved);
     }
-
     return TRUE;
 }

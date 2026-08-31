@@ -5,6 +5,7 @@ setlocal EnableExtensions
 rem 本脚本只构建 BUGFix，不依赖 src\Extra 根目录中的其它构建脚本。
 set "SCRIPT_DIR=%~dp0"
 set "SRC_DIR=%SCRIPT_DIR%source"
+set "SDK_DIR=%SCRIPT_DIR%..\..\RuntimeSDK"
 set "OUT_DIR=%SCRIPT_DIR%..\..\..\build"
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%" 2>nul
 
@@ -37,12 +38,19 @@ if errorlevel 1 (
     goto :fail
 )
 
-rem 沿用拆分前的编译与链接参数，不改变优化、警告、CRT 或 DLL 入口策略。
-set CFLAGS=/nologo /std:c++17 /utf-8 /O2 /Oi- /W4 /WX /GR- /GS- /Gs999999999 /Zl /LD
-set LFLAGS=/link /NOLOGO /NODEFAULTLIB /ENTRY:DllMain /SUBSYSTEM:WINDOWS /MACHINE:X86 kernel32.lib
+rem BUGFix 自带无 CRT memcpy/memset；SDK Client 仍以纯 C 编译后统一链接。  
+set CXXFLAGS=/nologo /c /std:c++17 /utf-8 /O2 /Oi- /W4 /WX /GR- /GS- /Gs999999999 /Zl /I"%SDK_DIR%\include"
+set CLIENT_CFLAGS=/nologo /c /TC /utf-8 /O2 /Oi- /W4 /WX /GS- /Gs999999999 /Zl /I"%SDK_DIR%\include" /I"%SDK_DIR%\client"
+set LFLAGS=/NOLOGO /DLL /NODEFAULTLIB /ENTRY:DllMain@12 /SUBSYSTEM:WINDOWS /MACHINE:X86 /DYNAMICBASE /NXCOMPAT
 
 echo [1/1] BUGFix.asi - 已合并稳定 CrashFix test2 双调用路径修复
-cl.exe %CFLAGS% "%SRC_DIR%\BUGFix.cpp" /Fo"%OBJ_DIR%\BUGFix.obj" %LFLAGS% /OUT:"%OUT_DIR%\BUGFix.asi"
+cl.exe %CXXFLAGS% "%SRC_DIR%\BUGFix.cpp" /Fo"%OBJ_DIR%\BUGFix.obj"
+if errorlevel 1 goto :fail
+cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_client.c" /Fo"%OBJ_DIR%\runtime_client.obj"
+if errorlevel 1 goto :fail
+cl.exe %CLIENT_CFLAGS% "%SDK_DIR%\client\runtime_entry_gate.c" /Fo"%OBJ_DIR%\runtime_entry_gate.obj"
+if errorlevel 1 goto :fail
+link.exe %LFLAGS% /DEF:"%SRC_DIR%\BUGFix.def" /OUT:"%OUT_DIR%\BUGFix.asi" "%OBJ_DIR%\BUGFix.obj" "%OBJ_DIR%\runtime_client.obj" "%OBJ_DIR%\runtime_entry_gate.obj" kernel32.lib
 if errorlevel 1 goto :fail
 call :check_pe "%OUT_DIR%\BUGFix.asi"
 if errorlevel 1 goto :fail
