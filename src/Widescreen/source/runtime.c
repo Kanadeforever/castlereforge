@@ -1,5 +1,6 @@
 ﻿#include "runtime.h"
 #include "game_addresses.h"
+#include "CastleHook_API.h"
 
 /*
  * runtime.c
@@ -27,6 +28,14 @@ static PFN_GetTickCount            g_GetTickCount;
 static PFN_GetPrivateProfileIntA   g_GetPrivateProfileIntA;
 static HANDLE g_log = INVALID_HANDLE_VALUE_;
 static HMODULE g_self_module;
+static const CastleRuntimeApiV1* g_sdk_runtime_api;
+static const CastleHookApiV1* g_sdk_hook_api;
+static CastlePluginHandle g_sdk_plugin_handle;
+static CastleModule g_sdk_game_module;
+static CastleTransactionHandle g_sdk_transaction;
+static CastleClaimHandle g_sdk_pointer_claim;
+static void** g_sdk_pointer_output;
+static int g_sdk_transaction_building;
 
 static SIZE_T text_len(const char* s) {
     SIZE_T n = 0;
@@ -362,6 +371,82 @@ int Runtime_ExactBuildProtocolOk(void) {
     return ok;
 }
 
+static CastleStringView sdk_view_(const char* text, CastleU32 length) {
+    CastleStringView view;
+    view.data = text;
+    view.length = length;
+    return view;
+}
+
+int Runtime_BeginSdkHookTransaction(const CastleRuntimeApiV1* runtime_api,
+                                    CastlePluginHandle plugin_handle) {
+    static const char interface_id[] = CASTLE_HOOK_INTERFACE_ID;
+    static const char transaction_label[] = "Widescreen hook transaction";
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 result = {0};
+    CastleRuntimeInfoV1 info = {0};
+    g_sdk_runtime_api = runtime_api;
+    g_sdk_plugin_handle = plugin_handle;
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = sdk_view_(interface_id,
+        (CastleU32)(sizeof(interface_id) - 1u));
+    query.requested_version = CASTLE_HOOK_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_HOOK_API_V1;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    info.magic = CASTLE_RUNTIME_INFO_MAGIC;
+    info.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
+    info.info_version = CASTLE_RUNTIME_INFO_VERSION_1;
+    if (!runtime_api || runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
+        runtime_api->GetRuntimeInfo(&info) != CASTLE_OK) return 0;
+    g_sdk_hook_api = (const CastleHookApiV1*)result.api_pointer;
+    g_sdk_game_module = info.game_module;
+    g_sdk_pointer_claim = 0u;
+    g_sdk_pointer_output = NULL;
+    if (!g_sdk_hook_api || g_sdk_hook_api->BeginTransaction(plugin_handle,
+            sdk_view_(transaction_label,
+                (CastleU32)(sizeof(transaction_label) - 1u)),
+            0u, &g_sdk_transaction) != CASTLE_OK) return 0;
+    g_sdk_transaction_building = 1;
+    return 1;
+}
+
+int Runtime_CommitSdkHookTransaction(void) {
+    CastleResult result;
+    if (!g_sdk_transaction_building || !g_sdk_hook_api) return 0;
+    result = g_sdk_hook_api->PreflightTransaction(g_sdk_transaction);
+    if (result >= 0) result = g_sdk_hook_api->CommitTransaction(g_sdk_transaction);
+    if (result < 0) {
+        g_sdk_transaction_building = 0;
+        return 0;
+    }
+    if (g_sdk_pointer_claim && g_sdk_pointer_output) {
+        CastleHookBindingV1 binding = {0};
+        binding.magic = CASTLE_HOOK_BINDING_MAGIC;
+        binding.struct_size = CASTLE_SIZEOF_HOOK_BINDING_V1;
+        binding.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        if (g_sdk_hook_api->GetHookBinding(g_sdk_pointer_claim, &binding) != CASTLE_OK ||
+            !binding.next_slot) {
+            g_sdk_transaction_building = 0;
+            return 0;
+        }
+        *g_sdk_pointer_output = *binding.next_slot;
+    }
+    g_sdk_transaction_building = 0;
+    Runtime_Log("[RuntimeSDK] Widescreen Hook 事务已提交。");
+    return 1;
+}
+
+void Runtime_AbortSdkHookTransaction(void) {
+    if (g_sdk_transaction_building && g_sdk_hook_api) {
+        g_sdk_hook_api->AbortTransaction(g_sdk_transaction);
+    }
+    g_sdk_transaction_building = 0;
+}
+
 int Runtime_PatchCall(u32 call_address, u32 expected_target, const void* replacement, const char* label) {
     u8 patch[5];
     i32 rel;
@@ -369,6 +454,41 @@ int Runtime_PatchCall(u32 call_address, u32 expected_target, const void* replace
     DWORD ignored = 0;
     HANDLE process;
 
+    if (g_sdk_runtime_api) {
+        static const char rebuild_signature[] =
+            "org.castlereforge.signature.display-rebuild.v1";
+        static const char render_signature[] =
+            "org.castlereforge.signature.render-queue.v1";
+        static const char present_signature[] =
+            "org.castlereforge.signature.display-present.v1";
+        CastleChainHookClaimV1 claim = {0};
+        CastleClaimHandle claim_handle = 0u;
+        const char* signature_text = expected_target == FN_DISPLAY_REBUILD ?
+            rebuild_signature : (expected_target == FN_RENDER_QUEUE ?
+            render_signature : present_signature);
+        CastleU32 signature_length = expected_target == FN_DISPLAY_REBUILD ?
+            (CastleU32)(sizeof(rebuild_signature) - 1u) :
+            (expected_target == FN_RENDER_QUEUE ?
+            (CastleU32)(sizeof(render_signature) - 1u) :
+            (CastleU32)(sizeof(present_signature) - 1u));
+        if (!g_sdk_transaction_building || !g_sdk_hook_api || !replacement) return 0;
+        claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
+        claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
+        claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        claim.hook_kind = CASTLE_HOOK_REL32_CALL;
+        claim.target.module = g_sdk_game_module;
+        claim.target.rva = call_address - (u32)g_sdk_game_module;
+        claim.target.size = 5u;
+        claim.expected_original_target = expected_target;
+        claim.replacement_hook = (CastleAddress)(SIZE_T)replacement;
+        claim.signature_id = sdk_view_(signature_text, signature_length);
+        claim.phase = CASTLE_HOOK_PHASE_NORMAL;
+        claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
+        claim.label = label ? sdk_view_(label, (CastleU32)text_len(label)) :
+                              claim.signature_id;
+        return g_sdk_hook_api->AddRelativeCallHook(g_sdk_transaction, &claim,
+            &claim_handle) >= 0;
+    }
     if (!g_VirtualProtect || !replacement) return 0;
     if (!call_target_is(call_address, expected_target)) {
         Runtime_Log("[Hook] 安装前 CALL 已发生变化，拒绝覆盖。 ");
@@ -412,6 +532,7 @@ int Runtime_RestoreCall(u32 call_address, u32 expected_current_target, u32 resto
     DWORD ignored = 0;
     HANDLE process;
 
+    if (g_sdk_runtime_api) return 1;
     if (!g_VirtualProtect) return 0;
     if (!call_target_is(call_address, expected_current_target)) return 0;
 
@@ -436,6 +557,35 @@ int Runtime_PatchPointer(u32 slot_address, const void* replacement, void** old_v
     void* current;
     HANDLE process;
 
+    if (g_sdk_runtime_api) {
+        static const char signature[] =
+            "org.castlereforge.signature.bink-copy-to-buffer.v1";
+        CastleChainHookClaimV1 claim = {0};
+        void* original;
+        if (!g_sdk_transaction_building || !g_sdk_hook_api || !replacement ||
+            !old_value) return 0;
+        original = *(void**)slot_address;
+        if (!original) return 0;
+        claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
+        claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
+        claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        claim.hook_kind = CASTLE_HOOK_IAT_POINTER;
+        claim.target.module = g_sdk_game_module;
+        claim.target.rva = slot_address - (u32)g_sdk_game_module;
+        claim.target.size = 4u;
+        claim.expected_original_target = (CastleAddress)(SIZE_T)original;
+        claim.replacement_hook = (CastleAddress)(SIZE_T)replacement;
+        claim.signature_id = sdk_view_(signature,
+            (CastleU32)(sizeof(signature) - 1u));
+        claim.phase = CASTLE_HOOK_PHASE_NORMAL;
+        claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
+        claim.label = label ? sdk_view_(label, (CastleU32)text_len(label)) :
+                              claim.signature_id;
+        if (g_sdk_hook_api->AddPointerHook(g_sdk_transaction, &claim,
+                &g_sdk_pointer_claim) < 0) return 0;
+        g_sdk_pointer_output = old_value;
+        return 1;
+    }
     if (!g_VirtualProtect || !replacement || !old_value) return 0;
     current = *(void**)slot_address;
     if (!current) {

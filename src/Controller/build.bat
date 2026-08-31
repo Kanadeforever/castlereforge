@@ -1,7 +1,7 @@
 ﻿setlocal DisableDelayedExpansion
 chcp 65001 >nul
 @echo off
-rem 统一输出目录：仓库根 build\
+rem 统一输出目录：仓库根 build\  
 set "ROOT=%~dp0"
 set "OUT=%ROOT%..\..\build"
 set "SDK=%ROOT%..\RuntimeSDK"
@@ -13,8 +13,8 @@ if not defined VSDEV if exist "C:\Program Files\Microsoft Visual Studio\2022\Pro
 if not defined VSDEV if exist "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" set "VSDEV=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
 
 if not defined VSDEV (
-  echo [错误] 没有找到支持的 Visual Studio VsDevCmd.bat。
-  echo [说明] 可编辑本文件中的 VSDEV 搜索路径，或者在已初始化的 x86 Developer Command Prompt 中自行执行同等命令。
+  echo [错误] 没有找到支持的 Visual Studio VsDevCmd.bat。  
+  echo [说明] 可编辑本文件中的 VSDEV 搜索路径，或者在已初始化的 x86 Developer Command Prompt 中自行执行同等命令。  
   pause
   exit /b 1
 )
@@ -33,7 +33,7 @@ set "VisualStudioVersion="
 
 call "%VSDEV%" -no_logo -arch=x86 -host_arch=x64 >nul
 if errorlevel 1 (
-  echo [错误] Visual Studio x86 开发环境初始化失败。
+  echo [错误] Visual Studio x86 开发环境初始化失败。  
   pause
   exit /b 1
 )
@@ -78,7 +78,7 @@ call :compile save_point.c save_point.obj || goto :fail
 call :compile frontend.c frontend.obj || goto :fail
 call :compile battle.c battle.obj || goto :fail
 call :compile plugin.c plugin.obj || goto :fail
-echo [编译] RuntimeSDK Client
+echo [编译] RuntimeSDK Client  
 clang-cl %CFLAGS% "%SDK%\client\runtime_client.c" /Fo:"%ROOT%_build\runtime_client.obj"
 if errorlevel 1 goto :fail
 clang-cl %CFLAGS% "%SDK%\client\runtime_entry_gate.c" /Fo:"%ROOT%_build\runtime_entry_gate.obj"
@@ -86,7 +86,7 @@ if errorlevel 1 goto :fail
 clang-cl %CFLAGS% "%SDK%\client\runtime_client_support.c" /Fo:"%ROOT%_build\runtime_client_support.obj"
 if errorlevel 1 goto :fail
 
-echo [链接] Castle_PadSupport.asi
+echo [链接] Castle_PadSupport.asi  
 link /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 /def:"%ROOT%source\Castle_PadSupport.def" ^
   "%ROOT%_build\runtime.obj" "%ROOT%_build\pad_input.obj" "%ROOT%_build\input_router.obj" "%ROOT%_build\pad_public_api.obj" "%ROOT%_build\movie_skip.obj" ^
   "%ROOT%_build\confirm_dialog.obj" "%ROOT%_build\dialogue_input.obj" ^
@@ -108,12 +108,12 @@ rmdir /s /q "%ROOT%_build"
 
 echo.
 echo done
-echo [打包] ASI、INI 已同步到 build 目录。
+echo [打包] ASI、INI 已同步到 build 目录。  
 pause
 exit /b 0
 
 :compile
-echo [编译] %1
+echo [编译] %1  
 clang-cl %CFLAGS% "%ROOT%source\%1" /Fo:"%ROOT%_build\%2"
 if errorlevel 1 exit /b 1
 exit /b 0

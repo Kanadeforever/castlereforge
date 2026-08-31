@@ -2,6 +2,8 @@
 #include "platform.h"
 #include "game_addresses.h"
 #include "runtime.h"
+#include "CastleDisplay_API.h"
+#include "CastleRender_API.h"
 
 /*
  * widescreen.c — v0.11-poc11 电影式模糊 / 纯黑侧区切换版
@@ -92,6 +94,14 @@ static u32 g_side_width = SIDE_WIDTH_16_9;
 static u32 g_present_staging_w = STAGING_WIDTH_16_9;
 static u32 g_cinematic_low_w = 214u;
 static int g_ultrawide_enabled;
+static const CastleRuntimeApiV1* g_sdk_runtime_api;
+static const CastleDisplayApiV1* g_sdk_display_api;
+static const CastleRenderApiV1* g_sdk_render_api;
+static CastlePluginHandle g_sdk_plugin_handle;
+static CastleProviderHandle g_sdk_display_provider;
+static CastleProviderHandle g_sdk_render_provider;
+static CastleDisplayGeometryV1 g_sdk_geometry;
+static u32 g_sdk_services_ready;
 
 /*
  * v0.11 新增的侧区样式开关。
@@ -860,6 +870,41 @@ static int calculate_camera_plan(i32 camera_x, CameraPlan* plan) {
     return 1;
 }
 
+static void sdk_publish_geometry(u32 display_mode_value, u32 projection_scope,
+                                 i32 effective_camera_x,
+                                 i32 original_camera_x,
+                                 u32 left_world_width,
+                                 u32 right_world_width) {
+    CastleU32 runtime_generation = 0u;
+    if (!g_sdk_services_ready || !g_sdk_display_api || !g_sdk_display_provider) return;
+    Runtime_MemZero(&g_sdk_geometry, sizeof(g_sdk_geometry));
+    g_sdk_geometry.magic = CASTLE_DISPLAY_GEOMETRY_MAGIC;
+    g_sdk_geometry.struct_size = CASTLE_SIZEOF_DISPLAY_GEOMETRY_V1;
+    g_sdk_geometry.api_version = CASTLE_DISPLAY_API_VERSION_1;
+    g_sdk_geometry.output_width = OUTPUT_WIDTH;
+    g_sdk_geometry.output_height = OUTPUT_HEIGHT;
+    g_sdk_geometry.logical_width = LOGICAL_WIDTH;
+    g_sdk_geometry.logical_height = LOGICAL_HEIGHT;
+    g_sdk_geometry.center_x = (i32)SIDE_WIDTH;
+    g_sdk_geometry.center_y = 0;
+    g_sdk_geometry.center_width = (i32)LOGICAL_WIDTH;
+    g_sdk_geometry.center_height = (i32)LOGICAL_HEIGHT;
+    g_sdk_geometry.effective_camera_x = effective_camera_x;
+    g_sdk_geometry.effective_camera_y = *(volatile i32*)GLOBAL_CAMERA_Y;
+    g_sdk_geometry.original_camera_x = original_camera_x;
+    g_sdk_geometry.original_camera_y = g_sdk_geometry.effective_camera_y;
+    g_sdk_geometry.left_world_width = left_world_width;
+    g_sdk_geometry.right_world_width = right_world_width;
+    g_sdk_geometry.display_mode = display_mode_value;
+    g_sdk_geometry.projection_scope = projection_scope;
+    g_sdk_geometry.transition_value = g_cinematic_fill_amount;
+    g_sdk_geometry.transition_max = CINEMATIC_FILL_MAX;
+    if (g_sdk_display_api->PublishDisplayGeometry(g_sdk_display_provider,
+            &g_sdk_geometry, &runtime_generation) == CASTLE_OK) {
+        g_sdk_geometry.generation = runtime_generation;
+    }
+}
+
 /*
  * 从队列对象取得 vtable[1]，也就是 0x434710 真正会 CALL 的 draw 方法地址。
  *
@@ -942,6 +987,7 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
     g_side_frame_ready = 0;
 
     if (!self) return;
+    original_camera_x = *(volatile i32*)GLOBAL_CAMERA_X;
 
     /*
      * 一定要在第一次 g_original_render_queue() 之前扫描。
@@ -953,6 +999,8 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
 
     /* 标题/Bink/主 Interface 没有普通世界补画意义，直接保持原版中央绘制一次。 */
     if (frame_requires_hard_4x3()) {
+        sdk_publish_geometry(CASTLE_DISPLAY_HARD_4_3, CASTLE_PROJECTION_NONE,
+            original_camera_x, original_camera_x, 0u, 0u);
         g_original_render_queue(self);
         return;
     }
@@ -967,6 +1015,9 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
      * 中央完整队列仍由原版正常执行一次；Present 再从中央 640 生成模糊侧区。
      */
     if (g_cinematic_latched || g_battle_latched) {
+        sdk_publish_geometry(g_battle_latched ? CASTLE_DISPLAY_BATTLE_4_3 :
+            CASTLE_DISPLAY_CINEMATIC_4_3, CASTLE_PROJECTION_NONE,
+            original_camera_x, original_camera_x, 0u, 0u);
         g_original_render_queue(self);
         return;
     }
@@ -977,6 +1028,8 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
             g_logged_bad_geometry = 1;
             Runtime_Log("[多Camera] Display 暂时不是完整 768×576/640×480 几何；本帧走中央，侧边交给历史帧过渡。");
         }
+        sdk_publish_geometry(CASTLE_DISPLAY_TRANSITION, CASTLE_PROJECTION_NONE,
+            original_camera_x, original_camera_x, 0u, 0u);
         g_original_render_queue(self);
         return;
     }
@@ -988,17 +1041,20 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
             g_logged_bad_queue = 1;
             Runtime_Log("[多Camera] 绘制队列超过 200 项静态上限；本帧不重放，避免写越未知队列区。");
         }
+        sdk_publish_geometry(CASTLE_DISPLAY_TRANSITION, CASTLE_PROJECTION_NONE,
+            original_camera_x, original_camera_x, 0u, 0u);
         g_original_render_queue(self);
         return;
     }
     g_logged_bad_queue = 0;
 
-    original_camera_x = *(volatile i32*)GLOBAL_CAMERA_X;
     if (!calculate_camera_plan(original_camera_x, &plan)) {
         if (!g_logged_bad_camera_bounds) {
             g_logged_bad_camera_bounds = 1;
             Runtime_Log("[多Camera] 当前地图 Camera bounds 尚未建立；本帧只画中央，不再瞬间强制清黑左右。");
         }
+        sdk_publish_geometry(CASTLE_DISPLAY_TRANSITION, CASTLE_PROJECTION_NONE,
+            original_camera_x, original_camera_x, 0u, 0u);
         g_original_render_queue(self);
         return;
     }
@@ -1036,6 +1092,8 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
             g_logged_world_filter = 1;
             Runtime_Log("[世界队列过滤] 当前帧没有找到 draw=0x40B050 的 world manager；保留中央，侧边等待下一张有效世界帧。");
         }
+        sdk_publish_geometry(CASTLE_DISPLAY_TRANSITION, CASTLE_PROJECTION_NONE,
+            plan.center_x, original_camera_x, 0u, 0u);
         return;
     }
     g_logged_world_filter = 0;
@@ -1082,6 +1140,12 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
     g_side_frame_ready = 1;
     g_have_side_history = 1;
     g_side_miss_frames = 0u;
+
+    sdk_publish_geometry(g_cinematic_fill_amount != 0u ?
+        CASTLE_DISPLAY_TRANSITION : CASTLE_DISPLAY_WIDE_WORLD,
+        g_cinematic_fill_amount != 0u ? CASTLE_PROJECTION_NONE :
+                                        CASTLE_PROJECTION_FULL_OUTPUT,
+        plan.center_x, original_camera_x, plan.left_shift, plan.right_shift);
 
     if (!g_logged_first_multipass) {
         g_logged_first_multipass = 1;
@@ -1820,6 +1884,139 @@ static i32 WINAPI Hook_BinkCopyToBuffer(
     }
 
     return result;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL sdk_display_get_state(CastleDisplayStateV1* state) {
+    if (!state) return CASTLE_ERROR_INVALID_ARGUMENT;
+    state->flags = 0u; state->ready = g_sdk_services_ready;
+    state->generation = g_sdk_geometry.generation;
+    state->backend_plugin = g_sdk_plugin_handle;
+    state->display_mode = g_sdk_geometry.display_mode;
+    return CASTLE_OK;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL sdk_display_copy_geometry(CastleDisplayGeometryV1* geometry) {
+    if (!geometry || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
+    *geometry = g_sdk_geometry;
+    return CASTLE_OK;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL sdk_world_to_screen(
+    const CastleWorldToScreenRequestV1* request, CastleScreenProjectionV1* output) {
+    if (!request || !output || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
+    if (request->requested_generation && request->requested_generation != g_sdk_geometry.generation)
+        return CASTLE_ERROR_STALE_GENERATION;
+    output->flags = 0u; output->actual_generation = g_sdk_geometry.generation;
+    output->screen_x = request->world_x - g_sdk_geometry.effective_camera_x + g_sdk_geometry.center_x;
+    output->screen_y = request->world_y - g_sdk_geometry.effective_camera_y + g_sdk_geometry.center_y;
+    output->projection_scope = g_sdk_geometry.projection_scope;
+    if (g_sdk_geometry.projection_scope == CASTLE_PROJECTION_NONE)
+        output->visibility = CASTLE_VISIBILITY_NOT_PROJECTABLE;
+    else if (output->screen_x < 0) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_LEFT;
+    else if ((u32)output->screen_x >= g_sdk_geometry.output_width) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_RIGHT;
+    else if (output->screen_y < 0) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_TOP;
+    else if ((u32)output->screen_y >= g_sdk_geometry.output_height) output->visibility = CASTLE_VISIBILITY_OFFSCREEN_BOTTOM;
+    else output->visibility = CASTLE_VISIBILITY_VISIBLE;
+    return CASTLE_OK;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL sdk_screen_to_world(
+    const CastleScreenToWorldRequestV1* request, CastleWorldProjectionV1* output) {
+    if (!request || !output || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
+    if (request->requested_generation && request->requested_generation != g_sdk_geometry.generation)
+        return CASTLE_ERROR_STALE_GENERATION;
+    output->flags = 0u; output->actual_generation = g_sdk_geometry.generation;
+    output->world_x = request->screen_x - g_sdk_geometry.center_x + g_sdk_geometry.effective_camera_x;
+    output->world_y = request->screen_y - g_sdk_geometry.center_y + g_sdk_geometry.effective_camera_y;
+    output->projection_scope = g_sdk_geometry.projection_scope;
+    output->visibility = g_sdk_geometry.projection_scope == CASTLE_PROJECTION_NONE ?
+        CASTLE_VISIBILITY_NOT_PROJECTABLE : CASTLE_VISIBILITY_VISIBLE;
+    return CASTLE_OK;
+}
+
+static const CastleDisplayProviderV1 g_sdk_display_provider_api = {
+    CASTLE_DISPLAY_PROVIDER_MAGIC, CASTLE_SIZEOF_DISPLAY_PROVIDER_V1,
+    CASTLE_DISPLAY_API_VERSION_1, CASTLE_DISPLAY_CAP_SCREEN_TO_WORLD,
+    sdk_display_get_state, sdk_display_copy_geometry, sdk_world_to_screen, sdk_screen_to_world
+};
+
+static CastleResult CASTLE_RUNTIME_CALL sdk_render_get_state(CastleRenderStateV1* state) {
+    if (!state) return CASTLE_ERROR_INVALID_ARGUMENT;
+    state->flags = 0u; state->ready = g_sdk_services_ready;
+    state->generation = g_sdk_geometry.generation;
+    state->backend_plugin = g_sdk_plugin_handle;
+    state->provider_handle = g_sdk_render_provider;
+    state->display_provider_generation = 0u; state->extra_frame_owner = 0u;
+    return CASTLE_OK;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL sdk_render_queue(const CastleRenderCallV1* call) {
+    if (!call || !call->render_context || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
+    Hook_RenderQueue((void*)(SIZE_T)call->render_context, NULL);
+    return CASTLE_OK;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL sdk_render_present(const CastleRenderCallV1* call) {
+    if (!call || !call->render_context || !g_sdk_services_ready) return CASTLE_ERROR_NOT_READY;
+    Hook_DisplayPresent((void*)(SIZE_T)call->render_context, NULL);
+    return CASTLE_OK;
+}
+
+static const CastleRenderProviderV1 g_sdk_render_provider_api = {
+    CASTLE_RENDER_PROVIDER_MAGIC, CASTLE_SIZEOF_RENDER_PROVIDER_V1,
+    CASTLE_RENDER_API_VERSION_1, 0u,
+    sdk_render_get_state, sdk_render_queue, sdk_render_present
+};
+
+static const void* sdk_query_interface(const CastleRuntimeApiV1* runtime_api,
+    const char* id, CastleU32 id_length, CastleU32 version, CastleU32 minimum_size) {
+    CastleInterfaceQueryV1 query = {0}; CastleInterfaceResultV1 result_value = {0};
+    query.magic = CASTLE_QUERY_MAGIC; query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id.data = id; query.interface_id.length = id_length;
+    query.requested_version = version; query.minimum_struct_size = minimum_size;
+    result_value.magic = CASTLE_INTERFACE_API_MAGIC;
+    result_value.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result_value.result_version = CASTLE_QUERY_VERSION_1;
+    if (!runtime_api || runtime_api->QueryInterface(&query, &result_value) != CASTLE_OK) return NULL;
+    return result_value.api_pointer;
+}
+
+int Widescreen_RegisterRuntimeServices(const CastleRuntimeApiV1* runtime_api,
+                                       CastlePluginHandle plugin_handle) {
+    static const char display_id[] = CASTLE_DISPLAY_INTERFACE_ID;
+    static const char render_id[] = CASTLE_RENDER_INTERFACE_ID;
+    static const char display_provider_id[] = "org.castlereforge.widescreen.display";
+    static const char render_provider_id[] = "org.castlereforge.widescreen.render";
+    CastleStringView provider_id; CastleResult result_value;
+    g_sdk_runtime_api = runtime_api; g_sdk_plugin_handle = plugin_handle;
+    g_sdk_display_api = (const CastleDisplayApiV1*)sdk_query_interface(runtime_api,
+        display_id, (CastleU32)(sizeof(display_id) - 1u),
+        CASTLE_DISPLAY_API_VERSION_1, CASTLE_SIZEOF_DISPLAY_API_V1);
+    g_sdk_render_api = (const CastleRenderApiV1*)sdk_query_interface(runtime_api,
+        render_id, (CastleU32)(sizeof(render_id) - 1u),
+        CASTLE_RENDER_API_VERSION_1, CASTLE_SIZEOF_RENDER_API_V1);
+    if (!g_sdk_display_api || !g_sdk_render_api) return 0;
+    provider_id.data = display_provider_id;
+    provider_id.length = (CastleU32)(sizeof(display_provider_id) - 1u);
+    result_value = g_sdk_display_api->RegisterDisplayProvider(plugin_handle, provider_id,
+        &g_sdk_display_provider_api, &g_sdk_display_provider);
+    if (result_value < 0) return 0;
+    g_sdk_services_ready = 1u;
+    sdk_publish_geometry(CASTLE_DISPLAY_TRANSITION, CASTLE_PROJECTION_NONE,
+        *(volatile i32*)GLOBAL_CAMERA_X, *(volatile i32*)GLOBAL_CAMERA_X, 0u, 0u);
+    if (g_sdk_display_api->SetDisplayProviderReady(g_sdk_display_provider, 1u) < 0) return 0;
+    provider_id.data = render_provider_id;
+    provider_id.length = (CastleU32)(sizeof(render_provider_id) - 1u);
+    result_value = g_sdk_render_api->RegisterRenderProvider(plugin_handle, provider_id,
+        g_sdk_display_provider, &g_sdk_render_provider_api, &g_sdk_render_provider);
+    if (result_value < 0 ||
+        g_sdk_render_api->SetRenderProviderReady(g_sdk_render_provider, 1u) < 0) {
+        Runtime_Log("[RuntimeSDK] Display 已发布，但 Render Provider 注册失败。");
+        return 0;
+    }
+    Runtime_Log("[RuntimeSDK] Widescreen Display/Render 权威后端已就绪。");
+    return 1;
 }
 
 /*

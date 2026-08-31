@@ -2,6 +2,7 @@
 #define CASTLE_WIDESCREEN_RUNTIME_H
 
 #include "platform.h"
+#include "CastleRuntime_API.h"
 
 /* 启动最小 Win32 API、日志；Shutdown 只负责关闭日志句柄。 */
 int Runtime_Initialize(HMODULE self_module);
@@ -51,5 +52,11 @@ void* Runtime_Alloc(SIZE_T size);
 /* 自制字节复制/清零循环，避免编译器要求 CRT 的 memcpy/memset。 */
 void Runtime_MemCopy(void* dst, const void* src, SIZE_T size);
 void Runtime_MemZero(void* dst, SIZE_T size);
+
+/* RuntimeHost 把四个 CALL 与 Bink 指针先声明，全部通过后一次提交。 */
+int Runtime_BeginSdkHookTransaction(const CastleRuntimeApiV1* runtime_api,
+                                    CastlePluginHandle plugin_handle);
+int Runtime_CommitSdkHookTransaction(void);
+void Runtime_AbortSdkHookTransaction(void);
 
 #endif /* CASTLE_WIDESCREEN_RUNTIME_H */

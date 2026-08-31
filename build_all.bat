@@ -3,48 +3,59 @@ setlocal EnableExtensions
 set "ROOT=%~dp0"
 
 @echo off
-echo [1/8] 对话历史
+echo [1/9] RuntimeSDK 核心  
+call "%ROOT%src\RuntimeSDK\build.bat" < nul || goto :fail
+cls
+echo [2/9] 对话历史  
 call "%ROOT%src\Backlog\build.bat" < nul || goto :fail
 cls
-echo [2/8] 控制器支持
+echo [3/9] 控制器支持  
 call "%ROOT%src\Controller\build.bat" < nul || goto :fail
 cls
-echo [3/8] 宽屏
+echo [4/9] 宽屏  
 call "%ROOT%src\Widescreen\build.bat" < nul || goto :fail
 cls
-echo [4/8] 安全扩展存档
+echo [5/9] 安全扩展存档  
 call "%ROOT%src\SaveEnhance\build.bat" < nul || goto :fail
 cls
-echo [5/8] 问题修复
+echo [6/9] 问题修复  
 call "%ROOT%src\Extra\BUGFix\build.bat" < nul || goto :fail
 cls
-echo [6/8] 免CD
+echo [7/9] 免CD  
 call "%ROOT%src\Extra\NoCD\build.bat" < nul || goto :fail
 cls
-echo [7/8] 最大成长&最大掉宝
+echo [8/9] 最大成长&最大掉宝  
 call "%ROOT%src\Extra\MaxGrowthAndDrop\build.bat" < nul || goto :fail
 cls
-echo [8/8] 模组加载器
+echo [9/9] 模组加载器  
 call "%ROOT%src\MODLoader\build.bat" < nul || goto :fail
 cls
-echo [移动] 移动 ASI 与同名 INI 到 mods\asi...
+echo [移动] 移动 Runtime、ASI 与同名 INI 到 mods\asi...  
 @echo off
 if not exist "%ROOT%build\mods\asi" mkdir "%ROOT%build\mods\asi"
 for %%F in ("%ROOT%build\*.asi") do (
     move /y "%%F" "%ROOT%build\mods\asi\" >nul || goto :fail
     if exist "%%~dpnF.ini" move /y "%%~dpnF.ini" "%ROOT%build\mods\asi\" >nul || goto :fail
 )
+if not exist "%ROOT%build\Castle_Runtime.dll" goto :fail
+move /y "%ROOT%build\Castle_Runtime.dll" "%ROOT%build\mods\asi\Castle_Runtime.dll" >nul || goto :fail
+
+rem SaveEnhance 的外置 WAV 固定从 ASI 同目录下 Castle_SaveEnhance 子目录读取。  
+set "SAVE_SOUND_DIR=%ROOT%build\mods\asi\Castle_SaveEnhance"
+if not exist "%SAVE_SOUND_DIR%" mkdir "%SAVE_SOUND_DIR%" || goto :fail
+copy /y "%ROOT%docs\SaveEnhance\安装与INI配置说明.md" "%SAVE_SOUND_DIR%\音效放置与INI配置说明.md" >nul || goto :fail
+copy /y "%ROOT%docs\SaveEnhance\实机测试清单.md" "%SAVE_SOUND_DIR%\SaveEnhance实机测试清单.md" >nul || goto :fail
 cls
-echo [移动] 完成
+echo [移动] 完成  
 cls
 echo.
-echo [完成] 全部子项目编译完成：ASI/INI 位于 build\mods\asi，加载器位于 build\
+echo [完成] Runtime/ASI/INI 位于 build\mods\asi，加载器位于 build\。FPSUnlock 仍未纳入。  
 pause
 exit /b 0
 
 :fail
 cls
 echo.
-echo [失败] build_all 中止，请检查上方错误
+echo [失败] build_all 中止，请检查上方错误。  
 pause
 exit /b 1

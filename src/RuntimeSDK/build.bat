@@ -101,6 +101,8 @@ cl.exe %CLIENT_CFLAGS% /Fo"%OUT%\runtime_client.obj" "%ROOT%client\runtime_clien
 if errorlevel 1 goto :fail
 cl.exe %CLIENT_CFLAGS% /Fo"%OUT%\runtime_entry_gate.obj" "%ROOT%client\runtime_entry_gate.c"
 if errorlevel 1 goto :fail
+cl.exe %CLIENT_CFLAGS% /Fo"%OUT%\runtime_client_support.obj" "%ROOT%client\runtime_client_support.c"
+if errorlevel 1 goto :fail
 cl.exe %CLIENT_CFLAGS% /Fo"%OUT%\entry_gate_test.obj" "%ENTRY_GATE_TEST%"
 if errorlevel 1 goto :fail
 cl.exe %CLIENT_CFLAGS% /Fo"%OUT%\client_state_test.obj" "%CLIENT_STATE_TEST%"

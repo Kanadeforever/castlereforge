@@ -1,5 +1,8 @@
 #include "PatchUtil.h"
 #include "PluginLog.h"
+#include "CastleRuntime_Client.h"
+#include "CastleHook_API.h"
+#include "CastlePath_API.h"
 #include "Castle_PadSupport_API.h"
 
 // ============================================================================
@@ -267,6 +270,7 @@ HMODULE gSelfModule = nullptr;
 // 这个标记只防止调试环境/其它兼容加载器重复调用正式初始化，避免同一批 Hook 被打两遍。
 // Mod Loader 的 ASI 加载是按配置顺序单线程执行，所以这里不需要额外的线程同步原语。
 bool gInitializationAttempted = false;
+bool gStandaloneMode = false;
 OriginalSaveGateFunction gOriginalSaveGate = nullptr;
 OriginalMapTickFunction gOriginalMapTick = nullptr;
 OriginalSaveWriterFunction gOriginalSaveWriter = nullptr;
@@ -2418,6 +2422,262 @@ fail:
     return false;
 }
 
+CastleStringView SdkView(const char* text, CastleU32 length) {
+    CastleStringView view{};
+    view.data = text;
+    view.length = length;
+    return view;
+}
+
+const CastleHookApiV1* QueryHookApi(const CastleRuntimeApiV1* runtimeApi) {
+    static const char interfaceId[] = CASTLE_HOOK_INTERFACE_ID;
+    CastleInterfaceQueryV1 query{};
+    CastleInterfaceResultV1 result{};
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = SdkView(interfaceId,
+        static_cast<CastleU32>(sizeof(interfaceId) - 1u));
+    query.requested_version = CASTLE_HOOK_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_HOOK_API_V1;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (!runtimeApi || runtimeApi->QueryInterface(&query, &result) != CASTLE_OK) {
+        return nullptr;
+    }
+    return static_cast<const CastleHookApiV1*>(result.api_pointer);
+}
+
+CastleResult AddRuntimeCall(const CastleHookApiV1* hookApi,
+    CastleTransactionHandle transaction, CastleModule gameModule,
+    DWORD rva, CastleAddress originalTarget, const void* hook,
+    CastleStringView signature, CastleClaimHandle* outClaim) {
+    static const char label[] = "SaveEnhance CALL chain";
+    CastleChainHookClaimV1 claim{};
+    claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
+    claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
+    claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+    claim.hook_kind = CASTLE_HOOK_REL32_CALL;
+    claim.target = {gameModule, rva, 5u};
+    claim.expected_original_target = originalTarget;
+    claim.replacement_hook = static_cast<CastleAddress>(
+        reinterpret_cast<SIZE_T>(hook));
+    claim.signature_id = signature;
+    claim.phase = CASTLE_HOOK_PHASE_NORMAL;
+    claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
+    claim.label = SdkView(label, static_cast<CastleU32>(sizeof(label) - 1u));
+    return hookApi->AddRelativeCallHook(transaction, &claim, outClaim);
+}
+
+CastleResult AddRuntimeExclusive(const CastleHookApiV1* hookApi,
+    CastleTransactionHandle transaction, CastleModule gameModule,
+    DWORD rva, const BYTE* expected, const BYTE* replacement,
+    CastleU32 size, const char* label, CastleU32 labelLength,
+    CastleClaimHandle* outClaim) {
+    CastleExclusivePatchClaimV1 claim{};
+    claim.magic = CASTLE_EXCLUSIVE_PATCH_MAGIC;
+    claim.struct_size = CASTLE_SIZEOF_EXCLUSIVE_PATCH_V1;
+    claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+    claim.flags = CASTLE_PATCH_FLAG_CODE | CASTLE_PATCH_FLAG_KEEP_ON_PROCESS_EXIT;
+    claim.target = {gameModule, rva, size};
+    claim.expected_bytes = expected;
+    claim.expected_size = size;
+    claim.replacement_bytes = replacement;
+    claim.replacement_size = size;
+    claim.label = SdkView(label, labelLength);
+    return hookApi->AddExclusivePatch(transaction, &claim, outClaim);
+}
+
+void BuildRuntimeCall6(BYTE* site, const void* target, BYTE output[6]) {
+    output[0] = 0xE8u;
+    *reinterpret_cast<DWORD*>(output + 1u) = static_cast<DWORD>(
+        reinterpret_cast<SIZE_T>(target) - reinterpret_cast<SIZE_T>(site + 5u));
+    output[5] = 0x90u;
+}
+
+bool GetRuntimeBinding(const CastleHookApiV1* hookApi, CastleClaimHandle claim,
+                       void* volatile** outSlot) {
+    CastleHookBindingV1 binding{};
+    binding.magic = CASTLE_HOOK_BINDING_MAGIC;
+    binding.struct_size = CASTLE_SIZEOF_HOOK_BINDING_V1;
+    binding.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+    if (hookApi->GetHookBinding(claim, &binding) != CASTLE_OK ||
+        !binding.next_slot) return false;
+    *outSlot = binding.next_slot;
+    return true;
+}
+
+bool InstallAllHooksIntegrated(const CastleRuntimeApiV1* runtimeApi,
+                               CastlePluginHandle pluginHandle) {
+    static const char transactionLabel[] = "SaveEnhance complete hook transaction";
+    static const char genericSignatureText[] =
+        "org.castlereforge.signature.saveenhance-call.v1";
+    static const char saveActionUpdateSignatureText[] =
+        "org.castlereforge.signature.save-action-update.v1";
+    static const char buttonHitSignatureText[] =
+        "org.castlereforge.signature.button-hit-fast.v1";
+    static const char buttonEventSignatureText[] =
+        "org.castlereforge.signature.button-event-this.v1";
+    static const char prevLabel[] = "SaveEnhance previous-page loop";
+    static const char nextLabel[] = "SaveEnhance next-page loop";
+    CastleRuntimeInfoV1 info{};
+    const CastleHookApiV1* hookApi = QueryHookApi(runtimeApi);
+    CastleTransactionHandle transaction = 0u;
+    CastleClaimHandle vtableClaim = 0u;
+    CastleClaimHandle hitClaim = 0u;
+    CastleClaimHandle eventClaim = 0u;
+    CastleClaimHandle temporaryClaim = 0u;
+    CastleResult result;
+    BYTE prevReplacement[6]{};
+    BYTE nextReplacement[6]{};
+    void* volatile* vtableNext = nullptr;
+    void* volatile* hitNext = nullptr;
+    void* volatile* eventNext = nullptr;
+    CastleStringView genericSignature = SdkView(genericSignatureText,
+        static_cast<CastleU32>(sizeof(genericSignatureText) - 1u));
+
+    if (GetModuleHandleA("AnytimeSave.asi") != nullptr) {
+        ycrlog::Line("[启动失败] 检测到旧 AnytimeSave.asi；禁止两个存档插件并存。");
+        return false;
+    }
+    if (!hookApi || !runtimeApi || !EnsureOriginalSaveGateFunction() ||
+        !PrecheckAllHookSites()) return false;
+    info.magic = CASTLE_RUNTIME_INFO_MAGIC;
+    info.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
+    info.info_version = CASTLE_RUNTIME_INFO_VERSION_1;
+    if (runtimeApi->GetRuntimeInfo(&info) != CASTLE_OK) return false;
+
+    gOriginalSaveGate = reinterpret_cast<OriginalSaveGateFunction>(gExeBase + kOriginalSaveGateFunctionRva);
+    gOriginalMapTick = reinterpret_cast<OriginalMapTickFunction>(gExeBase + kOriginalMapTickFunctionRva);
+    gOriginalSaveWriter = reinterpret_cast<OriginalSaveWriterFunction>(gExeBase + kOriginalSaveWriterFunctionRva);
+    gOriginalSaveSlot = reinterpret_cast<OriginalSaveSlotFunction>(gExeBase + kOriginalSaveSlotFunctionRva);
+    gOriginalLoadSlot = reinterpret_cast<OriginalLoadSlotFunction>(gExeBase + kOriginalLoadSlotFunctionRva);
+    gOriginalSavePrepare = reinterpret_cast<OriginalNoArgFunction>(gExeBase + kOriginalSavePrepareFunctionRva);
+    gOriginalPostLoad = reinterpret_cast<OriginalNoArgFunction>(gExeBase + kOriginalPostLoadFunctionRva);
+    gGameFileCtor = reinterpret_cast<GameFileCtorFunction>(gExeBase + kGameFileCtorFunctionRva);
+    gGameFileDtor = reinterpret_cast<GameFileDtorFunction>(gExeBase + kGameFileDtorFunctionRva);
+    gGameFileOpen = reinterpret_cast<GameFileOpenFunction>(gExeBase + kGameFileOpenFunctionRva);
+
+    result = hookApi->BeginTransaction(pluginHandle,
+        SdkView(transactionLabel,
+            static_cast<CastleU32>(sizeof(transactionLabel) - 1u)),
+        0u, &transaction);
+    if (result < 0) return false;
+
+    for (SIZE_T index = 0u; index < kFixedMenuPatchCount; ++index) {
+        CastleStatePatchClaimV1 claim{};
+        claim.magic = CASTLE_STATE_PATCH_MAGIC;
+        claim.struct_size = CASTLE_SIZEOF_STATE_PATCH_V1;
+        claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        claim.flags = CASTLE_PATCH_FLAG_CODE | CASTLE_PATCH_FLAG_KEEP_ON_PROCESS_EXIT;
+        claim.target = {info.game_module, kFixedMenuPatches[index].rva,
+            static_cast<CastleU32>(kFixedMenuPatches[index].size)};
+        claim.original_bytes = kFixedMenuPatches[index].original;
+        claim.original_size = static_cast<CastleU32>(kFixedMenuPatches[index].size);
+        claim.enabled_bytes = kFixedMenuPatches[index].patched;
+        claim.enabled_size = static_cast<CastleU32>(kFixedMenuPatches[index].size);
+        claim.desired_state = CASTLE_PATCH_STATE_ENABLED;
+        claim.label = SdkView(transactionLabel,
+            static_cast<CastleU32>(sizeof(transactionLabel) - 1u));
+        result = hookApi->AddStatePatch(transaction, &claim, &temporaryClaim);
+        if (result < 0) goto fail_runtime_install;
+    }
+
+    BuildRuntimeCall6(gExeBase + kPrevPageBaseReadRva,
+        reinterpret_cast<const void*>(&PrevPageBaseLoopHelper), prevReplacement);
+    BuildRuntimeCall6(gExeBase + kNextPageBaseReadRva,
+        reinterpret_cast<const void*>(&NextPageBaseLoopHelper), nextReplacement);
+    result = AddRuntimeExclusive(hookApi, transaction, info.game_module,
+        kPrevPageBaseReadRva, kPrevPageBaseReadBytes, prevReplacement, 6u,
+        prevLabel, static_cast<CastleU32>(sizeof(prevLabel) - 1u), &temporaryClaim);
+    if (result < 0) goto fail_runtime_install;
+    result = AddRuntimeExclusive(hookApi, transaction, info.game_module,
+        kNextPageBaseReadRva, kNextPageBaseReadBytes, nextReplacement, 6u,
+        nextLabel, static_cast<CastleU32>(sizeof(nextLabel) - 1u), &temporaryClaim);
+    if (result < 0) goto fail_runtime_install;
+
+    result = AddRuntimeCall(hookApi, transaction, info.game_module,
+        kNormalMenuSaveGateCallRva,
+        static_cast<CastleAddress>(reinterpret_cast<SIZE_T>(gExeBase + kOriginalSaveGateFunctionRva)),
+        reinterpret_cast<const void*>(&SafeSaveGateHook), genericSignature, &temporaryClaim);
+    if (result < 0) goto fail_runtime_install;
+    result = AddRuntimeCall(hookApi, transaction, info.game_module,
+        kMapTickCallRva,
+        static_cast<CastleAddress>(reinterpret_cast<SIZE_T>(gExeBase + kOriginalMapTickFunctionRva)),
+        reinterpret_cast<const void*>(&SafeMapTickHook), genericSignature, &temporaryClaim);
+    if (result < 0) goto fail_runtime_install;
+    result = AddRuntimeCall(hookApi, transaction, info.game_module,
+        kSaveWriterCallRva,
+        static_cast<CastleAddress>(reinterpret_cast<SIZE_T>(gExeBase + kOriginalSaveWriterFunctionRva)),
+        reinterpret_cast<const void*>(&SafeSaveWriterHook), genericSignature, &temporaryClaim);
+    if (result < 0) goto fail_runtime_install;
+    result = AddRuntimeCall(hookApi, transaction, info.game_module,
+        kMenuSaveCallRva,
+        static_cast<CastleAddress>(reinterpret_cast<SIZE_T>(gExeBase + kOriginalSaveSlotFunctionRva)),
+        reinterpret_cast<const void*>(&ProtectedManualSaveHook), genericSignature, &temporaryClaim);
+    if (result < 0) goto fail_runtime_install;
+    result = AddRuntimeCall(hookApi, transaction, info.game_module,
+        kCommandSaveCallRva,
+        static_cast<CastleAddress>(reinterpret_cast<SIZE_T>(gExeBase + kOriginalSaveSlotFunctionRva)),
+        reinterpret_cast<const void*>(&ProtectedManualSaveHook), genericSignature, &temporaryClaim);
+    if (result < 0) goto fail_runtime_install;
+
+    {
+        CastleChainHookClaimV1 claim{};
+        claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
+        claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
+        claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        claim.hook_kind = CASTLE_HOOK_VTABLE_POINTER;
+        claim.target = {info.game_module, kSaveActionUpdateVtableRva, 4u};
+        claim.expected_original_target = kSaveActionUpdateOriginalVa;
+        claim.replacement_hook = static_cast<CastleAddress>(
+            reinterpret_cast<SIZE_T>(&SaveActionUpdateHook));
+        claim.signature_id = SdkView(saveActionUpdateSignatureText,
+            static_cast<CastleU32>(sizeof(saveActionUpdateSignatureText) - 1u));
+        claim.phase = CASTLE_HOOK_PHASE_NORMAL;
+        claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
+        claim.label = claim.signature_id;
+        result = hookApi->AddPointerHook(transaction, &claim, &vtableClaim);
+        if (result < 0) goto fail_runtime_install;
+    }
+    result = AddRuntimeCall(hookApi, transaction, info.game_module,
+        kSaveActionHitCallRva, kOriginalButtonHitVa,
+        reinterpret_cast<const void*>(&ReservedSaveActionHitHook),
+        SdkView(buttonHitSignatureText,
+            static_cast<CastleU32>(sizeof(buttonHitSignatureText) - 1u)), &hitClaim);
+    if (result < 0) goto fail_runtime_install;
+    result = AddRuntimeCall(hookApi, transaction, info.game_module,
+        kSaveActionEventCallRva, kOriginalButtonEventVa,
+        reinterpret_cast<const void*>(&ReservedSaveActionEventHook),
+        SdkView(buttonEventSignatureText,
+            static_cast<CastleU32>(sizeof(buttonEventSignatureText) - 1u)), &eventClaim);
+    if (result < 0) goto fail_runtime_install;
+
+    result = hookApi->PreflightTransaction(transaction);
+    if (result >= 0) result = hookApi->CommitTransaction(transaction);
+    if (result < 0) return false;
+    if (!GetRuntimeBinding(hookApi, vtableClaim, &vtableNext) ||
+        !GetRuntimeBinding(hookApi, hitClaim, &hitNext) ||
+        !GetRuntimeBinding(hookApi, eventClaim, &eventNext)) return false;
+    gOriginalSaveActionUpdate = reinterpret_cast<OriginalSaveActionUpdateFunction>(*vtableNext);
+    gSaveActionHitNext = reinterpret_cast<SaveActionHitFunction>(*hitNext);
+    gSaveActionEventNext = reinterpret_cast<SaveActionEventFunction>(*eventNext);
+    gSaveActionPadHooksInstalled = true;
+    gFixedPatchesInstalled = true;
+    gPrevPageHookInstalled = true;
+    gNextPageHookInstalled = true;
+    gCoreHooksInstalled[0] = gCoreHooksInstalled[1] = gCoreHooksInstalled[2] = true;
+    gManualHooksInstalled[0] = gManualHooksInstalled[1] = true;
+    gVtableInstalled = true;
+    ycrlog::Line("[RuntimeSDK] SaveEnhance 完整 Hook 事务已提交；SaveAction next 指向 Controller POST 链。");
+    return true;
+
+fail_runtime_install:
+    hookApi->AbortTransaction(transaction);
+    return false;
+}
+
 } // namespace
 
 // ============================================================================
@@ -2574,19 +2834,44 @@ extern "C" __declspec(naked) void NextPageBaseLoopHelper() {
 // - DllMain 只保存自身 HMODULE，并关闭无用的线程 attach/detach 通知；
 // - 所有文件 I/O、INI、兼容模块查询、内存检查、VirtualProtect 和 Hook 写入都放进 InitializeASI；
 // - 这样也保证 SaveEnhance 看见的是 Loader 已经准备好的最终 Locale/Overrides 环境。
-extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
-    // Loader 正常只会调用一次。仍加一层幂等保护，避免开发调试时重复手工调用导致第二次打 Hook。
-    if (gInitializationAttempted) {
-        return;
+static bool BuildIniPathRuntime(const CastleRuntimeApiV1* runtimeApi,
+                                CastlePluginHandle pluginHandle) {
+    static const char interfaceId[] = CASTLE_PATH_INTERFACE_ID;
+    static const wchar_t relativeName[] = L"Castle_SaveEnhance.ini";
+    CastleInterfaceQueryV1 query{};
+    CastleInterfaceResultV1 result{};
+    CastleWideStringView relative{};
+    CastleU32 outputLength = 0u;
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = SdkView(interfaceId,
+        static_cast<CastleU32>(sizeof(interfaceId) - 1u));
+    query.requested_version = CASTLE_PATH_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_PATH_API_V1;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (!runtimeApi || runtimeApi->QueryInterface(&query, &result) != CASTLE_OK) {
+        return false;
     }
-    gInitializationAttempted = true;
+    const auto* pathApi = static_cast<const CastlePathApiV1*>(result.api_pointer);
+    relative.data = reinterpret_cast<const CastleU16*>(relativeName);
+    relative.length = static_cast<CastleU32>(WLen(relativeName));
+    return pathApi && pathApi->BuildPluginRelativePathWide(pluginHandle,
+        relative, reinterpret_cast<CastleU16*>(gIniPath), 520u,
+        &outputLength) == CASTLE_OK;
+}
 
-    // 从正式生命周期开始才打开/清空日志。这样日志中的“启动”就表示正式初始化确实已经进入，
-    // 不再把“DLL 被映射进进程”误当成“SaveEnhance 已经安装”。
+static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
+                                          CastlePluginHandle pluginHandle,
+                                          bool integrated) {
     ycrlog::Open(gSelfModule, L"Castle_SaveEnhance.log");
-    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.1.0-test7 启动。");
+    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.2.0 RuntimeSDK 启动。");
     ycrlog::Line("By Luminous with ChatGPT");
-    ycrlog::Line("[装载] 已由 Castle Mod Loader 的 InitializeASI 生命周期进入正式初始化。");
+    ycrlog::Line(integrated
+        ? "[装载] Integrated：Runtime Path + Hook 事务。"
+        : "[装载] Standalone：插件本地 Path + fail-closed 补丁器。");
     ycrlog::Line("[槽位] 0=Quick，1~90=Manual，91~99=Rolling Auto；普通菜单保留槽只读。");
     ycrlog::Line("[快捷] F5=Quick Save；F9 连按确认=Quick Load；Controller API 可选联动。");
     ycrlog::Line("[声音] 只使用可选外置 WAV；空/非法/缺失文件静默，不影响存档结果。");
@@ -2594,10 +2879,12 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
     // 到这个时刻 LoadLibraryExW 已经返回，所以 GetModuleHandle/VirtualQuery/VirtualProtect 等正式
     // 初始化工作不再发生在 DllMain Loader Lock 中。
     gExeBase = ycr::GetExeBase();
-    if (gExeBase == nullptr || !BuildIniPath(gIniPath, 520u)) {
+    const bool pathReady = integrated ? BuildIniPathRuntime(runtimeApi, pluginHandle) :
+                                        BuildIniPath(gIniPath, 520u);
+    if (gExeBase == nullptr || !pathReady) {
         ycrlog::Line("[启动失败] 无法取得 RPG.exe 基址或 Castle_SaveEnhance.ini 路径。");
         ycrlog::Line("[状态] SaveEnhance 未完整安装；本轮不修改任何存档逻辑。");
-        return;
+        return CASTLE_ERROR_RUNTIME_FAULT;
     }
 
     LoadConfig();
@@ -2618,32 +2905,100 @@ extern "C" __declspec(dllexport) void __cdecl InitializeASI() {
     // 增加两个阶段日志。即使以后某台机器仍在安装阶段异常停止，也能一眼知道停在“进入预检查”
     // 之前还是“已经开始机器码安装”之后，不再只剩一行配置日志。
     ycrlog::Line("[启动] 开始目标机器码预检查与兼容性检查。");
-    if (!InstallAllHooks()) {
+    const bool installed = integrated ?
+        InstallAllHooksIntegrated(runtimeApi, pluginHandle) : InstallAllHooks();
+    if (!installed) {
         ycrlog::Line("[状态] SaveEnhance 未完整安装；为保护存档，本轮不提供增强功能。");
-        return;
+        return CASTLE_ERROR_EXPECTED_BYTES;
     }
 
     ycrlog::Line("[状态] SaveEnhance 已完整安装，可以开始实机功能测试。");
+    gStandaloneMode = !integrated;
+    return CASTLE_OK;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL SaveEnhance_Integrated(
+    const CastleRuntimeApiV1* runtimeApi, CastlePluginHandle pluginHandle,
+    void* userContext) {
+    (void)userContext;
+    return InitializeSaveEnhance(runtimeApi, pluginHandle, true);
+}
+
+static CastleResult CASTLE_RUNTIME_CALL SaveEnhance_Standalone(void* userContext) {
+    (void)userContext;
+    return InitializeSaveEnhance(nullptr, 0u, false);
+}
+
+static void CASTLE_RUNTIME_CALL SaveEnhance_RuntimeFault(CastleResult failure,
+                                                         void* userContext) {
+    (void)userContext;
+    ycrlog::Open(gSelfModule, L"Castle_SaveEnhance.log");
+    ycrlog::Line("[失败] Castle_Runtime.dll 存在但不可用；SaveEnhance 未回退到私有 Hook。");
+    ycrlog::Text("[失败] Runtime code=");
+    ycrlog::Unsigned(static_cast<DWORD>(-failure));
+    ycrlog::Line("。");
+}
+
+static void CASTLE_RUNTIME_CALL SaveEnhance_ProcessExit(void* userContext) {
+    (void)userContext;
+    ResetReservedPadState();
+    EndSaveButtonOverride();
+    ycrlog::Line("[退出] Castle_SaveEnhance 随进程结束。");
+    ycrlog::Close();
+}
+
+static const char gSdkPluginId[] = "org.castlereforge.saveenhance";
+static const char gSdkDisplayName[] = "Castle SaveEnhance";
+static const char gSdkVersion[] = "0.2.0";
+static const char gSdkBuild[] = "runtimesdk-v1";
+static const CastlePluginDescriptorV1 gSdkDescriptor = {
+    CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,
+    CASTLE_PLUGIN_DESCRIPTOR_V1,
+    CASTLE_PLUGIN_FLAG_SUPPORTS_STANDALONE | CASTLE_PLUGIN_FLAG_REQUESTS_HOOKS |
+        CASTLE_PLUGIN_FLAG_OFFICIAL_MODULE,
+    0u,
+    {gSdkPluginId, static_cast<CastleU32>(sizeof(gSdkPluginId) - 1u)},
+    {gSdkDisplayName, static_cast<CastleU32>(sizeof(gSdkDisplayName) - 1u)},
+    {gSdkVersion, static_cast<CastleU32>(sizeof(gSdkVersion) - 1u)},
+    {gSdkBuild, static_cast<CastleU32>(sizeof(gSdkBuild) - 1u)}
+};
+static const CastleRuntimeClientConfigV1 gSdkClientConfig = {
+    CASTLE_CLIENT_CONFIG_MAGIC, CASTLE_SIZEOF_CLIENT_CONFIG_V1,
+    CASTLE_CLIENT_CONFIG_VERSION_1, 0u,
+    SaveEnhance_Integrated, SaveEnhance_Standalone, SaveEnhance_RuntimeFault,
+    SaveEnhance_ProcessExit, nullptr
+};
+static CastlePluginExportV1 gSdkExport = {
+    CASTLE_PLUGIN_QUERY_MAGIC, CASTLE_SIZEOF_PLUGIN_EXPORT_V1,
+    CASTLE_PLUGIN_EXPORT_VERSION_1, 0u,
+    &gSdkDescriptor, &gSdkClientConfig, 0u, nullptr
+};
+
+extern "C" const CastlePluginExportV1* CASTLE_RUNTIME_CALL CastlePlugin_Query(
+    CastleU32 requestedVersion) {
+    return requestedVersion == CASTLE_PLUGIN_EXPORT_VERSION_1 ? &gSdkExport : nullptr;
+}
+
+extern "C" void __cdecl InitializeASI() {
+    CastleRuntimeClient_RunNow();
 }
 
 extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) {
-    (void)reserved;
 
     if (reason == DLL_PROCESS_ATTACH) {
         // DllMain 必须尽可能短。这里只记住自己的模块句柄，供稍后的 InitializeASI 构造日志/INI 路径。
         gSelfModule = module;
         DisableThreadLibraryCalls(module);
+        CastleRuntimeClient_OnProcessAttach(
+            static_cast<CastleModule>(reinterpret_cast<SIZE_T>(module)), &gSdkExport);
         return TRUE;
     }
 
     if (reason == DLL_PROCESS_DETACH) {
         // 退出时只恢复本插件自己链入的两处 CALL、临时 disabled 和私有焦点，再关闭日志。
         // 不修改 PadSupport 代码，也不重装任何业务 Hook。
-        RestoreReservedSaveActionPadHooks();
-        ResetReservedPadState();
-        EndSaveButtonOverride();
-        ycrlog::Line("[退出] Castle_SaveEnhance v0.1.0-test7 卸载。");
-        ycrlog::Close();
+        if (reserved == nullptr && gStandaloneMode) RestoreReservedSaveActionPadHooks();
+        CastleRuntimeClient_OnProcessDetach(reserved);
     }
     return TRUE;
 }

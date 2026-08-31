@@ -1,14 +1,24 @@
-@echo off
+﻿@echo off
 setlocal DisableDelayedExpansion
 chcp 65001 >nul
 
 set "ROOT=%~dp0"
 set "OUT=%ROOT%_build"
 set "TARGET=%ROOT%..\..\build\Castle_Widescreen.asi"
+set "SDK=%ROOT%..\RuntimeSDK"
 
 if exist "%OUT%" rmdir /s /q "%OUT%"
 mkdir "%OUT%" || goto :fail
 if not exist "%ROOT%..\..\build\" mkdir "%ROOT%..\..\build\" || goto :fail
+
+set "VSDEV=C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat"
+if not exist "%VSDEV%" set "VSDEV=C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat"
+if not exist "%VSDEV%" (
+    echo [构建] 未找到 Visual Studio x86 开发环境。  
+    goto :fail
+)
+call "%VSDEV%" -no_logo -arch=x86 -host_arch=x64 >nul
+if errorlevel 1 goto :fail
 
 set "CLANG_CL="
 set "LLD_LINK="
@@ -16,33 +26,40 @@ for /f "delims=" %%I in ('where clang-cl 2^>nul') do if not defined CLANG_CL set
 for /f "delims=" %%I in ('where lld-link 2^>nul') do if not defined LLD_LINK set "LLD_LINK=%%I"
 
 if not defined CLANG_CL (
-    echo [构建] 未找到 clang-cl。请确认 LLVM 已安装并加入 PATH。
+    echo [构建] 未找到 clang-cl。请确认 LLVM 已安装并加入 PATH。  
     goto :fail
 )
 if not defined LLD_LINK (
-    echo [构建] 未找到 lld-link。请确认 LLVM 已安装并加入 PATH。
+    echo [构建] 未找到 lld-link。请确认 LLVM 已安装并加入 PATH。  
     goto :fail
 )
 
-"%CLANG_CL%" /nologo /c /O2 /Oi- /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc "%ROOT%source\runtime.c" /Fo"%OUT%\runtime.obj" || goto :fail
+set "CFLAGS=/nologo /c /O2 /Oi- /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc /I%SDK%\include /I%SDK%\client"
 
-"%CLANG_CL%" /nologo /c /O2 /Oi- /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc "%ROOT%source\widescreen.c" /Fo"%OUT%\widescreen.obj" || goto :fail
+"%CLANG_CL%" %CFLAGS% "%ROOT%source\runtime.c" /Fo"%OUT%\runtime.obj" || goto :fail
 
-"%CLANG_CL%" /nologo /c /O2 /Oi- /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc "%ROOT%source\plugin.c" /Fo"%OUT%\plugin.obj" || goto :fail
+"%CLANG_CL%" %CFLAGS% "%ROOT%source\widescreen.c" /Fo"%OUT%\widescreen.obj" || goto :fail
+
+"%CLANG_CL%" %CFLAGS% "%ROOT%source\plugin.c" /Fo"%OUT%\plugin.obj" || goto :fail
+"%CLANG_CL%" %CFLAGS% "%SDK%\client\runtime_client.c" /Fo"%OUT%\runtime_client.obj" || goto :fail
+"%CLANG_CL%" %CFLAGS% "%SDK%\client\runtime_entry_gate.c" /Fo"%OUT%\runtime_entry_gate.obj" || goto :fail
+"%CLANG_CL%" %CFLAGS% "%SDK%\client\runtime_client_support.c" /Fo"%OUT%\runtime_client_support.obj" || goto :fail
 
 "%LLD_LINK%" /nologo /dll /nodefaultlib /machine:x86 /entry:DllMain@12 ^
     "%OUT%\runtime.obj" "%OUT%\widescreen.obj" "%OUT%\plugin.obj" ^
+    "%OUT%\runtime_client.obj" "%OUT%\runtime_entry_gate.obj" "%OUT%\runtime_client_support.obj" ^
+    /def:"%ROOT%source\Widescreen.def" kernel32.lib ^
     /implib:"%OUT%\Castle_Widescreen.lib" /out:"%TARGET%" || goto :fail
 
 copy /y "%ROOT%templete\Castle_Widescreen.ini" "%ROOT%..\..\build\Castle_Widescreen.ini" >nul || goto :fail
 
 if exist "%OUT%" rmdir /s /q "%OUT%"
-echo [构建] 完成： %TARGET%
+echo [构建] 完成： %TARGET%  
 pause
 exit /b 0
 
 :fail
 if exist "%OUT%" rmdir /s /q "%OUT%"
-echo [构建] 失败。未替换旧二进制文件。
+echo [构建] 失败。未替换旧二进制文件。  
 pause
 exit /b 1
