@@ -87,6 +87,14 @@ Runtime 持锁时不能调用插件代码。插件回调也不能假设：
 
 热路径只读稳定函数表、句柄、generation 和 next 槽。
 
+### Schedule 启动边界
+
+- `IntegratedInitialize` 可以登记周期/一次性后台任务；
+- Runtime 在 Bootstrap 期间只保存任务，不创建或运行 worker；
+- 普通 ASI Loader 在 Entry Gate Bootstrap 完成后开闸；
+- ModLoader 在阶段2完成、主线程实际返回 SDK Entry Gate 后开闸；
+- 禁止用固定毫秒延时、插件 ID 排序或“我应该最后初始化”替代入口闸门。
+
 ## 7. 代次
 
 Provider 切换或几何发布会产生 generation。消费者流程：

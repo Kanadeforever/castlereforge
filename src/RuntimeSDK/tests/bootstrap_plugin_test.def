@@ -3,3 +3,4 @@ EXPORTS
     RuntimeTest_GetBootstrapCount
     RuntimeTest_GetBootstrapMode
     RuntimeTest_GetBootstrapHandle
+    RuntimeTest_GetScheduleCount

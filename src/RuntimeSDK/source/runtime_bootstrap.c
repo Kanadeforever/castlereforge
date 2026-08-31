@@ -174,10 +174,19 @@ CastleResult Runtime_BootstrapLoadedPlugins(const CastleBootstrapRequestV1* requ
 
     old_state = InterlockedCompareExchange(&g_bootstrap_state, 1, 0);
     if (old_state == 2) {
+        /* ModLoader 的第二阶段已经做完；真实 Entry Gate 到达时才放行后台任务。 */
+        if (request->trigger_kind == CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE) {
+            Runtime_ScheduleNotifyGameEntry();
+        }
         runtime_copy_bootstrap_result_(out_result);
         return CASTLE_STATUS_ALREADY_DONE;
     }
     if (old_state != 0) return CASTLE_ERROR_TRANSACTION_STATE;
+
+    /* 测试宿主不模拟 RPG 入口；真实两种启动来源都必须先关闭后台回调闸门。 */
+    if (request->trigger_kind != CASTLE_BOOTSTRAP_TRIGGER_TEST_HOST) {
+        Runtime_ScheduleCloseBootstrapGate();
+    }
 
     Runtime_ByteZero(&g_last_bootstrap_result,
                      (CastleU32)sizeof(g_last_bootstrap_result));
@@ -255,6 +264,9 @@ CastleResult Runtime_BootstrapLoadedPlugins(const CastleBootstrapRequestV1* requ
     runtime_copy_bootstrap_result_(out_result);
     Runtime_DiagnosticAppend("[Bootstrap] loaded SDK plugins processed.");
     InterlockedExchange(&g_bootstrap_state, 2);
+    if (request->trigger_kind == CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE) {
+        Runtime_ScheduleNotifyGameEntry();
+    }
     return g_last_bootstrap_result.failed_plugins ?
         CASTLE_STATUS_OPTIONAL_UNAVAILABLE : CASTLE_OK;
 }

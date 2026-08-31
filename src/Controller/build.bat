@@ -1,6 +1,7 @@
-﻿setlocal DisableDelayedExpansion
-chcp 65001 >nul
-@echo off
+﻿@echo off
+setlocal DisableDelayedExpansion
+set "PATH=%SystemRoot%\System32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0;%PATH%"
+"%SystemRoot%\System32\chcp.com" 65001 >nul
 rem 统一输出目录：仓库根 build\  
 set "ROOT=%~dp0"
 set "OUT=%ROOT%..\..\build"
@@ -16,7 +17,6 @@ if not defined VSDEV (
   exit /b 1
 )
 
-set "PATH=%SystemRoot%\System32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0;%PATH%"
 set "INCLUDE="
 set "LIB="
 set "LIBPATH="

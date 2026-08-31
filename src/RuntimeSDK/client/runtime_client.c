@@ -381,10 +381,17 @@ CastleResult CASTLE_RUNTIME_CALL CastleRuntimeClient_BootstrapAll(
     CastleU32 clear_index;
 
     (void)trigger_module;
-    restore_result = Client_RestoreKnownEntryGate();
-    if (restore_result < 0) {
-        return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,
-                                       restore_result);
+    /*
+     * InitializeASI 发生在 ModLoader 的 RPG 入口前第二阶段。此时保留 Entry Gate，等主线程
+     * 真正到达入口后再恢复原字节并通知 Runtime 放行 Schedule。普通 ASI Loader 直接从
+     * Entry Gate 进入本函数，必须先恢复原入口，随后裸 thunk 才能安全重放原始五字节。
+     */
+    if (trigger_kind != CASTLE_BOOTSTRAP_TRIGGER_INITIALIZE_ASI) {
+        restore_result = Client_RestoreKnownEntryGate();
+        if (restore_result < 0) {
+            return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,
+                                           restore_result);
+        }
     }
     if (!client_build_runtime_path_(runtime_path, CLIENT_PATH_CAP)) {
         return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,

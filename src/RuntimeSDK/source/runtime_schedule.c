@@ -72,6 +72,8 @@ static CastleU32 g_periodic_generation;
 static CastleU32 g_post_sequence;
 static HANDLE g_schedule_event;
 static HANDLE g_schedule_thread;
+/* 1 允许创建/运行后台线程；0 表示插件仍在 Bootstrap，任务只能登记不能执行。 */
+static volatile LONG g_schedule_callbacks_allowed;
 
 static CastleResult CASTLE_RUNTIME_CALL schedule_register_periodic_(
     CastlePluginHandle plugin, const CastleScheduledTaskV1* task,
@@ -230,6 +232,16 @@ static CastleU32 schedule_collect_work_(RuntimeScheduleWorkItem* work,
 
     Runtime_Lock(&g_schedule_lock);
 
+    /*
+     * worker 可能在主线程关闸前刚好通过了循环顶部检查。持锁后再检查一次，保证 Bootstrap
+     * 一旦关闸，就连这个极窄竞态里的旧 worker 也拿不到刚登记的新任务。
+     */
+    if (InterlockedCompareExchange(&g_schedule_callbacks_allowed, 0, 0) == 0) {
+        Runtime_Unlock(&g_schedule_lock);
+        *out_wait_ms = INFINITE;
+        return 0u;
+    }
+
     /* 一次性任务已经到期，按固定队列逐一复制并立即释放队列槽。 */
     for (index = 0u; index < RUNTIME_SCHEDULE_MAX_POSTED; ++index) {
         RuntimePostedTask* posted = &g_posted_tasks[index];
@@ -334,6 +346,15 @@ static DWORD WINAPI schedule_thread_main_(LPVOID unused) {
     RuntimeScheduleWorkItem work[RUNTIME_SCHEDULE_MAX_WORK];
     (void)unused;
     for (;;) {
+        /*
+         * ModLoader 会在 RPG 入口以前统一调用 InitializeASI。此时插件可以登记任务，但游戏
+         * 全局状态和其它插件仍可能处于安装中。只有 Entry Gate 明确通知“游戏开始执行”后，
+         * 后台线程才允许读取游戏状态。
+         */
+        if (InterlockedCompareExchange(&g_schedule_callbacks_allowed, 0, 0) == 0) {
+            WaitForSingleObject(g_schedule_event, INFINITE);
+            continue;
+        }
         CastleU32 now = GetTickCount();
         DWORD wait_ms = INFINITE;
         CastleU32 count = schedule_collect_work_(work, now, &wait_ms);
@@ -362,8 +383,52 @@ void Runtime_ScheduleInitialize(void) {
     g_post_sequence = 0u;
     g_schedule_event = NULL;
     g_schedule_thread = NULL;
+    /* 测试宿主直接使用 Schedule 时保持旧行为；真实 Bootstrap 会在登记插件前主动关闸。 */
+    g_schedule_callbacks_allowed = 1;
     Runtime_ByteZero(g_periodic_tasks, (CastleU32)sizeof(g_periodic_tasks));
     Runtime_ByteZero(g_posted_tasks, (CastleU32)sizeof(g_posted_tasks));
+}
+
+void Runtime_ScheduleCloseBootstrapGate(void) {
+    /* 真实 Bootstrap 只执行一次，并且在任何 SDK 插件登记任务之前调用这里。 */
+    InterlockedExchange(&g_schedule_callbacks_allowed, 0);
+}
+
+void Runtime_ScheduleNotifyGameEntry(void) {
+    HANDLE event_to_signal = NULL;
+    CastleU32 index;
+    CastleU32 entry_time = GetTickCount();
+    int has_work = 0;
+    int worker_failed = 0;
+
+    Runtime_Lock(&g_schedule_lock);
+    InterlockedExchange(&g_schedule_callbacks_allowed, 1);
+    /*
+     * 闸门关闭期间不提前创建线程。现在扫描固定表：只要存在一个周期/一次性任务，就创建
+     * 全局唯一 worker。没有任务时不创建空线程，未来第一次登记仍会按正常路径创建。
+     */
+    for (index = 0u; index < RUNTIME_SCHEDULE_MAX_PERIODIC; ++index) {
+        RuntimePeriodicTask* task = &g_periodic_tasks[index];
+        if (!task->used) continue;
+        has_work = 1;
+        /*
+         * Bootstrap 可能远长于任务自己的 8ms 周期。开闸时从真实入口重新计算首次到期点，
+         * 保证入口 thunk 有时间返回原游戏，也不把“按设计禁止运行”的等待误算成 missed。
+         */
+        if (task->enabled) task->next_due_ms = entry_time + task->period_ms;
+    }
+    for (index = 0u; index < RUNTIME_SCHEDULE_MAX_POSTED && !has_work; ++index) {
+        if (g_posted_tasks[index].used) has_work = 1;
+    }
+    if (has_work) {
+        if (schedule_ensure_worker_locked_()) event_to_signal = g_schedule_event;
+        else worker_failed = 1;
+    }
+    Runtime_Unlock(&g_schedule_lock);
+    if (event_to_signal) SetEvent(event_to_signal);
+    Runtime_DiagnosticAppend(worker_failed ?
+        "[调度] RPG入口已到达，但唯一后台线程创建失败。" :
+        "[调度] RPG入口已到达，后台任务现已放行。");
 }
 
 const CastleScheduleApiV1* Runtime_GetScheduleApiV1(void) {
@@ -385,7 +450,9 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_register_periodic_(
     }
 
     Runtime_Lock(&g_schedule_lock);
-    if (!schedule_ensure_worker_locked_()) {
+    /* Bootstrap 闸门关闭时只登记，不创建能抢跑的后台线程。 */
+    if (InterlockedCompareExchange(&g_schedule_callbacks_allowed, 0, 0) != 0 &&
+        !schedule_ensure_worker_locked_()) {
         Runtime_Unlock(&g_schedule_lock);
         return CASTLE_ERROR_RUNTIME_FAULT;
     }
@@ -422,7 +489,7 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_register_periodic_(
     task->plugin_id_length = id_length;
     *out_task = handle;
     Runtime_Unlock(&g_schedule_lock);
-    SetEvent(g_schedule_event);
+    if (g_schedule_event) SetEvent(g_schedule_event);
     return CASTLE_OK;
 }
 
@@ -440,6 +507,12 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_set_enabled_(CastleTaskHandle h
         Runtime_Unlock(&g_schedule_lock);
         return CASTLE_ERROR_NOT_READY;
     }
+    if (enabled &&
+        InterlockedCompareExchange(&g_schedule_callbacks_allowed, 0, 0) != 0 &&
+        !schedule_ensure_worker_locked_()) {
+        Runtime_Unlock(&g_schedule_lock);
+        return CASTLE_ERROR_RUNTIME_FAULT;
+    }
     task->enabled = enabled;
     if (!task->running) {
         task->state = enabled ? CASTLE_SCHEDULE_TASK_WAITING :
@@ -447,7 +520,7 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_set_enabled_(CastleTaskHandle h
     }
     if (enabled) task->next_due_ms = GetTickCount() + task->period_ms;
     Runtime_Unlock(&g_schedule_lock);
-    SetEvent(g_schedule_event);
+    if (g_schedule_event) SetEvent(g_schedule_event);
     return CASTLE_OK;
 }
 
@@ -465,7 +538,7 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_unregister_(CastleTaskHandle ha
     }
     Runtime_ByteZero(task, (CastleU32)sizeof(*task));
     Runtime_Unlock(&g_schedule_lock);
-    SetEvent(g_schedule_event);
+    if (g_schedule_event) SetEvent(g_schedule_event);
     return CASTLE_OK;
 }
 
@@ -513,7 +586,9 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_post_background_(
         return CASTLE_ERROR_INVALID_ARGUMENT;
     }
     Runtime_Lock(&g_schedule_lock);
-    if (!schedule_ensure_worker_locked_()) {
+    /* 一次性任务也必须服从同一个入口闸门，不能在其它插件初始化中途执行。 */
+    if (InterlockedCompareExchange(&g_schedule_callbacks_allowed, 0, 0) != 0 &&
+        !schedule_ensure_worker_locked_()) {
         Runtime_Unlock(&g_schedule_lock);
         return CASTLE_ERROR_RUNTIME_FAULT;
     }
@@ -540,7 +615,7 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_post_background_(
     Runtime_ByteCopy(task->plugin_id, plugin_id, id_length + 1u);
     task->plugin_id_length = id_length;
     Runtime_Unlock(&g_schedule_lock);
-    SetEvent(g_schedule_event);
+    if (g_schedule_event) SetEvent(g_schedule_event);
     return CASTLE_OK;
 }
 

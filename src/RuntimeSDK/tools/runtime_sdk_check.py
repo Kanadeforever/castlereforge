@@ -81,6 +81,9 @@ def check_required_files(ctx: CheckContext, sdk_root: Path) -> dict[str, str]:
         "tests/entry_gate_test.c",
         "tests/client_state_test.c",
         "tests/client_bootstrap_test.c",
+        "tests/bootstrap_plugin_test.c",
+        "source/runtime_schedule.c",
+        "source/runtime_bootstrap.c",
         "client/runtime_client.c",
         "client/runtime_entry_gate.c",
         "client/runtime_client_support.c",
@@ -183,9 +186,26 @@ def check_tokens(ctx: CheckContext, loaded: dict[str, str]) -> None:
             "client_load_runtime_silently_",
             "SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX",
             "FreeLibrary(runtime_module);",
+            "trigger_kind != CASTLE_BOOTSTRAP_TRIGGER_INITIALIZE_ASI",
         ),
         "tests/client_bootstrap_test.c": (
             "observed_error_mode != SEM_NOGPFAULTERRORBOX",
+            "entry[0] != 0xE9u",
+        ),
+        "source/runtime_schedule.c": (
+            "g_schedule_callbacks_allowed",
+            "Runtime_ScheduleCloseBootstrapGate",
+            "Runtime_ScheduleNotifyGameEntry",
+        ),
+        "source/runtime_bootstrap.c": (
+            "Runtime_ScheduleNotifyGameEntry();",
+        ),
+        "tests/bootstrap_plugin_test.c": (
+            "Bootstrap gate schedule probe",
+        ),
+        "tests/runtime_host_test.c": (
+            "get_a_schedule_count() != 0u",
+            "get_a_schedule_count() == 0u",
         ),
     }
 

@@ -74,8 +74,13 @@ CastleStringView Runtime_GetGameBuildView(void);
 CastleModule Runtime_GetGameModuleValue(void);
 const CastlePathApiV1* Runtime_GetPathApiV1(void);
 
-/* 单后台线程调度；游戏线程阶段能力在获得实机证据前保持不可用。 */
+/*
+ * 单后台线程调度；游戏线程阶段能力在获得实机证据前保持不可用。
+ * Bootstrap 闸门保证插件可以先登记任务，但 RPG 入口到达前绝不会启动后台回调。
+ */
 void Runtime_ScheduleInitialize(void);
+void Runtime_ScheduleCloseBootstrapGate(void);
+void Runtime_ScheduleNotifyGameEntry(void);
 const CastleScheduleApiV1* Runtime_GetScheduleApiV1(void);
 
 /* 已确认游戏 profile 与内部公共符号。未知构建时这些函数安全返回不可用。 */

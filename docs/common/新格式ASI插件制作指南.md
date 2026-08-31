@@ -175,6 +175,8 @@ InitializeASI
 
 `InitializeASI` 只调用 `CastleRuntimeClient_RunNow()`。Castle Mod Loader 第二阶段会调用它；
 普通 ASI Loader 则由 Entry Gate 触发。两条路径竞争同一个幂等状态，不会初始化两次。
+MODLoader 路径会在阶段2保留 SDK Entry Gate：Schedule 任务可以先登记，但主线程真正经过
+RPG 入口前不会运行。插件不得因为任务尚未执行就额外创建一条临时 worker。
 
 使用 `.def` 保证 x86 导出名未修饰：
 

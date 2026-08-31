@@ -157,8 +157,13 @@ __declspec(noreturn) void __stdcall ClientBootstrapTestEntry(void) {
     if (Client_InstallOrJoinEntryGateAt(entry) != CASTLE_OK ||
         CastleRuntimeClient_GetState() != CASTLE_CLIENT_GATE_OWNER) ExitProcess(4u);
 
-    result = CastleRuntimeClient_BootstrapAll(CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE,
+    /*
+     * 先模拟 ModLoader 第二阶段。插件必须完成初始化，但入口 E9 仍要保留，给真正的 RPG
+     * 主线程一次明确的“现在可以放行 Schedule”通知机会。
+     */
+    result = CastleRuntimeClient_BootstrapAll(CASTLE_BOOTSTRAP_TRIGGER_INITIALIZE_ASI,
         (CastleModule)(ULONG_PTR)g_client_module);
+    if (entry[0] != 0xE9u) ExitProcess(10u);
 
     /*
      * SetThreadErrorMode 在设置新值的同时返回旧值。这里再次写入相同哨兵，并检查旧值仍等于
@@ -186,6 +191,16 @@ __declspec(noreturn) void __stdcall ClientBootstrapTestEntry(void) {
             g_test_context.last_fault >= 0 ||
             CastleRuntimeClient_GetState() != CASTLE_CLIENT_RUNTIME_FAULT ||
             GetModuleHandleW(L"Castle_Runtime.dll")) ExitProcess(7u);
+    }
+
+    /*
+     * 再模拟主线程命中 Entry Gate。无论独立、整合还是 Fault，入口都必须恢复成原五字节；
+     * 业务回调仍保持一次，不能把这个“开闸通知”误当第二次插件初始化。
+     */
+    CastleRuntimeClient_BootstrapAll(CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE,
+        (CastleModule)(ULONG_PTR)g_client_module);
+    for (index = 0u; index < CASTLE_RPG_ENTRY_PATCH_SIZE; ++index) {
+        if (entry[index] != original[index]) ExitProcess(10u);
     }
 
     /* 再次触发不能重复业务回调，也不能从 Fault 偷换成 Standalone。 */
