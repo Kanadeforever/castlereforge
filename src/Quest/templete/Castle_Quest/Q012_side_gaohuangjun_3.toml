@@ -1,0 +1,385 @@
+# 《幽城幻剑录》Castle_Quest Q012 / 三遇高皇君／营救李元昊
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q012"
+quest_id = "side_gaohuangjun_3"
+enabled = true
+title = "三遇高皇君／营救李元昊"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "是"
+ending_relevant = "是（七色璎珞材料）"
+tags = ["timed", "missable", "ending_relevant_material"]
+discover_mode = "offer_target_current_scene"
+offer_scene = "mp1101"
+offer_target = "event:manual:116"
+offer_when = "var[518] == 3 && var[3090] == 1"
+offer_marker_when = "var[518] == 3 && var[3090] == 1"
+journal_when = "(var[518] == 4 || var[518] == 5) || (var[518] == 6) || (var[518] == 255)"
+available_in_tracker = false
+active_when = "var[518] == 4 || var[518] == 5"
+completed_when = "var[518] == 6"
+failed_when = "var[518] == 255"
+expired_when = "false"
+authoritative_state = "Var518=4→5→6；Item229"
+formalization_status = "A"
+evidence = "A"
+notes = "第三次相遇→救李元昊→后续世界地图阶段。"
+available_objective = "在沙州寻找高皇君，了解新的危机。"
+
+[[stage]]
+stage_id = "third_meet"
+order = 10
+when = "var[518] == 3 && var[3090] == 1"
+condition_status = "A"
+objective = "在沙州第三次遇到高皇君并取得后续线索。"
+player_notes = []
+show_in_journal = false
+optional = false
+writes_var = "518|3090"
+stage_result = "Var518=4"
+evidence = "程序静态A"
+notes = "；dev6m可见性审计：本Stage发生在Quest正式Active之前，只保留作Offer/程序证据，不再冒充接取后的当前任务。"
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp1101"
+runtime_event = "116"
+trigger_type = "MANUAL_EB"
+object = "kou_2"
+world_x = "1420"
+world_y = "2482"
+
+[stage.marker]
+location_name = "沙州城内"
+name = "kou_2"
+hint = "在沙州第三次遇到高皇君并取得后续线索。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "rescue_liyuanhao"
+order = 20
+when = "var[518] == 4"
+condition_status = "A"
+objective = "营救李元昊。"
+player_notes = []
+show_in_journal = true
+optional = false
+battle_group = "128"
+item_dependency = "輝月魂石"
+reads_var = "518"
+writes_var = "518|4405|4406|4407|4408|4409"
+stage_result = "Var518=5；Item229 辉月魂石"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "OBJECTIVE"
+scene = "mp1201"
+runtime_event = "13"
+trigger_type = "TOUCH_EA"
+object = "城門入口"
+world_x = "738"
+world_y = "541"
+marker_override = "world:738,541"
+
+[stage.marker]
+location_name = "鸣沙山侧 莫高窟"
+name = "城門入口"
+hint = "营救李元昊。"
+scope = "target"
+role = "objective"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp1101 -> mp3001
+[[stage.route]]
+id = "R000505"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 12
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000506"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 12
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000517"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "左下方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "左下方出入口"
+world_x = 25
+world_y = 2143
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000518"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "左下方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "左下方出入口"
+world_x = 25
+world_y = 2143
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000519"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "右上方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 24
+trigger_type = "TOUCH_EA"
+target_object = "右上方出入口"
+world_x = 3132
+world_y = 100
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000520"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "右上方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 24
+trigger_type = "TOUCH_EA"
+target_object = "右上方出入口"
+world_x = 3132
+world_y = 100
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000521"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "点头说话的褐衣男"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 25
+trigger_type = "MANUAL_EB"
+target_object = "點頭說話的褐衣男"
+world_x = 1207
+world_y = 1565
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000522"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "点头说话的褐衣男"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 25
+trigger_type = "MANUAL_EB"
+target_object = "點頭說話的褐衣男"
+world_x = 1207
+world_y = 1565
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp3001 -> mp1201
+[[stage.route]]
+id = "R001091"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp1201"
+to_name = "鸣沙山侧 莫高窟"
+marker_name = "尼雅"
+route_hint = "前往鸣沙山侧 莫高窟。"
+marker_scope = "entrance"
+when = "true"
+event_id = 25
+trigger_type = "TOUCH_EA"
+target_object = "尼雅"
+world_x = 268
+world_y = 794
+native_event_bindings = "24|TOUCH_EA|千佛洞|1266|775"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage]]
+stage_id = "followup"
+order = 30
+when = "var[518] == 5"
+condition_status = "A"
+objective = "完成世界地图/肃州后续。"
+player_notes = []
+show_in_journal = true
+optional = false
+battle_group = "117"
+reads_var = "1|518"
+writes_var = "518|1219"
+stage_result = "Var518=6"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_TOUCH"
+scene = "mp3001"
+runtime_event = "20"
+trigger_type = "TOUCH_EA"
+object = "肅州"
+world_x = "1938"
+world_y = "694"
+
+[stage.marker]
+location_name = "西域辽疆"
+name = "肅州"
+hint = "完成世界地图/肃州后续。"
+scope = "target"
+role = "trigger"
+
+[stage.navigation]
+mode = "stage_route"
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp1201 -> mp3001
+[[stage.route]]
+id = "R000574"
+from_scene = "mp1201"
+from_name = "鸣沙山侧 莫高窟"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "true"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|左邊出入口|55|799"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000575"
+from_scene = "mp1201"
+from_name = "鸣沙山侧 莫高窟"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "城门入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "true"
+event_id = 13
+trigger_type = "TOUCH_EA"
+target_object = "城門入口"
+world_x = 738
+world_y = 541
+native_event_bindings = "11|TOUCH_EA|左邊出入口|55|799"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false

@@ -1,0 +1,128 @@
+# 《幽城幻剑录》Castle_Quest Q024 / 挽救伊斯朵／定魂珠
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q024"
+quest_id = "supp_isdor"
+enabled = true
+title = "挽救伊斯朵／定魂珠"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "剧情窗口"
+ending_relevant = "是"
+tags = ["story_window", "ending_relevant", "conditional_bonus"]
+discover_mode = "offer_target_current_scene"
+offer_when = "var[668] == 0 && var[1135] == 1"
+offer_marker_when = "var[668] == 0 && var[1135] == 1"
+journal_when = "(var[668] >= 1 && var[668] <= 3) || (var[668] == 4)"
+available_in_tracker = false
+active_when = "var[668] >= 1 && var[668] <= 3"
+completed_when = "var[668] == 4"
+failed_when = "false"
+expired_when = "false"
+authoritative_state = "Var668；Var663；Var551/550；Item408/228"
+formalization_status = "A-"
+evidence = "A"
+notes = "救伊斯朵本身以Var668=4完成；保住定魂珠是独立附加结果Var663=1，不应把低好感路线误判为任务失败。"
+available_objective = "调查伊斯朵出现的异常。"
+
+[[stage]]
+stage_id = "illness"
+order = 10
+when = "var[668] == 0 && var[1135] == 1"
+condition_status = "A"
+objective = "发现伊斯朵的异常并推进救援。"
+player_notes = []
+show_in_journal = false
+optional = false
+item_dependency = "神烏金翎|定魂珠"
+reads_var = "550|551|668"
+writes_var = "95|663|668|1223"
+stage_result = "Var668进入救援状态"
+evidence = "程序静态A"
+notes = "；dev6m可见性审计：本Stage发生在Quest正式Active之前，只保留作Offer/程序证据，不再冒充接取后的当前任务。"
+
+[stage.target]
+kind = "OBJECTIVE"
+scene = "mp1602"
+runtime_event = "30"
+trigger_type = "MANUAL_EB"
+object = "sad"
+world_x = "1320"
+world_y = "494"
+marker_override = "world:1320,494"
+
+[stage.marker]
+location_name = "拓浑 长老家中"
+name = "sad"
+hint = "发现伊斯朵的异常并推进救援。"
+scope = "target"
+role = "objective"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "save_orb"
+order = 20
+when = "var[668] >= 1 && var[668] < 4 && (var[551] >= 6 || var[550] >= 4)"
+condition_status = "A"
+objective = "好感足够时使用“净魂”等方案保住定魂珠。"
+player_notes = []
+show_in_journal = false
+optional = true
+item_dependency = "神烏金翎|定魂珠"
+reads_var = "550|551|668"
+writes_var = "95|663|668|1223"
+stage_result = "Item408；Var663=1"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "OBJECTIVE"
+scene = "mp1602"
+runtime_event = "30"
+trigger_type = "MANUAL_EB"
+object = "sad"
+world_x = "1320"
+world_y = "494"
+
+[stage.marker]
+location_name = "拓浑 长老家中"
+name = "sad"
+hint = "好感足够时使用“净魂”等方案保住定魂珠。"
+scope = "target"
+role = "optional_bonus"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "complete"
+order = 30
+when = "var[668] >= 1 && var[668] < 4"
+condition_status = "A"
+objective = "完成伊斯朵后续。"
+player_notes = []
+show_in_journal = true
+optional = false
+stage_result = "Var668=4；Item228神乌金翎"
+evidence = "程序/人工整理"
+notes = ""
+
+[stage.target]
+kind = "OBJECTIVE"
+
+[stage.marker]
+location_name = ""
+name = "完成伊斯朵后续。"
+hint = "完成伊斯朵后续。"
+scope = "target"
+role = "objective"
+
+[stage.navigation]
+mode = "direct"

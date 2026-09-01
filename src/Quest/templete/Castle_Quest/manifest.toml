@@ -1,0 +1,12 @@
+# Castle_Quest 多文件任务数据库清单
+# 每条任务固定由一份详细 Q*.toml + 一份同名 Q*_addon.toml 组成。
+# ASI 先读取详细原始任务链，再叠加 addon；修改后使用 Ctrl+F8 整体事务式热重载。
+# Base 只保存原版真实任务链；所有 Remastered 人工体验步骤只能放入同名 addon。
+# 跨场景 Route 仍属于详细任务各自的 [[stage.route]]，运行时不存在全局 routes.toml。
+
+format_version = 7
+database_version = "research-v0.6+dev6zd-runtimesdk-migration"
+quest_count = 25
+addon_count = 25
+stage_count = 146
+canonical_stage_count = 146

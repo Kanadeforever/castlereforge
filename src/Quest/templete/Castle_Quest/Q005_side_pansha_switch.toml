@@ -1,0 +1,66 @@
+# 《幽城幻剑录》Castle_Quest Q005 / 磐沙堡地牢拉环
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q005"
+quest_id = "side_pansha_switch"
+enabled = true
+title = "磐沙堡地牢拉环"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "剧情阶段内"
+ending_relevant = "否"
+tags = ["story_window", "puzzle"]
+discover_mode = "when_active"
+offer_scene = "mp0604"
+offer_target = "event:manual:22"
+offer_when = "var[1120] == 1"
+offer_marker_when = "var[1120] == 1"
+journal_when = "(var[1120] == 1) || (var[1121] == 255)"
+available_in_tracker = false
+active_when = "var[1120] == 1"
+completed_when = "var[1121] == 255"
+failed_when = "false"
+expired_when = "false"
+authoritative_state = "Var1120/1121"
+formalization_status = "A"
+evidence = "A"
+notes = "Var1120使密道开关出现；拉动后Var1121=255。"
+available_objective = ""
+
+[[stage]]
+stage_id = "pull_switch"
+order = 20
+when = "var[1120] == 1"
+condition_status = "A"
+objective = "拉动地牢密道开关。"
+player_notes = []
+show_in_journal = true
+optional = false
+writes_var = "1120|1121"
+stage_result = "Var1120=0；Var1121=255"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0604"
+runtime_event = "22"
+trigger_type = "MANUAL_EB"
+object = "密道開關"
+world_x = "883"
+world_y = "888"
+
+[stage.marker]
+location_name = "磐沙堡 地下牢房"
+name = "密道開關"
+hint = "拉动地牢密道开关。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"

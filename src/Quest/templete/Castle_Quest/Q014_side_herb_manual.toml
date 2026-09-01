@@ -1,0 +1,656 @@
+# 《幽城幻剑录》Castle_Quest Q014 / 磐沙堡四层／百草药典
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q014"
+quest_id = "side_herb_manual"
+enabled = true
+title = "磐沙堡四层／百草药典"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "剧情窗口"
+ending_relevant = "否"
+tags = ["story_window"]
+discover_mode = "offer_target_current_scene"
+offer_scene = "mp0706"
+offer_target = "event:manual:21"
+offer_when = "var[652] == 0 && var[1229] == 1"
+offer_marker_when = "var[652] == 0 && var[1229] == 1"
+journal_when = "(var[652] == 1 || (var[652] == 2 && var[1230] == 0)) || (var[652] == 2 && var[1230] == 1)"
+available_in_tracker = false
+active_when = "var[652] == 1 || (var[652] == 2 && var[1230] == 0)"
+completed_when = "var[652] == 2 && var[1230] == 1"
+failed_when = "false"
+expired_when = "false"
+authoritative_state = "Var652；Item458"
+formalization_status = "A"
+evidence = "A"
+notes = "整体再验证修正：返还百草药典并不会SET Var652=3；真正完成证据是Var652仍为2，同时女子旧对象Var1229=0、后继girl对象Var1230=1。"
+available_objective = "接受寻找百草药典的委托。"
+
+[[stage]]
+stage_id = "accept"
+order = 10
+when = "var[652] == 0 && var[1229] == 1"
+condition_status = "A"
+objective = "接受寻找百草药典的委托。"
+player_notes = []
+show_in_journal = false
+optional = false
+item_dependency = "百草藥典"
+reads_var = "652"
+writes_var = "652|999|1229|1230"
+stage_result = "Var652=1"
+evidence = "程序静态A"
+notes = "；dev6m可见性审计：本Stage发生在Quest正式Active之前，只保留作Offer/程序证据，不再冒充接取后的当前任务。"
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0706"
+runtime_event = "21"
+trigger_type = "MANUAL_EB"
+object = "女子"
+world_x = "234"
+world_y = "381"
+
+[stage.marker]
+location_name = "仁心药铺"
+name = "女子"
+hint = "接受寻找百草药典的委托。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "get_book"
+order = 20
+when = "var[652] == 1 && var[1185] == 1"
+condition_status = "A"
+objective = "在磐沙堡宝箱取得百草药典。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "百草藥典"
+reads_var = "652"
+writes_var = "652|1185"
+stage_result = "Item458；Var652=2"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0609b"
+runtime_event = "23"
+trigger_type = "MANUAL_EB"
+object = "3"
+world_x = "1379"
+world_y = "404"
+
+[stage.marker]
+location_name = "皇甫申的房间"
+name = "3"
+hint = "在磐沙堡宝箱取得百草药典。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp0706 -> mp0701
+[[stage.route]]
+id = "R000227"
+from_scene = "mp0706"
+from_name = "仁心药铺"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "甘州城"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "true"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|出入口|651|476"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0701 -> mp3001
+[[stage.route]]
+id = "R000189"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[1] != 62"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|下方出入口|982|1379;;18|TOUCH_EA|出入口|3479|174"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000201"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "药店出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[1] != 62"
+event_id = 19
+trigger_type = "MANUAL_EB"
+target_object = "藥店出入口"
+world_x = 287
+world_y = 1225
+native_event_bindings = "11|TOUCH_EA|下方出入口|982|1379;;18|TOUCH_EA|出入口|3479|174"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp3001 -> mp0601-1
+[[stage.route]]
+id = "R001059"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0601-1"
+to_name = "磐沙谷"
+marker_name = "磐沙谷"
+route_hint = "前往磐沙谷。"
+marker_scope = "entrance"
+when = "var[1] >= 21"
+event_id = 5
+native_event_bindings = "19|TOUCH_EA|磐沙堡|2480|470"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001074"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0601-1"
+to_name = "磐沙谷"
+marker_name = "肃州"
+route_hint = "前往磐沙谷。"
+marker_scope = "entrance"
+when = "true"
+event_id = 20
+trigger_type = "TOUCH_EA"
+target_object = "肅州"
+world_x = 1938
+world_y = 694
+native_event_bindings = "19|TOUCH_EA|磐沙堡|2480|470"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0601-1 -> mp0605
+[[stage.route]]
+id = "R000124"
+from_scene = "mp0601-1"
+from_name = "磐沙谷"
+to_scene = "mp0605"
+to_name = "磐沙堡  一楼"
+marker_name = "一楼"
+route_hint = "前往磐沙堡  一楼。"
+marker_scope = "entrance"
+when = "true"
+event_id = 14
+native_event_bindings = "13|MANUAL_EB|盤沙堡大門口|880|435;;21|MANUAL_EB|火盆|574|713"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0605 -> mp0606
+[[stage.route]]
+id = "R000147"
+from_scene = "mp0605"
+from_name = "磐沙堡  一楼"
+to_scene = "mp0606"
+to_name = "磐沙堡 二楼"
+marker_name = "右边上二楼旋梯"
+route_hint = "前往磐沙堡 二楼。"
+marker_scope = "entrance"
+when = "var[1102] != 0"
+event_id = 20
+trigger_type = "TOUCH_EA"
+target_object = "右邊上二樓旋梯"
+world_x = 1562
+world_y = 571
+native_event_bindings = "19|TOUCH_EA|左邊上二樓旋梯|244|369;;20|TOUCH_EA|右邊上二樓旋梯|1557|566"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000148"
+from_scene = "mp0605"
+from_name = "磐沙堡  一楼"
+to_scene = "mp0606"
+to_name = "磐沙堡 二楼"
+marker_name = "右边上二楼旋梯"
+route_hint = "前往磐沙堡 二楼。"
+marker_scope = "entrance"
+when = "var[1102] == 0"
+event_id = 20
+trigger_type = "TOUCH_EA"
+target_object = "右邊上二樓旋梯"
+world_x = 1562
+world_y = 571
+native_event_bindings = "19|TOUCH_EA|左邊上二樓旋梯|244|369;;20|TOUCH_EA|右邊上二樓旋梯|1557|566"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000149"
+from_scene = "mp0605"
+from_name = "磐沙堡  一楼"
+to_scene = "mp0606"
+to_name = "磐沙堡 二楼"
+marker_name = "左边往地牢出入口"
+route_hint = "前往磐沙堡 二楼。"
+marker_scope = "entrance"
+when = "var[1102] != 0"
+event_id = 21
+trigger_type = "TOUCH_EA"
+target_object = "左邊往地牢出入口"
+world_x = 487
+world_y = 662
+native_event_bindings = "19|TOUCH_EA|左邊上二樓旋梯|244|369;;20|TOUCH_EA|右邊上二樓旋梯|1557|566"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000150"
+from_scene = "mp0605"
+from_name = "磐沙堡  一楼"
+to_scene = "mp0606"
+to_name = "磐沙堡 二楼"
+marker_name = "左边往地牢出入口"
+route_hint = "前往磐沙堡 二楼。"
+marker_scope = "entrance"
+when = "var[1102] == 0"
+event_id = 21
+trigger_type = "TOUCH_EA"
+target_object = "左邊往地牢出入口"
+world_x = 487
+world_y = 662
+native_event_bindings = "19|TOUCH_EA|左邊上二樓旋梯|244|369;;20|TOUCH_EA|右邊上二樓旋梯|1557|566"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0606 -> mp0609a
+[[stage.route]]
+id = "R000156"
+from_scene = "mp0606"
+from_name = "磐沙堡 二楼"
+to_scene = "mp0609a"
+to_name = "磐沙堡 四楼"
+marker_name = "宝箱横"
+route_hint = "前往磐沙堡 四楼。"
+marker_scope = "entrance"
+when = "var[4501] == 2"
+event_id = 24
+trigger_type = "MANUAL_EB"
+target_object = "寶箱橫"
+world_x = 1442
+world_y = 498
+native_event_bindings = "23|TOUCH_EA|PLATE|1552|902"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0609a -> mp0609b
+[[stage.route]]
+id = "R000167"
+from_scene = "mp0609a"
+from_name = "磐沙堡 四楼"
+to_scene = "mp0609b"
+to_name = "皇甫申的房间"
+marker_name = "左楼梯出入口"
+route_hint = "前往皇甫申的房间。"
+marker_scope = "entrance"
+when = "true"
+event_id = 12
+trigger_type = "TOUCH_EA"
+target_object = "左樓梯出入口"
+world_x = 90
+world_y = 903
+native_event_bindings = "16|MANUAL_EB|大門|975|763"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage]]
+stage_id = "return"
+order = 30
+when = "var[652] == 2 && var[1229] == 1"
+condition_status = "A"
+objective = "返回甘州交付百草药典。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "百草藥典"
+reads_var = "652"
+writes_var = "652|999|1229|1230"
+stage_result = "消耗Item458；推进完成状态"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0706"
+runtime_event = "21"
+trigger_type = "MANUAL_EB"
+object = "女子"
+world_x = "234"
+world_y = "381"
+
+[stage.marker]
+location_name = "仁心药铺"
+name = "女子"
+hint = "返回甘州交付百草药典。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "stage_route"
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp0609b -> mp0609a
+[[stage.route]]
+id = "R000173"
+from_scene = "mp0609b"
+from_name = "皇甫申的房间"
+to_scene = "mp0609a"
+to_name = "磐沙堡 四楼"
+marker_name = "四楼"
+route_hint = "前往磐沙堡 四楼。"
+marker_scope = "entrance"
+when = "true"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|出入口|985|765"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0609a -> mp0601-2
+[[stage.route]]
+id = "R000170"
+from_scene = "mp0609a"
+from_name = "磐沙堡 四楼"
+to_scene = "mp0601-2"
+to_name = "磐沙堡"
+marker_name = "左出入口"
+route_hint = "前往磐沙堡。"
+marker_scope = "entrance"
+when = "true"
+event_id = 15
+trigger_type = "TOUCH_EA"
+target_object = "左出入口"
+world_x = 446
+world_y = 1007
+native_event_bindings = "14|TOUCH_EA|右出入口|1111|1099;;15|TOUCH_EA|左出入口|447|1008"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000171"
+from_scene = "mp0609a"
+from_name = "磐沙堡 四楼"
+to_scene = "mp0601-2"
+to_name = "磐沙堡"
+marker_name = "大门"
+route_hint = "前往磐沙堡。"
+marker_scope = "entrance"
+when = "true"
+event_id = 16
+trigger_type = "MANUAL_EB"
+target_object = "大門"
+world_x = 975
+world_y = 763
+native_event_bindings = "14|TOUCH_EA|右出入口|1111|1099;;15|TOUCH_EA|左出入口|447|1008"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0601-2 -> mp0610a
+[[stage.route]]
+id = "R000131"
+from_scene = "mp0601-2"
+from_name = "磐沙堡"
+to_scene = "mp0610a"
+to_name = "磐沙堡 顶楼"
+marker_name = "顶楼"
+route_hint = "前往磐沙堡 顶楼。"
+marker_scope = "entrance"
+when = "true"
+event_id = 19
+native_event_bindings = "18|TOUCH_EA|出口|1199|408"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0610a -> mp0601-1
+[[stage.route]]
+id = "R000175"
+from_scene = "mp0610a"
+from_name = "磐沙堡 顶楼"
+to_scene = "mp0601-1"
+to_name = "磐沙谷"
+marker_name = "密道出口"
+route_hint = "前往磐沙谷。"
+marker_scope = "entrance"
+when = "var[1] < 29"
+event_id = 12
+trigger_type = "TOUCH_EA"
+target_object = "密道出口"
+world_x = 573
+world_y = 816
+native_event_bindings = "14|MANUAL_EB|大門|814|514"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0601-1 -> mp3001
+[[stage.route]]
+id = "R000121"
+from_scene = "mp0601-1"
+from_name = "磐沙谷"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "往密密通道"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "true"
+event_id = 12
+trigger_type = "TOUCH_EA"
+target_object = "往密密通道"
+world_x = 110
+world_y = 1513
+native_event_bindings = "11|TOUCH_EA|盤沙堡出入口|1039|1808"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp3001 -> mp0701
+[[stage.route]]
+id = "R001081"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "沙州"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] != 67"
+event_id = 22
+trigger_type = "TOUCH_EA"
+target_object = "沙州"
+world_x = 1390
+world_y = 705
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001082"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "沙州"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] != 67 && var[515] != 2"
+event_id = 22
+trigger_type = "TOUCH_EA"
+target_object = "沙州"
+world_x = 1390
+world_y = 705
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001083"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "沙州"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] == 67"
+event_id = 22
+trigger_type = "TOUCH_EA"
+target_object = "沙州"
+world_x = 1390
+world_y = 705
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001113"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "snake"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[20] == 2"
+event_id = 42
+trigger_type = "TOUCH_EA"
+target_object = "snake"
+world_x = 3044
+world_y = 1436
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0701 -> mp0706
+[[stage.route]]
+id = "R000190"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp0706"
+to_name = "仁心药铺"
+marker_name = "仁心药铺"
+route_hint = "前往仁心药铺。"
+marker_scope = "entrance"
+when = "true"
+event_id = 13
+native_event_bindings = "19|MANUAL_EB|藥店出入口|287|1225"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false

@@ -1,0 +1,169 @@
+# 《幽城幻剑录》Castle_Quest Q002 / 彩石弹珠
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q002"
+quest_id = "side_colored_marble"
+enabled = true
+title = "彩石弹珠"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "是"
+ending_relevant = "是"
+tags = ["timed", "missable", "ending_relevant", "important"]
+discover_mode = "offer_target_current_scene"
+offer_scene = "mp0101"
+offer_target = "event:manual:23"
+offer_when = "var[1] >= 1 && var[1] < 6 && var[4501] == 0 && var[1009] == 1 && var[1010] == 0 && var[505] != 3 && var[505] != 254"
+offer_marker_when = "var[1] >= 1 && var[1] < 6 && var[4501] == 0 && var[1009] == 1 && var[1010] == 0 && var[505] != 3 && var[505] != 254"
+journal_when = "(var[1] >= 1 && var[1] < 6 && ((var[4501] > 0 && var[1009] == 1 && var[1010] == 0) || (var[505] == 1 && var[1008] == 1 && var[1010] == 1) || (var[505] == 1 && var[1007] == 1) || var[505] == 2)) || var[505] == 3 || var[505] == 254"
+available_in_tracker = false
+active_when = "var[1] >= 1 && var[1] < 6 && ((var[4501] > 0 && var[1009] == 1 && var[1010] == 0) || (var[505] == 1 && var[1008] == 1 && var[1010] == 1) || (var[505] == 1 && var[1007] == 1) || var[505] == 2)"
+completed_when = "var[505] == 3"
+failed_when = "false"
+expired_when = "var[505] == 254"
+authoritative_state = "Var505；临时Var4501；在场Var1008/1009/1010；Item451"
+formalization_status = "A"
+evidence = "A"
+notes = "核心状态Var505；首次离开河州未完成会254。；dev6a实机纠错：Active增加Var1>=1且<6故事窗口，防止新开局/Bank切换时旧Var505残值误激活。；dev6l实机可见性修正：Var505=1可为初始化残值，未接/已接改由Var4501与Var1008/1009/1010共同区分。；dev6zc全量原版链复核：Event37后Var1008清0、Var1007置1而Var505仍为1，因此Active/Journal必须显式覆盖Var505=1&&Var1007=1，否则find_doll Stage会被Quest顶层状态挡住。"
+available_objective = "与哭泣的阿铃交谈。"
+
+[[stage]]
+stage_id = "talk_aling"
+order = 10
+when = "var[1] >= 1 && var[1] < 6 && var[4501] > 0 && var[1009] == 1 && var[1010] == 0"
+condition_status = "A"
+objective = "继续询问哭泣的阿铃。"
+player_notes = ["阿铃可能还有话说，继续询问吧。"]
+show_in_journal = true
+optional = false
+reads_var = "4501"
+writes_var = "505|1008|1009|1010|4501"
+stage_result = "Var4501循环；最终Var505=1、Var1008=1、Var1010=1"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0101"
+runtime_event = "23"
+trigger_type = "MANUAL_EB"
+object = "猛哭"
+world_x = "378"
+world_y = "466"
+
+[stage.marker]
+location_name = "河州镇"
+name = "阿铃"
+hint = "继续和阿铃交谈，直到她说出布娃娃的事情。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "find_aping"
+order = 20
+when = "var[505] == 1 && var[1008] == 1"
+condition_status = "A"
+objective = "找到躲起来的阿平，问清布娃娃被藏在哪里。"
+player_notes = []
+show_in_journal = true
+optional = false
+writes_var = "1004|1005|1006|1007|1008"
+stage_result = "开启Var1004~1007调查点"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0101"
+runtime_event = "37"
+trigger_type = "MANUAL_EB"
+object = "躲起小鬼"
+world_x = "1788"
+world_y = "182"
+
+[stage.marker]
+location_name = "河州镇"
+name = "阿平"
+hint = "找到躲起来的阿平，问清布娃娃被藏在哪里。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "find_doll"
+order = 30
+when = "var[505] == 1 && var[1007] == 1"
+condition_status = "A"
+objective = "调查孩子附近的藏物点，找到布娃娃。"
+player_notes = []
+show_in_journal = true
+optional = false
+writes_var = "505|1007"
+stage_result = "Var505=2"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0101"
+runtime_event = "41"
+trigger_type = "MANUAL_EB"
+object = "ng0101-05.SF2"
+world_x = "962"
+world_y = "417"
+
+[stage.marker]
+location_name = "河州镇"
+name = "藏物点"
+hint = "调查孩子附近的藏物点，找到布娃娃。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "return_aling"
+order = 40
+when = "var[505] == 2 && var[1010] == 1"
+condition_status = "A"
+objective = "把布娃娃带回给阿铃。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "彩石彈珠"
+reads_var = "505|667"
+writes_var = "505"
+stage_result = "Var505=3；ADD Item451 彩石弹珠"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0101"
+runtime_event = "24"
+trigger_type = "MANUAL_EB"
+object = "不哭了"
+world_x = "379"
+world_y = "465"
+
+[stage.marker]
+location_name = "河州镇"
+name = "阿铃"
+hint = "把布娃娃带回给阿铃。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+

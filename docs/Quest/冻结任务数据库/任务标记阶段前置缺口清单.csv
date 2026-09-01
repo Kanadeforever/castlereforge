@@ -1,0 +1,30 @@
+﻿类型,Var1状态,场景,下一目标场景,首段,当前记录,处理阶段,说明
+主线首段Route目标对象未静态绑定,2,mp0104a,mp0101,mp0104a --Event12--> mp0101,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,5,mp0104a,mp0101,mp0104a --Event12--> mp0101,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,6,mp0101,mp0212,mp0101 --Event12--> mp3001,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,7,mp0212,mp0207,mp0212 --Event14--> mp0207,"Event14  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,20,mp0504,mp3001,mp0504 --Event12--> mp0501,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,22,mp3001,mp0601-1,mp3001 --Event5--> mp0601-1,"Event5  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,24,mp0601-1,mp0604,mp0601-1 --Event14--> mp0605,"Event14  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,26,mp0604,mp0607a,mp0604 --Event12--> mp0605,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,30,mp0402,mp3001,mp0402 --Event15--> mp0401,"Event15  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,32,mp0101,mp0705,mp0101 --Event12--> mp3001,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,34,mp0704,mp0401,mp0704 --Event12--> mp0705,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,36,mp0704,mp0906,mp0704 --Event18--> mp0901,"Event18  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,46,mp1013,mp0701,mp1013 --Event13--> mp0705,"Event13  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,47,mp0701,mp1301,mp0701 --Event12--> mp3001,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,51,mp2002,mp1206,mp2002 --Event13--> mp2001,"Event13  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,52,mp1206,mp1009b,mp1206 --Event22--> mp1009b,"Event22  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,56,mp1101,mp1502,mp1101 --Event12--> mp3001,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,57,mp1502,mp3001,mp1502 --Event14--> mp1501,"Event14  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,58,mp3001,mp1901,mp3001 --Event32--> mp1901,"Event32  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,59,mp1901,mp1905,mp1901 --Event16--> mp1902,"Event16  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,60,mp1905,mp1005b,mp1905 --Event16--> mp1903e,"Event16  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,61,mp1005b,mp0704,mp1005b --Event12--> mp1005a,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,62,mp0704,mp0701,mp0704 --Event12--> mp0705,"Event12  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,65,mp1009a,mp1013,mp1009a --Event13--> mp1009e,"Event13  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,67,mp1013,mp3001,mp1013 --Event13--> mp0705,"Event13  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,68,mp3001,mp1003a,mp3001 --Event35--> mp1002g,"Event35  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+主线首段Route目标对象未静态绑定,71,mp1007c,mp1014a,mp1007c --Event16--> mp1008,"Event16  @(,)",Marker修复阶段,Scene/Event/Route语义已闭合，但该跳转Event没有直接SCI EA/EB对象绑定；需用动态Event绑定、触发区或运行时捕获补坐标。
+Marker最终Surface投影,,全局,,,controller-camera并非最终Surface坐标,Marker修复阶段,"dev5日志证明Render=World-(320,260)，当前Screen又减Camera；应沿原版最终blit链闭合，不能继续硬编码旧公式。"
+Scene Manager generation,,全局,,,Scene字符串先切换，Manager快照后更新,Marker修复阶段,场景变化必须立即作废旧Manager并等待新0x409580捕获，避免跨场景短暂误绑。

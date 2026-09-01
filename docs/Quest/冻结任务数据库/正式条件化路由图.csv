@@ -1,0 +1,1117 @@
+﻿来源场景,RuntimeEventID,触发类型,目标对象,世界X,世界Y,目标场景,跳转类型,Opcode,已证明必要条件,条件完整性,条件证据等级,来源资源,依赖GameVar,含瞬时变量或运行时结果,可用于提前Route筛选,v0.5说明
+mp0000,4,,,,,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0000/Mp0000.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0101,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 3 && var[1] != 4 && var[1] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0101/Mp0101.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0101,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 3 && var[1] != 4 && var[1] != 5 && var[1] >= 6,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0101/Mp0101.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0101,13,MANUAL_EB,夏侯儀家出入口,1222,409,mp0102a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0101/Mp0101.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0101,15,MANUAL_EB,夏侯儀抄家出入口,1224,406,mp0104a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 32 && var[1] != 31 && var[1] != 3 && var[1] < 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0101/Mp0101.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0101,15,MANUAL_EB,夏侯儀抄家出入口,1224,406,mp0104a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 32 && var[1] == 31,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0101/Mp0101.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0101,17,MANUAL_EB,藥舖出入口,689,355,mp0107a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0101/Mp0101.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0101,18,,,,,mp0105,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 40 && var[1] < 31 && var[1] >= 2 && var[1] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0101/Mp0101.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0101,19,MANUAL_EB,晾衣服的女人,1296,1243,mp0105,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0101/Mp0101.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102a,12,TOUCH_EA,下方往廚房,667,398,mp0102c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102a/Mp0102a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102a,13,TOUCH_EA,往外的出入口,326,494,mp0102c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102a/Mp0102a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102a,14,,,,,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102a/Mp0102a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102b,12,MANUAL_EB,桌上記錄點,180,418,mp0102c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102b/Mp0102b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102c,12,TOUCH_EA,上方往客廳,147,428,mp0102b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102c/Mp0102c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102c,13,TOUCH_EA,下方往客廳,348,498,mp0102a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102c/Mp0102c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102c,14,TOUCH_EA,夏侯儀父母臥室,572,469,mp0102a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102c/Mp0102c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102c,15,,,,,mp0102d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102c/Mp0102c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102c,16,MANUAL_EB,地下室出入口,354,387,mp0102e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102c/Mp0102c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102d,12,MANUAL_EB,ng0102d-01.SF2,265,510,mp0102c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102d/Mp0102d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0102e,12,,,,,mp0102c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0102e/Mp0102e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0104,12,,,,,mp0104a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0104/Mp0104.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0104a,12,,,,,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 32,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0104a/Mp0104a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0104a,12,,,,,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 32,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0104a/Mp0104a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0104a,13,MANUAL_EB,儲藏室出入口,606,350,mp0104,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0104a/Mp0104a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0105,18,TOUCH_EA,往二樓出入口,649,265,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0105/Mp0105.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0105,19,,,,,mp0105a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1226] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0105/Mp0105.eve,1226,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0105a,13,,,,,mp0106,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0105a/Mp0105a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0105a,19,,,,,mp0105,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0105a/Mp0105a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0106,12,,,,,mp0105a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0106/Mp0106.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107a,12,TOUCH_EA,下方往廚房出入口,675,413,mp0107c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107a/Mp0107a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107a,13,TOUCH_EA,往外面出入口,319,504,mp0107c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107a/Mp0107a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107a,14,,,,,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 40,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107a/Mp0107a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107a,14,,,,,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 40,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107a/Mp0107a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107b,12,,,,,mp0107c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107b/Mp0107b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107c,12,TOUCH_EA,上方往客廳出入口,140,425,mp0107b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107c/Mp0107c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107c,13,TOUCH_EA,下方往廚房出入口,344,493,mp0107a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107c/Mp0107c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107c,14,TOUCH_EA,夏侯儀父母臥室出入口,572,469,mp0107a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107c/Mp0107c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107c,15,,,,,mp0107d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107c/Mp0107c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107c,16,MANUAL_EB,地下室出入口,351,386,mp0107e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107c/Mp0107c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107d,12,,,,,mp0107c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107d/Mp0107d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0107e,12,,,,,mp0107c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0107e/Mp0107e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0201a,12,TOUCH_EA,武器舖出入口,1963,535,mp0208,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0201A/Mp0201a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0201a,13,TOUCH_EA,藥鋪出入口,2435,388,mp0205,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0201A/Mp0201a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0201a,14,TOUCH_EA,雜貨鋪出入口,2630,319,mp0207,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0201A/Mp0201a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0201a,15,TOUCH_EA,客棧出入口,3237,1143,mp0206,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0201A/Mp0201a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0201a,16,TOUCH_EA,上方城門出入口,3793,219,mp0202,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0201A/Mp0201a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0201a,17,TOUCH_EA,下方城門出入口,185,1396,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0201A/Mp0201a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0201a,18,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0201A/Mp0201a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0202,16,MANUAL_EB,掌櫃,357,670,mp0212,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0202/Mp0202.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0202,16,MANUAL_EB,掌櫃,357,670,mp0201a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0202/Mp0202.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0202,43,,,,,mp0202,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0202/Mp0202.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0203,6,,,,,mp0102c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0203/Mp0203.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0204,6,,,,,mp0102c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0204/Mp0204.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0205,12,MANUAL_EB,老闆,416,290,mp0201a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0205/Mp0205.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0206,12,,,,,mp0201a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0206/Mp0206.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0207,12,MANUAL_EB,藥鋪老闆,333,341,mp0212,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 10 && var[539] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0207/Mp0207.eve,1|539,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0207,12,MANUAL_EB,藥鋪老闆,333,341,mp0201a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0207/Mp0207.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0207,12,MANUAL_EB,藥鋪老闆,333,341,mp0212,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 10 && var[539] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0207/Mp0207.eve,1|539,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0208,12,,,,,mp0212,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 12,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0208/Mp0208.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0208,12,,,,,mp0201a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 12,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0208/Mp0208.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0209,6,,,,,mp0102c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0209/Mp0209.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,12,,,,,mp0208,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 9,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,12,,,,,mp0208,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 9 && var[1] == 8,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,12,,,,,mp0212,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 9 && var[1] == 8,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,13,TOUCH_EA,藥舖入口,2402,275,mp0205,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,14,,,,,mp0207,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 9,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,15,TOUCH_EA,客棧入口,3237,1058,mp0206,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,16,TOUCH_EA,右上城門入口,3620,214,mp0202,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 9,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,17,TOUCH_EA,ne0201-07.SF2,170,1412,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,18,TOUCH_EA,南方進入檢查線,353,1317,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,33,MANUAL_EB,花盆底,1155,354,mp2504,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0212,33,MANUAL_EB,花盆底,1155,354,mp0301,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0212/Mp0212.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0301,12,TOUCH_EA,門出入口,356,408,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0301/Mp0301.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0301,13,TOUCH_EA,帳棚出入口,866,551,mp0302,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[540] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0301/Mp0301.eve,540,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0301,13,TOUCH_EA,帳棚出入口,866,551,mp0302,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[540] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0301/Mp0301.eve,540,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0301,14,MANUAL_EB,門出入口,356,408,mp0305,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0301/Mp0301.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0301a,12,TOUCH_EA,洞穴內,268,394,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0301a/Mp0301a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0301a,13,,,,,mp0302,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0301a/Mp0301a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0302,12,TOUCH_EA,下方出入口,444,1108,mp0303,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[542] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0302/Mp0302.EVE,542,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0302,12,TOUCH_EA,下方出入口,444,1108,mp0303,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[542] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0302/Mp0302.EVE,542,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0302,13,MANUAL_EB,body,294,372,mp0301,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0302/Mp0302.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0302,13,MANUAL_EB,body,294,372,mp0301a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0302/Mp0302.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0303,12,TOUCH_EA,gate,932,703,mp0302,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0303/Mp0303.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0303,13,,,,,mp0304,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[543] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0303/Mp0303.eve,543,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0303,13,,,,,mp0304,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[543] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0303/Mp0303.eve,543,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0304,12,MANUAL_EB,CHAIR_LEFT,590,681,mp0303,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0304/Mp0304.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0305,14,MANUAL_EB,chest1,729,486,mp0301,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0305/Mp0305.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,12,TOUCH_EA,右邊城門出入口,3582,872,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 21 && var[1] != 16 && var[1] != 15 && var[1] != 14 && var[1] >= 14,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,12,TOUCH_EA,右邊城門出入口,3582,872,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 21 && var[1] != 16 && var[1] != 15 && var[1] == 14,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,12,TOUCH_EA,右邊城門出入口,3582,872,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 21 && var[1] == 16,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,12,TOUCH_EA,右邊城門出入口,3582,872,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 21,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,13,TOUCH_EA,藥舖出入口,575,479,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 21 && var[1] != 16 && var[1] != 15 && var[1] != 14 && var[1] >= 14,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,13,TOUCH_EA,藥舖出入口,575,479,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 21 && var[1] != 16 && var[1] != 15 && var[1] == 14,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,13,TOUCH_EA,藥舖出入口,575,479,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 21 && var[1] == 16,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,13,TOUCH_EA,藥舖出入口,575,479,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 21,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,14,TOUCH_EA,客棧出入口,1885,207,mp0403,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,15,TOUCH_EA,雜貨舖出入口,2984,470,mp0402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,16,TOUCH_EA,武器舖出入口,2724,374,mp0405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,17,MANUAL_EB,發呆慕容箏,2169,291,mp0404,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0401,53,MANUAL_EB,被救的商人,2663,834,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 34,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0401/Mp0401.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0402,15,,,,,mp0401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 29 && var[1] <= 8,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0402/Mp0402.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0402,15,,,,,mp0401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 29,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0402/Mp0402.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0402,15,,,,,mp0401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 29 && var[1] > 8 && var[509] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0402/Mp0402.EVE,1|509,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0402,21,MANUAL_EB,boss,827,682,mp0402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0402/Mp0402.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0403,14,,,,,mp0401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0403/Mp0403.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0404,17,,,,,mp0401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0404/Mp0404.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0405,16,,,,,mp0401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0405/Mp0405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0501,12,TOUCH_EA,中帳棚出入口,600,288,mp0504,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 19,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0501/Mp0501.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0501,12,TOUCH_EA,中帳棚出入口,600,288,mp0504,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0501/Mp0501.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0501,13,TOUCH_EA,右帳棚出入口,1001,326,mp0502,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0501/Mp0501.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0501,14,TOUCH_EA,下方帳篷出入,712,873,mp0503,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 18,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0501/Mp0501.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0501,14,TOUCH_EA,下方帳篷出入,712,873,mp0501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 18,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0501/Mp0501.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0501,14,TOUCH_EA,下方帳篷出入,712,873,mp0503,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0501/Mp0501.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0501,15,TOUCH_EA,盤沙眾營地出入口,1261,1151,mp0505,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0501/Mp0501.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0501,16,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 18,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0501/Mp0501.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0502,13,MANUAL_EB,chest,742,474,mp0501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0502/Mp0502.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0503,14,,,,,mp0501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0503/Mp0503.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0504,12,,,,,mp0501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 20,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0504/Mp0504.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0504,12,,,,,mp0501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 20,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0504/Mp0504.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0505,15,,,,,mp0501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0505/Mp0505.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601-1,12,TOUCH_EA,往密密通道,110,1513,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0601-1/Mp0601-1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601-1,13,MANUAL_EB,盤沙堡大門口,880,435,mp0601a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 23,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0601-1/Mp0601-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601-1,13,MANUAL_EB,盤沙堡大門口,880,435,mp0601a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 23,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0601-1/Mp0601-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601-1,14,,,,,mp0605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0601-1/Mp0601-1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601-1,22,,,,,mp0605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,world_item_result != 0 && world_item_result == 406,必要条件（不是充分条件）,B（含运行时结果必要条件）,Map/mp0601-1/Mp0601-1.eve,,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp0601-2,14,,,,,mp0611,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1112] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0601-2/Mp0601-2.eve,1112,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601-2,14,,,,,mp0611,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1112] != 0 && var[1] == 27,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0601-2/Mp0601-2.eve,1|1112,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601-2,14,,,,,mp0611,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0601-2/Mp0601-2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601-2,15,,,,,mp0609a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0601-2/Mp0601-2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601-2,16,MANUAL_EB,右下出入口,1294,1802,mp0609a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0601-2/Mp0601-2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601-2,19,,,,,mp0610a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0601-2/Mp0601-2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601a,12,TOUCH_EA,通往盤沙堡正門,948,805,mp0602,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0601a/Mp0601a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0601a,13,MANUAL_EB,地下水道出入口,386,515,mp0601-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0601a/Mp0601a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0602,12,TOUCH_EA,右邊出入口,2467,126,mp0601a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0602/Mp0602.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0602,13,,,,,mp0603,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0602/Mp0602.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0603,12,TOUCH_EA,樓下出入口,210,1331,mp0604,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[649] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0603/Mp0603.eve,649,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0603,12,TOUCH_EA,樓下出入口,210,1331,mp0604,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[649] == 0 && var[1157] >= 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0603/Mp0603.eve,649|1157,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0603,12,TOUCH_EA,樓下出入口,210,1331,mp0604,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[649] == 0 && var[1157] < 1 && var[1] >= 30,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0603/Mp0603.eve,1|649|1157,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0603,12,TOUCH_EA,樓下出入口,210,1331,mp0604,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[649] == 0 && var[1157] < 1 && var[1] < 30,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0603/Mp0603.eve,1|649|1157,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0603,13,,,,,mp0602,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0603/Mp0603.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0604,12,,,,,mp0605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0604/Mp0604.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0604,13,TOUCH_EA,密門,1176,486,mp0603,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0604/Mp0604.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0604,14,,,,,mp0603,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0604/Mp0604.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0604,22,MANUAL_EB,密道開關,883,888,mp0605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0604/Mp0604.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0605,18,TOUCH_EA,通往四樓,990,693,mp0601-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 29,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0605/Mp0605.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0605,19,TOUCH_EA,左邊上二樓旋梯,246,369,mp0608,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 28,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0605/Mp0605.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0605,20,TOUCH_EA,右邊上二樓旋梯,1562,571,mp0606,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1102] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0605/Mp0605.eve,1102,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0605,20,TOUCH_EA,右邊上二樓旋梯,1562,571,mp0606,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1102] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0605/Mp0605.eve,1102,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0605,21,TOUCH_EA,左邊往地牢出入口,487,662,mp0606,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1102] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0605/Mp0605.eve,1102,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0605,21,TOUCH_EA,左邊往地牢出入口,487,662,mp0606,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1102] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0605/Mp0605.eve,1102,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0605,22,,,,,mp0604,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0605/Mp0605.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0606,13,,,,,mp0605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0606/Mp0606.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0606,15,TOUCH_EA,右側事件線,1337,900,mp0605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0606/Mp0606.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0606,20,TOUCH_EA,右樓梯出入口,1615,1080,mp0605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0606/Mp0606.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0606,21,MANUAL_EB,右梯發條,1775,870,mp0605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0606/Mp0606.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0606,24,MANUAL_EB,寶箱橫,1442,498,mp0609a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[4501] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0606/Mp0606.eve,4501,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0607a,12,TOUCH_EA,左樓梯出入,101,510,mp0607b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 27,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0607a/Mp0607a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0607a,12,TOUCH_EA,左樓梯出入,101,510,mp0607b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0607a/Mp0607a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0607a,13,TOUCH_EA,右樓梯出入口,1767,750,mp0609a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0607a/Mp0607a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0607a,14,MANUAL_EB,大門,901,941,mp0609a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0607a/Mp0607a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0607b,12,,,,,mp0607a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0607b/Mp0607b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0608,18,TOUCH_EA,五樓出口,515,334,mp0605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0608/Mp0608.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0608,19,,,,,mp0610a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1157] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0608/Mp0608.eve,1157,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0608,19,,,,,mp0610a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1157] == 1 && var[648] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0608/Mp0608.eve,648|1157,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0608,19,,,,,mp0610b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1157] == 1 && var[648] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0608/Mp0608.eve,648|1157,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0608,19,,,,,mp0610a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1157] == 1 && var[648] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0608/Mp0608.eve,648|1157,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0609a,12,TOUCH_EA,左樓梯出入口,90,903,mp0609b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0609a/Mp0609a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0609a,13,TOUCH_EA,右樓梯出入口,1694,1066,mp0607a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0609a/Mp0609a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0609a,14,TOUCH_EA,右出入口,1104,1096,mp0607a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0609a/Mp0609a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0609a,15,TOUCH_EA,左出入口,446,1007,mp0601-2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0609a/Mp0609a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0609a,16,MANUAL_EB,大門,975,763,mp0601-2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0609a/Mp0609a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0609a,24,,,,,mp0606,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[4501] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0609a/Mp0609a.eve,4501,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0609b,12,,,,,mp0609a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0609b/Mp0609b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610a,12,TOUCH_EA,密道出口,573,816,mp0610b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 29,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610a,12,TOUCH_EA,密道出口,573,816,mp0601-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 29,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610a,12,TOUCH_EA,密道出口,573,816,mp0204,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 29,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610a,12,TOUCH_EA,密道出口,573,816,mp0402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 29 && var[999] != 2 && var[999] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,1|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp0610a,12,TOUCH_EA,密道出口,573,816,mp0204,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 29 && var[999] != 2 && var[999] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,1|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp0610a,12,TOUCH_EA,密道出口,573,816,mp2701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 29,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610a,12,TOUCH_EA,密道出口,573,816,mp0204,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 29,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610a,12,TOUCH_EA,密道出口,573,816,mp0402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 29,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610a,12,TOUCH_EA,密道出口,573,816,mp0610b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610a,13,TOUCH_EA,出入口,344,720,mp0608,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610a,14,MANUAL_EB,大門,814,514,mp0601-2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610a/Mp0610a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610b,12,,,,,mp0610a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[648] != 2 && var[648] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610b/Mp0610b.eve,648,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610b,12,,,,,mp0610a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[648] != 2 && var[648] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610b/Mp0610b.eve,648,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0610b,12,,,,,mp0601-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[648] != 2 && var[648] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0610b/Mp0610b.eve,648,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0611,14,,,,,mp0601-2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0611/Mp0611.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 62,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,13,,,,,mp0706,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,14,TOUCH_EA,客棧出入口,1586,280,mp0707,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,15,,,,,mp0702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 46,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,15,,,,,mp0702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 46 && var[607] != 1 && var[607] != 2 && var[608] != 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,1|607|608,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,15,,,,,mp0702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 46,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,15,,,,,mp0702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 46 && var[607] != 1 && var[607] != 2 && var[608] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,1|607|608,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,16,,,,,mp0710,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,17,,,,,mp0709,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 42,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,17,,,,,mp0709,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 42 && var[593] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,1|593,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,17,,,,,mp0709,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 42 && var[593] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,1|593,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,18,TOUCH_EA,出入口,3472,12,mp0705,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 62,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,19,MANUAL_EB,藥店出入口,287,1225,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 62,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,29,MANUAL_EB,ice_wait,157,527,mp0710,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[522] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,522,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,30,MANUAL_EB,mu,2546,912,mp1304,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[654] != 1 && var[551] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,551|654,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,30,MANUAL_EB,mu,2546,912,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[654] != 1 && var[551] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,551|654,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,31,MANUAL_EB,包茶色頭巾的男子(坐),3263,1235,mp1304,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[550] >= 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,550,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0701,31,MANUAL_EB,包茶色頭巾的男子(坐),3263,1235,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[550] >= 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0701/Mp0701.eve,550,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0702,13,MANUAL_EB,最右出入口,1179,430,mp0209,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 62,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0702/Mp0702.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0702,13,MANUAL_EB,最右出入口,1179,430,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 62,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0702/Mp0702.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0702,15,MANUAL_EB,ice_alone,817,805,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 41,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0702/Mp0702.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0702,22,,,,,mp0702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0702/Mp0702.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0702,23,,,,,mp0203,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0702/Mp0702.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0702,23,,,,,mp0702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0702/Mp0702.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0704,12,,,,,mp0705,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0704/Mp0704.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0704,16,MANUAL_EB,灰心的鐵匠,423,494,mp0705,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0704/Mp0704.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0704,18,,,,,mp0901,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 63 && var[1] != 63 && var[1] != 62,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0704/Mp0704.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,16,MANUAL_EB,往打鐵鋪,154,437,mp0704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 63 && var[1] != 63 && var[1] <= 41 && var[1] < 35 && var[1] != 34,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,16,MANUAL_EB,往打鐵鋪,154,437,mp0704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 63 && var[1] != 63 && var[1] <= 41 && var[1] < 35 && var[1] == 34,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,16,MANUAL_EB,往打鐵鋪,154,437,mp0704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 63 && var[1] != 63 && var[1] <= 41 && var[1] >= 35,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,16,MANUAL_EB,往打鐵鋪,154,437,mp0704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 63 && var[1] != 63 && var[1] > 41 && var[30] != 0 && var[20] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1|20|30,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,16,MANUAL_EB,往打鐵鋪,154,437,mp0704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 63 && var[1] != 63 && var[1] > 41 && var[30] == 0 && var[20] != 255,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1|20|30,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,16,MANUAL_EB,往打鐵鋪,154,437,mp0704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 63 && var[1] != 63 && var[1] > 41 && var[30] == 0 && var[20] == 255,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1|20|30,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,16,MANUAL_EB,往打鐵鋪,154,437,mp0704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 63 && var[1] != 63 && var[1] > 41 && var[30] != 0 && var[20] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1|20|30,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,16,MANUAL_EB,往打鐵鋪,154,437,mp0704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 63 && var[1] == 63,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,16,MANUAL_EB,往打鐵鋪,154,437,mp0704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 63,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,18,MANUAL_EB,摸劍的大漢,417,544,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 62,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0705,18,MANUAL_EB,摸劍的大漢,417,544,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 62,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0705/Mp0705.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0706,13,,,,,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0706/Mp0706.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0707,14,,,,,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0707/Mp0707.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0709,17,,,,,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0709/Mp0709.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0710,12,,,,,mp0711,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0710/Mp0710.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0710,16,,,,,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[522] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0710/Mp0710.eve,522,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0711,12,,,,,mp0710,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0711/Mp0711.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0711,21,,,,,mp0710,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[522] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0711/Mp0711.eve,522,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0711,21,,,,,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[522] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0711/Mp0711.eve,522,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801,12,,,,,mp0802a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0801/Mp0801.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801,13,,,,,mp0804,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0801/Mp0801.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801,14,,,,,mp0805,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0801/Mp0801.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801,15,TOUCH_EA,出入口,3747,70,mp0803,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0801/Mp0801.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801,16,MANUAL_EB,藥舖出入口,1926,375,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0801/Mp0801.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801,20,MANUAL_EB,雅布斯家出入口,1112,1757,mp0806,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0801/Mp0801.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,12,,,,,mp0802a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,13,,,,,mp0804,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,14,,,,,mp0805,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,15,TOUCH_EA,出入口,3747,70,mp0803,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,16,MANUAL_EB,藥舖出入口,1927,375,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,20,MANUAL_EB,雅布斯家出入口,1112,1755,mp0806,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1218] != 0 && var[668] != 1 && var[25] != 10 && var[25] != 9 && var[25] != 8 && var[25] != 3 && var[669] != 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,25|668|669|1218,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,20,MANUAL_EB,雅布斯家出入口,1112,1755,mp0806,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1218] != 0 && var[668] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,668|1218,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,20,MANUAL_EB,雅布斯家出入口,1112,1755,mp0806,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1218] != 0 && var[668] != 1 && var[25] != 10 && var[25] != 9 && var[25] != 8 && var[25] != 3 && var[669] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,25|668|669|1218,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,20,MANUAL_EB,雅布斯家出入口,1112,1755,mp0806,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1218] != 0 && var[668] != 1 && var[25] != 10 && var[25] != 9 && var[25] != 8 && var[25] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,25|668|1218,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,20,MANUAL_EB,雅布斯家出入口,1112,1755,mp0806,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1218] != 0 && var[668] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,668|1218,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,20,MANUAL_EB,雅布斯家出入口,1112,1755,mp0806,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1218] != 0 && var[668] != 1 && var[25] == 10 && var[1] < 70,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,1|25|668|1218,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,22,MANUAL_EB,f_teller,2987,1586,mp0806,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[4501] != 1 && var[4501] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,4501,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0801a,22,MANUAL_EB,f_teller,2987,1586,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[4501] != 1 && var[4501] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0801a/Mp0801a.eve,4501,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0802a,12,TOUCH_EA,樓梯出入口,1075,311,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0802a/Mp0802a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0802a,13,,,,,mp0802b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0802a/Mp0802a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0802b,13,,,,,mp0802a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0802b/Mp0802b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0802b,21,,,,,mp0802b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0802b/Mp0802b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0802b,21,,,,,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[669] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0802b/Mp0802b.eve,669,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0802b,21,,,,,mp1302,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[669] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0802b/Mp0802b.eve,669,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0802b,21,,,,,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[669] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0802b/Mp0802b.eve,669,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0802b,21,,,,,mp0802b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[669] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0802b/Mp0802b.eve,669,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0802b,21,,,,,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[669] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0802b/Mp0802b.eve,669,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0802b,21,,,,,mp0802b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[669] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0802b/Mp0802b.eve,669,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0803,15,,,,,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0803/Mp0803.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0804,13,,,,,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0804/Mp0804.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0805,14,,,,,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0805/Mp0805.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0806,20,MANUAL_EB,arbs,423,320,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0806/Mp0806.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0806,21,MANUAL_EB,sivia,179,392,mp1601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[668] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0806/Mp0806.eve,668,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0806,21,MANUAL_EB,sivia,179,392,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[668] != 1 && var[25] != 10 && var[25] != 9 && var[25] != 8 && var[25] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0806/Mp0806.eve,25|668,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0806,21,MANUAL_EB,sivia,179,392,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[668] != 1 && var[25] != 10 && var[673] == 1 && var[699] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0806/Mp0806.eve,25|668|673|699,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0806,21,MANUAL_EB,sivia,179,392,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[668] != 1 && var[25] == 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0806/Mp0806.eve,25|668,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0901,12,TOUCH_EA,出入口,232,895,mp0903,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[602] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0901/Mp0901.eve,602,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0901,12,TOUCH_EA,出入口,232,895,mp0903,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0901/Mp0901.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0901,13,MANUAL_EB,左上出入口,491,276,mp0902,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[603] <= 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0901/Mp0901.eve,603,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0901,13,MANUAL_EB,左上出入口,491,276,mp0902,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0901/Mp0901.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0902,13,MANUAL_EB,牢門,768,770,mp0901,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0902/Mp0902.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0903,14,TOUCH_EA,往上,259,131,mp0901,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0903/Mp0903.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0903,15,,,,,mp0904,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp0903/Mp0903.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0904,12,TOUCH_EA,地道出入口,634,536,mp0905,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0904/Mp0904.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0904,13,TOUCH_EA,deadline,1250,565,mp0903,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0904/Mp0904.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0905,12,TOUCH_EA,右上樓梯口,564,-50,mp0904,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0905/Mp0905.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0905,13,MANUAL_EB,princess,740,413,mp0906,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[595] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0905/Mp0905.eve,595,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0905,13,MANUAL_EB,princess,740,413,mp0906,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0905/Mp0905.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0906,12,TOUCH_EA,右上出入口,995,240,mp0907,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0906/Mp0906.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0906,12,TOUCH_EA,右上出入口,995,240,mp2504,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0906/Mp0906.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0906,12,TOUCH_EA,右上出入口,995,240,mp1003b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0906/Mp0906.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0906,13,MANUAL_EB,chest1,667,591,mp0905,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0906/Mp0906.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp0907,12,,,,,mp0906,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp0907/Mp0907.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001a1,12,TOUCH_EA,廳內,797,741,mp1002g,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001a1/Mp1001a1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001a1,13,TOUCH_EA,line1,1933,1333,mp1001a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001a1/Mp1001a1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001a2,12,TOUCH_EA,出入口,1092,913,mp1001b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001a2/Mp1001a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001a2,13,TOUCH_EA,門出入口,1134,499,mp1001a1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001a2/Mp1001a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001a2,14,,,,,mp1001e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001a2/Mp1001a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001b1,12,TOUCH_EA,左出入口,657,1108,mp1001a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001b1/Mp1001b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001b1,13,TOUCH_EA,大廳出入口,838,774,mp1001f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001b1/Mp1001b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001b1,14,TOUCH_EA,樓梯出入口,1710,618,mp1001b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001b1/Mp1001b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001b1,15,,,,,mp1003a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001b1/Mp1001b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001b2,14,,,,,mp1001b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001b2/Mp1001b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001c,12,TOUCH_EA,地道出入口,654,679,mp1003c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001c/Mp1001c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001c,13,,,,,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 65 && var[1] >= 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001c/Mp1001c.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001c,13,,,,,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 65 && var[657] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001c/Mp1001c.eve,1|657,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001d,14,,,,,mp1001f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[2014] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001d/Mp1001d.eve,2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001d,14,,,,,mp1002d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[2014] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001d/Mp1001d.eve,2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001d1,14,,,,,mp1001f1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[2014] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1001d1/Mp1001d1.eve,2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001d1,14,,,,,mp1002d1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[2014] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1001d1/Mp1001d1.eve,2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001e1,14,TOUCH_EA,房間出入口,896,770,mp1001a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1001e1/Mp1001e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001e1,15,TOUCH_EA,側塔出入口,1587,734,mp1001e2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1001e1/Mp1001e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001e1,16,TOUCH_EA,樓梯出入口,1193,894,mp1001f1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1001e1/Mp1001e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001e1,17,,,,,mp1003a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1001e1/Mp1001e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001e2,12,,,,,mp1001e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1001e2/Mp1001e2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001f,14,TOUCH_EA,樓梯出入口,1417,275,mp1001b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1001f/Mp1001f.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001f,15,,,,,mp1001d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1001f/Mp1001f.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001f1,14,TOUCH_EA,出入口,489,741,mp1001d1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1001f1/Mp1001f1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001f1,15,,,,,mp1001e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1001f1/Mp1001f1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001g,12,,,,,mp1003a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1001g/Mp1001g.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001h,12,,,,,mp1003a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1001h/Mp1001h.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1001i,12,,,,,mp1003c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1001i/Mp1001i.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002a1,12,TOUCH_EA,左方大門出入口,442,603,mp1002g,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 73 && var[1] != 74 && var[1] != 70,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002a1/Mp1002a1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002a1,13,,,,,mp1002a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002a1/Mp1002a1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002a2,13,TOUCH_EA,右方出入口,1087,482,mp1002a1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002a2/Mp1002a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002a2,14,TOUCH_EA,左下出入口,163,794,mp1002e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002a2/Mp1002a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002a2,15,,,,,mp1002b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002a2/Mp1002a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002b1,12,TOUCH_EA,左方出入口,447,527,mp1003a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002b1/Mp1002b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002b1,13,TOUCH_EA,中間下方出入口,252,826,mp1002b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002b1/Mp1002b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002b1,14,TOUCH_EA,中間上方出入口,1151,449,mp1002d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002b1/Mp1002b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002b1,15,,,,,mp1002a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002b1/Mp1002b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002b2,13,,,,,mp1002b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002b2/Mp1002b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002c,12,TOUCH_EA,地道出入口,516,603,mp1003c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002c/Mp1002c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002c,13,,,,,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 70,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002c/Mp1002c.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002d,14,TOUCH_EA,樓梯出入口,1428,273,mp1002b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1002d/Mp1002d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002d,15,,,,,mp1001d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1002d/Mp1002d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002d1,14,TOUCH_EA,樓梯出入口,783,267,mp1002e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1002d1/Mp1002d1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002d1,15,,,,,mp1001d1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1002d1/Mp1002d1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002e1,14,TOUCH_EA,客房入口,900,775,mp1002a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1002e1/Mp1002e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002e1,15,TOUCH_EA,側塔出入口,1574,730,mp1002e2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1002e1/Mp1002e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002e1,16,TOUCH_EA,二樓出口,1183,897,mp1002d1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1002e1/Mp1002e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002e1,17,,,,,mp1003a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1002e1/Mp1002e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002e2,12,,,,,mp1002e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002e2/Mp1002e2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002g,12,TOUCH_EA,出入口,209,669,mp1002a1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002g/Mp1002g.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1002g,13,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1002g/Mp1002g.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,12,MANUAL_EB,出入口,874,707,mp1003b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 69 && var[606] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1|606,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,12,MANUAL_EB,出入口,874,707,mp1003b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 69 && var[606] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1|606,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,14,TOUCH_EA,左下樓梯,732,1121,mp1004a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 68,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,15,TOUCH_EA,右上樓梯,753,303,mp1001b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 69 && var[2014] != 1 && var[1] != 65 && var[629] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1|629|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,15,TOUCH_EA,右上樓梯,753,303,mp1001g,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 69 && var[2014] != 1 && var[1] != 65 && var[629] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1|629|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,15,TOUCH_EA,右上樓梯,753,303,mp1001b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 69 && var[2014] != 1 && var[1] == 65 && var[657] != 1 && var[657] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1|657|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,15,TOUCH_EA,右上樓梯,753,303,mp1002b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 69 && var[2014] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,16,TOUCH_EA,右下樓梯,1571,751,mp1004a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 68,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,17,,,,,mp1001e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 69 && var[2014] != 1 && var[1] != 65 && var[629] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1|629|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,17,,,,,mp1001h,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 69 && var[2014] != 1 && var[1] != 65 && var[629] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1|629|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,17,,,,,mp1001e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 69 && var[2014] != 1 && var[1] == 65 && var[657] != 1 && var[657] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1|657|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003a,17,,,,,mp1002e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 69 && var[2014] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003a/Mp1003a.eve,1|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003b,12,TOUCH_EA,上方秘道,702,403,mp1003a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003b/Mp1003b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003b,13,MANUAL_EB,ng1003b-01a.SF2,1010,601,mp1003c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003b/Mp1003b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003b1,12,TOUCH_EA,上方秘道,692,395,mp1003a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003b1/Mp1003b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003b1,13,,,,,mp1003c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003b1/Mp1003b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003c,12,TOUCH_EA,右出入口,1421,558,mp1001c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[2014] != 1 && var[606] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003c/Mp1003c.eve,606|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003c,12,TOUCH_EA,右出入口,1421,558,mp1001i,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[2014] != 1 && var[606] == 0 && var[629] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003c/Mp1003c.eve,606|629|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003c,12,TOUCH_EA,右出入口,1421,558,mp1001i,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[2014] != 1 && var[606] == 0 && var[629] == 1 && var[643] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003c/Mp1003c.eve,606|629|643|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003c,12,TOUCH_EA,右出入口,1421,558,mp1001i,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[2014] != 1 && var[606] == 0 && var[629] == 1 && var[643] != 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003c/Mp1003c.eve,606|629|643|2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003c,12,TOUCH_EA,右出入口,1421,558,mp1002c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[2014] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003c/Mp1003c.eve,2014,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003c,13,TOUCH_EA,左出入口,236,610,mp1003b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[606] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003c/Mp1003c.eve,606,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003c,13,TOUCH_EA,左出入口,236,610,mp1003b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[606] == 0 && var[641] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003c/Mp1003c.eve,606|641,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003c,13,TOUCH_EA,左出入口,236,610,mp1003b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[606] == 0 && var[641] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003c/Mp1003c.eve,606|641,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1003c,14,MANUAL_EB,密道出入口,787,377,mp1008,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 39,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1003c/Mp1003c.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1004a,13,TOUCH_EA,左方往下階梯,440,777,mp1005a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1004a/Mp1004a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1004a,14,TOUCH_EA,右方往上階梯,1142,368,mp1003a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1004a/Mp1004a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1004a,15,TOUCH_EA,右方往下階梯,996,469,mp1005a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1004a/Mp1004a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1004a,16,,,,,mp1003a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1004a/Mp1004a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1004b,12,,,,,mp1005c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1004b/Mp1004b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1004c,12,,,,,mp1005c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1004c/Mp1004c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005a,16,MANUAL_EB,出入口,989,741,mp1005b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 65 && var[641] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,1|641,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005a,16,MANUAL_EB,出入口,989,741,mp1005b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 65 && var[641] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,1|641,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005a,16,MANUAL_EB,出入口,989,741,mp1005b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 65,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005a,16,MANUAL_EB,出入口,989,741,mp1005b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 69,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005a,16,MANUAL_EB,出入口,989,741,mp1005a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 69 && var[999] != 1 && var[663] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,1|663|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1005a,16,MANUAL_EB,出入口,989,741,mp1005a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 69 && var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,1|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1005a,16,MANUAL_EB,出入口,989,741,mp1005a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 69 && var[999] != 1 && var[663] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,1|663|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1005a,18,TOUCH_EA,往上的場景,327,601,mp1004a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005a,19,TOUCH_EA,往上的場景,911,339,mp1006a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005a,20,TOUCH_EA,往下的場景,814,514,mp1006a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005a,21,MANUAL_EB,guard_l,920,859,mp1004a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005a/Mp1005a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005b,12,,,,,mp1005a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[657] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1005b/Mp1005b.eve,657,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005b,12,,,,,mp1005a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[657] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1005b/Mp1005b.eve,657,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005b,13,,,,,mp1005c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1005b/Mp1005b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005b,14,MANUAL_EB,左門出入口,200,696,mp1005c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1005b/Mp1005b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005c,14,TOUCH_EA,左上,485,723,mp1005b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005c/Mp1005c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005c,15,TOUCH_EA,左往下,495,666,mp1005b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005c/Mp1005c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005c,16,TOUCH_EA,右往下,729,569,mp1004b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005c/Mp1005c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1005c,17,,,,,mp1004c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1005c/Mp1005c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1006a,12,TOUCH_EA,左方樓梯出入口,556,677,mp1005a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1006a/Mp1006a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1006a,13,,,,,mp1005a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1006a/Mp1006a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1006a,14,MANUAL_EB,門,442,402,mp1006b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[606] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1006a/Mp1006a.eve,606,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1006a,14,MANUAL_EB,門,442,402,mp1006c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[606] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1006a/Mp1006a.eve,606,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1006b,14,MANUAL_EB,出入口,270,464,mp1006a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1006b/Mp1006b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1006c,12,MANUAL_EB,出入口,324,478,mp1006a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1006c/Mp1006c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1007a,16,,,,,mp1008,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1007a/Mp1007a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1007b,16,TOUCH_EA,event,1137,695,mp1008,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1007b/Mp1007b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1007b,17,,,,,mp0209,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 40,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1007b/Mp1007b.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1007b,17,,,,,mp0702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 40 && var[999] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1007b/Mp1007b.eve,1|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1007b,17,,,,,mp0702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 40 && var[999] != 3 && var[999] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1007b/Mp1007b.eve,1|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1007c,16,,,,,mp1008,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1007c/Mp1007c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1007c,21,,,,,mp2401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 73,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1007c/Mp1007c.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1007c,21,,,,,mp2401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 73 && var[26] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1007c/Mp1007c.eve,1|26,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1007d,16,,,,,mp1008,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1007d/Mp1007d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1007d,21,,,,,mp1905,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1007d/Mp1007d.eve,999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1008,12,TOUCH_EA,左下樓梯出入口,19,1202,mp1007a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 73 && var[1] != 70 && var[1] <= 69 && var[1] != 65 && var[1] != 40 && var[1] != 39 && var[629] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1008/Mp1008.eve,1|629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1008,12,TOUCH_EA,左下樓梯出入口,19,1202,mp1007b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 73 && var[1] != 70 && var[1] <= 69 && var[1] != 65 && var[1] == 40,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1008/Mp1008.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1008,12,TOUCH_EA,左下樓梯出入口,19,1202,mp1007b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 73 && var[1] != 70 && var[1] <= 69 && var[1] != 65 && var[1] != 40 && var[1] == 39,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1008/Mp1008.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1008,12,TOUCH_EA,左下樓梯出入口,19,1202,mp1007d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 73 && var[1] != 70 && var[1] <= 69 && var[1] != 65 && var[1] != 40 && var[1] != 39 && var[629] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1008/Mp1008.eve,1|629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1008,12,TOUCH_EA,左下樓梯出入口,19,1202,mp1007c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 73 && var[1] != 70,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1008/Mp1008.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1008,12,TOUCH_EA,左下樓梯出入口,19,1202,mp1007c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 73 && var[1] == 70,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1008/Mp1008.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1008,12,TOUCH_EA,左下樓梯出入口,19,1202,mp1007c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 73,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1008/Mp1008.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1008,13,,,,,mp1003c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[641] != 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1008/Mp1008.eve,641,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1008,13,,,,,mp1003c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[641] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1008/Mp1008.eve,641,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,12,,,,,mp1002c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 66 && var[606] != 1 && var[629] != 1 && var[629] != 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,1|606|629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,12,,,,,mp1001c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 66 && var[606] == 1 && var[657] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,1|606|657,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,12,,,,,mp1701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 66 && var[606] != 1 && var[629] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,1|606|629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,12,,,,,mp1002c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 66 && var[606] != 1 && var[629] != 1 && var[629] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,1|606|629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,13,,,,,mp1009e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,14,,,,,mp1009f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[606] != 0 && var[10] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,10|606,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,14,,,,,mp1009f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[606] != 0 && var[10] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,10|606,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,14,,,,,mp1009f1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[606] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,606,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,15,,,,,mp1009d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,16,,,,,mp1009b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,17,MANUAL_EB,右上房間門,994,523,mp1009c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,19,MANUAL_EB,左上房間門,160,878,mp1009e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 64,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,19,MANUAL_EB,左上房間門,160,878,mp1009g,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 64,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,19,MANUAL_EB,左上房間門,160,878,mp1003b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 64,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009a,19,MANUAL_EB,左上房間門,160,878,mp1009g,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009a/Mp1009a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009b,12,MANUAL_EB,右方大開關,464,238,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3057] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009b/Mp1009b.eve,3057,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009b,21,MANUAL_EB,bottle1,152,269,mp1206,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009b/Mp1009b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009c,12,MANUAL_EB,level_a,164,279,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009c/Mp1009c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009d,12,,,,,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009d/Mp1009d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009d,16,,,,,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009d/Mp1009d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009e,12,,,,,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009e/Mp1009e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009e,13,TOUCH_EA,右下密門,591,195,mp1010,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009e/Mp1009e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009e,14,MANUAL_EB,右上密室門,413,282,mp1009g,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009e/Mp1009e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009f,12,,,,,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009f/Mp1009f.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009f,13,MANUAL_EB,左邊大門開開,269,327,mp1011,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[10] != 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009f/Mp1009f.eve,10,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009f,13,MANUAL_EB,左邊大門開開,269,327,mp1011,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[10] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009f/Mp1009f.eve,10,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009f1,12,,,,,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009f1/Mp1009f1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009f1,13,MANUAL_EB,左上方出入口,242,365,mp1011,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009f1/Mp1009f1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009f2,12,MANUAL_EB,kakera,647,553,mp1006b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009f2/Mp1009f2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1009g,12,,,,,mp1009e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1207] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1009g/Mp1009g.eve,1207,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1010,12,TOUCH_EA,下方出入口,334,554,mp1010a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1010/Mp1010.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1010,13,MANUAL_EB,出入口,474,333,mp1009e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1010/Mp1010.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1010a,16,TOUCH_EA,出入口,280,1453,mp1010,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1010a/Mp1010a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1010a,17,,,,,mp1014a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[629] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1010a/Mp1010a.eve,629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1010a,17,,,,,mp1014b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[629] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1010a/Mp1010a.eve,629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1011,12,,,,,mp1009f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[606] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1011/Mp1011.eve,606,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1011,12,,,,,mp1009f1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[606] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1011/Mp1011.eve,606,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1011,13,MANUAL_EB,門出入口,516,338,mp1012a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1011/Mp1011.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1012a,16,,,,,mp1011,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1012a/Mp1012a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1012a,17,MANUAL_EB,上方出入口,640,369,mp1012b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] != 9 && var[10] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1012a/Mp1012a.eve,10|627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1012a,17,MANUAL_EB,上方出入口,640,369,mp1012b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] != 9 && var[10] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1012a/Mp1012a.eve,10|627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1012a,17,MANUAL_EB,上方出入口,640,369,mp1012b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] == 9,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1012a/Mp1012a.eve,627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1012b,12,TOUCH_EA,右上出入口,2611,680,mp1012a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1012b/Mp1012b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1012b,13,,,,,mp1013,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1012b/Mp1012b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,12,TOUCH_EA,中間出口,1700,1129,mp1012b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp1014b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 66 && var[1] != 53,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp1014b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 66 && var[627] != 11,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,1|627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp1014a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp1014a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[10] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,10,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp1402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[10] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,10,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp2503a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[10] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,10,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp0203,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[10] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,10,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp0702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[10] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,10,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[10] == 5 && var[551] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,10|551,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp1014b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 66 && var[627] == 11,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,1|627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp1014b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 66,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp2505,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 66,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp1009g,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 66,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp1014a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp1014a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp2506,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1013,13,,,,,mp0705,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1013/Mp1013.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1014a,12,TOUCH_EA,中門出入口,1285,651,mp1013,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1014a/Mp1014a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1014a,13,TOUCH_EA,左門出入口,190,760,mp1015a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 66,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1014a/Mp1014a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1014a,14,MANUAL_EB,miran_s,1090,1082,mp1010a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1014a/Mp1014a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1014b,12,TOUCH_EA,中門出入口,1280,667,mp1013,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1014b/Mp1014b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1014b,13,TOUCH_EA,左門出入口,214,750,mp1015a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1014b/Mp1014b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1014b,14,,,,,mp1010a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1014b/Mp1014b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015a,12,,,,,mp1014a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[629] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015a/Mp1015a.eve,629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015a,12,,,,,mp1014b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[629] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015a/Mp1015a.eve,629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015a,21,,,,,mp1015b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015a/Mp1015a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015a,21,,,,,mp1015b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] == 12,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015a/Mp1015a.eve,627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015b,12,TOUCH_EA,下方出入口,1965,847,mp1015a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015b/Mp1015b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015b,13,,,,,mp1015c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015b/Mp1015b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015c,12,TOUCH_EA,下方出入口,125,923,mp1015b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015c/Mp1015c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015c,13,,,,,mp1015d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015c/Mp1015c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015c1,12,TOUCH_EA,下方出入口,171,913,mp1015d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015c1/Mp1015c1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015c1,13,,,,,mp1015e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015c1/Mp1015c1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015d,12,TOUCH_EA,下出入口,1966,847,mp1015c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015d/Mp1015d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015d,13,,,,,mp1015c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015d/Mp1015d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015e,12,TOUCH_EA,下出入口,1596,703,mp1015c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015e/Mp1015e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015e,13,,,,,mp1015f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015e/Mp1015e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015f,12,TOUCH_EA,下方出入口,866,1713,mp1015e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015f/Mp1015f.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015f,13,,,,,mp1016b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[629] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015f/Mp1015f.eve,629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1015f,13,,,,,mp1016a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[629] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1015f/Mp1015f.eve,629,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1016a,12,TOUCH_EA,上方出入口,1091,345,mp1010a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 53,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1016a/Mp1016a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1016a,13,,,,,mp1015f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1016a/Mp1016a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1016b,12,TOUCH_EA,上方出入口,1100,338,mp1010a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1016b/Mp1016b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1016b,13,,,,,mp1015f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1016b/Mp1016b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] != 5 && var[3] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,3|544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,13,MANUAL_EB,佛寺大門,242,1309,mp1101a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,14,,,,,mp1101a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,14,,,,,mp1101a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[4505] != 1 && var[5] != 6 && var[5] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,5|4505,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,15,MANUAL_EB,武器舖出入口,1027,2127,mp1108,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,17,MANUAL_EB,雜貨舖出入口,2144,1545,mp1109,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 48,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,17,MANUAL_EB,雜貨舖出入口,2144,1545,mp1109,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 48 && var[544] != 0 && var[544] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,1|544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,17,MANUAL_EB,雜貨舖出入口,2144,1545,mp1109,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 48 && var[544] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,1|544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,17,MANUAL_EB,雜貨舖出入口,2144,1545,mp1109,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 48 && var[544] != 0 && var[544] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,1|544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,19,MANUAL_EB,客棧出入口,1327,1535,mp1102,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,21,MANUAL_EB,藥舖出入口,1846,1087,mp1107,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,23,TOUCH_EA,左下方出入口,25,2143,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] != 5 && var[3] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,3|544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,23,TOUCH_EA,左下方出入口,25,2143,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,24,TOUCH_EA,右上方出入口,3132,100,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] != 5 && var[3] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,3|544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,24,TOUCH_EA,右上方出入口,3132,100,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,25,MANUAL_EB,點頭說話的褐衣男,1207,1565,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] != 5 && var[3] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,3|544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,25,MANUAL_EB,點頭說話的褐衣男,1207,1565,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101,84,MANUAL_EB,藍衣藍帽的中年男子,3189,1213,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[23] == 1 && var[27] != 1 && var[999] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,23|27|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1101,84,MANUAL_EB,藍衣藍帽的中年男子,3189,1213,mp2601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[23] == 1 && var[27] != 1 && var[999] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,23|27|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1101,118,MANUAL_EB,oldguy,1650,1521,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1101,118,MANUAL_EB,oldguy,1650,1521,mp1501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1101/Mp1101.eve,999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1101a,12,,,,,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1101a/Mp1101a.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101a,13,MANUAL_EB,釋經房出入口,120,917,mp1103c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1101a/Mp1101a.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101a,15,MANUAL_EB,譯僧房出入口,1176,1163,mp1103b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1101a/Mp1101a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101a,17,MANUAL_EB,五層塔出入口,335,178,mp1104,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1101a/Mp1101a.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101a,17,MANUAL_EB,五層塔出入口,335,178,mp1104,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[623] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1101a/Mp1101a.eve,5|623,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101a,17,MANUAL_EB,五層塔出入口,335,178,mp1104,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[623] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1101a/Mp1101a.eve,5|623,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1101a,19,,,,,mp1103a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1101a/Mp1101a.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1102,16,MANUAL_EB,右邊第二房間出入口,783,293,mp0209,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1102/Mp1102.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1102,16,MANUAL_EB,右邊第二房間出入口,783,293,mp1102,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1102/Mp1102.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1102,17,,,,,mp0209,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] <= 6 && var[9] == 6,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1102/Mp1102.eve,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1102,17,,,,,mp1102,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] <= 6 && var[9] == 6,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1102/Mp1102.eve,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1102,18,TOUCH_EA,下方大門入口,484,811,mp1102,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1102/Mp1102.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1102,19,,,,,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1102/Mp1102.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1103a,12,,,,,mp1101a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1103a/Mp1103a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1103b,15,,,,,mp1101a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1103b/Mp1103b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1103c,13,,,,,mp1101a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[562] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1103c/Mp1103c.eve,562,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1103c,13,,,,,mp1101a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[562] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1103c/Mp1103c.eve,562,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1104,12,,,,,mp1105a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1104/Mp1104.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1104,12,,,,,mp1105b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1104/Mp1104.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1104,17,,,,,mp1101a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 5 && var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1104/Mp1104.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1104,17,,,,,mp1101a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 5 && var[5] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1104/Mp1104.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1104,17,,,,,mp1101a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1104/Mp1104.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1104,17,,,,,mp1103a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1104/Mp1104.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1104,17,,,,,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1104/Mp1104.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105a,12,TOUCH_EA,上樓,546,152,mp1104,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105a/Mp1105a.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105a,12,TOUCH_EA,上樓,546,152,mp1105b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[546] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105a/Mp1105a.eve,5|546,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105a,12,TOUCH_EA,上樓,546,152,mp1105b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[546] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105a/Mp1105a.eve,5|546,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105a,13,,,,,mp1105b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105a/Mp1105a.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105a,13,,,,,mp1105c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[547] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105a/Mp1105a.eve,5|547,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105a,13,,,,,mp1105c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[547] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105a/Mp1105a.eve,5|547,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105b,12,TOUCH_EA,下樓,607,227,mp1105c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105b/Mp1105b.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105b,12,TOUCH_EA,下樓,607,227,mp1105a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[545] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105b/Mp1105b.eve,5|545,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105b,12,TOUCH_EA,下樓,607,227,mp1105d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[545] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105b/Mp1105b.eve,5|545,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105b,13,,,,,mp1105a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105b/Mp1105b.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105b,13,,,,,mp1105c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[548] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105b/Mp1105b.eve,5|548,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105b,13,,,,,mp1105c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[548] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105b/Mp1105b.eve,5|548,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105c,12,TOUCH_EA,上樓,553,96,mp1105b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105c/Mp1105c.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105c,12,TOUCH_EA,上樓,553,96,mp1104,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105c/Mp1105c.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105c,13,,,,,mp1105d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105c/Mp1105c.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105c,13,,,,,mp1105a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[549] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105c/Mp1105c.eve,5|549,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105c,13,,,,,mp1105a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4 && var[549] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105c/Mp1105c.eve,5|549,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105d,13,,,,,mp1105c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105d/Mp1105d.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1105d,13,,,,,mp1105c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[5] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1105d/Mp1105d.eve,5,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1107,12,MANUAL_EB,002.SF2,392,350,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1107/Mp1107.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1107,21,,,,,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1107/Mp1107.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1108,15,,,,,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1108/Mp1108.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1109,17,,,,,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1109/Mp1109.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1201,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1201/Mp1201.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1201,13,TOUCH_EA,城門入口,738,541,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1201/Mp1201.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1201,14,TOUCH_EA,右上小門入口,1749,480,mp1203,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1201/Mp1201.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1201,14,TOUCH_EA,右上小門入口,1749,480,mp1203,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[518] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1201/Mp1201.eve,518,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1201,14,TOUCH_EA,右上小門入口,1749,480,mp1201,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[518] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1201/Mp1201.eve,518,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1201,15,,,,,mp1202,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1201/Mp1201.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1202,12,MANUAL_EB,右方密門,731,310,mp1204,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1202/Mp1202.eve,627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1202,12,MANUAL_EB,右方密門,731,310,mp1204,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1202/Mp1202.eve,627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1202,15,,,,,mp1201,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1202/Mp1202.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1203,14,,,,,mp1201,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1203/Mp1203.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1204,12,TOUCH_EA,右上出入口,1023,313,mp1202,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1204/Mp1204.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1204,13,,,,,mp1205,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1204/Mp1204.eve,627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1204,13,,,,,mp1205,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1204/Mp1204.eve,627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1205,12,TOUCH_EA,左上出入口,225,297,mp1206,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] != 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1205/Mp1205.eve,627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1205,12,TOUCH_EA,左上出入口,225,297,mp1206,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1205/Mp1205.eve,627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1205,13,,,,,mp1204,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1205/Mp1205.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1206,12,,,,,mp1205,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 53,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1206/Mp1206.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1206,12,,,,,mp1205,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 53,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1206/Mp1206.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1206,22,,,,,mp1009b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1155] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1206/Mp1206.eve,1155,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1301,12,TOUCH_EA,右方出口,1894,289,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1301/Mp1301.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1301,13,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1301/Mp1301.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1301,21,,,,,mp1801,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] != 1 && var[13] == 2 && var[3] >= 23,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1301/Mp1301.eve,3|13,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1301a,12,,,,,mp1302,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1301a/Mp1301a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1301b,13,,,,,mp1302,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1301b/Mp1301b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1301c,14,,,,,mp1302,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1301c/Mp1301c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1302,12,TOUCH_EA,左下出入口,293,1036,mp1301a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1302/Mp1302.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1302,13,TOUCH_EA,右下出入口,1316,741,mp1301b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1302/Mp1302.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1302,14,TOUCH_EA,右上出入口,1238,9,mp1301c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1302/Mp1302.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1302,15,,,,,mp1303,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1302/Mp1302.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1303,15,,,,,mp1302,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1303/Mp1303.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1303,21,,,,,mp1304,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1303/Mp1303.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1304,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1304/Mp1304.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1304,13,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1304/Mp1304.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1304,22,TOUCH_EA,line2,1084,766,mp0209,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1304/Mp1304.eve,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1304,22,TOUCH_EA,line2,1084,766,mp1102,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1304/Mp1304.eve,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1304,23,TOUCH_EA,line3,1178,733,mp0209,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1304/Mp1304.eve,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1304,23,TOUCH_EA,line3,1178,733,mp1102,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1304/Mp1304.eve,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1304,24,,,,,mp0209,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1304/Mp1304.eve,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1304,24,,,,,mp1102,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1304/Mp1304.eve,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1304,26,TOUCH_EA,linex,943,715,mp1302,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1304/Mp1304.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,12,TOUCH_EA,左下第一個洞口,50,1019,mp1402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,12,TOUCH_EA,左下第一個洞口,50,1019,mp1402a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,12,TOUCH_EA,左下第一個洞口,50,1019,mp1402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 45 && var[569] != 1 && var[518] == 2 && var[584] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1|518|569|584,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,13,TOUCH_EA,左下第二個洞口,276,716,mp14066,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,13,TOUCH_EA,左下第二個洞口,276,716,mp1406,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,14,TOUCH_EA,中左上洞口,1098,141,mp14064,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,14,TOUCH_EA,中左上洞口,1098,141,mp1406,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,15,TOUCH_EA,右上洞口,2068,142,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 45 && var[568] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1|568,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,15,TOUCH_EA,右上洞口,2068,142,mp1406,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,15,TOUCH_EA,右上洞口,2068,142,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 45 && var[568] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1|568,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,16,TOUCH_EA,右中洞口,1886,779,mp14061,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,16,TOUCH_EA,右中洞口,1886,779,mp1406,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,17,TOUCH_EA,右下洞口,1794,1036,mp1406a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,17,TOUCH_EA,右下洞口,1794,1036,mp1406a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,18,TOUCH_EA,右中下洞口,1894,876,mp1406a1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,18,TOUCH_EA,右中下洞口,1894,876,mp1406a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] > 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1401-1,19,,,,,mp1403,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1401-1/Mp1401-1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1402,12,TOUCH_EA,右方出入口,1886,745,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1402/Mp1402.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1402,13,TOUCH_EA,右方帳棚入口,1371,553,mp1407,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1402/Mp1402.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1402,14,TOUCH_EA,左方出入口,28,565,mp1402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1402/Mp1402.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1402,15,MANUAL_EB,高皇君,126,426,mp1407,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1402/Mp1402.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1402a,12,TOUCH_EA,大地圖出入口,371,926,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1402a/Mp1402a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1402a,13,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1402a/Mp1402a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1403,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1403/Mp1403.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1403,18,TOUCH_EA,右上梯子,584,231,mp1404,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1403/Mp1403.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1403,19,,,,,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1403/Mp1403.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1404,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1404/Mp1404.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1404,18,TOUCH_EA,右方出入口,1571,703,mp1403,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1404/Mp1404.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1404,19,MANUAL_EB,key,1204,794,mp1405a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1404/Mp1404.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14041,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14041/Mp14041.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14041,22,TOUCH_EA,下方出入口,837,1117,mp14041,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14041/Mp14041.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14041,23,,,,,mp14063,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14041/Mp14041.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14041,27,TOUCH_EA,右方出入口,1826,918,mp14041,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14041/Mp14041.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14041,28,,,,,mp14048,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14041/Mp14041.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14042,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14042/Mp14042.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14042,22,TOUCH_EA,右下出入口,1434,840,mp14048,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14042/Mp14042.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14042,23,,,,,mp14063,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14042/Mp14042.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14043,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14043/Mp14043.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14043,22,TOUCH_EA,右方出入口,1845,869,mp14041,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14043/Mp14043.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14043,23,TOUCH_EA,下方出入口,865,1057,mp14043,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14043/Mp14043.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14043,24,,,,,mp14045,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14043/Mp14043.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14043,28,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14043/Mp14043.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14044,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14044/Mp14044.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14044,22,TOUCH_EA,右上方出入口,2141,385,mp1406a1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14044/Mp14044.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14044,23,,,,,mp14047,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14044/Mp14044.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14045,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14045/Mp14045.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14045,22,TOUCH_EA,下方出入口,820,1079,mp14041,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14045/Mp14045.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14045,23,TOUCH_EA,左方出入口,163,624,mp14042,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14045/Mp14045.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14045,24,,,,,mp14066,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14045/Mp14045.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14045,27,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14045/Mp14045.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14046,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14046/Mp14046.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14046,22,TOUCH_EA,上方出入口,1311,347,mp14046,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14046/Mp14046.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14046,23,TOUCH_EA,右方出入口,1888,858,mp14046,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14046/Mp14046.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14046,24,TOUCH_EA,下方出入口,850,1046,mp14044,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14046/Mp14046.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14046,25,,,,,mp14042,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14046/Mp14046.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14047,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14047/Mp14047.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14047,22,TOUCH_EA,右方出入口,1822,1019,mp14043,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14047/Mp14047.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14047,23,TOUCH_EA,左下方出入口,241,1145,mp14045,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14047/Mp14047.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14047,24,,,,,mp14046,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14047/Mp14047.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14048,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14048/Mp14048.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14048,22,TOUCH_EA,右上方出入口,2849,870,mp14048,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14048/Mp14048.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14048,23,TOUCH_EA,中下方出入口,1379,1282,mp14043,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14048/Mp14048.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14048,24,,,,,mp14043,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14048/Mp14048.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14048,28,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14048/Mp14048.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1405,17,,,,,mp1405a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1405/Mp1405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1405,24,,,,,mp1009f2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1405/Mp1405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1405a,17,MANUAL_EB,出入口,1552,283,mp1405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[583] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1405a/Mp1405a.eve,583,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1405a,17,MANUAL_EB,出入口,1552,283,mp1405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[583] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1405a/Mp1405a.eve,583,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1405a,19,MANUAL_EB,save.SF2,1161,496,mp1404,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1405a/Mp1405a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406,13,TOUCH_EA,左中出入口,1104,706,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406/Mp1406.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406,14,TOUCH_EA,中上出入口,2889,264,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406/Mp1406.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406,15,TOUCH_EA,右上出入口,4057,401,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406/Mp1406.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406,16,,,,,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406/Mp1406.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14061,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14061/Mp14061.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14061,16,,,,,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14061/Mp14061.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14061,22,,,,,mp14064,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14061/Mp14061.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14062,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14062/Mp14062.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14062,15,TOUCH_EA,rescue,854,458,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14062/Mp14062.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14062,27,TOUCH_EA,右方出入口,2547,548,mp14041,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14062/Mp14062.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14062,28,,,,,mp14063,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14062/Mp14062.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14063,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14063/Mp14063.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14063,22,TOUCH_EA,下方出入口,658,950,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14063/Mp14063.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14063,23,,,,,mp14048,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14063/Mp14063.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14063,28,,,,,mp14043,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14063/Mp14063.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14064,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14064/Mp14064.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14064,14,,,,,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14064/Mp14064.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14064,22,,,,,mp14065,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14064/Mp14064.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14065,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14065/Mp14065.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14065,22,TOUCH_EA,右方出入口,1432,46,mp14045,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14065/Mp14065.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14065,23,,,,,mp14045,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14065/Mp14065.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14066,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14066/Mp14066.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14066,13,,,,,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14066/Mp14066.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp14066,22,,,,,mp14061,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp14066/Mp14066.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406a,17,TOUCH_EA,左上樓梯出入口,322,311,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406a/Mp1406a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406a,18,,,,,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406a/Mp1406a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406a1,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406a1/Mp1406a1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406a1,18,,,,,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406a1/Mp1406a1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406a1,22,,,,,mp14046,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406a1/Mp1406a1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406a2,4,,,,,mp14062,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406a2/Mp1406a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406a2,17,,,,,mp1401-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406a2/Mp1406a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1406a2,22,,,,,mp14047,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1406a2/Mp1406a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1407,12,TOUCH_EA,沙上,323,-30,mp1402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1407/Mp1407.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1407,12,TOUCH_EA,沙上,323,-30,mp1402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 44 && var[1] == 44,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1407/Mp1407.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1407,12,TOUCH_EA,沙上,323,-30,mp1402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 44 && var[1] != 44 && var[1] == 45,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1407/Mp1407.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1410,14,,,,,mp1402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1410/Mp1410.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1501,12,MANUAL_EB,藥舖出入口,270,826,mp1504,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1501/Mp1501.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1501,14,,,,,mp1502,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1501/Mp1501.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1501,15,MANUAL_EB,雜貨舖出入口,1967,221,mp1503,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1501/Mp1501.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1501,17,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 9 && var[3] != 8 && var[3] != 7 && var[3] != 6 && var[3] != 5 && var[3] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1501/Mp1501.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1502,14,,,,,mp1501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1502/Mp1502.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1502,21,MANUAL_EB,feed_wood,327,468,mp1502,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1502/Mp1502.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1503,15,,,,,mp1501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1503/Mp1503.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1504,12,,,,,mp1501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1504/Mp1504.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1600a,12,TOUCH_EA,洞穴出入口,152,382,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 17,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1600a/Mp1600a.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1600a,12,TOUCH_EA,洞穴出入口,152,382,mp2503a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 17,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1600a/Mp1600a.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1600a,12,TOUCH_EA,洞穴出入口,152,382,mp1607,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 17,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1600a/Mp1600a.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1600a,13,,,,,mp1600b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1600a/Mp1600a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1600a,13,,,,,mp1600b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 14,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1600a/Mp1600a.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1600b,12,TOUCH_EA,右下出口,2621,1595,mp1601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 15 && var[3] >= 20,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1600b/Mp1600b.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1600b,12,TOUCH_EA,右下出口,2621,1595,mp1601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 15,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1600b/Mp1600b.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1600b,12,TOUCH_EA,右下出口,2621,1595,mp1601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 15 && var[3] < 20,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1600b/Mp1600b.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1600b,13,,,,,mp1600a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1600b/Mp1600b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1601,12,,,,,mp1600b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] <= 23,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1601/Mp1601.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1601,12,,,,,mp1600b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] > 23 && var[668] != 2 && var[619] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1601/Mp1601.eve,3|619|668,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1601,12,,,,,mp1600b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] > 23 && var[668] != 2 && var[619] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1601/Mp1601.eve,3|619|668,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1601,13,,,,,mp1602,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 16,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1601/Mp1601.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1601,13,,,,,mp1602,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 16,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1601/Mp1601.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1601,13,,,,,mp1601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 16,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1601/Mp1601.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1601,14,MANUAL_EB,長老家入口,1412,267,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1601/Mp1601.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1602,13,,,,,mp1601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1602/Mp1602.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1602,31,,,,,mp1603d2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[668] != 4 && var[668] != 3 && var[668] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1602/Mp1602.eve,668,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1602,31,,,,,mp1601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[668] != 4 && var[668] != 3 && var[668] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1602/Mp1602.eve,668,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a1,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a1/Mp1603a1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a1,14,TOUCH_EA,左上出入口,171,245,mp1603b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a1/Mp1603a1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a1,15,,,,,mp1603b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a1/Mp1603a1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a2,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a2/Mp1603a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a2,12,TOUCH_EA,左上出入口,729,446,mp1601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 23 && var[3] != 22 && var[3] != 21 && var[3] != 20 && var[3] != 19,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a2/Mp1603a2.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a2,12,TOUCH_EA,左上出入口,729,446,mp1607,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 23 && var[3] != 22 && var[3] != 21,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a2/Mp1603a2.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a2,12,TOUCH_EA,左上出入口,729,446,mp1602,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 23,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a2/Mp1603a2.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a2,12,TOUCH_EA,左上出入口,729,446,mp1601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 23,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a2/Mp1603a2.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a2,13,TOUCH_EA,右上出入口,1367,440,mp1603b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a2/Mp1603a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a2,14,,,,,mp1603b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a2/Mp1603a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a3,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a3/Mp1603a3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a3,13,,,,,mp1603b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a3/Mp1603a3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603a3,15,,,,,mp1603b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603a3/Mp1603a3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b1,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b1/Mp1603b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b1,12,TOUCH_EA,中下出入口,1314,1227,mp1603c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b1/Mp1603b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b1,13,TOUCH_EA,左下出入口,433,1337,mp1603a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b1/Mp1603b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b1,14,TOUCH_EA,右下出入口,1907,1173,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b1/Mp1603b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b1,15,,,,,mp1603a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b1/Mp1603b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b2,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b2/Mp1603b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b2,12,TOUCH_EA,右下出入口,1659,1286,mp1603c2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b2/Mp1603b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b2,13,TOUCH_EA,中下出入口,806,1202,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b2/Mp1603b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b2,14,TOUCH_EA,左下出入口,222,1077,mp1603a1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b2/Mp1603b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b2,15,TOUCH_EA,左上出入口,822,223,mp1603a1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b2/Mp1603b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603b2,16,,,,,mp1603c3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603b2/Mp1603b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603c1,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603c1/Mp1603c1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603c1,12,TOUCH_EA,上出口,670,293,mp1603b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603c1/Mp1603c1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603c1,13,,,,,mp1603d2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603c1/Mp1603c1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603c2,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603c2/Mp1603c2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603c2,12,,,,,mp1603b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603c2/Mp1603c2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603c3,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603c3/Mp1603c3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603c3,13,,,,,mp1603d1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603c3/Mp1603c3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603c3,16,,,,,mp1603b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603c3/Mp1603c3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603d1,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603d1/Mp1603d1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603d1,13,,,,,mp1603c3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603d1/Mp1603d1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603d2,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603d2/Mp1603d2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603d2,13,,,,,mp1603c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603d2/Mp1603d2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603d2,14,MANUAL_EB,出入口,294,249,mp1604,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603d2/Mp1603d2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603d2,14,MANUAL_EB,出入口,294,249,mp1604,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 20,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603d2/Mp1603d2.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1603d2,14,MANUAL_EB,出入口,294,249,mp1602,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1603d2/Mp1603d2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1604,13,TOUCH_EA,下方出口,754,1005,mp1605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 21,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1604/Mp1604.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1604,13,TOUCH_EA,下方出口,754,1005,mp1605,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 21,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1604/Mp1604.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1604,14,,,,,mp1603d2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp1604/Mp1604.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1605,4,,,,,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1605/Mp1605.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1605,12,TOUCH_EA,下方出口,308,732,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 23 && var[3] >= 23 && var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1605/Mp1605.eve,3|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1605,13,,,,,mp1604,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1605/Mp1605.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1607,13,,,,,mp1608,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 18,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1607/Mp1607.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1607,13,,,,,mp1608,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 18,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1607/Mp1607.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1607,14,MANUAL_EB,homedoor,1402,269,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 19,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1607/Mp1607.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1607,14,MANUAL_EB,homedoor,1402,269,mp1603a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 19,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1607/Mp1607.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1608,13,MANUAL_EB,bed,1353,465,mp1607,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1608/Mp1608.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1701,12,MANUAL_EB,salt,1902,271,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] != 6,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1701/Mp1701.eve,627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1701,12,MANUAL_EB,salt,1902,271,mp1009a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[627] == 6,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1701/Mp1701.eve,627,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1701,14,TOUCH_EA,event_line,1518,358,mp1703,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1701/Mp1701.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1702,12,TOUCH_EA,中間洞穴入口,1633,651,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1702/Mp1702.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1702,13,,,,,mp1703,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1702/Mp1702.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1703,13,TOUCH_EA,上方出入口,1072,277,mp1702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1703/Mp1703.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1703,14,,,,,mp1701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] != 8,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1703/Mp1703.eve,544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1703,14,,,,,mp1701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] == 8,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1703/Mp1703.eve,544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1703,15,MANUAL_EB,密室入口,726,948,mp1704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1703/Mp1703.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1703,21,,,,,mp1704,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] == 7,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1703/Mp1703.eve,544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1704,15,,,,,mp1703,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1704/Mp1704.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1801,12,TOUCH_EA,右上樓梯,1147,7,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] != 8 && var[13] != 7 && var[13] >= 7,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1801/Mp1801.eve,13,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1801,12,TOUCH_EA,右上樓梯,1147,7,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] == 8,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1801/Mp1801.eve,13,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1801,13,,,,,mp1803-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1801/Mp1801.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-1,12,TOUCH_EA,下方出入口,242,1275,mp1803-2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] <= 4 && var[13] != 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-1/Mp1803-1.eve,13,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-1,12,TOUCH_EA,下方出入口,242,1275,mp1803-2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] <= 4 && var[13] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-1/Mp1803-1.eve,13,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-1,12,TOUCH_EA,下方出入口,242,1275,mp1804,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] > 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-1/Mp1803-1.eve,13,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-1,12,TOUCH_EA,下方出入口,242,1275,mp1804,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[21] == 2 && var[13] >= 9,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-1/Mp1803-1.eve,13|21,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-1,13,,,,,mp1801,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-1/Mp1803-1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-2,4,,,,,mp1803-2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-2/Mp1803-2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-2,12,,,,,mp1803-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-2/Mp1803-2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-2,13,,,,,mp1803-3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-2/Mp1803-2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-2,26,,,,,mp1803-3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1195] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-2/Mp1803-2.eve,1195,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-3,4,,,,,mp1803-2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-3/Mp1803-3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-3,12,TOUCH_EA,左下走道出入口,164,1297,mp1804,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-3/Mp1803-3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-3,12,TOUCH_EA,左下走道出入口,164,1297,mp1804,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-3/Mp1803-3.eve,13,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1803-3,13,,,,,mp1803-2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1803-3/Mp1803-3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1804,12,,,,,mp1803-3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] != 5 && var[13] <= 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1804/Mp1804.eve,13,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1804,12,,,,,mp1803-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] != 5 && var[13] > 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1804/Mp1804.eve,13,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1804,12,,,,,mp1803-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1804/Mp1804.eve,13,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1901,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 11,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1901/Mp1901.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1901,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 11,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1901/Mp1901.eve,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1901,16,,,,,mp1902,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 58,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1901/Mp1901.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1901,16,,,,,mp1902,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 58,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1901/Mp1901.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1902,14,TOUCH_EA,右下上二樓,1140,581,mp1903b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1902/Mp1902.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1902,15,TOUCH_EA,一樓出入口,584,740,mp1903a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1902/Mp1902.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1902,16,,,,,mp1901,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1902/Mp1902.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903a,14,TOUCH_EA,樓下出入口,415,499,mp1903d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903a/Mp1903a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903a,14,TOUCH_EA,樓下出入口,415,499,mp1903b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903a/Mp1903a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903a,15,,,,,mp1902,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903a/Mp1903a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903a,15,,,,,mp1903f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903a/Mp1903a.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903b,16,TOUCH_EA,上方出口,634,297,mp1902,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1903b/Mp1903b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903b,17,,,,,mp1903c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/MP1903b/Mp1903b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903c,16,TOUCH_EA,下樓出入口,420,497,mp1903f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903c/Mp1903c.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903c,16,TOUCH_EA,下樓出入口,420,497,mp1903b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 59 && var[639] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903c/Mp1903c.eve,1|639,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903c,16,TOUCH_EA,下樓出入口,420,497,mp1905,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 59 && var[639] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903c/Mp1903c.eve,1|639,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903c,17,,,,,mp1903b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903c/Mp1903c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903d,16,TOUCH_EA,上出口,615,317,mp1903a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903d/Mp1903d.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903d,16,TOUCH_EA,上出口,615,317,mp1903c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903d/Mp1903d.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903d,17,,,,,mp1904a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903d/Mp1903d.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903d,17,,,,,mp1903e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903d/Mp1903d.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903e,16,TOUCH_EA,樓下出入口,421,494,mp1905,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59 && var[3] != 11 && var[3] != 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903e/Mp1903e.eve,1|3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903e,16,TOUCH_EA,樓下出入口,421,494,mp1905,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59 && var[3] != 11 && var[3] == 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903e/Mp1903e.eve,1|3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903e,16,TOUCH_EA,樓下出入口,421,494,mp1905,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59 && var[3] == 11,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903e/Mp1903e.eve,1|3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903e,16,TOUCH_EA,樓下出入口,421,494,mp1903f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903e/Mp1903e.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903e,17,,,,,mp1903f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903e/Mp1903e.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903e,17,,,,,mp1903b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903e/Mp1903e.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903f,16,TOUCH_EA,上出口,616,301,mp1903c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903f/Mp1903f.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903f,16,TOUCH_EA,上出口,616,301,mp1903e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903f/Mp1903f.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903f,17,,,,,mp1903e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903f/Mp1903f.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1903f,17,,,,,mp1904a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 59,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1903f/Mp1903f.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1904a,17,,,,,mp1903d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1904a/Mp1904a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1905,16,,,,,mp1903e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1905/Mp1905.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp1905,22,TOUCH_EA,ml2x,322,825,mp1007d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 59 && var[640] != 1 && var[1] <= 65 && var[13] >= 5 && var[641] != 0 && var[999] == 1 && var[641] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1905/Mp1905.eve,1|13|640|641|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1905,22,TOUCH_EA,ml2x,322,825,mp1007d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 59 && var[640] != 1 && var[1] <= 65 && var[13] >= 5 && var[641] == 0 && var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1905/Mp1905.eve,1|13|640|641|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1905,22,TOUCH_EA,ml2x,322,825,mp1007d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 59 && var[640] != 1 && var[1] <= 65 && var[13] >= 5 && var[641] != 0 && var[999] == 1 && var[641] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1905/Mp1905.eve,1|13|640|641|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp1905,23,,,,,mp1007d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[13] >= 5 && var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp1905/Mp1905.eve,13|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp2001,12,TOUCH_EA,山動入口,97,189,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 51,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2001/Mp2001.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2001,12,TOUCH_EA,山動入口,97,189,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 51,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2001/Mp2001.eve,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2001,13,,,,,mp2002,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1158] != 1 && var[658] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2001/Mp2001.eve,658|1158,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2001,13,,,,,mp2002,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1158] != 1 && var[658] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2001/Mp2001.eve,658|1158,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2001,13,,,,,mp2002a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1158] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2001/Mp2001.eve,1158,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2002,13,,,,,mp2001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2002/Mp2002.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2002a,12,TOUCH_EA,樓上出入口,1718,374,mp2003,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2002a/Mp2002a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2002a,13,,,,,mp2001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2002a/Mp2002a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2003,12,,,,,mp2002a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[653] != 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2003/Mp2003.eve,653,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2003,12,,,,,mp2002a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[653] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2003/Mp2003.eve,653,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2101a,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2101a&b/Mp2101a&b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2101a,13,,,,,mp2102,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[562] >= 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2101a&b/Mp2101a&b.eve,562,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2101a,13,,,,,mp2102,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[562] >= 3 && var[672] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2101a&b/Mp2101a&b.eve,562|672,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2101a,13,,,,,mp2102,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[562] < 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2101a&b/Mp2101a&b.eve,562,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2101a,13,,,,,mp2101a&b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[562] < 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2101a&b/Mp2101a&b.eve,562,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2102,13,,,,,mp2101a&b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2102/Mp2102.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2401,12,,,,,mp2402c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[43] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2401/Mp2401.eve,43,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2401,12,,,,,mp2402a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[43] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2401/Mp2401.eve,43,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402,12,TOUCH_EA,二樓出入口,564,299,mp2402b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402/Mp2402.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402,13,,,,,mp2403,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402/Mp2402.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402a,12,TOUCH_EA,右出入口,515,749,mp2402d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402a/Mp2402a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402a,13,TOUCH_EA,出入口,218,297,mp2402b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402a/Mp2402a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402a,14,,,,,mp2403c2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402a/Mp2402a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402a,21,,,,,mp2401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402a/Mp2402a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402b,12,TOUCH_EA,最左出入口,36,673,mp2402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402b/Mp2402b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402b,13,TOUCH_EA,左出入口,392,770,mp2402c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402b/Mp2402b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402b,14,TOUCH_EA,中出入口,803,710,mp2403c3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402b/Mp2402b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402b,15,TOUCH_EA,右出入口,1065,582,mp2403c4,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402b/Mp2402b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402b,16,TOUCH_EA,最右出入口,1029,376,mp2403c5,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402b/Mp2402b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402b,17,,,,,mp2402a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402b/Mp2402b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402c,12,TOUCH_EA,中大門出入口,105,340,mp2402d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402c/Mp2402c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402c,13,TOUCH_EA,左出入口,115,744,mp2401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402c/Mp2402c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402c,14,TOUCH_EA,出入口,417,300,mp2402b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402c/Mp2402c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402c,15,,,,,mp2403c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402c/Mp2402c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402d,12,TOUCH_EA,右出入口,1618,839,mp2402c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402d/Mp2402d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2402d,13,,,,,mp2402a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2402d/Mp2402d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403,12,TOUCH_EA,左出入口,51,387,mp2402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403/Mp2403.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403,13,TOUCH_EA,右出入口,970,395,mp2403a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403/Mp2403.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403,14,,,,,mp2403a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403/Mp2403.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403a,12,TOUCH_EA,右出入口,982,321,mp2403,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403a/Mp2403a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403a,13,TOUCH_EA,傳送點,531,512,mp2403,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403a/Mp2403a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403a,14,,,,,mp2403b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403a/Mp2403a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403b,12,TOUCH_EA,右邊傳送,749,493,mp2403a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403b/Mp2403b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403b,13,,,,,mp2403b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403b/Mp2403b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403b1,12,TOUCH_EA,右邊傳送,750,489,mp2403b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403b1/Mp2403b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403b1,13,,,,,mp2403b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403b1/Mp2403b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403b1,26,,,,,mp4001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403b1/Mp2403b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403b1,26,,,,,mp2403a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403b1/Mp2403b1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403b2,12,TOUCH_EA,右邊傳送,755,492,mp2403b1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403b2/Mp2403b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403b2,13,TOUCH_EA,nd2403b-03.SF2,680,352,mp2403a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403b2/Mp2403b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403b2,14,,,,,mp2405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403b2/Mp2403b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403c1,12,MANUAL_EB,金星,393,534,mp2402c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403c1/Mp2403c1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403c1,13,,,,,mp2403c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403c1/Mp2403c1.eve,999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp2403c2,12,MANUAL_EB,木星,392,534,mp2402a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403c2/Mp2403c2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403c2,13,,,,,mp2403c2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403c2/Mp2403c2.eve,999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp2403c3,12,MANUAL_EB,水星,395,517,mp2402b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403c3/Mp2403c3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403c3,13,,,,,mp2403c3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403c3/Mp2403c3.eve,999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp2403c4,12,MANUAL_EB,火星,393,552,mp2402b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403c4/Mp2403c4.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403c4,13,,,,,mp2403c4,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403c4/Mp2403c4.eve,999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp2403c5,12,MANUAL_EB,土星,395,530,mp2402b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403c5/Mp2403c5.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2403c5,13,,,,,mp2403c5,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2403c5/Mp2403c5.eve,999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp2404,4,,,,,mp2403a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2404/Mp2404.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2404,12,,,,,mp2405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2404/Mp2404.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,12,TOUCH_EA,下層傳點,762,1119,mp2403b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,14,,,,,mp2409a1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,15,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,16,TOUCH_EA,上層傳輸點,765,469,mp2409a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,24,MANUAL_EB,羅侯在左,500,375,mp2409a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,26,MANUAL_EB,右盤,1188,477,mp2409a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,29,MANUAL_EB,羅侯在右,1190,430,mp2406,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,31,,,,,mp2407c3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,35,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[689] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,689,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,35,,,,,mp2404,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[689] != 1 && var[36] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,36|689,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,35,,,,,mp2404,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[689] != 1 && var[36] == 1 && var[1316] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,36|689|1316,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,35,,,,,mp2404,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[689] != 1 && var[36] == 1 && var[1316] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,36|689|1316,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2405,35,,,,,mp2411a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2405/Mp2405.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2406,12,,,,,mp2405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2406/Mp2406.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2406a,12,,,,,mp2406,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2406a/Mp2406a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407,12,TOUCH_EA,右上出入口,1262,178,mp2409a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407/Mp2407.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407,13,TOUCH_EA,左上出入口,711,168,mp2407b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407/Mp2407.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407,14,,,,,mp2407a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407/Mp2407.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407,15,,,,,mp2405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407/Mp2407.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407a,12,,,,,mp2407,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407a/Mp2407a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407b,12,MANUAL_EB,羅侯,1263,750,mp2407,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407b/Mp2407b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407c1,12,TOUCH_EA,階梯通道,758,25,mp2407d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3235] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407c1/Mp2407c1.eve,3235,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407c1,13,TOUCH_EA,o.sf2,961,663,mp2407c2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407c1/Mp2407c1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407c2,12,TOUCH_EA,山道上方出入口,330,61,mp2407c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407c2/Mp2407c2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407c2,13,,,,,mp2407c3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407c2/Mp2407c2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407c3,12,TOUCH_EA,傳送點,1035,396,mp2407c2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407c3/Mp2407c3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407c3,13,,,,,mp2405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407c3/Mp2407c3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2407d,12,MANUAL_EB,太虛,402,370,mp2407c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2407d/Mp2407d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2408,12,,,,,mp2409a2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2408/Mp2408.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409a1,12,TOUCH_EA,下方出口,701,770,mp2405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409a1/Mp2409a1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409a2,12,TOUCH_EA,下方出口,697,774,mp2405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409a2/Mp2409a2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409a2,13,,,,,mp2407,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3209] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409a2/Mp2409a2.eve,3209,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409a2,13,,,,,mp2408,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3209] != 1 && var[3211] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409a2/Mp2409a2.eve,3209|3211,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409a3,12,TOUCH_EA,下方出口,683,756,mp2405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409a3/Mp2409a3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409a3,13,,,,,mp2409b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409a3/Mp2409a3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409b,4,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409b/Mp2409b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409b,12,TOUCH_EA,下方出口,920,670,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409b/Mp2409b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409b,13,,,,,mp2409c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409b/Mp2409b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409b2,12,TOUCH_EA,右出入口,932,670,mp2409d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409b2/Mp2409b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409b2,13,,,,,mp2409e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409b2/Mp2409b2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409b3,4,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409b3/Mp2409b3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409b3,12,TOUCH_EA,右上出入口,844,358,mp2409l,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3223] != 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409b3/Mp2409b3.eve,3223,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409b3,12,TOUCH_EA,右上出入口,844,358,mp2409l1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3223] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409b3/Mp2409b3.eve,3223,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409b3,13,,,,,mp2409d2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409b3/Mp2409b3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409c,12,TOUCH_EA,左下出入口,95,773,mp2409b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409c/Mp2409c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409c,13,TOUCH_EA,右下出入口,2356,1189,mp2409c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409c/Mp2409c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409c,14,,,,,mp2409d,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409c/Mp2409c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409c1,12,,,,,mp2409c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409c1/Mp2409c1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409d,12,TOUCH_EA,下方出口,2002,1547,mp2409c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409d/Mp2409d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409d,13,,,,,mp2409b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409d/Mp2409d.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409d1,4,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409d1/Mp2409d1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409d1,12,TOUCH_EA,下方出口,1727,1676,mp2409h,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409d1/Mp2409d1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409d1,13,,,,,mp2409i,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409d1/Mp2409d1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409d2,4,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409d2/Mp2409d2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409d2,12,TOUCH_EA,下出口,1728,1662,mp2409h2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409d2/Mp2409d2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409d2,13,,,,,mp2409b3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409d2/Mp2409d2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e,4,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e/Mp2409e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e,12,TOUCH_EA,右下出口,1475,963,mp2409b2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3224] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e/Mp2409e.eve,3224,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e,12,TOUCH_EA,右下出口,1475,963,mp2409h,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3224] != 0 && var[3224] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e/Mp2409e.eve,3224,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e,12,TOUCH_EA,右下出口,1475,963,mp2409h,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e/Mp2409e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e,13,TOUCH_EA,下方出口,905,987,mp2409f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3224] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e/Mp2409e.eve,3224,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e,13,TOUCH_EA,下方出口,905,987,mp2409f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3224] != 0 && var[3224] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e/Mp2409e.eve,3224,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e,14,TOUCH_EA,左方出口,200,622,mp2409k1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e/Mp2409e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e,15,,,,,mp2409f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3224] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e/Mp2409e.eve,3224,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e,15,,,,,mp2409f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3224] != 0 && var[3224] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e/Mp2409e.eve,3224,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e,15,,,,,mp2409f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e/Mp2409e.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e1,4,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e1/Mp2409e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e1,12,TOUCH_EA,左方出口,198,621,mp2409k1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e1/Mp2409e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e1,13,TOUCH_EA,右下出口,1473,963,mp2409f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e1/Mp2409e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409e1,14,,,,,mp2409f,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409e1/Mp2409e1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409f,4,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409f/Mp2409f.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409f,12,TOUCH_EA,往出口,2398,1027,mp2409e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3225] != 9 && var[3225] != 14,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409f/Mp2409f.eve,3225,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409f,12,TOUCH_EA,往出口,2398,1027,mp2409e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3225] == 9,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409f/Mp2409f.eve,3225,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409f,12,TOUCH_EA,往出口,2398,1027,mp2409e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3225] != 9 && var[3225] == 14,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409f/Mp2409f.eve,3225,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409f,13,,,,,mp2409e1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3225] != 10 && var[3225] != 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409f/Mp2409f.eve,3225,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409f,13,,,,,mp2409e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3225] == 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409f/Mp2409f.eve,3225,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409f,13,,,,,mp2409e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3225] != 10 && var[3225] == 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409f/Mp2409f.eve,3225,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409h,4,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409h/Mp2409h.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409h,12,TOUCH_EA,下方出入口,282,1095,mp2409e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409h/Mp2409h.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409h,13,,,,,mp2409d1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409h/Mp2409h.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409h2,4,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409h2/Mp2409h2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409h2,12,TOUCH_EA,下出入口,288,1091,mp2409i,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409h2/Mp2409h2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409h2,13,,,,,mp2409d2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409h2/Mp2409h2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409i,4,,,,,mp2409a3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409i/Mp2409i.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409i,12,TOUCH_EA,左出入口,504,546,mp2409d1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409i/Mp2409i.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409i,13,TOUCH_EA,門出入口,147,286,mp2409h2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409i/Mp2409i.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409i,14,,,,,mp2409j,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409i/Mp2409i.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409j,12,,,,,mp2409i,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[690] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409J/Mp2409j.eve,690,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409k1,12,,,,,mp2409e,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409k1/Mp2409k1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409l,12,,,,,mp2409b3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409l/Mp2409l.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409l1,12,MANUAL_EB,基座中央,1193,893,mp2409b3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409l1/Mp2409l1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2409l1,13,,,,,mp2410,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1 && var[3230] == 7,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409l1/Mp2409l1.eve,999|3230,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp2409l1,13,,,,,mp2410a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1 && var[3230] == 7,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2409l1/Mp2409l1.eve,999|3230,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp2410a,12,,,,,mp2410b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,runtime_condition = false && var[999] == 1 && var[1333] != 1 && var[1334] != 1 && var[3232] == 21,必要条件（不是充分条件）,C（含未解释运行时条件）,Map/mp2410a/Mp2410a.eve,999|1333|1334|3232,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp2410a,12,,,,,mp2410b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2410a/Mp2410a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2410b,4,,,,,mp2411a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2410b/Mp2410b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411a,12,TOUCH_EA,傳送點,795,1935,mp2411c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411a/Mp2411a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411a,13,TOUCH_EA,樓梯出入口4,1483,1520,mp2405,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411a/Mp2411a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411a,14,TOUCH_EA,樓梯出入口2,114,1223,mp2411c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411a/Mp2411a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411a,15,TOUCH_EA,樓梯出入口5,1479,937,mp2411c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411a/Mp2411a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411a,16,TOUCH_EA,樓梯出入口3,122,638,mp2411c1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411a/Mp2411a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411a,17,,,,,mp2411c2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411a/Mp2411a.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411b,12,TOUCH_EA,樓梯出入口1,110,1325,mp2411c2,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411b/Mp2411b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411b,13,TOUCH_EA,樓梯出入口3,1336,487,mp2411c3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411b/Mp2411b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411b,14,TOUCH_EA,傳送點,799,625,mp2411c3,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411b/Mp2411b.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411b,15,TOUCH_EA,o.sf2,794,628,mp2412,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3209] == 0 && var[3210] == 0 && var[3211] == 0 && var[3212] == 0 && var[3213] == 0 && var[3214] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411b/Mp2411b.eve,3209|3210|3211|3212|3213|3214,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411c,12,TOUCH_EA,樓梯出入口右,1292,380,mp2411a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411c/Mp2411c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411c,13,,,,,mp2411a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411c/Mp2411c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411c1,12,TOUCH_EA,右出入口,1295,395,mp2411a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411c1/Mp2411c1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411c1,13,,,,,mp2411a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411c1/Mp2411c1.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411c2,12,TOUCH_EA,右出入口,1297,396,mp2411a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411c2/Mp2411c2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411c2,13,,,,,mp2411b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411c2/Mp2411c2.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411c3,12,TOUCH_EA,右出入口,1301,396,mp2411b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411c3/Mp2411c3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2411c3,13,,,,,mp2411b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2411c3/Mp2411c3.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2412,31,,,,,mp2412a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[691] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2412/Mp2412.eve,691,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2412,31,,,,,mp2506,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[691] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2412/Mp2412.eve,691,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2412,31,,,,,mp0705,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[691] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2412/Mp2412.eve,691,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2412,31,,,,,mp2506,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[691] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2412/Mp2412.eve,691,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2412,31,,,,,mp0705,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[691] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2412/Mp2412.eve,691,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2502c,12,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2502c/Mp2502c.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2601,12,TOUCH_EA,武器店出入口,1007,167,mp2603,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp2601/Mp2601.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2601,13,TOUCH_EA,雜貨店出入口,1204,176,mp2602,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp2601/Mp2601.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2601,14,,,,,mp2604,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp2601/Mp2601.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2601,15,TOUCH_EA,右邊出入口,1910,354,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp2601/Mp2601.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2601,16,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp2601/Mp2601.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2601,22,,,,,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[999] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp2601/Mp2601.eve,999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。
+mp2602,13,,,,,mp2601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp2602/Mp2602.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2603,12,,,,,mp2601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp2603/Mp2603.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2603,22,MANUAL_EB,1,433,259,mp2603,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[23] != 5 && var[23] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp2603/Mp2603.eve,23,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2604,14,,,,,mp2601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp2604/Mp2604.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp2701,14,,,,,mp2601,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/mp2701/Mp2701.eve,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,5,,,,,mp2501a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 21,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,5,,,,,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 21,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,5,,,,,mp0601-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 21,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,12,TOUCH_EA,救小鬼,2801,1710,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 40 && var[1] < 31 && var[1] != 30 && var[1] <= 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,12,TOUCH_EA,救小鬼,2801,1710,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 40 && var[1] < 31 && var[1] == 30,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,12,TOUCH_EA,救小鬼,2801,1710,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 40 && var[1] >= 31,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,12,TOUCH_EA,救小鬼,2801,1710,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 40,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,13,,,,,mp2503a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[504] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,504,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,14,TOUCH_EA,蘭州城,3183,1387,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[504] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,504,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,15,TOUCH_EA,涼州,2793,834,mp0212,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] < 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,15,TOUCH_EA,涼州,2793,834,mp0201a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] >= 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,16,TOUCH_EA,自動導航往涼州,2876,1031,mp0401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 20,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,16,TOUCH_EA,自動導航往涼州,2876,1031,mp0401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 20,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,17,TOUCH_EA,迦夏之窟,2888,1089,mp0401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 10 && var[1] == 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,17,TOUCH_EA,迦夏之窟,2888,1089,mp0402,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] <= 10 && var[1] == 10,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,18,TOUCH_EA,沙漠營地,2778,481,mp0301a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,19,TOUCH_EA,磐沙堡,2478,318,mp0501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,20,TOUCH_EA,肅州,1938,694,mp0601-1,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,21,TOUCH_EA,甘州,2365,769,mp0801,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[518] != 6 && var[518] != 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,518,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,21,TOUCH_EA,甘州,2365,769,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[518] != 6 && var[518] != 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,518,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,21,TOUCH_EA,甘州,2365,769,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[518] != 6 && var[518] != 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,518,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,21,TOUCH_EA,甘州,2365,769,mp3001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[518] != 6 && var[518] != 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,518,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,21,TOUCH_EA,甘州,2365,769,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[518] != 6,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,518,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,21,TOUCH_EA,甘州,2365,769,mp0801a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,22,TOUCH_EA,沙州,1390,705,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 67,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,22,TOUCH_EA,沙州,1390,705,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 67 && var[515] != 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1|515,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,22,TOUCH_EA,沙州,1390,705,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 67,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,23,TOUCH_EA,月牙泉,1551,671,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 49,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,23,TOUCH_EA,月牙泉,1551,671,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 49 && var[544] != 1 && var[544] != 2 && var[610] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1|544|610,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,23,TOUCH_EA,月牙泉,1551,671,mp1101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 49,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,24,TOUCH_EA,千佛洞,1263,699,mp1301,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] != 3 && var[9] >= 6,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,24,TOUCH_EA,千佛洞,1263,699,mp1304,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] == 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,24,TOUCH_EA,千佛洞,1263,699,mp1304,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] != 3 && var[9] < 6 && var[9] >= 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,24,TOUCH_EA,千佛洞,1263,699,mp1301,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[9] != 3 && var[9] < 6 && var[9] < 3,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,9,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,25,TOUCH_EA,尼雅,268,794,mp1201,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,26,TOUCH_EA,拓渾隧道入口,193,1010,mp1501,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,27,TOUCH_EA,呼延崇家,1087,670,mp1600a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] != 13 && var[3] > 12,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,27,TOUCH_EA,呼延崇家,1087,670,mp1600a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[3] == 13,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,3,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,28,TOUCH_EA,nd3001-a.SF2,2155,1184,mp2001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[658] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,658,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,28,TOUCH_EA,nd3001-a.SF2,2155,1184,mp2001,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[658] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,658,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,29,TOUCH_EA,高昌古城,1339,261,mp1801,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,30,TOUCH_EA,羅布泊遺跡入口,981,546,mp1402a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,31,TOUCH_EA,烽火台,288,560,mp1702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] != 6,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,31,TOUCH_EA,烽火台,288,560,mp1702,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[544] == 6,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,544,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,32,,,,,mp1901,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 57 && var[616] != 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1|616,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,32,,,,,mp1901,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] != 57 && var[616] == 0,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1|616,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,32,,,,,mp1901,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 57,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,34,TOUCH_EA,樓蘭,851,421,mp2101a&b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[25] >= 5,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,25,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,35,,,,,mp1002g,LOAD_SCENE_WITH_WORLD_RESET,0x3A,true,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,37,TOUCH_EA,高昌古城前,1326,367,mp2501a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 14,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,37,TOUCH_EA,高昌古城前,1326,367,mp0401,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 14,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,38,TOUCH_EA,dock_left,3341,1174,mp1407,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[1] == 42 && var[593] == 1,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,1|593,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,41,TOUCH_EA,flame_pig,2561,719,mp2501a,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[515] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,515,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,41,TOUCH_EA,flame_pig,2561,719,mp0801,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[515] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,515,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,41,TOUCH_EA,flame_pig,2561,719,mp0905,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[515] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,515,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,42,TOUCH_EA,snake,3044,1436,mp2502c,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[20] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,20,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,42,TOUCH_EA,snake,3044,1436,mp0701,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[20] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,20,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,43,,,,,mp2501b,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[667] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,667,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,43,,,,,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[667] == 2,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,667,0,1,可在运行时读取当前持久GameVar后参与路由筛选。
+mp3001,43,,,,,mp0101,LOAD_SCENE_WITH_WORLD_RESET,0x3A,var[667] == 2 && var[999] == 4,必要条件（不是充分条件）,A（EVE控制流精确必要条件）,Map/Mp3001/Mp3001.EVE,667|999,1,0,瞬时Var999/战斗结果等不能作为进入事件前的稳定导航条件；只保留为原始控制流证据。

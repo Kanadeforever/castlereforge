@@ -1,0 +1,66 @@
+# 《幽城幻剑录》Castle_Quest Q011 / 二遇高皇君
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q011"
+quest_id = "side_gaohuangjun_2"
+enabled = true
+title = "二遇高皇君"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "阶段窗口"
+ending_relevant = "是"
+tags = ["timed", "ending_relevant_material"]
+discover_mode = "offer_target_current_scene"
+offer_scene = "mp0701"
+offer_target = "event:manual:44"
+offer_when = "var[518] == 2 && var[3084] == 1"
+offer_marker_when = "var[518] == 2 && var[3084] == 1"
+journal_when = "((var[518] >= 3 && var[518] < 254) || var[518] == 255)"
+available_in_tracker = false
+active_when = "false"
+completed_when = "((var[518] >= 3 && var[518] < 254) || var[518] == 255)"
+failed_when = "false"
+expired_when = "false"
+authoritative_state = "Var518=3"
+formalization_status = "A"
+evidence = "A"
+notes = "Var518=255表示第三遇后的后续失败，按程序路径可证明第二遇已经完成，因此第二遇保持Completed。；dev6m可见性审计：Var518=2是二遇高皇君的一次性机会窗口，mp0701/Event44直接写Var518=3，没有独立的接取后Active区间；运行显示按Available→Completed处理，避免接触前提前进入Tracker。"
+available_objective = "在甘州找到高皇君，与她再次交谈。"
+
+[[stage]]
+stage_id = "second_meet"
+order = 10
+when = "var[518] == 2 && var[3084] == 1"
+condition_status = "A"
+objective = "在甘州第二次遇到高皇君。"
+player_notes = []
+show_in_journal = false
+optional = false
+writes_var = "518|3084"
+stage_result = "Var518=3"
+evidence = "程序静态A"
+notes = "；dev6m可见性审计：本Stage就是一次性Offer交互本身，Event44后原版直接Var518=3；不作为接取后的当前任务显示。"
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0701"
+runtime_event = "44"
+trigger_type = "MANUAL_EB"
+object = "kou_anm"
+world_x = "3557"
+world_y = "1059"
+
+[stage.marker]
+location_name = "甘州城"
+name = "kou_anm"
+hint = "在甘州第二次遇到高皇君。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"

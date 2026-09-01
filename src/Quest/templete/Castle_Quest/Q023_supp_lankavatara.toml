@@ -1,0 +1,770 @@
+# 《幽城幻剑录》Castle_Quest Q023 / 楞伽经／神炎金灯
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q023"
+quest_id = "supp_lankavatara"
+enabled = true
+title = "楞伽经／神炎金灯"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "阶段窗口"
+ending_relevant = "是（圣枪前置）"
+tags = ["story_window", "ending_relevant", "longinus_prerequisite"]
+discover_mode = "offer_target_current_scene"
+offer_scene = "mp1103c"
+offer_target = "event:manual:20"
+offer_when = "var[562] == 0 && var[1148] == 1"
+offer_marker_when = "var[562] == 0 && var[1148] == 1"
+journal_when = "(var[562] == 1 || var[562] == 2) || (var[562] >= 3)"
+available_in_tracker = false
+active_when = "var[562] == 1 || var[562] == 2"
+completed_when = "var[562] >= 3"
+failed_when = "false"
+expired_when = "false"
+authoritative_state = "Var562；Item422/382"
+formalization_status = "A"
+evidence = "A"
+notes = "Var562=3时已取得神炎金灯；后续4属于后续对白状态，不影响本任务完成。"
+available_objective = "与慧性和尚交谈，接受寻找《楞伽经》的委托。"
+
+[[stage]]
+stage_id = "accept"
+order = 10
+when = "var[562] == 0 && var[1148] == 1"
+condition_status = "A"
+objective = "慧性和尚委托寻找楞伽经。"
+player_notes = []
+show_in_journal = false
+optional = false
+item_dependency = "神炎金燈|楞迦經"
+reads_var = "562"
+writes_var = "562|999|1148"
+stage_result = "Var562=1"
+evidence = "程序静态A"
+notes = "；dev6m可见性审计：本Stage发生在Quest正式Active之前，只保留作Offer/程序证据，不再冒充接取后的当前任务。"
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp1103c"
+runtime_event = "20"
+trigger_type = "MANUAL_EB"
+object = "hwechin"
+world_x = "633"
+world_y = "459"
+
+[stage.marker]
+location_name = "甘陀寺 藏经殿"
+name = "hwechin"
+hint = "慧性和尚委托寻找楞伽经。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "book"
+order = 20
+when = "var[562] == 1 && var[1167] == 1"
+condition_status = "A"
+objective = "在千佛洞取得楞伽经。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "楞迦經"
+reads_var = "562"
+writes_var = "562|1167"
+stage_result = "Item422；Var562=2"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp1205"
+runtime_event = "25"
+trigger_type = "MANUAL_EB"
+object = "sb"
+world_x = "408"
+world_y = "270"
+
+[stage.marker]
+location_name = "莫高窟 藏经室"
+name = "sb"
+hint = "在千佛洞取得楞伽经。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp1103c -> mp1101a
+[[stage.route]]
+id = "R000542"
+from_scene = "mp1103c"
+from_name = "甘陀寺 藏经殿"
+to_scene = "mp1101a"
+to_name = "甘陀寺"
+marker_name = "甘陀寺"
+route_hint = "前往甘陀寺。"
+marker_scope = "entrance"
+when = "var[562] != 3"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|釋經房出入口|271|727"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000543"
+from_scene = "mp1103c"
+from_name = "甘陀寺 藏经殿"
+to_scene = "mp1101a"
+to_name = "甘陀寺"
+marker_name = "甘陀寺"
+route_hint = "前往甘陀寺。"
+marker_scope = "entrance"
+when = "var[562] == 3"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|釋經房出入口|271|727"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1101a -> mp1101
+[[stage.route]]
+id = "R000527"
+from_scene = "mp1101a"
+from_name = "甘陀寺"
+to_scene = "mp1101"
+to_name = "沙州城内"
+marker_name = "沙州城内"
+route_hint = "前往沙州城内。"
+marker_scope = "entrance"
+when = "var[5] != 4"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|出入口|476|1388"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1101 -> mp3001
+[[stage.route]]
+id = "R000505"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 12
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000506"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 12
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000517"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "左下方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "左下方出入口"
+world_x = 25
+world_y = 2143
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000518"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "左下方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "左下方出入口"
+world_x = 25
+world_y = 2143
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000519"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "右上方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 24
+trigger_type = "TOUCH_EA"
+target_object = "右上方出入口"
+world_x = 3132
+world_y = 100
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000520"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "右上方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 24
+trigger_type = "TOUCH_EA"
+target_object = "右上方出入口"
+world_x = 3132
+world_y = 100
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000521"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "点头说话的褐衣男"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 25
+trigger_type = "MANUAL_EB"
+target_object = "點頭說話的褐衣男"
+world_x = 1207
+world_y = 1565
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000522"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "点头说话的褐衣男"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 25
+trigger_type = "MANUAL_EB"
+target_object = "點頭說話的褐衣男"
+world_x = 1207
+world_y = 1565
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp3001 -> mp1201
+[[stage.route]]
+id = "R001091"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp1201"
+to_name = "鸣沙山侧 莫高窟"
+marker_name = "尼雅"
+route_hint = "前往鸣沙山侧 莫高窟。"
+marker_scope = "entrance"
+when = "true"
+event_id = 25
+trigger_type = "TOUCH_EA"
+target_object = "尼雅"
+world_x = 268
+world_y = 794
+native_event_bindings = "24|TOUCH_EA|千佛洞|1266|775"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1201 -> mp1202
+[[stage.route]]
+id = "R000579"
+from_scene = "mp1201"
+from_name = "鸣沙山侧 莫高窟"
+to_scene = "mp1202"
+to_name = "莫高窟 佛窟"
+marker_name = "佛窟"
+route_hint = "前往莫高窟 佛窟。"
+marker_scope = "entrance"
+when = "true"
+event_id = 15
+native_event_bindings = "14|TOUCH_EA|右上小門入口|1747|607"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1202 -> mp1204
+[[stage.route]]
+id = "R000580"
+from_scene = "mp1202"
+from_name = "莫高窟 佛窟"
+to_scene = "mp1204"
+to_name = "佛窟后密道"
+marker_name = "右方密门"
+route_hint = "前往佛窟后密道。"
+marker_scope = "entrance"
+when = "var[627] != 0"
+event_id = 12
+trigger_type = "MANUAL_EB"
+target_object = "右方密門"
+world_x = 731
+world_y = 310
+native_event_bindings = "11|TOUCH_EA|右方密門|734|311;;23|MANUAL_EB|dw_s|67|481"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000581"
+from_scene = "mp1202"
+from_name = "莫高窟 佛窟"
+to_scene = "mp1204"
+to_name = "佛窟后密道"
+marker_name = "右方密门"
+route_hint = "前往佛窟后密道。"
+marker_scope = "entrance"
+when = "var[627] == 0"
+event_id = 12
+trigger_type = "MANUAL_EB"
+target_object = "右方密門"
+world_x = 731
+world_y = 310
+native_event_bindings = "11|TOUCH_EA|右方密門|734|311;;23|MANUAL_EB|dw_s|67|481"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1204 -> mp1205
+[[stage.route]]
+id = "R000585"
+from_scene = "mp1204"
+from_name = "佛窟后密道"
+to_scene = "mp1205"
+to_name = "莫高窟 藏经室"
+marker_name = "藏经室"
+route_hint = "前往莫高窟 藏经室。"
+marker_scope = "entrance"
+when = "var[627] != 1"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|右上出入口|1019|397"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000586"
+from_scene = "mp1204"
+from_name = "佛窟后密道"
+to_scene = "mp1205"
+to_name = "莫高窟 藏经室"
+marker_name = "藏经室"
+route_hint = "前往莫高窟 藏经室。"
+marker_scope = "entrance"
+when = "var[627] == 1"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|右上出入口|1019|397"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage]]
+stage_id = "lamp"
+order = 30
+when = "var[562] == 2 && var[1148] == 1"
+condition_status = "A"
+objective = "把楞伽经交回慧性和尚。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "神炎金燈|楞迦經"
+reads_var = "562"
+writes_var = "562|999|1148"
+stage_result = "消耗Item422；Item382神炎金灯；Var562=3"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp1103c"
+runtime_event = "20"
+trigger_type = "MANUAL_EB"
+object = "hwechin"
+world_x = "633"
+world_y = "459"
+
+[stage.marker]
+location_name = "甘陀寺 藏经殿"
+name = "hwechin"
+hint = "把楞伽经交回慧性和尚。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "stage_route"
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp1205 -> mp1204
+[[stage.route]]
+id = "R000589"
+from_scene = "mp1205"
+from_name = "莫高窟 藏经室"
+to_scene = "mp1204"
+to_name = "佛窟后密道"
+marker_name = "佛窟后密道"
+route_hint = "前往佛窟后密道。"
+marker_scope = "entrance"
+when = "true"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|左上出入口|233|360"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1204 -> mp1202
+[[stage.route]]
+id = "R000584"
+from_scene = "mp1204"
+from_name = "佛窟后密道"
+to_scene = "mp1202"
+to_name = "莫高窟 佛窟"
+marker_name = "右上出入口"
+route_hint = "前往莫高窟 佛窟。"
+marker_scope = "entrance"
+when = "true"
+event_id = 12
+trigger_type = "TOUCH_EA"
+target_object = "右上出入口"
+world_x = 1023
+world_y = 313
+native_event_bindings = "11|TOUCH_EA|左下出入口|171|453"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1202 -> mp1201
+[[stage.route]]
+id = "R000582"
+from_scene = "mp1202"
+from_name = "莫高窟 佛窟"
+to_scene = "mp1201"
+to_name = "鸣沙山侧 莫高窟"
+marker_name = "莫高窟"
+route_hint = "前往鸣沙山侧 莫高窟。"
+marker_scope = "entrance"
+when = "true"
+event_id = 15
+native_event_bindings = "14|TOUCH_EA|下方出入口|350|596"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1201 -> mp3001
+[[stage.route]]
+id = "R000574"
+from_scene = "mp1201"
+from_name = "鸣沙山侧 莫高窟"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "true"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|左邊出入口|55|799"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000575"
+from_scene = "mp1201"
+from_name = "鸣沙山侧 莫高窟"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "城门入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "true"
+event_id = 13
+trigger_type = "TOUCH_EA"
+target_object = "城門入口"
+world_x = 738
+world_y = 541
+native_event_bindings = "11|TOUCH_EA|左邊出入口|55|799"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp3001 -> mp1101
+[[stage.route]]
+id = "R001084"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp1101"
+to_name = "沙州城内"
+marker_name = "月牙泉"
+route_hint = "前往沙州城内。"
+marker_scope = "entrance"
+when = "var[1] != 49"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "月牙泉"
+world_x = 1551
+world_y = 671
+native_event_bindings = "22|TOUCH_EA|沙州|1392|681"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001085"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp1101"
+to_name = "沙州城内"
+marker_name = "月牙泉"
+route_hint = "前往沙州城内。"
+marker_scope = "entrance"
+when = "var[1] != 49 && var[544] != 1 && var[544] != 2 && var[610] == 0"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "月牙泉"
+world_x = 1551
+world_y = 671
+native_event_bindings = "22|TOUCH_EA|沙州|1392|681"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001086"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp1101"
+to_name = "沙州城内"
+marker_name = "月牙泉"
+route_hint = "前往沙州城内。"
+marker_scope = "entrance"
+when = "var[1] == 49"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "月牙泉"
+world_x = 1551
+world_y = 671
+native_event_bindings = "22|TOUCH_EA|沙州|1392|681"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1101 -> mp1101a
+[[stage.route]]
+id = "R000507"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp1101a"
+to_name = "甘陀寺"
+marker_name = "佛寺大门"
+route_hint = "前往甘陀寺。"
+marker_scope = "entrance"
+when = "true"
+event_id = 13
+trigger_type = "MANUAL_EB"
+target_object = "佛寺大門"
+world_x = 242
+world_y = 1309
+native_event_bindings = "13|MANUAL_EB|佛寺大門|242|1309"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000508"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp1101a"
+to_name = "甘陀寺"
+marker_name = "甘陀寺"
+route_hint = "前往甘陀寺。"
+marker_scope = "entrance"
+when = "true"
+event_id = 14
+native_event_bindings = "13|MANUAL_EB|佛寺大門|242|1309"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000509"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp1101a"
+to_name = "甘陀寺"
+marker_name = "甘陀寺"
+route_hint = "前往甘陀寺。"
+marker_scope = "entrance"
+when = "var[4505] != 1 && var[5] != 6 && var[5] == 3"
+event_id = 14
+native_event_bindings = "13|MANUAL_EB|佛寺大門|242|1309"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1101a -> mp1103c
+[[stage.route]]
+id = "R000528"
+from_scene = "mp1101a"
+from_name = "甘陀寺"
+to_scene = "mp1103c"
+to_name = "甘陀寺 藏经殿"
+marker_name = "释经房出入口"
+route_hint = "前往甘陀寺 藏经殿。"
+marker_scope = "entrance"
+when = "var[5] != 4"
+event_id = 13
+trigger_type = "MANUAL_EB"
+target_object = "釋經房出入口"
+world_x = 120
+world_y = 917
+native_event_bindings = "13|MANUAL_EB|釋經房出入口|120|917"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false

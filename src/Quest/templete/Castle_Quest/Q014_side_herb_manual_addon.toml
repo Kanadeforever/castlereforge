@@ -1,0 +1,46 @@
+# 《幽城幻剑录》Castle_Quest Q014 / 磐沙堡四层／百草药典 — Remastered 调整层
+# 本文件只放人工追加与体验修正；详细原始任务链在同名、不带 _addon 的 TOML 中。
+#
+# 【局部覆盖】修改已有 Stage 时写：
+# [[override]]
+# stage_id = "原始Stage的stage_id"
+# objective = "新的任务目标文字"                 # 可选
+# player_notes = [                              # 可选；支持标准多行数组
+#     "第一条补充说明",
+#     "第二条补充说明"
+# ]
+# show_in_journal = true                          # 可选
+# optional = false                                # 可选
+# scene = "mp0000"                               # 可选
+# runtime_event = "12"                                      # 可选，0..255
+# object = "对象名称"                            # 可选，方便人读/F11核对
+# world_x = "100"                                   # world_x/world_y 必须成对
+# world_y = "200"                                   # 作为最终 Marker 人工坐标，优先于原始坐标
+# name = "Marker名称"                     # 可选
+# hint = "Marker提示"                     # 可选
+#
+# 【插入人工步骤】在原始任务链两个相邻 Stage 之间写：
+# [[insert]]
+# stage_id = "addon_step_name"                          # addon 自己的稳定ID，不要伪装成 var1_08_5
+# after = "原始上一Stage的stage_id"
+# before = "原始下一Stage的stage_id"
+# objective = "让玩家做什么"
+# player_notes = [
+#     "给玩家看的第一条补充说明",
+#     "给玩家看的第二条补充说明"
+# ]
+# show_in_journal = true
+# optional = true
+# scene = "mp0000"
+# runtime_event = "33"                                      # 玩家在该Scene实际触发此Event后，本人工步骤完成
+# object = "对象名称"
+# world_x = "100"                                   # 人工步骤必须明确提供 Marker 世界坐标
+# world_y = "200"
+#
+# after/before 必须同时存在，而且必须在详细原始链中相邻；否则 Ctrl+F8 整体事务回退并报错。
+# addon 不写 GameVar、不阻止原版剧情推进；它只调整任务系统的显示顺序、文案和 Marker。
+
+format_version = 2
+
+[addon]
+quest_id = "side_herb_manual"

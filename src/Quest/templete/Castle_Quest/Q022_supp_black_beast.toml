@@ -1,0 +1,803 @@
+# 《幽城幻剑录》Castle_Quest Q022 / 严婆婆送信／黑兽魂石
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q022"
+quest_id = "supp_black_beast"
+enabled = true
+title = "严婆婆送信／黑兽魂石"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "阶段窗口"
+ending_relevant = "是"
+tags = ["story_window", "ending_relevant", "craft"]
+discover_mode = "offer_target_current_scene"
+offer_scene = "mp0701"
+offer_target = "event:manual:28"
+offer_when = "var[522] == 0 && var[3089] == 1 && var[24] == 0"
+offer_marker_when = "var[522] == 0 && var[3089] == 1 && var[24] == 0"
+journal_when = "((var[522] >= 1 && var[522] <= 5) && item[436] == 0) || (item[436] > 0)"
+available_in_tracker = false
+active_when = "(var[522] >= 1 && var[522] <= 5) && item[436] == 0"
+completed_when = "item[436] > 0"
+failed_when = "false"
+expired_when = "false"
+authoritative_state = "Var522；Item435/436/223；Battle141"
+formalization_status = "A-"
+evidence = "A"
+notes = "弱黑兽魂石在Var522=5获得；最终完成按Item436真黑兽魂石。"
+available_objective = "与严婆婆交谈，了解送信的请求。"
+
+[[stage]]
+stage_id = "letter"
+order = 10
+when = "var[522] == 0 && var[3089] == 1 && var[24] == 0"
+condition_status = "A"
+objective = "与严婆婆反复交谈并接受送信相关请求。"
+player_notes = []
+show_in_journal = false
+optional = false
+reads_var = "24|522|999|4501"
+writes_var = "24|96|97|522|1225|4501"
+stage_result = "Var522=1（后续同事件可到4）"
+evidence = "程序静态A"
+notes = "；dev6m可见性审计：本Stage发生在Quest正式Active之前，只保留作Offer/程序证据，不再冒充接取后的当前任务。"
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0701"
+runtime_event = "28"
+trigger_type = "MANUAL_EB"
+object = "old_maiden"
+world_x = "2300"
+world_y = "1355"
+
+[stage.marker]
+location_name = "甘州城"
+name = "old_maiden"
+hint = "与严婆婆反复交谈并接受送信相关请求。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "temple"
+order = 20
+when = "var[522] == 1"
+condition_status = "A"
+objective = "推进甘陀寺相关人物/圆智线。"
+player_notes = []
+show_in_journal = true
+optional = false
+reads_var = "5|9|24|522|621|4505"
+writes_var = "5|522|621|1146|1147|1148|4505"
+stage_result = "Var522=2"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp1101"
+runtime_event = "13"
+trigger_type = "MANUAL_EB"
+object = "佛寺大門"
+world_x = "242"
+world_y = "1309"
+
+[stage.marker]
+location_name = "沙州城内"
+name = "佛寺大門"
+hint = "推进甘陀寺相关人物/圆智线。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp0701 -> mp3001
+[[stage.route]]
+id = "R000189"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[1] != 62"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|下方出入口|982|1379;;18|TOUCH_EA|出入口|3479|174"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000201"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "药店出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[1] != 62"
+event_id = 19
+trigger_type = "MANUAL_EB"
+target_object = "藥店出入口"
+world_x = 287
+world_y = 1225
+native_event_bindings = "11|TOUCH_EA|下方出入口|982|1379;;18|TOUCH_EA|出入口|3479|174"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp3001 -> mp1101
+[[stage.route]]
+id = "R001084"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp1101"
+to_name = "沙州城内"
+marker_name = "月牙泉"
+route_hint = "前往沙州城内。"
+marker_scope = "entrance"
+when = "var[1] != 49"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "月牙泉"
+world_x = 1551
+world_y = 671
+native_event_bindings = "22|TOUCH_EA|沙州|1392|681"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001085"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp1101"
+to_name = "沙州城内"
+marker_name = "月牙泉"
+route_hint = "前往沙州城内。"
+marker_scope = "entrance"
+when = "var[1] != 49 && var[544] != 1 && var[544] != 2 && var[610] == 0"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "月牙泉"
+world_x = 1551
+world_y = 671
+native_event_bindings = "22|TOUCH_EA|沙州|1392|681"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001086"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp1101"
+to_name = "沙州城内"
+marker_name = "月牙泉"
+route_hint = "前往沙州城内。"
+marker_scope = "entrance"
+when = "var[1] == 49"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "月牙泉"
+world_x = 1551
+world_y = 671
+native_event_bindings = "22|TOUCH_EA|沙州|1392|681"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage]]
+stage_id = "temple_follow"
+order = 30
+when = "var[522] == 2"
+condition_status = "A"
+objective = "继续寺院剧情。"
+player_notes = []
+show_in_journal = true
+optional = false
+reads_var = "5|522"
+writes_var = "5|23|522|1141|1146|1147|1154|3089"
+stage_result = "Var522=3"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "OBJECTIVE"
+scene = "mp1104"
+runtime_event = "16"
+trigger_type = "TOUCH_EA"
+object = "五層塔出入口"
+world_x = "417"
+world_y = "444"
+marker_override = "world:417,444"
+
+[stage.marker]
+location_name = "五层塔 塔内"
+name = "五層塔出入口"
+hint = "继续寺院剧情。"
+scope = "target"
+role = "objective"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp1101 -> mp1101a
+[[stage.route]]
+id = "R000507"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp1101a"
+to_name = "甘陀寺"
+marker_name = "佛寺大门"
+route_hint = "前往甘陀寺。"
+marker_scope = "entrance"
+when = "true"
+event_id = 13
+trigger_type = "MANUAL_EB"
+target_object = "佛寺大門"
+world_x = 242
+world_y = 1309
+native_event_bindings = "13|MANUAL_EB|佛寺大門|242|1309"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000508"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp1101a"
+to_name = "甘陀寺"
+marker_name = "甘陀寺"
+route_hint = "前往甘陀寺。"
+marker_scope = "entrance"
+when = "true"
+event_id = 14
+native_event_bindings = "13|MANUAL_EB|佛寺大門|242|1309"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000509"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp1101a"
+to_name = "甘陀寺"
+marker_name = "甘陀寺"
+route_hint = "前往甘陀寺。"
+marker_scope = "entrance"
+when = "var[4505] != 1 && var[5] != 6 && var[5] == 3"
+event_id = 14
+native_event_bindings = "13|MANUAL_EB|佛寺大門|242|1309"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1101a -> mp1104
+[[stage.route]]
+id = "R000530"
+from_scene = "mp1101a"
+from_name = "甘陀寺"
+to_scene = "mp1104"
+to_name = "五层塔 塔内"
+marker_name = "五层塔出入口"
+route_hint = "前往五层塔 塔内。"
+marker_scope = "entrance"
+when = "var[5] != 4"
+event_id = 17
+trigger_type = "MANUAL_EB"
+target_object = "五層塔出入口"
+world_x = 335
+world_y = 178
+native_event_bindings = "17|MANUAL_EB|五層塔出入口|335|178"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000531"
+from_scene = "mp1101a"
+from_name = "甘陀寺"
+to_scene = "mp1104"
+to_name = "五层塔 塔内"
+marker_name = "五层塔出入口"
+route_hint = "前往五层塔 塔内。"
+marker_scope = "entrance"
+when = "var[5] == 4 && var[623] != 0"
+event_id = 17
+trigger_type = "MANUAL_EB"
+target_object = "五層塔出入口"
+world_x = 335
+world_y = 178
+native_event_bindings = "17|MANUAL_EB|五層塔出入口|335|178"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000532"
+from_scene = "mp1101a"
+from_name = "甘陀寺"
+to_scene = "mp1104"
+to_name = "五层塔 塔内"
+marker_name = "五层塔出入口"
+route_hint = "前往五层塔 塔内。"
+marker_scope = "entrance"
+when = "var[5] == 4 && var[623] == 0"
+event_id = 17
+trigger_type = "MANUAL_EB"
+target_object = "五層塔出入口"
+world_x = 335
+world_y = 178
+native_event_bindings = "17|MANUAL_EB|五層塔出入口|335|178"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage]]
+stage_id = "cellar_battle"
+order = 40
+when = "var[522] == 4"
+condition_status = "A"
+objective = "进入地窖处理阿娟/驱魔事件。"
+player_notes = []
+show_in_journal = true
+optional = false
+battle_group = "141"
+item_dependency = "黑獸魂石"
+reads_var = "522"
+writes_var = "0|96|97|522|1225|3089|3095"
+stage_result = "Battle141；Item435；Var522=5"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "OBJECTIVE"
+scene = "mp0711"
+runtime_event = "20"
+trigger_type = "TOUCH_EA"
+object = "ne0501-01.SF2"
+world_x = "496"
+world_y = "473"
+marker_override = "world:496,473"
+
+[stage.marker]
+location_name = "老妇人家 地窖"
+name = "ne0501-01.SF2"
+hint = "进入地窖处理阿娟/驱魔事件。"
+scope = "target"
+role = "objective"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp1104 -> mp1101
+[[stage.route]]
+id = "R000550"
+from_scene = "mp1104"
+from_name = "五层塔 塔内"
+to_scene = "mp1101"
+to_name = "沙州城内"
+marker_name = "沙州城内"
+route_hint = "前往沙州城内。"
+marker_scope = "entrance"
+when = "var[5] == 5"
+event_id = 17
+native_event_bindings = "16|TOUCH_EA|五層塔出入口|423|514"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1101 -> mp3001
+[[stage.route]]
+id = "R000505"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 12
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000506"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 12
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000517"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "左下方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "左下方出入口"
+world_x = 25
+world_y = 2143
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000518"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "左下方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 23
+trigger_type = "TOUCH_EA"
+target_object = "左下方出入口"
+world_x = 25
+world_y = 2143
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000519"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "右上方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 24
+trigger_type = "TOUCH_EA"
+target_object = "右上方出入口"
+world_x = 3132
+world_y = 100
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000520"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "右上方出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 24
+trigger_type = "TOUCH_EA"
+target_object = "右上方出入口"
+world_x = 3132
+world_y = 100
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000521"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "点头说话的褐衣男"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] != 5 && var[3] != 3"
+event_id = 25
+trigger_type = "MANUAL_EB"
+target_object = "點頭說話的褐衣男"
+world_x = 1207
+world_y = 1565
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000522"
+from_scene = "mp1101"
+from_name = "沙州城内"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "点头说话的褐衣男"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[544] == 5"
+event_id = 25
+trigger_type = "MANUAL_EB"
+target_object = "點頭說話的褐衣男"
+world_x = 1207
+world_y = 1565
+native_event_bindings = "22|TOUCH_EA|左上方出入口|19|1615;;23|TOUCH_EA|左下方出入口|21|2136;;24|TOUCH_EA|exit_NE|3486|590;;24|TOUCH_EA|右上方出入口|3137|97;;83|MANUAL_EB|察斯葛|2766|1144;;117|MANUAL_EB|isdor|2569|1016"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp3001 -> mp0701
+[[stage.route]]
+id = "R001081"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "沙州"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] != 67"
+event_id = 22
+trigger_type = "TOUCH_EA"
+target_object = "沙州"
+world_x = 1390
+world_y = 705
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001082"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "沙州"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] != 67 && var[515] != 2"
+event_id = 22
+trigger_type = "TOUCH_EA"
+target_object = "沙州"
+world_x = 1390
+world_y = 705
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001083"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "沙州"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] == 67"
+event_id = 22
+trigger_type = "TOUCH_EA"
+target_object = "沙州"
+world_x = 1390
+world_y = 705
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001113"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "snake"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[20] == 2"
+event_id = 42
+trigger_type = "TOUCH_EA"
+target_object = "snake"
+world_x = 3044
+world_y = 1436
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0701 -> mp0710
+[[stage.route]]
+id = "R000196"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp0710"
+to_name = "老妇人家中"
+marker_name = "老妇人家中"
+route_hint = "前往老妇人家中。"
+marker_scope = "entrance"
+when = "true"
+event_id = 16
+native_event_bindings = "21|MANUAL_EB|老婦人家出入口|2039|1403;;28|MANUAL_EB|old_maiden|2300|1355"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000202"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp0710"
+to_name = "老妇人家中"
+marker_name = "ice_wait"
+route_hint = "前往老妇人家中。"
+marker_scope = "entrance"
+when = "var[522] == 3"
+event_id = 29
+trigger_type = "MANUAL_EB"
+target_object = "ice_wait"
+world_x = 157
+world_y = 527
+native_event_bindings = "21|MANUAL_EB|老婦人家出入口|2039|1403;;28|MANUAL_EB|old_maiden|2300|1355"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0710 -> mp0711
+[[stage.route]]
+id = "R000230"
+from_scene = "mp0710"
+from_name = "老妇人家中"
+to_scene = "mp0711"
+to_name = "老妇人家 地窖"
+marker_name = "地窖"
+route_hint = "前往老妇人家 地窖。"
+marker_scope = "entrance"
+when = "true"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|樓梯出入口|295|334"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage]]
+stage_id = "refine"
+order = 50
+when = "var[522] >= 5 && item[435] > 0 && item[223] > 0 && item[436] == 0"
+condition_status = "A"
+objective = "炼化真正黑兽魂石。"
+player_notes = []
+show_in_journal = true
+optional = false
+stage_result = "→Item436"
+evidence = "程序全局表A"
+notes = ""
+
+[stage.target]
+kind = "CRAFT"
+
+[stage.marker]
+location_name = ""
+name = "炼化真正黑兽魂石。"
+hint = "炼化真正黑兽魂石。"
+scope = "target"
+role = "craft"
+
+[stage.navigation]
+mode = "direct"

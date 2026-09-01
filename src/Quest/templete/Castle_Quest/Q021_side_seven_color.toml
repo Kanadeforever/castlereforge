@@ -1,0 +1,187 @@
+# 《幽城幻剑录》Castle_Quest Q021 / 七色璎珞
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q021"
+quest_id = "side_seven_color"
+enabled = true
+title = "七色璎珞"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "取决于素材窗口"
+ending_relevant = "是"
+tags = ["hidden", "craft", "ending_relevant", "important"]
+discover_mode = "hidden_until_material"
+offer_when = "item[208] == 0 && (item[230] > 0 || item[226] > 0 || item[228] > 0 || item[229] > 0 || item[227] > 0 || item[225] > 0 || item[219] > 0 || item[231] > 0 || item[199] > 0 || item[202] > 0 || item[232] > 0 || item[233] > 0)"
+offer_marker_when = "item[208] == 0 && (item[230] > 0 || item[226] > 0 || item[228] > 0 || item[229] > 0 || item[227] > 0 || item[225] > 0 || item[219] > 0 || item[231] > 0 || item[199] > 0 || item[202] > 0 || item[232] > 0 || item[233] > 0)"
+journal_when = "(item[208] == 0 && (item[230] > 0 || item[226] > 0 || item[228] > 0 || item[229] > 0 || item[227] > 0 || item[225] > 0 || item[219] > 0 || item[231] > 0 || item[199] > 0 || item[202] > 0 || item[232] > 0 || item[233] > 0)) || (item[208] > 0)"
+available_in_tracker = false
+active_when = "item[208] == 0 && (item[230] > 0 || item[226] > 0 || item[228] > 0 || item[229] > 0 || item[227] > 0 || item[225] > 0 || item[219] > 0 || item[231] > 0 || item[199] > 0 || item[202] > 0 || item[232] > 0 || item[233] > 0)"
+completed_when = "item[208] > 0"
+failed_when = "false"
+expired_when = "false"
+authoritative_state = "Item208及七种素材；RefineT"
+formalization_status = "A"
+evidence = "A"
+notes = "六步炼化链全部来自RefineT.ENC；Active条件与素材发现门槛一致，避免新游戏时逻辑上提前激活。"
+available_objective = ""
+
+[[stage]]
+stage_id = "r1"
+order = 10
+when = "item[230] > 0 && item[226] > 0 && item[231] == 0"
+condition_status = "A"
+objective = "冥华紫晶230 + 乌光玄铁226。"
+player_notes = []
+show_in_journal = true
+optional = false
+stage_result = "→魂刹玉231"
+evidence = "程序全局表A"
+notes = ""
+
+[stage.target]
+kind = "CRAFT"
+
+[stage.marker]
+location_name = ""
+name = "冥华紫晶230 + 乌光玄铁226。"
+hint = "冥华紫晶230 + 乌光玄铁226。"
+scope = "target"
+role = "craft"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "r2"
+order = 20
+when = "item[228] > 0 && item[229] > 0 && item[199] == 0"
+condition_status = "A"
+objective = "神乌金翎228 + 辉月魂石229。"
+player_notes = []
+show_in_journal = true
+optional = false
+stage_result = "→流光镜玉199"
+evidence = "程序全局表A"
+notes = ""
+
+[stage.target]
+kind = "CRAFT"
+
+[stage.marker]
+location_name = ""
+name = "神乌金翎228 + 辉月魂石229。"
+hint = "神乌金翎228 + 辉月魂石229。"
+scope = "target"
+role = "craft"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "r3"
+order = 30
+when = "item[227] > 0 && item[225] > 0 && item[202] == 0"
+condition_status = "A"
+objective = "火凛冰实227 + 翡翠碧砂225。"
+player_notes = []
+show_in_journal = true
+optional = false
+stage_result = "→千棱幻玉202"
+evidence = "程序全局表A"
+notes = ""
+
+[stage.target]
+kind = "CRAFT"
+
+[stage.marker]
+location_name = ""
+name = "火凛冰实227 + 翡翠碧砂225。"
+hint = "火凛冰实227 + 翡翠碧砂225。"
+scope = "target"
+role = "craft"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "r4"
+order = 40
+when = "item[219] > 0 && item[199] > 0 && item[232] == 0"
+condition_status = "A"
+objective = "赤炼火铜219 + 流光镜玉199。"
+player_notes = []
+show_in_journal = true
+optional = false
+stage_result = "→赤霞珠232"
+evidence = "程序全局表A"
+notes = ""
+
+[stage.target]
+kind = "CRAFT"
+
+[stage.marker]
+location_name = ""
+name = "赤炼火铜219 + 流光镜玉199。"
+hint = "赤炼火铜219 + 流光镜玉199。"
+scope = "target"
+role = "craft"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "r5"
+order = 50
+when = "item[232] > 0 && item[231] > 0 && item[233] == 0"
+condition_status = "A"
+objective = "赤霞珠232 + 魂刹玉231。"
+player_notes = []
+show_in_journal = true
+optional = false
+stage_result = "→血缨石髓233"
+evidence = "程序全局表A"
+notes = ""
+
+[stage.target]
+kind = "CRAFT"
+
+[stage.marker]
+location_name = ""
+name = "赤霞珠232 + 魂刹玉231。"
+hint = "赤霞珠232 + 魂刹玉231。"
+scope = "target"
+role = "craft"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "r6"
+order = 60
+when = "item[233] > 0 && item[202] > 0 && item[208] == 0"
+condition_status = "A"
+objective = "血缨石髓233 + 千棱幻玉202。"
+player_notes = []
+show_in_journal = true
+optional = false
+stage_result = "→七色璎珞208"
+evidence = "程序全局表A"
+notes = ""
+
+[stage.target]
+kind = "CRAFT"
+
+[stage.marker]
+location_name = ""
+name = "血缨石髓233 + 千棱幻玉202。"
+hint = "血缨石髓233 + 千棱幻玉202。"
+scope = "target"
+role = "craft"
+
+[stage.navigation]
+mode = "direct"

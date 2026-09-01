@@ -1,0 +1,379 @@
+# 《幽城幻剑录》Castle_Quest Q009 / 赤兽魂石
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q009"
+quest_id = "side_red_beast"
+enabled = true
+title = "赤兽魂石"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "是"
+ending_relevant = "是（七色璎珞材料链）"
+tags = ["timed", "missable", "ending_relevant_material"]
+discover_mode = "offer_target_current_scene"
+offer_scene = "mp0705"
+offer_target = "event:manual:15"
+offer_when = "var[20] == 0 && var[30] == 0 && var[1] > 41 && var[1] < 63"
+offer_marker_when = "var[20] == 0 && var[30] == 0 && var[1] > 41 && var[1] < 63"
+journal_when = "(var[20] >= 1 && var[20] <= 5) || (var[20] == 6) || (var[20] == 254 || var[20] == 255)"
+available_in_tracker = false
+active_when = "var[20] >= 1 && var[20] <= 5"
+completed_when = "var[20] == 6"
+failed_when = "var[20] == 254 || var[20] == 255"
+expired_when = "false"
+authoritative_state = "Var20；Item429；Item219"
+formalization_status = "A-"
+evidence = "A-"
+notes = "Event15到SET Var20=1的控制流必要条件已恢复；Var20=255有明确主线失效写入。"
+available_objective = "与甘州相关人物交谈，调查赤兽魂石的线索。"
+
+[[stage]]
+stage_id = "start"
+order = 10
+when = "var[20] == 0 && var[30] == 0 && var[1] > 41 && var[1] < 63"
+condition_status = "A"
+objective = "与甘州相关人物交谈，启动赤兽魂石线。"
+player_notes = []
+show_in_journal = false
+optional = false
+item_dependency = "紫金劍|赤煉火銅|星晷刻盤"
+reads_var = "1|20|30|999"
+writes_var = "1|20|30|95|1134|1135"
+stage_result = "Var20=1"
+evidence = "程序静态A"
+notes = "；dev6m可见性审计：本Stage发生在Quest正式Active之前，只保留作Offer/程序证据，不再冒充接取后的当前任务。"
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0705"
+runtime_event = "15"
+
+[stage.marker]
+location_name = "谭家铁铺"
+name = "与甘州相关人物交谈，启动赤兽魂石线。"
+hint = "与甘州相关人物交谈，启动赤兽魂石线。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "leave_ganzhou"
+order = 20
+when = "var[20] == 1"
+condition_status = "A"
+objective = "离开甘州后获得失踪/怪物线索。"
+player_notes = []
+show_in_journal = true
+optional = false
+reads_var = "1|20|515|609|999"
+writes_var = "20|609|3084"
+stage_result = "Var20=2"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_TOUCH"
+scene = "mp0701"
+runtime_event = "11"
+trigger_type = "TOUCH_EA"
+object = "下方出入口"
+world_x = "971"
+world_y = "1380"
+
+[stage.marker]
+location_name = "甘州城"
+name = "下方出入口"
+hint = "离开甘州后获得失踪/怪物线索。"
+scope = "target"
+role = "trigger"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp0705 -> mp0701
+[[stage.route]]
+id = "R000225"
+from_scene = "mp0705"
+from_name = "谭家铁铺"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "摸剑的大汉"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] != 62"
+event_id = 18
+trigger_type = "MANUAL_EB"
+target_object = "摸劍的大漢"
+world_x = 417
+world_y = 544
+native_event_bindings = "17|TOUCH_EA|出入口|635|539"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000226"
+from_scene = "mp0705"
+from_name = "谭家铁铺"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "摸剑的大汉"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] == 62"
+event_id = 18
+trigger_type = "MANUAL_EB"
+target_object = "摸劍的大漢"
+world_x = 417
+world_y = 544
+native_event_bindings = "17|TOUCH_EA|出入口|635|539"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage]]
+stage_id = "flame_pig"
+order = 30
+when = "var[20] == 2"
+condition_status = "A"
+objective = "在世界地图触发 flame_pig 事件。"
+player_notes = []
+show_in_journal = true
+optional = false
+battle_group = "165"
+item_dependency = "赤獸魂石"
+reads_var = "20"
+writes_var = "20"
+stage_result = "Battle165；Item429；Var20=3"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_TOUCH"
+scene = "mp3001"
+runtime_event = "41"
+trigger_type = "TOUCH_EA"
+object = "flame_pig"
+world_x = "2561"
+world_y = "719"
+
+[stage.marker]
+location_name = "西域辽疆"
+name = "flame_pig"
+hint = "在世界地图触发 flame_pig 事件。"
+scope = "target"
+role = "trigger"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp0701 -> mp3001
+[[stage.route]]
+id = "R000189"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[1] != 62"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|下方出入口|982|1379;;18|TOUCH_EA|出入口|3479|174"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000201"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "药店出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[1] != 62"
+event_id = 19
+trigger_type = "MANUAL_EB"
+target_object = "藥店出入口"
+world_x = 287
+world_y = 1225
+native_event_bindings = "11|TOUCH_EA|下方出入口|982|1379;;18|TOUCH_EA|出入口|3479|174"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage]]
+stage_id = "smith_followup"
+order = 40
+when = "var[20] == 3 || var[20] == 4 || var[20] == 5"
+condition_status = "A"
+objective = "回甘州继续铁匠相关后续，取得关键材料。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "紫金劍|赤煉火銅|星晷刻盤"
+reads_var = "1|20|30|999"
+writes_var = "1|20|30|95|1134|1135"
+stage_result = "推进Var20=4/5；Item219 赤炼火铜"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0705"
+runtime_event = "15"
+
+[stage.marker]
+location_name = "谭家铁铺"
+name = "回甘州继续铁匠相关后续，取得关键材料。"
+hint = "回甘州继续铁匠相关后续，取得关键材料。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp3001 -> mp0701
+[[stage.route]]
+id = "R001081"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "沙州"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] != 67"
+event_id = 22
+trigger_type = "TOUCH_EA"
+target_object = "沙州"
+world_x = 1390
+world_y = 705
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001082"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "沙州"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] != 67 && var[515] != 2"
+event_id = 22
+trigger_type = "TOUCH_EA"
+target_object = "沙州"
+world_x = 1390
+world_y = 705
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001083"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "沙州"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[1] == 67"
+event_id = 22
+trigger_type = "TOUCH_EA"
+target_object = "沙州"
+world_x = 1390
+world_y = 705
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001113"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0701"
+to_name = "甘州城"
+marker_name = "snake"
+route_hint = "前往甘州城。"
+marker_scope = "entrance"
+when = "var[20] == 2"
+event_id = 42
+trigger_type = "TOUCH_EA"
+target_object = "snake"
+world_x = 3044
+world_y = 1436
+native_event_bindings = "21|TOUCH_EA|甘州|2393|839;;41|TOUCH_EA|flame_pig|2561|721"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0701 -> mp0705
+[[stage.route]]
+id = "R000200"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp0705"
+to_name = "谭家铁铺"
+marker_name = "出入口"
+route_hint = "前往谭家铁铺。"
+marker_scope = "entrance"
+when = "var[1] != 62"
+event_id = 18
+trigger_type = "TOUCH_EA"
+target_object = "出入口"
+world_x = 3472
+world_y = 12
+native_event_bindings = "23|MANUAL_EB|武器店出入口|2596|203"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+

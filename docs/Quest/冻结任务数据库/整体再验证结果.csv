@@ -1,0 +1,54 @@
+﻿检查项,结果,严重度,说明
+全部当前CSV严格复读,PASS,,当前CSV=22，异常=[]
+Quest ID唯一,PASS,,25
+Stage键唯一,PASS,,146
+Stage全部引用现有Quest,PASS,,
+正式Quest数量保持25,PASS,,25
+正式Stage数量保持146,PASS,,146
+Stage条件全部A级,PASS,,Counter({'A': 146})
+任务状态硬BLOCKED为0,PASS,,
+所有正式条件表达式词法/括号合法,PASS,,[]
+原始有效Scene+Event仍唯一,PASS,,2509 / 2509
+正式Stage所引用Scene/Event全部存在,PASS,,[]
+正式Event目标与SCI对象关联一致,PASS,,检查=52，异常=[]
+条件中的ItemID全部存在,PASS,,[]
+Stage BattleGroup全部存在,PASS,,[]
+Item460在完整v0.1.3物品定义中存在且名称匹配,PASS,,羊皮封卷
+Longinus：完整游戏Ail2哈希一致,PASS,,a24784316c2bd23fc2683637ab860c0e54f1b4175f6db990398843bd0a13c5d8
+Longinus：Item460真实ID=460,PASS,,460
+Longinus：Item460 Ail2+0x28=17,PASS,,17
+Longinus：Item460说明明确已显字,PASS,,在沾染血氣之後，忽然浮現字跡圖樣的空白卷軸，其內容似乎藏有極重要的祕密....
+Longinus：目标RPG.exe哈希一致,PASS,,8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f
+Longinus：0x43AEC0 consumer读取Ail2+0x28,PASS,,8b 44 78 28 3b c6 7e 1d 89 41 08 89
+Longinus：0x43AEC0写DataCenter+0xC4/+0xEC,PASS,,
+Longinus：动作17 selector index=7,PASS,,"[0, 8, 8, 8, 8, 8, 8, 8, 1, 2, 3, 4, 5, 6, 7]"
+Longinus：动作17跳到0x40CFE4,PASS,,0x40cfe4
+Longinus：0x40CFE4调用GET_VAR(25),PASS,,6a 19 e8 e5 e0 03 00
+Longinus：Var25<3分支存在,PASS,,
+"Longinus：0x40D012调用SET_VAR(25,3)",PASS,,
+Longinus：正式Stage已替换旧BLOCKED,PASS,,"{'quest_id': 'side_longinus', 'stage_id': 'use_revealed_scroll', 'stage_order': '25', 'when': 'var[25] == 2', 'condition_status': 'A', 'objective': '在道具菜单使用显字后的羊皮封卷，阅读浮现出的字迹与图样。', 'role': 'item_use', 'show_in_journal': '1', 'optional': '0', 'route_mode': 'none', 'target_kind': 'ITEM_USE', 'target_scene': '', 'runtime_event': '', 'trigger_type': '', 'target_object': '', 'world_x': '', 'world_y': '', 'battle_group': '', 'item_dependency': '羊皮封卷（Item460，显字版）', 'reads_var': '25', 'writes_var': '25', 'stage_result': '使用Item460→世界动作码17→SET_VAR(25,3)', 'evidence': '程序静态A（Ail2+0x28；RPG.exe 0x43AEC0/0x40CE23/0x40CFE4；GET_VAR=0x44B0D0；SET_VAR=0x44B0B0）', 'notes': '这是道具使用阶段，不依赖场景Event；v0.5之所以缺失，是因为旧分析器主线只覆盖EVE写入。'}"
+Longinus：正式Quest已升A级,PASS,,A
+Longinus：生命周期含EXE写Var25=3,PASS,,
+主线69个真实Var1 Stage保持不变,PASS,,69
+主线Var1空洞17未伪造,PASS,,
+主线Var1空洞25未伪造,PASS,,
+主线Var1空洞37未伪造,PASS,,
+主线Var1空洞38未伪造,PASS,,
+主线Var1空洞43未伪造,PASS,,
+主线稳定条件Route语义缺口=0,PASS,,0
+69主线状态均有Route/同场景/终局记录,PASS,,69
+提前Route不消费瞬时结果边,PASS,,0
+高皇君254静态死路径仍未进入正式失效警告,PASS,,
+七色璎珞Active仍要求素材,PASS,,
+百草药典仍未伪造Var652=3,PASS,,var[652] == 2 && var[1230] == 1
+血灵神珠后续合法消耗后仍保持Completed,PASS,,var[667] == 3 && (item[426] > 0 || var[660] == 1)
+v2 TOML标准解析通过,PASS,,research-v0.6-frozen
+TOML Quest数量与CSV一致,PASS,,25
+TOML Longinus已含ITEM_USE阶段,PASS,,
+随包分析器版本为v0.1.4,PASS,,
+分析器导出世界动作码列,PASS,,
+当前文档无Longinus仍阻塞的过期陈述,PASS,,[]
+所有当前Markdown均含v0.6同步段,PASS,,
+Marker前置缺口继续显式列档,PASS,,29
+场景Manager旧快照问题仍列档,PASS,,
+最终Surface投影问题仍列档,PASS,,

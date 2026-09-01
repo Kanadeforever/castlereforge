@@ -1,0 +1,68 @@
+# 《幽城幻剑录》Castle_Quest Q003 / 羊皮封卷
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q003"
+quest_id = "side_sheepskin_scroll"
+enabled = true
+title = "羊皮封卷"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "是（首次兰州窗口）"
+ending_relevant = "间接（圣枪链前置）"
+tags = ["timed", "missable", "longinus_prerequisite"]
+discover_mode = "offer_target_current_scene"
+offer_scene = "mp0212"
+offer_target = "event:manual:31"
+offer_when = "var[25] == 0 && var[1227] == 1"
+offer_marker_when = "var[25] == 0 && var[1227] == 1"
+journal_when = "(var[25] >= 1) || (var[25] == 0 && var[1] >= 7 && var[1227] == 0)"
+available_in_tracker = false
+active_when = "false"
+completed_when = "var[25] >= 1"
+failed_when = "false"
+expired_when = "var[25] == 0 && var[1] >= 7 && var[1227] == 0"
+authoritative_state = "Var25；Item423/460"
+formalization_status = "A"
+evidence = "A"
+notes = "独立任务只负责“买到羊皮封卷”；之后交由Longinus长链，避免重复追踪同一阶段。"
+available_objective = "向兰州的神秘商人购买羊皮封卷。"
+
+[[stage]]
+stage_id = "buy_scroll"
+order = 10
+when = "var[25] == 0 && var[1227] == 1"
+condition_status = "A"
+objective = "在首次兰州阶段向神秘商人购买羊皮封卷。"
+player_notes = []
+show_in_journal = false
+optional = false
+item_dependency = "羊皮封卷"
+reads_var = "999"
+writes_var = "25|999|1227"
+stage_result = "支付350两；Var25=1；Item423"
+evidence = "程序静态A"
+notes = "；dev6m可见性审计：本Stage发生在Quest正式Active之前，只保留作Offer/程序证据，不再冒充接取后的当前任务。"
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0212"
+runtime_event = "31"
+trigger_type = "MANUAL_EB"
+object = "badguy"
+world_x = "685"
+world_y = "628"
+
+[stage.marker]
+location_name = "兰州城"
+name = "badguy"
+hint = "在首次兰州阶段向神秘商人购买羊皮封卷。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"

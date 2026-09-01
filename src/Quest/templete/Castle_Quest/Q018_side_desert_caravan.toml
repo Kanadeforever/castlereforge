@@ -1,0 +1,174 @@
+# 《幽城幻剑录》Castle_Quest Q018 / 沙漠商队／朱兽魂石
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q018"
+quest_id = "side_desert_caravan"
+enabled = true
+title = "沙漠商队／朱兽魂石"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "是"
+ending_relevant = "是"
+tags = ["timed", "missable", "ending_relevant"]
+discover_mode = "when_active"
+offer_scene = "mp2603"
+offer_target = "event:manual:21"
+offer_when = "var[23] == 1"
+offer_marker_when = "var[23] == 1"
+journal_when = "(var[23] >= 1 && var[23] <= 4) || (var[23] == 5) || (var[23] == 255)"
+available_in_tracker = false
+active_when = "var[23] >= 1 && var[23] <= 4"
+completed_when = "var[23] == 5"
+failed_when = "var[23] == 255"
+expired_when = "false"
+authoritative_state = "Var23；Item309/437/273"
+formalization_status = "A"
+evidence = "A-"
+notes = "Var23=1由甘陀寺主剧情Event16开启；离开沙州时若仍为1会被置255。"
+available_objective = ""
+
+[[stage]]
+stage_id = "merchant"
+order = 20
+when = "var[23] == 1"
+condition_status = "A"
+objective = "与商队药商/相关人物交谈。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "朱獸魂石"
+reads_var = "23|1228"
+writes_var = "23"
+stage_result = "Var23=2"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp2603"
+runtime_event = "21"
+trigger_type = "MANUAL_EB"
+object = "boss"
+world_x = "662"
+world_y = "392"
+
+[stage.marker]
+location_name = "沙漠商队 药铺"
+name = "boss"
+hint = "与商队药商/相关人物交谈。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "pot"
+order = 30
+when = "var[23] == 2"
+condition_status = "A"
+objective = "调查药锅/事件点。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "紫霜雲芝"
+reads_var = "23|999"
+writes_var = "23|999"
+stage_result = "Var23=3"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp2603"
+runtime_event = "30"
+trigger_type = "MANUAL_EB"
+object = "pot"
+world_x = "214"
+world_y = "432"
+
+[stage.marker]
+location_name = "沙漠商队 药铺"
+name = "pot"
+hint = "调查药锅/事件点。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "use_fungus"
+order = 40
+when = "var[23] == 3 && item[309] > 0"
+condition_status = "A"
+objective = "使用紫霜云芝解决问题。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "紫霜雲芝"
+reads_var = "23|999"
+writes_var = "23|999"
+stage_result = "Var23=4"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp2603"
+runtime_event = "30"
+trigger_type = "MANUAL_EB"
+object = "pot"
+world_x = "214"
+world_y = "432"
+
+[stage.marker]
+location_name = "沙漠商队 药铺"
+name = "pot"
+hint = "使用紫霜云芝解决问题。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "reward"
+order = 50
+when = "var[23] == 4"
+condition_status = "A"
+objective = "完成商队后续并领取奖励。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "朱獸魂石"
+reads_var = "23|1228"
+writes_var = "23"
+stage_result = "Var23=5；Item437 朱兽魂石"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp2603"
+runtime_event = "21"
+trigger_type = "MANUAL_EB"
+object = "boss"
+world_x = "662"
+world_y = "392"
+
+[stage.marker]
+location_name = "沙漠商队 药铺"
+name = "boss"
+hint = "完成商队后续并领取奖励。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+

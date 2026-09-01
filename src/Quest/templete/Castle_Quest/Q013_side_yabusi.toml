@@ -1,0 +1,68 @@
+# 《幽城幻剑录》Castle_Quest Q013 / 结识雅布斯
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q013"
+quest_id = "side_yabusi"
+enabled = true
+title = "结识雅布斯"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "否/长链"
+ending_relevant = "是"
+tags = ["ending_relevant", "long_chain"]
+discover_mode = "offer_target_current_scene"
+offer_scene = "mp0801a"
+offer_target = "event:manual:21"
+offer_when = "var[660] == 0 && var[1217] == 1 && item[426] > 0"
+offer_marker_when = "var[660] == 0 && var[1217] == 1 && item[426] > 0"
+journal_when = "(var[660] == 1)"
+available_in_tracker = false
+active_when = "false"
+completed_when = "var[660] == 1"
+failed_when = "false"
+expired_when = "false"
+authoritative_state = "Var660；Item426/222/459"
+formalization_status = "A"
+evidence = "A"
+notes = "消耗血灵神珠后取得辟邪紫金、炼金初要并写Var660=1。"
+available_objective = "带着血灵神珠相关线索与雅布斯交谈。"
+
+[[stage]]
+stage_id = "meet_yabusi"
+order = 10
+when = "var[660] == 0 && var[1217] == 1 && item[426] > 0"
+condition_status = "A"
+objective = "与雅布斯建立正式任务联系。"
+player_notes = []
+show_in_journal = false
+optional = false
+item_dependency = "辟邪紫金|血靈神珠|煉金初要"
+reads_var = "25|4501"
+writes_var = "660|999|1217|1218|4501"
+stage_result = "消耗Item426；Item222辟邪紫金；Item459炼金初要；Var660=1"
+evidence = "程序静态A"
+notes = "；dev6m可见性审计：本Stage发生在Quest正式Active之前，只保留作Offer/程序证据，不再冒充接取后的当前任务。"
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0801a"
+runtime_event = "21"
+trigger_type = "MANUAL_EB"
+object = "sivia / sivia_x"
+world_x = "2756"
+world_y = "1507"
+
+[stage.marker]
+location_name = "肃州城"
+name = "sivia / sivia_x"
+hint = "与雅布斯建立正式任务联系。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"

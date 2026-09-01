@@ -1,0 +1,7 @@
+﻿rule_id,quest_id,scene,runtime_event,when,result,severity,message,evidence
+warn_colored_marble_leave_hezhou,side_colored_marble,mp0101,11,var[1] == 5 && var[505] != 3,var[505] = 254,critical,离开河州将永久错过“彩石弹珠”。,A
+warn_aji_enter_lanzhou,side_rescue_aji,mp3001,14,var[504] < 2,var[504] = 254,critical,现在进入兰州将永久错过“营救阿吉”。,A
+warn_princess_return_ganzhou,side_yinchuan_princess,mp3001,21,(var[1] == 35 || var[1] == 36) && var[515] == 2,var[515] = 254,critical,偷听完成后应直接去救银川公主；现在返回甘州会令任务失效。,A
+warn_red_beast_var1_44,side_red_beast,mp1407,11,var[1] == 44 && var[20] == 2,var[20] = 255,critical,推进当前方违迷阵主线节点会令“赤兽魂石”失效。,A
+warn_caravan_leave_shazhou,side_desert_caravan,mp1101,11|22|23|24,var[23] == 1,var[23] = 255,critical,商队线开启后，在这个沙州阶段直接离城会使任务失效。,A
+warn_blood_orb_world_event,side_blood_spirit_orb,mp3001,37,var[1] == 42 && var[593] == 1 && var[667] != 3,var[667] = 254/255,critical,当前世界地图推进点会终止尚未完成的“血灵神珠”链。,A

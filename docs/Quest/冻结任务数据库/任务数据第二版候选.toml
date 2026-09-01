@@ -1,0 +1,2658 @@
+# 历史研究候选：不是 Castle_Quest dev6zd 运行数据；其中旧 optional_clues/字段只用于追溯冻结研究。
+format_version = 2
+database_version = "research-v0.6-frozen-dev6a-runtime-correction1"
+
+[[quest]]
+id = "side_colored_marble"
+category = "Side"
+title = "彩石弹珠"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[505] == 0 && var[1009] == 1 && var[1010] == 0"
+active_when = "var[1] >= 1 && var[1] < 6 && (var[505] == 1 || var[505] == 2)"
+completed_when = "var[505] == 3"
+failed_when = "false"
+expired_when = "var[505] == 254"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["timed", "missable", "ending_relevant", "important"]
+notes = "核心状态Var505；首次离开河州未完成会254。"
+
+[[quest.stage]]
+id = "talk_aling"
+order = 10
+when = "var[505] == 0 && var[1009] == 1 && var[1010] == 0"
+condition_status = "A"
+objective = "继续与哭泣的阿铃交谈，直到她说出布娃娃的事情。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0101"
+runtime_event = 23
+target_object = "猛哭"
+world_x = 378
+world_y = 466
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "find_aping"
+order = 20
+when = "var[505] == 1 && var[1008] == 1"
+condition_status = "A"
+objective = "找到躲起来的阿平，问清布娃娃被藏在哪里。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0101"
+runtime_event = 37
+target_object = "躲起小鬼"
+world_x = 1788
+world_y = 182
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "find_doll"
+order = 30
+when = "var[505] == 1 && var[1007] == 1"
+condition_status = "A"
+objective = "调查孩子附近的藏物点，找到布娃娃。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0101"
+runtime_event = 41
+target_object = "ng0101-05.SF2"
+world_x = 962
+world_y = 417
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "return_aling"
+order = 40
+when = "var[505] == 2 && var[1010] == 1"
+condition_status = "A"
+objective = "把布娃娃带回给阿铃。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0101"
+runtime_event = 24
+target_object = "不哭了"
+world_x = 379
+world_y = 465
+item_dependency = "彩石彈珠"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_sheepskin_scroll"
+category = "Side"
+title = "羊皮封卷"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[25] == 0 && var[1227] == 1"
+active_when = "false"
+completed_when = "var[25] >= 1"
+failed_when = "false"
+expired_when = "var[25] == 0 && var[1] >= 7 && var[1227] == 0"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["timed", "missable", "longinus_prerequisite"]
+notes = "独立任务只负责“买到羊皮封卷”；之后交由Longinus长链，避免重复追踪同一阶段。"
+
+[[quest.stage]]
+id = "buy_scroll"
+order = 10
+when = "var[25] == 0 && var[1227] == 1"
+condition_status = "A"
+objective = "在首次兰州阶段向神秘商人购买羊皮封卷。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0212"
+runtime_event = 31
+target_object = "badguy"
+world_x = 685
+world_y = 628
+item_dependency = "羊皮封卷"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_rescue_aji"
+category = "Side"
+title = "营救阿吉"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[504] == 0 && var[1072] == 1"
+active_when = "var[504] == 1"
+completed_when = "var[504] == 2"
+failed_when = "false"
+expired_when = "var[504] == 254"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["timed", "missable", "ending_relevant", "important"]
+notes = "四小孩是可选线索；真正硬门槛是Var504。"
+
+[[quest.stage]]
+id = "ask_mother"
+order = 10
+when = "var[504] == 0 && var[1072] == 1"
+condition_status = "A"
+objective = "与阿吉母亲交谈，得知阿吉不见。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0101"
+runtime_event = 36
+target_object = "阿平老媽"
+world_x = 1049
+world_y = 811
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "optional_clues"
+order = 20
+when = "var[504] == 1"
+condition_status = "A"
+objective = "四个孩子的对话是线索提示，并非硬性门槛。"
+role = "optional_clue"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0101"
+runtime_event = 32
+target_object = "聊天四小鬼之右"
+world_x = 730
+world_y = 729
+optional = true
+show_in_journal = false
+
+[[quest.stage]]
+id = "world_trigger"
+order = 30
+when = "var[504] == 1"
+condition_status = "A"
+objective = "离开河州后在世界地图前往“救小鬼”触发点。"
+role = "trigger"
+route_mode = "condition_graph"
+target_kind = "EVENT_TOUCH"
+target_scene = "mp3001"
+runtime_event = 12
+target_object = "救小鬼"
+world_x = 2801
+world_y = 1710
+battle_group = "101"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_pansha_switch"
+category = "Side"
+title = "磐沙堡地牢拉环"
+discover_mode = "when_active"
+offer_when = "var[1120] == 1"
+active_when = "var[1120] == 1"
+completed_when = "var[1121] == 255"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["story_window", "puzzle"]
+notes = "Var1120使密道开关出现；拉动后Var1121=255。"
+
+[[quest.stage]]
+id = "pull_switch"
+order = 20
+when = "var[1120] == 1"
+condition_status = "A"
+objective = "拉动地牢密道开关。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0604"
+runtime_event = 22
+target_object = "密道開關"
+world_x = 883
+world_y = 888
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_blood_spirit_orb"
+category = "Side"
+title = "血灵神珠"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[667] == 0 && var[1013] == 1 && var[505] == 3 && var[1] > 30"
+active_when = "var[667] == 1 || var[667] == 2"
+completed_when = "var[667] == 3 && (item[426] > 0 || var[660] == 1)"
+failed_when = "var[667] == 3 && item[426] == 0 && var[660] == 0"
+expired_when = "var[667] == 254 || var[667] == 255"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["timed", "missable", "ending_relevant", "important"]
+notes = "正确分支的Item426后续会被雅布斯消耗，因此完成判定必须允许Var660=1，不能只看当前库存。"
+
+[[quest.stage]]
+id = "aling_missing"
+order = 10
+when = "var[667] == 0 && var[1013] == 1 && var[505] == 3 && var[1] > 30"
+condition_status = "A"
+objective = "完成阿吉和彩石弹珠后，在河州得知阿铃失踪。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0101"
+runtime_event = 43
+target_object = "阿平"
+world_x = 1860
+world_y = 1202
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "ask_exorcist"
+order = 20
+when = "var[667] == 1"
+condition_status = "A"
+objective = "在兰州向侠客/驱邪者打听阿铃与蛇妖。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0202"
+runtime_event = 28
+target_object = "中俠客"
+world_x = 710
+world_y = 545
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "snake_event"
+order = 30
+when = "var[667] == 2"
+condition_status = "A"
+objective = "在世界地图触发蛇妖事件，选择“一切以阿铃性命为重”。"
+role = "trigger"
+route_mode = "condition_graph"
+target_kind = "EVENT_TOUCH"
+target_scene = "mp3001"
+runtime_event = 42
+target_object = "snake"
+world_x = 3044
+world_y = 1436
+battle_group = "182"
+item_dependency = "血靈神珠|彩石彈珠"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_yinchuan_princess"
+category = "Side"
+title = "银川公主"
+discover_mode = "offer_target_current_scene"
+offer_when = "(var[1] == 35 || var[1] == 36) && var[4508] == 1 && var[515] != 2 && var[515] != 3 && var[515] != 254"
+active_when = "var[4510] == 1 || var[515] == 2"
+completed_when = "var[515] == 3"
+failed_when = "false"
+expired_when = "var[515] == 254"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["timed", "missable", "ending_related"]
+notes = "补回v0.4遗漏的第一次偷听Event25；第二次Event26才写Var515=2。"
+
+[[quest.stage]]
+id = "eavesdrop_first"
+order = 5
+when = "(var[1] == 35 || var[1] == 36) && var[4508] == 1"
+condition_status = "A"
+objective = "先在甘州偷听第一段密谋，再继续寻找第二个偷听位置。"
+role = "trigger"
+route_mode = "condition_graph"
+target_kind = "EVENT_TOUCH"
+target_scene = "mp0701"
+runtime_event = 25
+target_object = "line1"
+world_x = 3786
+world_y = 156
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "eavesdrop"
+order = 10
+when = "var[4510] == 1"
+condition_status = "A"
+objective = "在甘州完成密谋偷听，确认银川公主危机。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0701"
+runtime_event = 26
+target_object = "line3"
+world_x = 1321
+world_y = 381
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "rescue"
+order = 20
+when = "var[515] == 2"
+condition_status = "A"
+objective = "出城后直接前往世界地图“救公主事件点”。"
+role = "trigger"
+route_mode = "condition_graph"
+target_kind = "EVENT_TOUCH"
+target_scene = "mp3001"
+runtime_event = 40
+target_object = "救公主事件點"
+world_x = 2189
+world_y = 735
+battle_group = "120|121"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_sleepy_maid"
+category = "Side"
+title = "贪睡侍女"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[1233] == 1 && var[1212] == 0"
+active_when = "var[1212] == 1 && var[1209] == 0"
+completed_when = "var[1209] == 1"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "B"
+primary = false
+tracked = true
+tags = ["timed", "missable", "ending_relevant_material"]
+notes = "正确回答后Var1212=1；藏宝取完写Var1209=1。错误回答会让侍女消失，但目前没有独立持久失败哨兵可与“尚未出现”无歧义区分。"
+
+[[quest.stage]]
+id = "maid"
+order = 10
+when = "var[1233] == 1 && var[1212] == 0"
+condition_status = "A"
+objective = "正确处理贪睡侍女的对话/选择。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp1001d"
+runtime_event = 32
+target_object = "event_maid"
+world_x = 766
+world_y = 694
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "treasure"
+order = 20
+when = "var[1212] == 1 && var[1209] == 0 && var[3080] == 1"
+condition_status = "A"
+objective = "前往开放的藏宝点取得奖励。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp1009g"
+runtime_event = 31
+target_object = "x"
+world_x = 613
+world_y = 324
+item_dependency = "三索蛇劍|地魄玄石|化淵曲玉|雷熒魄玉"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_red_beast"
+category = "Side"
+title = "赤兽魂石"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[20] == 0 && var[30] == 0 && var[1] > 41 && var[1] < 63"
+active_when = "var[20] >= 1 && var[20] <= 5"
+completed_when = "var[20] == 6"
+failed_when = "var[20] == 254 || var[20] == 255"
+expired_when = "false"
+formalization_status = "A-"
+primary = false
+tracked = true
+tags = ["timed", "missable", "ending_relevant_material"]
+notes = "Event15到SET Var20=1的控制流必要条件已恢复；Var20=255有明确主线失效写入。"
+
+[[quest.stage]]
+id = "start"
+order = 10
+when = "var[20] == 0 && var[30] == 0 && var[1] > 41 && var[1] < 63"
+condition_status = "A"
+objective = "与甘州相关人物交谈，启动赤兽魂石线。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0705"
+runtime_event = 15
+item_dependency = "紫金劍|赤煉火銅|星晷刻盤"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "leave_ganzhou"
+order = 20
+when = "var[20] == 1"
+condition_status = "A"
+objective = "离开甘州后获得失踪/怪物线索。"
+role = "trigger"
+route_mode = "condition_graph"
+target_kind = "EVENT_TOUCH"
+target_scene = "mp0701"
+runtime_event = 11
+target_object = "下方出入口"
+world_x = 971
+world_y = 1380
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "flame_pig"
+order = 30
+when = "var[20] == 2"
+condition_status = "A"
+objective = "在世界地图触发 flame_pig 事件。"
+role = "trigger"
+route_mode = "condition_graph"
+target_kind = "EVENT_TOUCH"
+target_scene = "mp3001"
+runtime_event = 41
+target_object = "flame_pig"
+world_x = 2561
+world_y = 719
+battle_group = "165"
+item_dependency = "赤獸魂石"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "smith_followup"
+order = 40
+when = "var[20] == 3 || var[20] == 4 || var[20] == 5"
+condition_status = "A"
+objective = "回甘州继续铁匠相关后续，取得关键材料。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0705"
+runtime_event = 15
+item_dependency = "紫金劍|赤煉火銅|星晷刻盤"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_gaohuangjun_1"
+category = "Side"
+title = "初遇高皇君／黑铁钥匙"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[518] == 0 && var[3002] == 1"
+active_when = "var[518] == 1"
+completed_when = "((var[518] >= 2 && var[518] < 254) || var[518] == 255)"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A-"
+primary = false
+tracked = true
+tags = ["timed", "missable", "ending_relevant_material"]
+notes = "Var518=254写入点经CFG复核为静态不可达；Var518=255只可能发生在第三遇后，因此不撤销第一遇已完成历史。"
+
+[[quest.stage]]
+id = "meet_injured"
+order = 10
+when = "var[518] == 0 && var[3002] == 1"
+condition_status = "A"
+objective = "在沙漠区域发现受伤的高皇君。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp1402"
+runtime_event = 15
+target_object = "高皇君"
+world_x = 126
+world_y = 426
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "rescue"
+order = 20
+when = "var[518] == 1"
+condition_status = "A"
+objective = "完成救援。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp14062"
+runtime_event = 15
+target_object = "rescue"
+world_x = 854
+world_y = 458
+battle_group = "126"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_gaohuangjun_2"
+category = "Side"
+title = "二遇高皇君"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[518] == 2 && var[3084] == 1"
+active_when = "var[518] == 2"
+completed_when = "((var[518] >= 3 && var[518] < 254) || var[518] == 255)"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["timed", "ending_relevant_material"]
+notes = "Var518=255表示第三遇后的后续失败，按程序路径可证明第二遇已经完成，因此第二遇保持Completed。"
+
+[[quest.stage]]
+id = "second_meet"
+order = 10
+when = "var[518] == 2 && var[3084] == 1"
+condition_status = "A"
+objective = "在甘州第二次遇到高皇君。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0701"
+runtime_event = 44
+target_object = "kou_anm"
+world_x = 3557
+world_y = 1059
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_gaohuangjun_3"
+category = "Side"
+title = "三遇高皇君／营救李元昊"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[518] == 3 && var[3090] == 1"
+active_when = "var[518] == 4 || var[518] == 5"
+completed_when = "var[518] == 6"
+failed_when = "var[518] == 255"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["timed", "missable", "ending_relevant_material"]
+notes = "第三次相遇→救李元昊→后续世界地图阶段。"
+
+[[quest.stage]]
+id = "third_meet"
+order = 10
+when = "var[518] == 3 && var[3090] == 1"
+condition_status = "A"
+objective = "在沙州第三次遇到高皇君并取得后续线索。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp1101"
+runtime_event = 116
+target_object = "kou_2"
+world_x = 1420
+world_y = 2482
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "rescue_liyuanhao"
+order = 20
+when = "var[518] == 4"
+condition_status = "A"
+objective = "营救李元昊。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp1201"
+runtime_event = 13
+target_object = "城門入口"
+world_x = 738
+world_y = 541
+battle_group = "128"
+item_dependency = "輝月魂石"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "followup"
+order = 30
+when = "var[518] == 5"
+condition_status = "A"
+objective = "完成世界地图/肃州后续。"
+role = "trigger"
+route_mode = "condition_graph"
+target_kind = "EVENT_TOUCH"
+target_scene = "mp3001"
+runtime_event = 20
+target_object = "肅州"
+world_x = 1938
+world_y = 694
+battle_group = "117"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_yabusi"
+category = "Side"
+title = "结识雅布斯"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[660] == 0 && var[1217] == 1 && item[426] > 0"
+active_when = "false"
+completed_when = "var[660] == 1"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["ending_relevant", "long_chain"]
+notes = "消耗血灵神珠后取得辟邪紫金、炼金初要并写Var660=1。"
+
+[[quest.stage]]
+id = "meet_yabusi"
+order = 10
+when = "var[660] == 0 && var[1217] == 1 && item[426] > 0"
+condition_status = "A"
+objective = "与雅布斯建立正式任务联系。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0801a"
+runtime_event = 21
+target_object = "sivia / sivia_x"
+world_x = 2756
+world_y = 1507
+item_dependency = "辟邪紫金|血靈神珠|煉金初要"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_herb_manual"
+category = "Side"
+title = "磐沙堡四层／百草药典"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[652] == 0 && var[1229] == 1"
+active_when = "var[652] == 1 || (var[652] == 2 && var[1230] == 0)"
+completed_when = "var[652] == 2 && var[1230] == 1"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["story_window"]
+notes = "整体再验证修正：返还百草药典并不会SET Var652=3；真正完成证据是Var652仍为2，同时女子旧对象Var1229=0、后继girl对象Var1230=1。"
+
+[[quest.stage]]
+id = "accept"
+order = 10
+when = "var[652] == 0 && var[1229] == 1"
+condition_status = "A"
+objective = "接受寻找百草药典的委托。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0706"
+runtime_event = 21
+target_object = "女子"
+world_x = 234
+world_y = 381
+item_dependency = "百草藥典"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "get_book"
+order = 20
+when = "var[652] == 1 && var[1185] == 1"
+condition_status = "A"
+objective = "在磐沙堡宝箱取得百草药典。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0609b"
+runtime_event = 23
+target_object = "3"
+world_x = 1379
+world_y = 404
+item_dependency = "百草藥典"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "return"
+order = 30
+when = "var[652] == 2 && var[1229] == 1"
+condition_status = "A"
+objective = "返回甘州交付百草药典。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0706"
+runtime_event = 21
+target_object = "女子"
+world_x = 234
+world_y = 381
+item_dependency = "百草藥典"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_purple_beast"
+category = "Side"
+title = "紫兽魂石"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[21] == 0 && var[1181] == 1 && var[1157] < 1"
+active_when = "(var[21] >= 1 && var[21] <= 3) || (var[21] >= 4 && item[434] == 0)"
+completed_when = "item[434] > 0"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A-"
+primary = false
+tracked = true
+tags = ["timed", "ending_relevant", "craft"]
+notes = "Var21=4只代表获得弱紫兽魂石；最终完成以炼化出Item434为准。"
+
+[[quest.stage]]
+id = "clue"
+order = 10
+when = "var[21] == 0 && var[1181] == 1 && var[1157] < 1"
+condition_status = "A"
+objective = "取得紫兽魂石相关线索。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0610a"
+runtime_event = 21
+target_object = "NP127.SF2"
+world_x = 927
+world_y = 568
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "sense_lightning"
+order = 20
+when = "var[21] == 1"
+condition_status = "A"
+objective = "在磐沙相关地点确认雷力线索。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0601-2"
+runtime_event = 21
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "get_seal"
+order = 30
+when = "var[21] == 2"
+condition_status = "A"
+objective = "龙岛剧情取得紫电封璧。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp1803-1"
+runtime_event = 11
+target_object = "上方出入口"
+world_x = 358
+world_y = -36
+item_dependency = "紫電封璧"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "battle"
+order = 40
+when = "var[21] == 3"
+condition_status = "A"
+objective = "回到磐沙触发战斗。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0601-2"
+runtime_event = 22
+target_object = "ng0601-01a.SF2"
+world_x = 878
+world_y = 323
+battle_group = "171"
+item_dependency = "紫獸魂石|紫電封璧"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "refine"
+order = 50
+when = "var[21] >= 4 && item[433] > 0 && item[221] > 0 && item[434] == 0"
+condition_status = "A"
+objective = "炼化真正的紫兽魂石。"
+role = "craft"
+route_mode = "none"
+target_kind = "CRAFT"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_white_beast"
+category = "Side"
+title = "白兽魂石"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[669] == 0 && var[1219] == 1"
+active_when = "var[669] >= 1 && var[669] <= 4"
+completed_when = "var[669] == 5"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["story_window", "ending_relevant"]
+notes = "完整0→5状态机。"
+
+[[quest.stage]]
+id = "spring"
+order = 10
+when = "var[669] == 0 && var[1219] == 1"
+condition_status = "A"
+objective = "调查酒泉/泉水相关线索。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0801a"
+runtime_event = 24
+target_object = "pool"
+world_x = 649
+world_y = 856
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "hidden_girl"
+order = 20
+when = "var[669] == 1 && var[1219] == 1"
+condition_status = "A"
+objective = "找到隐藏少女并完成重复对话。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0801a"
+runtime_event = 23
+target_object = "w_kagi_yellow"
+world_x = 2525
+world_y = 2142
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "yabusi"
+order = 30
+when = "var[669] == 2"
+condition_status = "A"
+objective = "雅布斯后续取得火凛冰实。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0806"
+runtime_event = 20
+target_object = "arbs"
+world_x = 423
+world_y = 320
+item_dependency = "鏽蝕古槍|西方神徽|火凜冰實"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "hotel_battle"
+order = 40
+when = "var[669] == 3"
+condition_status = "A"
+objective = "旅店夜间触发战斗。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp0802b"
+runtime_event = 20
+battle_group = "133"
+item_dependency = "火凜冰實|白獸魂石"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "ice_core"
+order = 50
+when = "var[669] == 4"
+condition_status = "A"
+objective = "在冰核相关地点完成最终战斗。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp1302"
+runtime_event = 20
+target_object = "ice_core"
+world_x = 639
+world_y = 595
+battle_group = "140"
+item_dependency = "白獸魂石|白獸魂石"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_purple_fungus"
+category = "Side"
+title = "紫霜云芝"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[660] == 1 && item[459] > 0 && var[1226] != 0"
+active_when = "var[1226] == 0 && var[1019] == 1"
+completed_when = "var[1226] == 0 && var[1019] == 0"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A-"
+primary = false
+tracked = true
+tags = ["story_window", "ending_relevant_material"]
+notes = "交炼金初要使Var1226=0；采集点由Var1019控制，采完清0。Var1019的置1来自场景/存档初始化而非已识别EVE直接SET，因此等级A-。"
+
+[[quest.stage]]
+id = "give_alchemy"
+order = 10
+when = "var[660] == 1 && item[459] > 0 && var[1226] != 0"
+condition_status = "A"
+objective = "把炼金初要交给李大夫。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0105"
+runtime_event = 15
+target_object = "nn0105-01.SF2 / 李大夫 / 0105N001.SF2"
+item_dependency = "煉金初要"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "collect"
+order = 30
+when = "var[1226] == 0 && var[1019] == 1"
+condition_status = "A"
+objective = "在内部区域取得紫霜云芝。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0106"
+runtime_event = 26
+target_object = "紫霜雲芝"
+world_x = 556
+world_y = 228
+item_dependency = "紫霜雲芝"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_desert_caravan"
+category = "Side"
+title = "沙漠商队／朱兽魂石"
+discover_mode = "when_active"
+offer_when = "var[23] == 1"
+active_when = "var[23] >= 1 && var[23] <= 4"
+completed_when = "var[23] == 5"
+failed_when = "var[23] == 255"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["timed", "missable", "ending_relevant"]
+notes = "Var23=1由甘陀寺主剧情Event16开启；离开沙州时若仍为1会被置255。"
+
+[[quest.stage]]
+id = "merchant"
+order = 20
+when = "var[23] == 1"
+condition_status = "A"
+objective = "与商队药商/相关人物交谈。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp2603"
+runtime_event = 21
+target_object = "boss"
+world_x = 662
+world_y = 392
+item_dependency = "朱獸魂石"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "pot"
+order = 30
+when = "var[23] == 2"
+condition_status = "A"
+objective = "调查药锅/事件点。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp2603"
+runtime_event = 30
+target_object = "pot"
+world_x = 214
+world_y = 432
+item_dependency = "紫霜雲芝"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "use_fungus"
+order = 40
+when = "var[23] == 3 && item[309] > 0"
+condition_status = "A"
+objective = "使用紫霜云芝解决问题。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp2603"
+runtime_event = 30
+target_object = "pot"
+world_x = 214
+world_y = 432
+item_dependency = "紫霜雲芝"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "reward"
+order = 50
+when = "var[23] == 4"
+condition_status = "A"
+objective = "完成商队后续并领取奖励。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp2603"
+runtime_event = 21
+target_object = "boss"
+world_x = 662
+world_y = 392
+item_dependency = "朱獸魂石"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_fortune_teller"
+category = "Side"
+title = "算命先生／太乙占盘"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[651] == 0"
+active_when = "var[651] == 1 || var[651] == 2"
+completed_when = "var[651] == 3"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["story_window", "ending_relevant_material"]
+notes = "0→1接任务→2取得太乙占盘→3返还完成。"
+
+[[quest.stage]]
+id = "accept"
+order = 10
+when = "var[651] == 0"
+condition_status = "A"
+objective = "与算命先生交谈，接受寻找太乙占盘的线索。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0801a"
+runtime_event = 22
+target_object = "f_teller"
+world_x = 2987
+world_y = 1586
+item_dependency = "烏光玄鐵|神臨金丹|鑄命封石|太乙占盤"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "get_disk"
+order = 20
+when = "var[651] == 1"
+condition_status = "A"
+objective = "在磐沙堡宝箱取得太乙占盘。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0609b"
+runtime_event = 22
+target_object = "2"
+world_x = 970
+world_y = 356
+item_dependency = "太乙占盤"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "return"
+order = 30
+when = "var[651] == 2"
+condition_status = "A"
+objective = "把太乙占盘带回算命先生。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0801a"
+runtime_event = 22
+target_object = "f_teller"
+world_x = 2987
+world_y = 1586
+item_dependency = "烏光玄鐵|神臨金丹|鑄命封石|太乙占盤"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_longinus"
+category = "Side"
+title = "失落圣枪 Longinus"
+discover_mode = "dependency_completed"
+offer_when = "var[25] >= 1 && var[25] < 11"
+active_when = "var[25] >= 1 && var[25] < 11"
+completed_when = "var[25] == 11"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["long_chain", "ending_relevant", "important"]
+notes = "Var25=1→2由黑龙EVE闭合；Var25=2时玩家使用显字后的Item460羊皮封卷，Ail2+0x28=17，经RPG.exe 0x43AEC0写入世界动作码，0x40CE23分派至0x40CFE4，后者GET_VAR(25)并在<3时SET_VAR(25,3)；3→11均已有EVE直接证据。Longinus状态链已完整闭环。"
+
+[[quest.stage]]
+id = "dragon"
+order = 20
+when = "var[25] == 1"
+condition_status = "A"
+objective = "黑龙事件中揭开羊皮封卷内容。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp1803-3"
+runtime_event = 11
+target_object = "右上走道出入口"
+world_x = 1589
+world_y = -15
+battle_group = "130|131"
+item_dependency = "鎮龍之玉|鎮龍之玉|血厲鬼皿|羊皮封卷|羊皮封卷"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "use_revealed_scroll"
+order = 25
+when = "var[25] == 2"
+condition_status = "A"
+objective = "在道具菜单使用显字后的羊皮封卷，阅读浮现出的字迹与图样。"
+role = "item_use"
+route_mode = "none"
+target_kind = "ITEM_USE"
+item_dependency = "羊皮封卷（Item460，显字版）"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "yabusi_decode"
+order = 30
+when = "var[25] == 3"
+condition_status = "A"
+objective = "请雅布斯解读羊皮卷。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0806"
+runtime_event = 20
+target_object = "arbs"
+world_x = 423
+world_y = 320
+item_dependency = "鏽蝕古槍|西方神徽|火凜冰實"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "huyan"
+order = 40
+when = "var[25] == 4"
+condition_status = "A"
+objective = "请呼延崇辨识地图/线索。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp2002"
+runtime_event = 21
+target_object = "hwuyen"
+world_x = 1051
+world_y = 1140
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "cave"
+order = 50
+when = "var[25] == 5"
+condition_status = "A"
+objective = "在对应洞窟开启圣枪路线。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp2101a"
+runtime_event = 14
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "spear"
+order = 60
+when = "var[25] == 6 || var[25] == 7"
+condition_status = "A"
+objective = "完成圣枪相关战斗/取得阶段。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp2102"
+runtime_event = 19
+target_object = "nd2101a&b-01.SF2"
+world_x = 920
+world_y = 335
+battle_group = "148"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "repair"
+order = 70
+when = "var[25] == 8 || var[25] == 9 || var[25] == 10"
+condition_status = "A"
+objective = "把圣枪相关物带回雅布斯处理。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0806"
+runtime_event = 20
+target_object = "arbs"
+world_x = 423
+world_y = 320
+item_dependency = "鏽蝕古槍|西方神徽|火凜冰實"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "side_seven_color"
+category = "Side"
+title = "七色璎珞"
+discover_mode = "hidden_until_material"
+offer_when = "item[208] == 0 && (item[230] > 0 || item[226] > 0 || item[228] > 0 || item[229] > 0 || item[227] > 0 || item[225] > 0 || item[219] > 0 || item[231] > 0 || item[199] > 0 || item[202] > 0 || item[232] > 0 || item[233] > 0)"
+active_when = "item[208] == 0 && (item[230] > 0 || item[226] > 0 || item[228] > 0 || item[229] > 0 || item[227] > 0 || item[225] > 0 || item[219] > 0 || item[231] > 0 || item[199] > 0 || item[202] > 0 || item[232] > 0 || item[233] > 0)"
+completed_when = "item[208] > 0"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["hidden", "craft", "ending_relevant", "important"]
+notes = "六步炼化链全部来自RefineT.ENC；Active条件与素材发现门槛一致，避免新游戏时逻辑上提前激活。"
+
+[[quest.stage]]
+id = "r1"
+order = 10
+when = "item[230] > 0 && item[226] > 0 && item[231] == 0"
+condition_status = "A"
+objective = "冥华紫晶230 + 乌光玄铁226。"
+role = "craft"
+route_mode = "none"
+target_kind = "CRAFT"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "r2"
+order = 20
+when = "item[228] > 0 && item[229] > 0 && item[199] == 0"
+condition_status = "A"
+objective = "神乌金翎228 + 辉月魂石229。"
+role = "craft"
+route_mode = "none"
+target_kind = "CRAFT"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "r3"
+order = 30
+when = "item[227] > 0 && item[225] > 0 && item[202] == 0"
+condition_status = "A"
+objective = "火凛冰实227 + 翡翠碧砂225。"
+role = "craft"
+route_mode = "none"
+target_kind = "CRAFT"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "r4"
+order = 40
+when = "item[219] > 0 && item[199] > 0 && item[232] == 0"
+condition_status = "A"
+objective = "赤炼火铜219 + 流光镜玉199。"
+role = "craft"
+route_mode = "none"
+target_kind = "CRAFT"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "r5"
+order = 50
+when = "item[232] > 0 && item[231] > 0 && item[233] == 0"
+condition_status = "A"
+objective = "赤霞珠232 + 魂刹玉231。"
+role = "craft"
+route_mode = "none"
+target_kind = "CRAFT"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "r6"
+order = 60
+when = "item[233] > 0 && item[202] > 0 && item[208] == 0"
+condition_status = "A"
+objective = "血缨石髓233 + 千棱幻玉202。"
+role = "craft"
+route_mode = "none"
+target_kind = "CRAFT"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "supp_black_beast"
+category = "Side"
+title = "严婆婆送信／黑兽魂石"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[522] == 0 && var[3089] == 1 && var[24] == 0"
+active_when = "(var[522] >= 1 && var[522] <= 5) && item[436] == 0"
+completed_when = "item[436] > 0"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A-"
+primary = false
+tracked = true
+tags = ["story_window", "ending_relevant", "craft"]
+notes = "弱黑兽魂石在Var522=5获得；最终完成按Item436真黑兽魂石。"
+
+[[quest.stage]]
+id = "letter"
+order = 10
+when = "var[522] == 0 && var[3089] == 1 && var[24] == 0"
+condition_status = "A"
+objective = "与严婆婆反复交谈并接受送信相关请求。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0701"
+runtime_event = 28
+target_object = "old_maiden"
+world_x = 2300
+world_y = 1355
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "temple"
+order = 20
+when = "var[522] == 1"
+condition_status = "A"
+objective = "推进甘陀寺相关人物/圆智线。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp1101"
+runtime_event = 13
+target_object = "佛寺大門"
+world_x = 242
+world_y = 1309
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "temple_follow"
+order = 30
+when = "var[522] == 2"
+condition_status = "A"
+objective = "继续寺院剧情。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp1104"
+runtime_event = 16
+target_object = "五層塔出入口"
+world_x = 417
+world_y = 444
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "cellar_battle"
+order = 40
+when = "var[522] == 4"
+condition_status = "A"
+objective = "进入地窖处理阿娟/驱魔事件。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp0711"
+runtime_event = 20
+target_object = "ne0501-01.SF2"
+world_x = 496
+world_y = 473
+battle_group = "141"
+item_dependency = "黑獸魂石"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "refine"
+order = 50
+when = "var[522] >= 5 && item[435] > 0 && item[223] > 0 && item[436] == 0"
+condition_status = "A"
+objective = "炼化真正黑兽魂石。"
+role = "craft"
+route_mode = "none"
+target_kind = "CRAFT"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "supp_lankavatara"
+category = "Side"
+title = "楞伽经／神炎金灯"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[562] == 0 && var[1148] == 1"
+active_when = "var[562] == 1 || var[562] == 2"
+completed_when = "var[562] >= 3"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = true
+tags = ["story_window", "ending_relevant", "longinus_prerequisite"]
+notes = "Var562=3时已取得神炎金灯；后续4属于后续对白状态，不影响本任务完成。"
+
+[[quest.stage]]
+id = "accept"
+order = 10
+when = "var[562] == 0 && var[1148] == 1"
+condition_status = "A"
+objective = "慧性和尚委托寻找楞伽经。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp1103c"
+runtime_event = 20
+target_object = "hwechin"
+world_x = 633
+world_y = 459
+item_dependency = "神炎金燈|楞迦經"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "book"
+order = 20
+when = "var[562] == 1 && var[1167] == 1"
+condition_status = "A"
+objective = "在千佛洞取得楞伽经。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp1205"
+runtime_event = 25
+target_object = "sb"
+world_x = 408
+world_y = 270
+item_dependency = "楞迦經"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "lamp"
+order = 30
+when = "var[562] == 2 && var[1148] == 1"
+condition_status = "A"
+objective = "把楞伽经交回慧性和尚。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp1103c"
+runtime_event = 20
+target_object = "hwechin"
+world_x = 633
+world_y = 459
+item_dependency = "神炎金燈|楞迦經"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "supp_isdor"
+category = "Side"
+title = "挽救伊斯朵／定魂珠"
+discover_mode = "offer_target_current_scene"
+offer_when = "var[668] == 0 && var[1135] == 1"
+active_when = "var[668] >= 1 && var[668] <= 3"
+completed_when = "var[668] == 4"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A-"
+primary = false
+tracked = true
+tags = ["story_window", "ending_relevant", "conditional_bonus"]
+notes = "救伊斯朵本身以Var668=4完成；保住定魂珠是独立附加结果Var663=1，不应把低好感路线误判为任务失败。"
+
+[[quest.stage]]
+id = "illness"
+order = 10
+when = "var[668] == 0 && var[1135] == 1"
+condition_status = "A"
+objective = "发现伊斯朵的异常并推进救援。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp1602"
+runtime_event = 30
+target_object = "sad"
+world_x = 1320
+world_y = 494
+item_dependency = "神烏金翎|定魂珠"
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "save_orb"
+order = 20
+when = "var[668] >= 1 && var[668] < 4 && (var[551] >= 6 || var[550] >= 4)"
+condition_status = "A"
+objective = "好感足够时使用“净魂”等方案保住定魂珠。"
+role = "optional_bonus"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp1602"
+runtime_event = 30
+target_object = "sad"
+world_x = 1320
+world_y = 494
+item_dependency = "神烏金翎|定魂珠"
+optional = true
+show_in_journal = false
+
+[[quest.stage]]
+id = "complete"
+order = 30
+when = "var[668] >= 1 && var[668] < 4"
+condition_status = "A"
+objective = "完成伊斯朵后续。"
+role = "objective"
+route_mode = "none"
+target_kind = "OBJECTIVE"
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "supp_affection"
+category = "Meta"
+title = "冰璃／璇玑好感事件"
+discover_mode = "hidden_meta"
+offer_when = "true"
+active_when = "true"
+completed_when = "false"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = false
+tracked = false
+tags = ["hidden", "ending_relevant", "affection"]
+notes = "这是好感度元系统，不作为普通任务列表项；Var551=冰璃，Var550=璇玑。"
+
+[[quest.stage]]
+id = "ice_shopping"
+order = 10
+when = "var[607] == 1"
+condition_status = "A"
+objective = "给冰璃购买礼物。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0701"
+runtime_event = 24
+target_object = "冰璃買物線"
+world_x = 2552
+world_y = 904
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "xuanji_shopping"
+order = 20
+when = "var[608] == 1"
+condition_status = "A"
+objective = "给璇玑购买礼物。"
+role = "talk_or_interact"
+route_mode = "condition_graph"
+target_kind = "EVENT_MANUAL"
+target_scene = "mp0701"
+runtime_event = 27
+target_object = "慕容璇璣買物線"
+world_x = 1584
+world_y = 476
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "ice_max"
+order = 30
+when = "var[1] == 64 && var[551] == 6"
+condition_status = "A"
+objective = "冰璃好感满足条件时可锁定到关键值。"
+role = "objective"
+route_mode = "condition_graph"
+target_kind = "OBJECTIVE"
+target_scene = "mp1009a"
+runtime_event = 18
+target_object = "中間大門呦"
+world_x = 650
+world_y = 688
+optional = false
+show_in_journal = true
+
+[[quest]]
+id = "main_story"
+category = "Main"
+title = "主线剧情"
+discover_mode = "always"
+offer_when = "var[1] >= 1"
+active_when = "var[1] >= 1"
+completed_when = "false"
+failed_when = "false"
+expired_when = "false"
+formalization_status = "A"
+primary = true
+tracked = true
+tags = ["primary", "mandatory"]
+notes = "Var1=74后仍进入最终区域，不能在74就宣称主线Completed；74只标记为终局持久阶段。"
+
+[[quest.stage]]
+id = "var1_01"
+order = 10
+when = "var[1] == 1"
+condition_status = "A"
+objective = "把鸡汤送到高老丈家。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0104a"
+runtime_event = 15
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_02"
+order = 20
+when = "var[1] == 2"
+condition_status = "A"
+objective = "前往河州药铺，向李大夫询问能救治高老丈的金萼红花。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0101"
+runtime_event = 17
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_03"
+order = 30
+when = "var[1] == 3"
+condition_status = "A"
+objective = "回家向母亲说明情况，取得远行许可和盘缠。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0102c"
+runtime_event = 17
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_04"
+order = 40
+when = "var[1] == 4"
+condition_status = "A"
+objective = "临行前去高老丈家辞行。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0104a"
+runtime_event = 15
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_05"
+order = 50
+when = "var[1] == 5"
+condition_status = "A"
+objective = "从河州镇出入口离开，前往兰州寻找金萼红花。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0101"
+runtime_event = 11
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_06"
+order = 60
+when = "var[1] == 6"
+condition_status = "A"
+objective = "前往兰州城，设法通过封锁并寻找药铺。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0212"
+runtime_event = 18
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_07"
+order = 70
+when = "var[1] == 7"
+condition_status = "A"
+objective = "进入兰州后前往药铺，继续打听金萼红花。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0207"
+runtime_event = 12
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_08"
+order = 80
+when = "var[1] == 8"
+condition_status = "A"
+objective = "根据兰州获得的线索前往废屋调查。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0212"
+runtime_event = 11
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_09"
+order = 90
+when = "var[1] == 9"
+condition_status = "A"
+objective = "与封铃笙一起摆脱追兵，继续寻找脱身路线。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0304"
+runtime_event = 12
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_10"
+order = 100
+when = "var[1] == 10"
+condition_status = "A"
+objective = "前往凉州，调查斋女与慕容璇玑失踪一事。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp3001"
+runtime_event = 16
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_11"
+order = 110
+when = "var[1] == 11"
+condition_status = "A"
+objective = "在凉州寻找慕容筝，询问璇玑和斋女失踪的线索。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0401"
+runtime_event = 17
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_12"
+order = 120
+when = "var[1] == 12"
+condition_status = "A"
+objective = "继续在凉州调查，寻找能够证明璇玑去向的物证。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0401"
+runtime_event = 18
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_13"
+order = 130
+when = "var[1] == 13"
+condition_status = "A"
+objective = "拿着找到的香包继续追查商队去向。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0401"
+runtime_event = 52
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_14"
+order = 140
+when = "var[1] == 14"
+condition_status = "A"
+objective = "前往世界地图追上出城的商队，处理途中发生的袭击。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp3001"
+runtime_event = 36
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_15"
+order = 150
+when = "var[1] == 15"
+condition_status = "A"
+objective = "救下商人后返回凉州，继续追踪北山绿洲。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0401"
+runtime_event = 53
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_16"
+order = 160
+when = "var[1] == 16"
+condition_status = "A"
+objective = "根据取得的北山绿洲详图前往营地区域。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0501"
+runtime_event = 13
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_18"
+order = 180
+when = "var[1] == 18"
+condition_status = "A"
+objective = "潜入北山绿洲营地，寻找失踪人员和敌方首领。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0501"
+runtime_event = 11
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_19"
+order = 190
+when = "var[1] == 19"
+condition_status = "A"
+objective = "深入营地并击败阿尔泰巴。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0504"
+runtime_event = 11
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_20"
+order = 200
+when = "var[1] == 20"
+condition_status = "A"
+objective = "处理营地战后的剧情，取得用于追踪磐沙堡的纸鸢。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp3001"
+runtime_event = 15
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_21"
+order = 210
+when = "var[1] == 21"
+condition_status = "A"
+objective = "返回凉州会合休整，准备追踪磐沙堡。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp3001"
+runtime_event = 4
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_22"
+order = 220
+when = "var[1] == 22"
+condition_status = "A"
+objective = "到世界地图使用纸鸢线索，找到并进入磐沙堡。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0601-1"
+runtime_event = 12
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_23"
+order = 230
+when = "var[1] == 23"
+condition_status = "A"
+objective = "调查磐沙堡内部，寻找继续潜入的密道和机关。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0601-1"
+runtime_event = 21
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_24"
+order = 240
+when = "var[1] == 24"
+condition_status = "A"
+objective = "利用讯号烟火继续潜入磐沙堡深处。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0604"
+runtime_event = 20
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_26"
+order = 260
+when = "var[1] == 26"
+condition_status = "A"
+objective = "进入地牢救人，并取得后续机关所需的道具。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0607a"
+runtime_event = 11
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_27"
+order = 270
+when = "var[1] == 27"
+condition_status = "A"
+objective = "继续深入磐沙堡，找到被囚禁或失踪的关键人物。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0605"
+runtime_event = 25
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_28"
+order = 280
+when = "var[1] == 28"
+condition_status = "A"
+objective = "使用锻铁钥匙开启机关，进入磐沙堡决战区域。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0610a"
+runtime_event = 11
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_29"
+order = 290
+when = "var[1] == 29"
+condition_status = "A"
+objective = "完成磐沙堡决战与救援，之后返回凉州。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0402"
+runtime_event = 14
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_30"
+order = 300
+when = "var[1] == 30"
+condition_status = "A"
+objective = "在凉州休整后返回河州查看家中情况。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp3001"
+runtime_event = 11
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_31"
+order = 310
+when = "var[1] == 31"
+condition_status = "A"
+objective = "调查河州发生的变故，确认双亲被掳后的去向。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0101"
+runtime_event = 14
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_32"
+order = 320
+when = "var[1] == 32"
+condition_status = "A"
+objective = "处理高老丈相关事件并取得紫金剑，继续追查双亲。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0705"
+runtime_event = 11
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_33"
+order = 330
+when = "var[1] == 33"
+condition_status = "A"
+objective = "前往甘州寻找谭铁匠，请他修复紫金剑。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0704"
+runtime_event = 16
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_34"
+order = 340
+when = "var[1] == 34"
+condition_status = "A"
+objective = "按照谭铁匠提出的办法，寻找能够潜入肃州石塔的途径。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0401"
+runtime_event = 52
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_35"
+order = 350
+when = "var[1] == 35"
+condition_status = "A"
+objective = "返回凉州找简二，请他安排前往肃州的车队。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0704"
+runtime_event = 17
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_36"
+order = 360
+when = "var[1] == 36"
+condition_status = "A"
+objective = "借车队潜入肃州铁卫军石塔，继续向塔内深入。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0906"
+runtime_event = 11
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_39"
+order = 390
+when = "var[1] == 39"
+condition_status = "A"
+objective = "在肃州石塔完成与赫兰铁罕的决战。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1005a"
+runtime_event = 23
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_40"
+order = 400
+when = "var[1] == 40"
+condition_status = "A"
+objective = "前往楼兰华穹殿附近，了解楼兰王与中原四派的争议。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1007b"
+runtime_event = 16
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_41"
+order = 410
+when = "var[1] == 41"
+condition_status = "A"
+objective = "处理观星台与旅店发生的事件后，与同伴重新会合。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0702"
+runtime_event = 22
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_42"
+order = 420
+when = "var[1] == 42"
+condition_status = "A"
+objective = "休养后继续调查夏侯仪身世及楼兰相关线索。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1407"
+runtime_event = 14
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_44"
+order = 440
+when = "var[1] == 44"
+condition_status = "A"
+objective = "进入方违之阵，破解七步迷阵。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1407"
+runtime_event = 11
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_45"
+order = 450
+when = "var[1] == 45"
+condition_status = "A"
+objective = "穿过方违之阵，与各派会合并继续追查天动仪。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1013"
+runtime_event = 12
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_46"
+order = 460
+when = "var[1] == 46"
+condition_status = "A"
+objective = "推进天动仪／天枢仪座的重大剧情，确认下一目的地。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0701"
+runtime_event = 14
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_47"
+order = 470
+when = "var[1] == 47"
+condition_status = "A"
+objective = "高昌阶段结束后转往沙州，继续追寻西域遗迹线索。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1301"
+runtime_event = 20
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_48"
+order = 480
+when = "var[1] == 48"
+condition_status = "A"
+objective = "寻找相桓子，询问破除妖龙炼甲的方法。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1701"
+runtime_event = 12
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_49"
+order = 490
+when = "var[1] == 49"
+condition_status = "A"
+objective = "调查罗布泊，在盐层下找到古城入口。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp3001"
+runtime_event = 22
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_50"
+order = 500
+when = "var[1] == 50"
+condition_status = "A"
+objective = "抵达沙州，了解时轮宫的警示与当前局势。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp2002"
+runtime_event = 20
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_51"
+order = 510
+when = "var[1] == 51"
+condition_status = "A"
+objective = "寻找呼延崇，取得千佛洞密室和刻盘碎片的线索。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1206"
+runtime_event = 20
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_52"
+order = 520
+when = "var[1] == 52"
+condition_status = "A"
+objective = "取得第四片刻盘碎片，并返回天动仪区域继续调查。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1009b"
+runtime_event = 23
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_53"
+order = 530
+when = "var[1] == 53"
+condition_status = "A"
+objective = "启动天动仪区域机关，进入天枢仪座。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1016a"
+runtime_event = 20
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_54"
+order = 540
+when = "var[1] == 54"
+condition_status = "A"
+objective = "深入天枢仪座并击败肓瘫。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1101"
+runtime_event = 122
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_55"
+order = 550
+when = "var[1] == 55"
+condition_status = "A"
+objective = "与中原各派会合，继续追查“蚀”与幻城的关系。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1101"
+runtime_event = 83
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_56"
+order = 560
+when = "var[1] == 56"
+condition_status = "A"
+objective = "向察斯葛打听幻城的消息。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1502"
+runtime_event = 26
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_57"
+order = 570
+when = "var[1] == 57"
+condition_status = "A"
+objective = "根据尼雅库迪老爹的线索前往古烽火台。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp3001"
+runtime_event = 31
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_58"
+order = 580
+when = "var[1] == 58"
+condition_status = "A"
+objective = "调查古烽火台，确认幻城位置与幻障的存在。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1901"
+runtime_event = 15
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_59"
+order = 590
+when = "var[1] == 59"
+condition_status = "A"
+objective = "进入古烽火台内部，寻找破除幻障的方法。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1905"
+runtime_event = 22
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_60"
+order = 600
+when = "var[1] == 60"
+condition_status = "A"
+objective = "使用诸幻神镜破除幻障，继续追查楼兰七曜机关。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1005b"
+runtime_event = 24
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_61"
+order = 610
+when = "var[1] == 61"
+condition_status = "A"
+objective = "解开楼兰七曜圆珠机关，并准备修复星晷刻盘。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0704"
+runtime_event = 17
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_62"
+order = 620
+when = "var[1] == 62"
+condition_status = "A"
+objective = "把星晷刻盘交给谭铁匠修复。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0701"
+runtime_event = 29
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_63"
+order = 630
+when = "var[1] == 63"
+condition_status = "A"
+objective = "处理甘州的夜间与人物关系事件，等待刻盘修复完成。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp0705"
+runtime_event = 15
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_64"
+order = 640
+when = "var[1] == 64"
+condition_status = "A"
+objective = "取回修复后的星晷刻盘，重返天动仪核心。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1009a"
+runtime_event = 18
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_65"
+order = 650
+when = "var[1] == 65"
+condition_status = "A"
+objective = "回到天动仪核心，应对汉军入城造成的新局势。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1013"
+runtime_event = 12
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_66"
+order = 660
+when = "var[1] == 66"
+condition_status = "A"
+objective = "继续推进天枢仪座与汉军相关剧情。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1013"
+runtime_event = 12
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_67"
+order = 670
+when = "var[1] == 67"
+condition_status = "A"
+objective = "确认幽界即将降临后，回甘州与葛云衣制定最终计划。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp3001"
+runtime_event = 21
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_68"
+order = 680
+when = "var[1] == 68"
+condition_status = "A"
+objective = "与葛云衣完成最终计划，返回楼兰阻止四派。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1003a"
+runtime_event = 12
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_69"
+order = 690
+when = "var[1] == 69"
+condition_status = "A"
+objective = "进入楼兰城，追上已经进入城内的四派。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1005a"
+runtime_event = 15
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_70"
+order = 700
+when = "var[1] == 70"
+condition_status = "A"
+objective = "前往华穹殿阻止四派，并处理同伴的重大剧情分支。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1007c"
+runtime_event = 20
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_71"
+order = 710
+when = "var[1] == 71"
+condition_status = "A"
+objective = "完成楼兰城末段剧情，准备通过荒茫厉界登上幽神城砦。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1014a"
+runtime_event = 14
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_72"
+order = 720
+when = "var[1] == 72"
+condition_status = "A"
+objective = "按计划准备镇曜大法，等待逆转仪式的机会。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1014a"
+runtime_event = 14
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_73"
+order = 730
+when = "var[1] == 73"
+condition_status = "A"
+objective = "逆转镇曜大法并开启“蚀”的通道。"
+role = "main_objective"
+route_mode = "condition_graph"
+target_kind = "ROUTE_OR_EVENT"
+target_scene = "mp1007c"
+runtime_event = 20
+optional = false
+show_in_journal = true
+
+[[quest.stage]]
+id = "var1_74"
+order = 740
+when = "var[1] == 74"
+condition_status = "A"
+objective = "完成降曜之仪后的终局流程，前往最终区域。"
+role = "main_objective"
+route_mode = "terminal"
+target_kind = "ROUTE_OR_EVENT"
+optional = false
+show_in_journal = true

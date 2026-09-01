@@ -1,0 +1,145 @@
+# 《幽城幻剑录》Castle_Quest Q004 / 营救阿吉
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q004"
+quest_id = "side_rescue_aji"
+enabled = true
+title = "营救阿吉"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "是"
+ending_relevant = "是（血灵神珠前置）"
+tags = ["timed", "missable", "ending_relevant", "important"]
+discover_mode = "offer_target_current_scene"
+offer_scene = "mp0101"
+offer_target = "event:manual:36"
+offer_when = "var[504] == 0 && var[1072] == 1"
+offer_marker_when = "var[504] == 0 && var[1072] == 1"
+journal_when = "(var[504] == 1) || (var[504] == 2) || (var[504] == 254)"
+available_in_tracker = false
+active_when = "var[504] == 1"
+completed_when = "var[504] == 2"
+failed_when = "false"
+expired_when = "var[504] == 254"
+authoritative_state = "Var504；Var1013；Battle101"
+formalization_status = "A"
+evidence = "A"
+notes = "四小孩属于原版可选线索；真正硬门槛是Var504。Remastered人工追加步骤不再写在本详细原始链，而由同名_addon.toml叠加。"
+available_objective = "与阿吉母亲交谈，了解发生了什么。"
+
+[[stage]]
+stage_id = "ask_mother"
+order = 10
+when = "var[504] == 0 && var[1072] == 1"
+condition_status = "A"
+objective = "与阿吉母亲交谈，得知阿吉不见。"
+player_notes = []
+show_in_journal = false
+optional = false
+reads_var = "1|504"
+writes_var = "504"
+stage_result = "Var504=1"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0101"
+runtime_event = "36"
+trigger_type = "MANUAL_EB"
+object = "阿平老媽"
+world_x = "1049"
+world_y = "811"
+
+[stage.marker]
+location_name = "河州镇"
+name = "阿吉母亲"
+hint = "与阿吉母亲交谈，了解发生了什么。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+
+[[stage]]
+stage_id = "world_trigger"
+order = 30
+when = "var[504] == 1"
+condition_status = "A"
+objective = "前往河州城外寻找阿吉。"
+player_notes = ["阿吉可能遇到了危险，最好尽快赶去。"]
+show_in_journal = true
+optional = false
+battle_group = "101"
+reads_var = "504"
+writes_var = "504|1013"
+stage_result = "进入mp2503a；Battle101"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_TOUCH"
+scene = "mp3001"
+runtime_event = "12"
+trigger_type = "TOUCH_EA"
+object = "救小鬼"
+world_x = "2801"
+world_y = "1710"
+
+[stage.marker]
+location_name = "西域辽疆"
+name = "阿吉所在区域"
+hint = "在河州城外寻找阿吉的踪迹。"
+scope = "area"
+role = "trigger"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp0101 -> mp3001
+[[stage.route]]
+id = "R000002"
+from_scene = "mp0101"
+from_name = "河州镇"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[1] > 3 && var[1] != 4 && var[1] == 5"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|河州鎮出入口|1039|1412"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000003"
+from_scene = "mp0101"
+from_name = "河州镇"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[1] > 3 && var[1] != 4 && var[1] != 5 && var[1] >= 6"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|河州鎮出入口|1039|1412"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+

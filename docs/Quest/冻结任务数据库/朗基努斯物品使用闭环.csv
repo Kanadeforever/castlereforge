@@ -1,0 +1,6 @@
+﻿序号,层级,对象,地址或字段,直接事实,结论,证据等级
+1,物品定义,Item460 羊皮封卷,"Ail2.ENC record ItemID=460, +0x28",真正ItemID=460；世界动作码=17；说明写明“沾染血气后浮现字迹图样”。,黑龙后获得的显字版羊皮封卷是可触发世界动作的道具。,A
+2,物品应用,RPG.exe,0x43AEC0（关键0x43AF05..0x43AF27）,读取当前Ail2记录+0x28；值>0时写DataCenter+0xC4；当前ItemID写DataCenter+0xEC并提前返回。,Item460使用后把动作码17送到世界动作dispatcher。,A
+3,世界动作分派,RPG.exe,0x40CE23；selector 0x40D110；jump table 0x40D0EC,动作码3..17经selector/jump table分派；动作码17选择index7，jump target=0x40CFE4。,Item460的动作码17确定进入0x40CFE4。,A
+4,Flag写入,RPG.exe,0x40CFE4..0x40D01B,"push 25→call 0x44B0D0(GET_VAR)；cmp eax,3；若<3则push3,push25→call 0x44B0B0(SET_VAR)。",使用Item460且Var25<3时，原版直接SET Var25=3。,A
+5,任务闭环,Longinus,Var25状态机,EVE已直接证明1→2与3→4→5→6→7/8→9/10→11；本轮补上唯一2→3。,Longinus全状态链已闭合，不再有任务状态硬阻塞。,A

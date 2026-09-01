@@ -1,0 +1,678 @@
+# 《幽城幻剑录》Castle_Quest Q020 / 失落圣枪 Longinus
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q020"
+quest_id = "side_longinus"
+enabled = true
+title = "失落圣枪 Longinus"
+category = "Side"
+primary = false
+tracked_default = true
+missable = "长链"
+ending_relevant = "强相关"
+tags = ["long_chain", "ending_relevant", "important"]
+discover_mode = "dependency_completed"
+offer_when = "var[25] >= 1 && var[25] < 11"
+offer_marker_when = "var[25] >= 1 && var[25] < 11"
+journal_when = "(var[25] >= 1 && var[25] < 11) || (var[25] == 11)"
+available_in_tracker = false
+active_when = "var[25] >= 1 && var[25] < 11"
+completed_when = "var[25] == 11"
+failed_when = "false"
+expired_when = "false"
+authoritative_state = "Var25；Item193/77；神炎金灯等"
+formalization_status = "A"
+evidence = "A"
+notes = "Var25=1→2由黑龙EVE闭合；Var25=2时玩家使用显字后的Item460羊皮封卷，Ail2+0x28=17，经RPG.exe 0x43AEC0写入世界动作码，0x40CE23分派至0x40CFE4，后者GET_VAR(25)并在<3时SET_VAR(25,3)；3→11均已有EVE直接证据。Longinus状态链已完整闭环。"
+available_objective = ""
+
+[[stage]]
+stage_id = "dragon"
+order = 20
+when = "var[25] == 1"
+condition_status = "A"
+objective = "黑龙事件中揭开羊皮封卷内容。"
+player_notes = []
+show_in_journal = true
+optional = false
+battle_group = "130|131"
+item_dependency = "鎮龍之玉|鎮龍之玉|血厲鬼皿|羊皮封卷|羊皮封卷"
+reads_var = "13|25"
+writes_var = "13|25|999"
+stage_result = "Var25=2；Item423→460"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "OBJECTIVE"
+scene = "mp1803-3"
+runtime_event = "11"
+trigger_type = "TOUCH_EA"
+object = "右上走道出入口"
+world_x = "1589"
+world_y = "-15"
+marker_override = "world:1589,-15"
+
+[stage.marker]
+location_name = "登顶石阶 乱阵"
+name = "右上走道出入口"
+hint = "黑龙事件中揭开羊皮封卷内容。"
+scope = "target"
+role = "objective"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "use_revealed_scroll"
+order = 25
+when = "var[25] == 2"
+condition_status = "A"
+objective = "在道具菜单使用显字后的羊皮封卷，阅读浮现出的字迹与图样。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "羊皮封卷（Item460，显字版）"
+reads_var = "25"
+writes_var = "25"
+stage_result = "使用Item460→世界动作码17→SET_VAR(25,3)"
+evidence = "程序静态A（Ail2+0x28；RPG.exe 0x43AEC0/0x40CE23/0x40CFE4；GET_VAR=0x44B0D0；SET_VAR=0x44B0B0）"
+notes = "这是道具使用阶段，不依赖场景Event；v0.5之所以缺失，是因为旧分析器主线只覆盖EVE写入。"
+
+[stage.target]
+kind = "ITEM_USE"
+
+[stage.marker]
+location_name = ""
+name = "在道具菜单使用显字后的羊皮封卷，阅读浮现出的字迹与图样。"
+hint = "在道具菜单使用显字后的羊皮封卷，阅读浮现出的字迹与图样。"
+scope = "target"
+role = "item_use"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "yabusi_decode"
+order = 30
+when = "var[25] == 3"
+condition_status = "A"
+objective = "请雅布斯解读羊皮卷。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "鏽蝕古槍|西方神徽|火凜冰實"
+reads_var = "25|668|669|673|699|999"
+writes_var = "25|668|669|673|699|999|1218|1223"
+stage_result = "Var25=4"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0806"
+runtime_event = "20"
+trigger_type = "MANUAL_EB"
+object = "arbs"
+world_x = "423"
+world_y = "320"
+
+[stage.marker]
+location_name = "雅布斯家中"
+name = "arbs"
+hint = "请雅布斯解读羊皮卷。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp1803-3 -> mp1803-2
+[[stage.route]]
+id = "R000819"
+from_scene = "mp1803-3"
+from_name = "登顶石阶 乱阵"
+to_scene = "mp1803-2"
+to_name = "登顶石阶 乱阵"
+marker_name = "乱阵"
+route_hint = "继续前往登顶石阶 乱阵的下一处区域。"
+marker_scope = "entrance"
+when = "true"
+event_id = 4
+native_event_bindings = "12|TOUCH_EA|左下走道出入口|166|1420"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000822"
+from_scene = "mp1803-3"
+from_name = "登顶石阶 乱阵"
+to_scene = "mp1803-2"
+to_name = "登顶石阶 乱阵"
+marker_name = "乱阵"
+route_hint = "继续前往登顶石阶 乱阵的下一处区域。"
+marker_scope = "entrance"
+when = "true"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|左下走道出入口|166|1420"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1803-2 -> mp1803-1
+[[stage.route]]
+id = "R000816"
+from_scene = "mp1803-2"
+from_name = "登顶石阶 乱阵"
+to_scene = "mp1803-1"
+to_name = "龙驹岛 登顶石阶"
+marker_name = "登顶石阶"
+route_hint = "前往龙驹岛 登顶石阶。"
+marker_scope = "entrance"
+when = "true"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|左下走道出入口|191|1422"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1803-1 -> mp1801
+[[stage.route]]
+id = "R000814"
+from_scene = "mp1803-1"
+from_name = "龙驹岛 登顶石阶"
+to_scene = "mp1801"
+to_name = "龙驹岛 清乐居"
+marker_name = "清乐居"
+route_hint = "前往龙驹岛 清乐居。"
+marker_scope = "entrance"
+when = "true"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|下方出入口|256|1421"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1801 -> mp3001
+[[stage.route]]
+id = "R000807"
+from_scene = "mp1801"
+from_name = "龙驹岛 清乐居"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "右上楼梯"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[13] != 8 && var[13] != 7 && var[13] >= 7"
+event_id = 12
+trigger_type = "TOUCH_EA"
+target_object = "右上樓梯"
+world_x = 1147
+world_y = 7
+native_event_bindings = "11|TOUCH_EA|出入口|1392|591"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000808"
+from_scene = "mp1801"
+from_name = "龙驹岛 清乐居"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "右上楼梯"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[13] == 8"
+event_id = 12
+trigger_type = "TOUCH_EA"
+target_object = "右上樓梯"
+world_x = 1147
+world_y = 7
+native_event_bindings = "11|TOUCH_EA|出入口|1392|591"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp3001 -> mp0801
+[[stage.route]]
+id = "R001075"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0801"
+to_name = "肃州城"
+marker_name = "甘州"
+route_hint = "前往肃州城。"
+marker_scope = "entrance"
+when = "var[518] != 6 && var[518] != 5"
+event_id = 21
+trigger_type = "TOUCH_EA"
+target_object = "甘州"
+world_x = 2365
+world_y = 769
+native_event_bindings = "20|TOUCH_EA|肅州|1927|789;;40|TOUCH_EA|救公主事件點|2189|737"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001110"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp0801"
+to_name = "肃州城"
+marker_name = "flame_pig"
+route_hint = "前往肃州城。"
+marker_scope = "entrance"
+when = "var[515] == 2"
+event_id = 41
+trigger_type = "TOUCH_EA"
+target_object = "flame_pig"
+world_x = 2561
+world_y = 719
+native_event_bindings = "20|TOUCH_EA|肅州|1927|789;;40|TOUCH_EA|救公主事件點|2189|737"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0801 -> mp0806
+[[stage.route]]
+id = "R000240"
+from_scene = "mp0801"
+from_name = "肃州城"
+to_scene = "mp0806"
+to_name = "雅布斯家中"
+marker_name = "雅布斯家出入口"
+route_hint = "前往雅布斯家中。"
+marker_scope = "entrance"
+when = "true"
+event_id = 20
+trigger_type = "MANUAL_EB"
+target_object = "雅布斯家出入口"
+world_x = 1112
+world_y = 1757
+native_event_bindings = "20|MANUAL_EB|雅布斯家出入口|1112|1757"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage]]
+stage_id = "huyan"
+order = 40
+when = "var[25] == 4"
+condition_status = "A"
+objective = "请呼延崇辨识地图/线索。"
+player_notes = []
+show_in_journal = true
+optional = false
+reads_var = "1|25"
+writes_var = "25"
+stage_result = "Var25=5"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp2002"
+runtime_event = "21"
+trigger_type = "MANUAL_EB"
+object = "hwuyen"
+world_x = "1051"
+world_y = "1140"
+
+[stage.marker]
+location_name = "呼延崇住处"
+name = "hwuyen"
+hint = "请呼延崇辨识地图/线索。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "stage_route"
+
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp0806 -> mp0801a
+[[stage.route]]
+id = "R000267"
+from_scene = "mp0806"
+from_name = "雅布斯家中"
+to_scene = "mp0801a"
+to_name = "肃州城"
+marker_name = "arbs"
+route_hint = "前往肃州城。"
+marker_scope = "entrance"
+when = "true"
+event_id = 20
+trigger_type = "MANUAL_EB"
+target_object = "arbs"
+world_x = 423
+world_y = 320
+native_event_bindings = "19|TOUCH_EA|出入口|255|533;;20|MANUAL_EB|arbs|423|320"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000269"
+from_scene = "mp0806"
+from_name = "雅布斯家中"
+to_scene = "mp0801a"
+to_name = "肃州城"
+marker_name = "sivia"
+route_hint = "前往肃州城。"
+marker_scope = "entrance"
+when = "var[668] != 1 && var[25] != 10 && var[25] != 9 && var[25] != 8 && var[25] == 3"
+event_id = 21
+trigger_type = "MANUAL_EB"
+target_object = "sivia"
+world_x = 179
+world_y = 392
+native_event_bindings = "19|TOUCH_EA|出入口|255|533;;20|MANUAL_EB|arbs|423|320"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000270"
+from_scene = "mp0806"
+from_name = "雅布斯家中"
+to_scene = "mp0801a"
+to_name = "肃州城"
+marker_name = "sivia"
+route_hint = "前往肃州城。"
+marker_scope = "entrance"
+when = "var[668] != 1 && var[25] != 10 && var[673] == 1 && var[699] == 1"
+event_id = 21
+trigger_type = "MANUAL_EB"
+target_object = "sivia"
+world_x = 179
+world_y = 392
+native_event_bindings = "19|TOUCH_EA|出入口|255|533;;20|MANUAL_EB|arbs|423|320"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000271"
+from_scene = "mp0806"
+from_name = "雅布斯家中"
+to_scene = "mp0801a"
+to_name = "肃州城"
+marker_name = "sivia"
+route_hint = "前往肃州城。"
+marker_scope = "entrance"
+when = "var[668] != 1 && var[25] == 10"
+event_id = 21
+trigger_type = "MANUAL_EB"
+target_object = "sivia"
+world_x = 179
+world_y = 392
+native_event_bindings = "19|TOUCH_EA|出入口|255|533;;20|MANUAL_EB|arbs|423|320"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp0801a -> mp3001
+[[stage.route]]
+id = "R000245"
+from_scene = "mp0801a"
+from_name = "肃州城"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "药铺出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "true"
+event_id = 16
+trigger_type = "MANUAL_EB"
+target_object = "藥舖出入口"
+world_x = 1927
+world_y = 375
+native_event_bindings = "15|TOUCH_EA|出入口|3539|225"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp3001 -> mp2001
+[[stage.route]]
+id = "R001095"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp2001"
+to_name = "呼延崇住处 入口"
+marker_name = "nd3001-a.SF2"
+route_hint = "前往呼延崇住处 入口。"
+marker_scope = "entrance"
+when = "var[658] != 0"
+event_id = 28
+trigger_type = "TOUCH_EA"
+target_object = "nd3001-a.SF2"
+world_x = 2155
+world_y = 1184
+native_event_bindings = "27|TOUCH_EA|呼延崇家|1085|785"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001096"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp2001"
+to_name = "呼延崇住处 入口"
+marker_name = "nd3001-a.SF2"
+route_hint = "前往呼延崇住处 入口。"
+marker_scope = "entrance"
+when = "var[658] == 0"
+event_id = 28
+trigger_type = "TOUCH_EA"
+target_object = "nd3001-a.SF2"
+world_x = 2155
+world_y = 1184
+native_event_bindings = "27|TOUCH_EA|呼延崇家|1085|785"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp2001 -> mp2002
+[[stage.route]]
+id = "R000865"
+from_scene = "mp2001"
+from_name = "呼延崇住处 入口"
+to_scene = "mp2002"
+to_name = "呼延崇住处"
+marker_name = "呼延崇住处"
+route_hint = "前往呼延崇住处。"
+marker_scope = "entrance"
+when = "var[1158] != 1 && var[658] != 1"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|山動入口|89|195"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000866"
+from_scene = "mp2001"
+from_name = "呼延崇住处 入口"
+to_scene = "mp2002"
+to_name = "呼延崇住处"
+marker_name = "呼延崇住处"
+route_hint = "前往呼延崇住处。"
+marker_scope = "entrance"
+when = "var[1158] != 1 && var[658] == 1"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|山動入口|89|195"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage]]
+stage_id = "cave"
+order = 50
+when = "var[25] == 5"
+condition_status = "A"
+objective = "在对应洞窟开启圣枪路线。"
+player_notes = []
+show_in_journal = true
+optional = false
+reads_var = "25"
+writes_var = "25|1232"
+stage_result = "Var25=6"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "OBJECTIVE"
+scene = "mp2101a"
+runtime_event = "14"
+marker_override = "none"
+
+[stage.marker]
+location_name = "荒山岩壁"
+name = "在对应洞窟开启圣枪路线。"
+hint = "在对应洞窟开启圣枪路线。"
+scope = "target"
+role = "objective"
+
+[stage.navigation]
+mode = "unresolved"
+# 研究冻结 Route 图在这一阶段没有形成可供自动 Marker 使用的完整原版物理绑定链；
+# dev6y 不再用全局图猜路，也不复制无证据路线。实机补证后直接在本 Stage 下增加 [[stage.route]]。
+
+[[stage]]
+stage_id = "spear"
+order = 60
+when = "var[25] == 6 || var[25] == 7"
+condition_status = "A"
+objective = "完成圣枪相关战斗/取得阶段。"
+player_notes = []
+show_in_journal = true
+optional = false
+battle_group = "148"
+reads_var = "25|999"
+writes_var = "25|98|999|1232"
+stage_result = "Var25=7→8"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "OBJECTIVE"
+scene = "mp2102"
+runtime_event = "19"
+trigger_type = "TOUCH_EA"
+object = "nd2101a&b-01.SF2"
+world_x = "920"
+world_y = "335"
+marker_override = "world:920,335"
+
+[stage.marker]
+location_name = "圣枪之窟"
+name = "nd2101a&b-01.SF2"
+hint = "完成圣枪相关战斗/取得阶段。"
+scope = "target"
+role = "objective"
+
+[stage.navigation]
+mode = "unresolved"
+# 研究冻结 Route 图在这一阶段没有形成可供自动 Marker 使用的完整原版物理绑定链；
+# dev6y 不再用全局图猜路，也不复制无证据路线。实机补证后直接在本 Stage 下增加 [[stage.route]]。
+
+[[stage]]
+stage_id = "repair"
+order = 70
+when = "var[25] == 8 || var[25] == 9 || var[25] == 10"
+condition_status = "A"
+objective = "把圣枪相关物带回雅布斯处理。"
+player_notes = []
+show_in_journal = true
+optional = false
+item_dependency = "鏽蝕古槍|西方神徽|火凜冰實"
+reads_var = "25|668|669|673|699|999"
+writes_var = "25|668|669|673|699|999|1218|1223"
+stage_result = "Var25最终=11"
+evidence = "程序静态A"
+notes = ""
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0806"
+runtime_event = "20"
+trigger_type = "MANUAL_EB"
+object = "arbs"
+world_x = "423"
+world_y = "320"
+
+[stage.marker]
+location_name = "雅布斯家中"
+name = "arbs"
+hint = "把圣枪相关物带回雅布斯处理。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "unresolved"
+# 研究冻结 Route 图在这一阶段没有形成可供自动 Marker 使用的完整原版物理绑定链；
+# dev6y 不再用全局图猜路，也不复制无证据路线。实机补证后直接在本 Stage 下增加 [[stage.route]]。

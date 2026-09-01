@@ -1,0 +1,333 @@
+# 《幽城幻剑录》Castle_Quest Q025 / 冰璃／璇玑好感事件
+# 本文件是“详细原始任务链”：保存已经研究确认的游戏任务状态、触发条件、目标、默认 Marker 与 Stage Route。
+# 日常体验调整不要直接改这里；优先写入同名 *_addon.toml。只有确认原始任务事实本身有错误时才修本文件。
+# ASI 先读取本文件，再叠加同名 addon；addon 只覆盖明确填写的字段，未填写内容继续继承本文件。
+
+format_version = 7
+[quest]
+quest_no = "Q025"
+quest_id = "supp_affection"
+enabled = true
+title = "冰璃／璇玑好感事件"
+category = "Meta"
+primary = false
+tracked_default = false
+missable = "多窗口"
+ending_relevant = "是"
+tags = ["hidden", "ending_relevant", "affection"]
+discover_mode = "hidden_meta"
+offer_scene = "mp0701"
+offer_target = "event:manual:24"
+offer_when = "true"
+offer_marker_when = "false"
+journal_when = "false"
+available_in_tracker = false
+active_when = "true"
+completed_when = "false"
+failed_when = "false"
+expired_when = "false"
+authoritative_state = "Var551/550"
+formalization_status = "A"
+evidence = "A"
+notes = "这是好感度元系统，不作为普通任务列表项；Var551=冰璃，Var550=璇玑。 dev6k首次显示修正：hidden_meta仅供内部统计，不进入普通Journal，也不显示Offer Marker。"
+available_objective = ""
+
+[[stage]]
+stage_id = "ice_shopping"
+order = 10
+when = "var[607] == 1"
+condition_status = "A"
+objective = "给冰璃购买礼物。"
+player_notes = []
+show_in_journal = true
+optional = false
+reads_var = "551|607"
+writes_var = "521|551|607|999"
+stage_result = "Var551+=1"
+evidence = "程序静态A"
+notes = "mp0701/Event24入口第一条分支直接要求Var607=1。"
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0701"
+runtime_event = "24"
+trigger_type = "TOUCH_EA"
+object = "冰璃買物線"
+world_x = "2552"
+world_y = "904"
+
+[stage.marker]
+location_name = "甘州城"
+name = "冰璃買物線"
+hint = "给冰璃购买礼物。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "xuanji_shopping"
+order = 20
+when = "var[608] == 1"
+condition_status = "A"
+objective = "给璇玑购买礼物。"
+player_notes = []
+show_in_journal = true
+optional = false
+reads_var = "550|608"
+writes_var = "520|550|608|999|3085"
+stage_result = "Var550+=1"
+evidence = "程序静态A"
+notes = "mp0701/Event27入口第一条分支直接要求Var608=1。"
+
+[stage.target]
+kind = "EVENT_MANUAL"
+scene = "mp0701"
+runtime_event = "27"
+trigger_type = "TOUCH_EA"
+object = "慕容璇璣買物線"
+world_x = "1584"
+world_y = "476"
+
+[stage.marker]
+location_name = "甘州城"
+name = "慕容璇璣買物線"
+hint = "给璇玑购买礼物。"
+scope = "target"
+role = "talk_or_interact"
+
+[stage.navigation]
+mode = "direct"
+
+[[stage]]
+stage_id = "ice_max"
+order = 30
+when = "var[1] == 64 && var[551] == 6"
+condition_status = "A"
+objective = "冰璃好感满足条件时可锁定到关键值。"
+player_notes = []
+show_in_journal = true
+optional = false
+reads_var = "1|551|3059"
+writes_var = "1|91|551|606|629|1204|1205|1206|3031|3032|3033|3073|3074|3075|3076|3077|3078|3079|3080|4082|4083|4084|4085|4087|4088|4089|4090|4103|4107|4108|4109|4110|4111|4112|4113|4115|4116|4117|4118|4119|4120|4121|4123|4126|4127|4128|4129|4130|4131"
+stage_result = "Var551=7；后续mp1013可取得Item230冥华紫晶"
+evidence = "程序静态A"
+notes = "mp1009a/Event18仅在Var1=64进入该剧情；I107再要求Var551=6，I114写Var551=7。"
+
+[stage.target]
+kind = "OBJECTIVE"
+scene = "mp1009a"
+runtime_event = "18"
+trigger_type = "MANUAL_EB"
+object = "中間大門呦"
+world_x = "650"
+world_y = "688"
+marker_override = "world:650,688"
+
+[stage.marker]
+location_name = "楼兰城 楼兰地下"
+name = "中間大門呦"
+hint = "冰璃好感满足条件时可锁定到关键值。"
+scope = "target"
+role = "objective"
+
+[stage.navigation]
+mode = "stage_route"
+
+# 本阶段跨场景导航只读取下面这些局部 Route；不会访问任何全局 routes.toml。
+# 路由步骤：mp0701 -> mp3001
+[[stage.route]]
+id = "R000189"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "西域辽疆"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[1] != 62"
+event_id = 12
+native_event_bindings = "11|TOUCH_EA|下方出入口|982|1379;;18|TOUCH_EA|出入口|3479|174"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000201"
+from_scene = "mp0701"
+from_name = "甘州城"
+to_scene = "mp3001"
+to_name = "西域辽疆"
+marker_name = "药店出入口"
+route_hint = "前往西域辽疆。"
+marker_scope = "entrance"
+when = "var[1] != 62"
+event_id = 19
+trigger_type = "MANUAL_EB"
+target_object = "藥店出入口"
+world_x = 287
+world_y = 1225
+native_event_bindings = "11|TOUCH_EA|下方出入口|982|1379;;18|TOUCH_EA|出入口|3479|174"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp3001 -> mp1702
+[[stage.route]]
+id = "R001099"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp1702"
+to_name = "罗布泊 隧道入口"
+marker_name = "烽火台"
+route_hint = "前往罗布泊 隧道入口。"
+marker_scope = "entrance"
+when = "var[544] != 6"
+event_id = 31
+trigger_type = "TOUCH_EA"
+target_object = "烽火台"
+world_x = 288
+world_y = 560
+native_event_bindings = "30|TOUCH_EA|羅布泊遺跡入口|963|613"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R001100"
+from_scene = "mp3001"
+from_name = "西域辽疆"
+to_scene = "mp1702"
+to_name = "罗布泊 隧道入口"
+marker_name = "烽火台"
+route_hint = "前往罗布泊 隧道入口。"
+marker_scope = "entrance"
+when = "var[544] == 6"
+event_id = 31
+trigger_type = "TOUCH_EA"
+target_object = "烽火台"
+world_x = 288
+world_y = 560
+native_event_bindings = "30|TOUCH_EA|羅布泊遺跡入口|963|613"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1702 -> mp1703
+[[stage.route]]
+id = "R000800"
+from_scene = "mp1702"
+from_name = "罗布泊 隧道入口"
+to_scene = "mp1703"
+to_name = "罗布泊 山腹古道"
+marker_name = "山腹古道"
+route_hint = "前往罗布泊 山腹古道。"
+marker_scope = "entrance"
+when = "true"
+event_id = 13
+native_event_bindings = "12|TOUCH_EA|中間洞穴入口|1639|753"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1703 -> mp1701
+[[stage.route]]
+id = "R000802"
+from_scene = "mp1703"
+from_name = "罗布泊 山腹古道"
+to_scene = "mp1701"
+to_name = "罗布泊 盐泽出口"
+marker_name = "盐泽出口"
+route_hint = "前往罗布泊 盐泽出口。"
+marker_scope = "entrance"
+when = "var[544] != 8"
+event_id = 14
+native_event_bindings = "13|TOUCH_EA|上方出入口|1076|413"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000803"
+from_scene = "mp1703"
+from_name = "罗布泊 山腹古道"
+to_scene = "mp1701"
+to_name = "罗布泊 盐泽出口"
+marker_name = "盐泽出口"
+route_hint = "前往罗布泊 盐泽出口。"
+marker_scope = "entrance"
+when = "var[544] == 8"
+event_id = 14
+native_event_bindings = "13|TOUCH_EA|上方出入口|1076|413"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+# 路由步骤：mp1701 -> mp1009a
+[[stage.route]]
+id = "R000796"
+from_scene = "mp1701"
+from_name = "罗布泊 盐泽出口"
+to_scene = "mp1009a"
+to_name = "楼兰城 楼兰地下"
+marker_name = "salt"
+route_hint = "前往楼兰城 楼兰地下。"
+marker_scope = "entrance"
+when = "var[627] != 6"
+event_id = 12
+trigger_type = "MANUAL_EB"
+target_object = "salt"
+world_x = 1902
+world_y = 271
+native_event_bindings = "11|TOUCH_EA|右方地道入口|1876|322"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
+
+[[stage.route]]
+id = "R000797"
+from_scene = "mp1701"
+from_name = "罗布泊 盐泽出口"
+to_scene = "mp1009a"
+to_name = "楼兰城 楼兰地下"
+marker_name = "salt"
+route_hint = "前往楼兰城 楼兰地下。"
+marker_scope = "entrance"
+when = "var[627] == 6"
+event_id = 12
+trigger_type = "MANUAL_EB"
+target_object = "salt"
+world_x = 1902
+world_y = 271
+native_event_bindings = "11|TOUCH_EA|右方地道入口|1876|322"
+native_navigable = true
+usage = "普通场景导航"
+verification_status = "静态分析"
+test_notes = "尚未逐条实机验证。"
+advance_safe = true
+runtime_only = false
