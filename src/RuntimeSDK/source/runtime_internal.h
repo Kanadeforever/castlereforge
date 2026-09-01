@@ -80,7 +80,7 @@ const CastlePathApiV1* Runtime_GetPathApiV1(void);
  */
 void Runtime_ScheduleInitialize(void);
 void Runtime_ScheduleCloseBootstrapGate(void);
-void Runtime_ScheduleNotifyGameEntry(void);
+void Runtime_ScheduleOpenBootstrapGate(void);
 const CastleScheduleApiV1* Runtime_GetScheduleApiV1(void);
 
 /* 已确认游戏 profile 与内部公共符号。未知构建时这些函数安全返回不可用。 */

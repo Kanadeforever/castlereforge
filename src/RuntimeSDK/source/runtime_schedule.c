@@ -68,6 +68,11 @@ typedef struct RuntimeScheduleWorkItem {
 static volatile LONG g_schedule_lock;
 static RuntimePeriodicTask g_periodic_tasks[RUNTIME_SCHEDULE_MAX_PERIODIC];
 static RuntimePostedTask g_posted_tasks[RUNTIME_SCHEDULE_MAX_POSTED];
+/*
+ * 全进程只有一个 Schedule worker，因此工作快照无需放在线程栈，也无需为每个线程复制。
+ * 256 项完整批次约占数十 KB；放入 Runtime 私有静态区可把插件回调前的线程栈恢复为干净状态。
+ */
+static RuntimeScheduleWorkItem g_schedule_work[RUNTIME_SCHEDULE_MAX_WORK];
 static CastleU32 g_periodic_generation;
 static CastleU32 g_post_sequence;
 static HANDLE g_schedule_event;
@@ -343,13 +348,12 @@ static void schedule_finish_periodic_(const RuntimeScheduleWorkItem* item,
 }
 
 static DWORD WINAPI schedule_thread_main_(LPVOID unused) {
-    RuntimeScheduleWorkItem work[RUNTIME_SCHEDULE_MAX_WORK];
     (void)unused;
     for (;;) {
         /*
-         * ModLoader 会在 RPG 入口以前统一调用 InitializeASI。此时插件可以登记任务，但游戏
-         * 全局状态和其它插件仍可能处于安装中。只有 Entry Gate 明确通知“游戏开始执行”后，
-         * 后台线程才允许读取游戏状态。
+         * ModLoader 会在 RPG 入口以前统一调用 InitializeASI。此时插件可以登记任务，但其它
+         * SDK 插件仍可能处于安装中。只有 Runtime 确认整批 integrated_initialize 全部返回后，
+         * 后台线程才允许读取游戏或其它插件状态。
          */
         if (InterlockedCompareExchange(&g_schedule_callbacks_allowed, 0, 0) == 0) {
             WaitForSingleObject(g_schedule_event, INFINITE);
@@ -357,15 +361,15 @@ static DWORD WINAPI schedule_thread_main_(LPVOID unused) {
         }
         CastleU32 now = GetTickCount();
         DWORD wait_ms = INFINITE;
-        CastleU32 count = schedule_collect_work_(work, now, &wait_ms);
+        CastleU32 count = schedule_collect_work_(g_schedule_work, now, &wait_ms);
         CastleU32 index;
         if (count == 0u) {
             WaitForSingleObject(g_schedule_event, wait_ms);
             continue;
         }
-        schedule_sort_work_(work, count);
+        schedule_sort_work_(g_schedule_work, count);
         for (index = 0u; index < count; ++index) {
-            RuntimeScheduleWorkItem* item = &work[index];
+            RuntimeScheduleWorkItem* item = &g_schedule_work[index];
             CastleU32 started = GetTickCount();
             CastleResult result = item->callback(item->handle, item->user_context);
             CastleU32 duration = GetTickCount() - started;
@@ -387,6 +391,7 @@ void Runtime_ScheduleInitialize(void) {
     g_schedule_callbacks_allowed = 1;
     Runtime_ByteZero(g_periodic_tasks, (CastleU32)sizeof(g_periodic_tasks));
     Runtime_ByteZero(g_posted_tasks, (CastleU32)sizeof(g_posted_tasks));
+    Runtime_ByteZero(g_schedule_work, (CastleU32)sizeof(g_schedule_work));
 }
 
 void Runtime_ScheduleCloseBootstrapGate(void) {
@@ -394,10 +399,10 @@ void Runtime_ScheduleCloseBootstrapGate(void) {
     InterlockedExchange(&g_schedule_callbacks_allowed, 0);
 }
 
-void Runtime_ScheduleNotifyGameEntry(void) {
+void Runtime_ScheduleOpenBootstrapGate(void) {
     HANDLE event_to_signal = NULL;
     CastleU32 index;
-    CastleU32 entry_time = GetTickCount();
+    CastleU32 bootstrap_complete_time = GetTickCount();
     int has_work = 0;
     int worker_failed = 0;
 
@@ -412,10 +417,12 @@ void Runtime_ScheduleNotifyGameEntry(void) {
         if (!task->used) continue;
         has_work = 1;
         /*
-         * Bootstrap 可能远长于任务自己的 8ms 周期。开闸时从真实入口重新计算首次到期点，
-         * 保证入口 thunk 有时间返回原游戏，也不把“按设计禁止运行”的等待误算成 missed。
+         * Bootstrap 可能远长于任务自己的 8ms 周期。开闸时从整批完成时间重算首次到期点，
+         * 给当前 InitializeASI 调用留出返回时间，也不把“按设计禁止运行”的等待算成 missed。
          */
-        if (task->enabled) task->next_due_ms = entry_time + task->period_ms;
+        if (task->enabled) {
+            task->next_due_ms = bootstrap_complete_time + task->period_ms;
+        }
     }
     for (index = 0u; index < RUNTIME_SCHEDULE_MAX_POSTED && !has_work; ++index) {
         if (g_posted_tasks[index].used) has_work = 1;
@@ -427,8 +434,8 @@ void Runtime_ScheduleNotifyGameEntry(void) {
     Runtime_Unlock(&g_schedule_lock);
     if (event_to_signal) SetEvent(event_to_signal);
     Runtime_DiagnosticAppend(worker_failed ?
-        "[调度] RPG入口已到达，但唯一后台线程创建失败。" :
-        "[调度] RPG入口已到达，后台任务现已放行。");
+        "[调度] SDK整批初始化已完成，但唯一后台线程创建失败。" :
+        "[调度] SDK整批初始化已完成，后台任务现已放行。");
 }
 
 const CastleScheduleApiV1* Runtime_GetScheduleApiV1(void) {
@@ -586,7 +593,7 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_post_background_(
         return CASTLE_ERROR_INVALID_ARGUMENT;
     }
     Runtime_Lock(&g_schedule_lock);
-    /* 一次性任务也必须服从同一个入口闸门，不能在其它插件初始化中途执行。 */
+    /* 一次性任务也必须服从同一个整批启动闸门，不能在其它插件初始化中途执行。 */
     if (InterlockedCompareExchange(&g_schedule_callbacks_allowed, 0, 0) != 0 &&
         !schedule_ensure_worker_locked_()) {
         Runtime_Unlock(&g_schedule_lock);

@@ -31,10 +31,25 @@ static CastleU32 g_bootstrap_mode;
 static CastlePluginHandle g_bootstrap_handle;
 #if defined(TEST_PLUGIN_A)
 static volatile LONG g_schedule_count;
+static volatile LONG g_schedule_early_count;
 static CastleTaskHandle g_schedule_task;
+typedef CastleU32 (CASTLE_RUNTIME_CALL *RuntimeTestGetU32Fn)(void);
+static RuntimeTestGetU32Fn g_get_bootstrap_order_count;
 #endif
 
 typedef void (CASTLE_RUNTIME_CALL *RuntimeTestRecordBootstrapFn)(CastleU32 token);
+
+/* A/B 都要解析宿主导出，所以函数地址复制助手必须位于条件编译块之外。 */
+static int test_copy_proc_(void* output, CastleU32 output_size, FARPROC address) {
+    volatile CastleU8* output_bytes = (volatile CastleU8*)output;
+    const volatile CastleU8* input_bytes = (const volatile CastleU8*)&address;
+    CastleU32 index;
+    if (!output || !address || output_size != (CastleU32)sizeof(address)) return 0;
+    for (index = 0u; index < (CastleU32)sizeof(address); ++index) {
+        output_bytes[index] = input_bytes[index];
+    }
+    return 1;
+}
 
 #if defined(TEST_PLUGIN_A)
 static CastleStringView test_view_(const char* text, CastleU32 length) {
@@ -55,13 +70,17 @@ static CastleResult CASTLE_RUNTIME_CALL test_schedule_callback_(
     CastleTaskHandle task, void* user_context) {
     (void)task;
     (void)user_context;
+    /* B 插件尚未登记时执行，说明 Schedule 在整批 Bootstrap 完成前抢跑。 */
+    if (!g_get_bootstrap_order_count || g_get_bootstrap_order_count() < 2u) {
+        InterlockedIncrement(&g_schedule_early_count);
+    }
     InterlockedIncrement(&g_schedule_count);
     return CASTLE_OK;
 }
 
 /*
- * A 插件在 Bootstrap 回调内部登记一个 1ms 周期任务。测试宿主先以 InitializeASI 触发
- * Bootstrap：此时任务必须保持 0 次；随后再模拟真实 Entry Gate，任务才允许开始运行。
+ * A 插件在 Bootstrap 回调内部登记一个 1ms 周期任务，B 随后故意延迟初始化。
+ * 任务只能在 A/B 都返回后开始，不能依赖不会再次执行的 ModLoader Entry Gate。
  */
 static CastleResult test_register_schedule_(const CastleRuntimeApiV1* runtime_api,
                                             CastlePluginHandle plugin_handle) {
@@ -71,11 +90,20 @@ static CastleResult test_register_schedule_(const CastleRuntimeApiV1* runtime_ap
     CastleInterfaceResultV1 result;
     CastleScheduledTaskV1 task;
     const CastleScheduleApiV1* schedule_api;
+    HMODULE host_module;
+    FARPROC get_order_address;
 
     /* 测试 DLL 同样按无 CRT 规则清零，避免把测试通过建立在隐式运行库上。 */
     test_zero_(&query, (CastleU32)sizeof(query));
     test_zero_(&result, (CastleU32)sizeof(result));
     test_zero_(&task, (CastleU32)sizeof(task));
+    host_module = GetModuleHandleW(NULL);
+    get_order_address = host_module ? GetProcAddress(host_module,
+        "RuntimeTest_GetBootstrapOrderCount") : NULL;
+    if (!test_copy_proc_(&g_get_bootstrap_order_count,
+            (CastleU32)sizeof(g_get_bootstrap_order_count), get_order_address)) {
+        return CASTLE_ERROR_RUNTIME_FAULT;
+    }
     query.magic = CASTLE_QUERY_MAGIC;
     query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
     query.request_version = CASTLE_QUERY_VERSION_1;
@@ -145,9 +173,15 @@ static CastleResult CASTLE_RUNTIME_CALL test_client_bootstrap_(
     g_bootstrap_handle = plugin_handle;
     ++g_bootstrap_count;
     host_module = GetModuleHandleW(NULL);
-    record = host_module ? (RuntimeTestRecordBootstrapFn)GetProcAddress(
-        host_module, "RuntimeTest_RecordBootstrap") : NULL;
-    if (!record) return CASTLE_ERROR_RUNTIME_FAULT;
+    record = NULL;
+    if (!host_module || !test_copy_proc_(&record, (CastleU32)sizeof(record),
+            GetProcAddress(host_module, "RuntimeTest_RecordBootstrap"))) {
+        return CASTLE_ERROR_RUNTIME_FAULT;
+    }
+#if !defined(TEST_PLUGIN_A)
+    /* 故意拉长 A、B 之间的窗口，让任何“登记即运行”的旧调度器稳定暴露抢跑。 */
+    Sleep(100u);
+#endif
     record(TEST_ORDER_TOKEN);
 #if defined(TEST_PLUGIN_A)
     if (test_register_schedule_(runtime_api, plugin_handle) != CASTLE_OK) {
@@ -189,6 +223,14 @@ CastlePluginHandle CASTLE_RUNTIME_CALL RuntimeTest_GetBootstrapHandle(void) {
 CastleU32 CASTLE_RUNTIME_CALL RuntimeTest_GetScheduleCount(void) {
 #if defined(TEST_PLUGIN_A)
     return (CastleU32)InterlockedCompareExchange(&g_schedule_count, 0, 0);
+#else
+    return 0u;
+#endif
+}
+
+CastleU32 CASTLE_RUNTIME_CALL RuntimeTest_GetScheduleEarlyCount(void) {
+#if defined(TEST_PLUGIN_A)
+    return (CastleU32)InterlockedCompareExchange(&g_schedule_early_count, 0, 0);
 #else
     return 0u;
 #endif

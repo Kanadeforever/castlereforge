@@ -19,6 +19,7 @@ static HMODULE g_plugin_module;
 static volatile LONG g_worker_running;
 static const CastleScheduleApiV1* g_schedule_api;
 static CastleTaskHandle g_schedule_task;
+static volatile LONG g_schedule_first_tick_logged;
 
 static CastleStringView plugin_view_(const char* text, CastleU32 length) {
     CastleStringView view;
@@ -59,6 +60,13 @@ static CastleResult CASTLE_RUNTIME_CALL Backlog_ScheduledPoll(
     CastleTaskHandle task, void* user_context) {
     (void)task;
     (void)user_context;
+    /*
+     * 只在 Runtime 真正放行后的第一次回调记录一次。初始化日志存在但没有这一行，说明任务
+     * 仍停在调度闸门；有这一行却无功能，才继续排查 Backlog 自身输入/游戏状态。
+     */
+    if (InterlockedCompareExchange(&g_schedule_first_tick_logged, 1, 0) == 0) {
+        Runtime_Log("[调度] Backlog Runtime Schedule 首次 tick 已执行。");
+    }
     poll_business_once_();
     return CASTLE_OK;
 }

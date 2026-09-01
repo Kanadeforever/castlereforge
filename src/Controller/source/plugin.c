@@ -51,6 +51,7 @@ static int g_controller_initialized;
 static int g_runtime_schedule_mode;
 static const CastleScheduleApiV1* g_schedule_api;
 static CastleTaskHandle g_schedule_task;
+static int g_schedule_first_tick_logged;
 
 /*
  * 安装阶段按“真实依赖”组织，而不是为了形式去机械复刻某个旧版本的全部顺序：
@@ -407,6 +408,15 @@ static CastleResult CASTLE_RUNTIME_CALL Controller_ScheduledTick(
     CastleTaskHandle task, void* user_context) {
     (void)task;
     (void)user_context;
+    /*
+     * 这条日志只出现一次，用来区分“插件安装完成但 Schedule 尚未开闸”和“业务 tick 已运行”。
+     * Runtime Schedule 保证同一任务不会并发重入，而且这个标记只由该任务线程读写；因此
+     * 不需要为了诊断日志额外扩张 Controller 的精简 Win32 API 表。
+     */
+    if (!g_schedule_first_tick_logged) {
+        g_schedule_first_tick_logged = 1;
+        Runtime_Log("[调度] Controller Runtime Schedule 首次 tick 已执行。");
+    }
     PluginWorker(NULL);
     return CASTLE_OK;
 }

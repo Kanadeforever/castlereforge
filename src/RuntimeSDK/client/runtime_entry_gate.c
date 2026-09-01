@@ -52,7 +52,8 @@ static const CastlePluginExportV1* client_query_owner_export_(void* gate_target)
 
     query_address = GetProcAddress(owner_module, "CastlePlugin_Query");
     if (!query_address) return NULL;
-    query = (CastlePluginQueryFn)query_address;
+    if (!Client_CopyProcedureAddress(&query, (CastleU32)sizeof(query),
+            query_address)) return NULL;
     owner_export = query(CASTLE_PLUGIN_EXPORT_VERSION_1);
     if (!owner_export ||
         VirtualQuery(owner_export, &export_information,

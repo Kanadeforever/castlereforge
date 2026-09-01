@@ -91,9 +91,10 @@ Runtime 持锁时不能调用插件代码。插件回调也不能假设：
 
 - `IntegratedInitialize` 可以登记周期/一次性后台任务；
 - Runtime 在 Bootstrap 期间只保存任务，不创建或运行 worker；
-- 普通 ASI Loader 在 Entry Gate Bootstrap 完成后开闸；
-- ModLoader 在阶段2完成、主线程实际返回 SDK Entry Gate 后开闸；
-- 禁止用固定毫秒延时、插件 ID 排序或“我应该最后初始化”替代入口闸门。
+- 普通 ASI Loader 在 Entry Gate 触发的 Runtime 整批初始化后开闸；
+- ModLoader 必须在外层全部 `InitializeASI` 返回后调用 SDK ASI 的 Client Loader-ready 桥；
+- ModLoader Core 会跳 `EntryPoint+5`，因此不能把 Schedule 依赖在不会再次执行的 SDK Gate 上；
+- 禁止用固定毫秒延时、插件 ID 排序或“我应该最后初始化”替代整批完成边界。
 
 ## 7. 代次
 

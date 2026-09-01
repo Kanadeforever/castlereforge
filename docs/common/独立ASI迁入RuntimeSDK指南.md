@@ -159,8 +159,8 @@ StandaloneHost 创建原线程并循环 `PollOnce + Sleep`；RuntimeHost 把 `Po
 
 Runtime 故障回调不得调用 StandaloneInitialize。
 
-整合模式在 `IntegratedInitialize` 中登记 Schedule 是安全的：Runtime 会在 Bootstrap 期间关闸，
-普通 Loader/ModLoader 的主线程真正命中 SDK Entry Gate 后才启动唯一 worker。迁移时不要保留
+整合模式在 `IntegratedInitialize` 中登记 Schedule 是安全的：Runtime 会在 Bootstrap 期间关闸；
+普通 Loader 在内部整批完成后开闸，ModLoader 在外层 Loader-ready 通知后开闸。迁移时不要保留
 “先创建旧 worker，等 Schedule 开始后再停”的过渡方案，否则会恢复双线程竞态。
 
 ## 11. 分阶段迁移方法

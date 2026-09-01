@@ -52,13 +52,15 @@ static void client_begin_silent_runtime_load_(ClientErrorModeGuard* guard) {
         GetProcAddress(kernel32_module, set_thread_error_mode_name) : NULL;
     if (function_address) {
         DWORD previous_mode = 0u;
-        ClientSetThreadErrorModeFn set_thread_error_mode =
-            (ClientSetThreadErrorModeFn)function_address;
+        ClientSetThreadErrorModeFn set_thread_error_mode = NULL;
+        int address_copied = Client_CopyProcedureAddress(&set_thread_error_mode,
+            (CastleU32)sizeof(set_thread_error_mode), function_address);
         /*
          * 第一次调用取得原模式。第二次把原模式与抑制位合并，避免临时关闭调用方已经设置的
          * SEM_NOGPFAULTERRORBOX 等其它保护。两次调用之间不执行任何可能失败的加载操作。
          */
-        if (set_thread_error_mode(suppressed_modes, &previous_mode)) {
+        if (address_copied &&
+            set_thread_error_mode(suppressed_modes, &previous_mode)) {
             set_thread_error_mode(previous_mode | suppressed_modes, NULL);
             guard->set_thread_error_mode = set_thread_error_mode;
             guard->previous_mode = previous_mode;
@@ -177,8 +179,11 @@ static CastleResult client_collect_candidates_(ClientCandidate* candidates,
         do {
             FARPROC query_address = GetProcAddress(entry.hModule, "CastlePlugin_Query");
             if (query_address) {
-                CastlePluginQueryFn query = (CastlePluginQueryFn)query_address;
-                const CastlePluginExportV1* plugin_export = query(CASTLE_PLUGIN_EXPORT_VERSION_1);
+                CastlePluginQueryFn query = NULL;
+                const CastlePluginExportV1* plugin_export;
+                if (!Client_CopyProcedureAddress(&query, (CastleU32)sizeof(query),
+                        query_address)) continue;
+                plugin_export = query(CASTLE_PLUGIN_EXPORT_VERSION_1);
                 if (client_valid_export_(entry.hModule, plugin_export)) {
                     if (count >= capacity) {
                         CloseHandle(snapshot);
@@ -382,16 +387,14 @@ CastleResult CASTLE_RUNTIME_CALL CastleRuntimeClient_BootstrapAll(
 
     (void)trigger_module;
     /*
-     * InitializeASI 发生在 ModLoader 的 RPG 入口前第二阶段。此时保留 Entry Gate，等主线程
-     * 真正到达入口后再恢复原字节并通知 Runtime 放行 Schedule。普通 ASI Loader 直接从
-     * Entry Gate 进入本函数，必须先恢复原入口，随后裸 thunk 才能安全重放原始五字节。
+     * 无论由普通 Loader 的 Entry Gate 还是 ModLoader 第二阶段进入，都先恢复原入口。
+     * ModLoader Core 最终直接转到 EntryPoint+5，不会再次执行这里安装过的 E9；Schedule 的
+     * 放行边界因此属于 Runtime 的“全部 SDK 插件初始化完成”，不再借入口 Gate 猜测。
      */
-    if (trigger_kind != CASTLE_BOOTSTRAP_TRIGGER_INITIALIZE_ASI) {
-        restore_result = Client_RestoreKnownEntryGate();
-        if (restore_result < 0) {
-            return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,
-                                           restore_result);
-        }
+    restore_result = Client_RestoreKnownEntryGate();
+    if (restore_result < 0) {
+        return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,
+                                       restore_result);
     }
     if (!client_build_runtime_path_(runtime_path, CLIENT_PATH_CAP)) {
         return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,
@@ -425,7 +428,12 @@ CastleResult CASTLE_RUNTIME_CALL CastleRuntimeClient_BootstrapAll(
         return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,
                                        CASTLE_ERROR_ABI_MISMATCH);
     }
-    get_api = (CastleRuntimeGetApiFn)get_api_address;
+    if (!Client_CopyProcedureAddress(&get_api, (CastleU32)sizeof(get_api),
+            get_api_address)) {
+        FreeLibrary(runtime_module);
+        return client_bootstrap_local_(CASTLE_CLIENT_BOOTSTRAP_FAULT, NULL,
+                                       CASTLE_ERROR_ABI_MISMATCH);
+    }
     runtime_api = get_api(CASTLE_RUNTIME_ABI_V1);
     if (!runtime_api || runtime_api->magic != CASTLE_RUNTIME_API_MAGIC ||
         runtime_api->struct_size < CASTLE_SIZEOF_RUNTIME_API_V1 ||
@@ -462,6 +470,16 @@ CastleResult CASTLE_RUNTIME_CALL CastleRuntimeClient_BootstrapAll(
 CastleResult CASTLE_RUNTIME_CALL CastleRuntimeClient_RunNow(void) {
     return CastleRuntimeClient_BootstrapAll(
         CASTLE_BOOTSTRAP_TRIGGER_INITIALIZE_ASI,
+        (CastleModule)(ULONG_PTR)g_client_module);
+}
+
+void CASTLE_RUNTIME_CALL CastleRuntimeClient_NotifyLoaderReady(void) {
+    /*
+     * ModLoader 只在全部 InitializeASI 都返回后调用一次任意 SDK ASI 的同名导出。
+     * Bootstrap 本身已经幂等；这里不会重复初始化插件，只会让 Runtime 打开 Schedule 闸门。
+     */
+    CastleRuntimeClient_BootstrapAll(
+        CASTLE_BOOTSTRAP_TRIGGER_LOADER_READY,
         (CastleModule)(ULONG_PTR)g_client_module);
 }
 

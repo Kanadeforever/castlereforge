@@ -23,6 +23,24 @@
 #define CLIENT_PATH_CAP 1024u
 #define CLIENT_MAX_PLUGINS 128u
 
+/*
+ * GetProcAddress 返回 Windows 定义的 FARPROC。x86 SDK 的稳定导出使用 __cdecl，较新的 Clang
+ * 会把“FARPROC 直接强转为 __cdecl 函数指针”诊断为不兼容调用约定。Windows PE 保证这些
+ * 指针具有相同位宽，所以这里把指针变量本身的字节复制到目标函数指针对象，不执行函数、
+ * 不经过整数，也不要求每个调用点关闭 -Wcast-function-type-mismatch。
+ */
+static int Client_CopyProcedureAddress(void* output, CastleU32 output_size,
+                                       FARPROC address) {
+    volatile BYTE* output_bytes = (volatile BYTE*)output;
+    const volatile BYTE* input_bytes = (const volatile BYTE*)&address;
+    CastleU32 index;
+    if (!output || !address || output_size != (CastleU32)sizeof(address)) return 0;
+    for (index = 0u; index < output_size; ++index) {
+        output_bytes[index] = input_bytes[index];
+    }
+    return 1;
+}
+
 extern HMODULE g_client_module;
 extern CastlePluginExportV1* g_client_export;
 extern volatile LONG g_client_state;

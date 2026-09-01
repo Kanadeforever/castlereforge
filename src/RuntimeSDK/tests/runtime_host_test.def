@@ -1,2 +1,3 @@
 EXPORTS
     RuntimeTest_RecordBootstrap
+    RuntimeTest_GetBootstrapOrderCount

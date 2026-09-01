@@ -67,6 +67,7 @@ Build/
 编译/
 build-*/
 _build_*/
+.runtime-integration-test/
 
 # CMake generated files
 CMakeFiles/

@@ -4,3 +4,4 @@ EXPORTS
     RuntimeTest_GetBootstrapMode
     RuntimeTest_GetBootstrapHandle
     RuntimeTest_GetScheduleCount
+    RuntimeTest_GetScheduleEarlyCount

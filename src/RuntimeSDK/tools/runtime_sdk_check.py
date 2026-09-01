@@ -84,6 +84,7 @@ def check_required_files(ctx: CheckContext, sdk_root: Path) -> dict[str, str]:
         "tests/bootstrap_plugin_test.c",
         "source/runtime_schedule.c",
         "source/runtime_bootstrap.c",
+        "client/client_internal.h",
         "client/runtime_client.c",
         "client/runtime_entry_gate.c",
         "client/runtime_client_support.c",
@@ -111,6 +112,7 @@ def check_tokens(ctx: CheckContext, loaded: dict[str, str]) -> None:
             "CASTLE_SIZEOF_RUNTIME_API_V1          60u",
             "BootstrapLoadedPlugins",
             "CASTLE_ERROR_ENTRY_GATE_CONFLICT",
+            "CASTLE_BOOTSTRAP_TRIGGER_LOADER_READY",
         ),
         "include/CastlePlugin_API.h": (
             "CASTLE_PLUGIN_QUERY_MAGIC  0x52515043ul",
@@ -123,6 +125,7 @@ def check_tokens(ctx: CheckContext, loaded: dict[str, str]) -> None:
             "CASTLE_RPG_ENTRY_VA_V1       0x00452C19ul",
             "CASTLE_CLIENT_LATE_LOAD_UNSUPPORTED",
             "CastleRuntimeClient_BootstrapAll",
+            "CastleRuntimeClient_NotifyLoaderReady",
         ),
         "include/CastleHook_API.h": (
             "CASTLE_SIZEOF_STATE_PATCH_V1          56u",
@@ -186,26 +189,33 @@ def check_tokens(ctx: CheckContext, loaded: dict[str, str]) -> None:
             "client_load_runtime_silently_",
             "SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX",
             "FreeLibrary(runtime_module);",
-            "trigger_kind != CASTLE_BOOTSTRAP_TRIGGER_INITIALIZE_ASI",
+            "restore_result = Client_RestoreKnownEntryGate();",
+            "CASTLE_BOOTSTRAP_TRIGGER_LOADER_READY",
+        ),
+        "client/client_internal.h": (
+            "Client_CopyProcedureAddress",
         ),
         "tests/client_bootstrap_test.c": (
             "observed_error_mode != SEM_NOGPFAULTERRORBOX",
-            "entry[0] != 0xE9u",
+            "entry[index] != original[index]",
         ),
         "source/runtime_schedule.c": (
             "g_schedule_callbacks_allowed",
             "Runtime_ScheduleCloseBootstrapGate",
-            "Runtime_ScheduleNotifyGameEntry",
+            "Runtime_ScheduleOpenBootstrapGate",
+            "static RuntimeScheduleWorkItem g_schedule_work",
+            "schedule_collect_work_(g_schedule_work",
         ),
         "source/runtime_bootstrap.c": (
-            "Runtime_ScheduleNotifyGameEntry();",
+            "Runtime_ScheduleOpenBootstrapGate();",
         ),
         "tests/bootstrap_plugin_test.c": (
             "Bootstrap gate schedule probe",
         ),
         "tests/runtime_host_test.c": (
-            "get_a_schedule_count() != 0u",
             "get_a_schedule_count() == 0u",
+            "get_a_schedule_early_count() != 0u",
+            "CASTLE_BOOTSTRAP_TRIGGER_LOADER_READY",
         ),
     }
 
@@ -225,6 +235,25 @@ def check_tokens(ctx: CheckContext, loaded: dict[str, str]) -> None:
         len(runtime_link_lines) == 1
         and "runtime_crt_support.obj" in runtime_link_lines[0],
         "Runtime正式链接命令包含无CRT memcpy/memset对象",
+    )
+
+    # 新版 Clang 会拒绝 FARPROC(stdcall) 到 SDK cdecl 函数的直接强转。所有 Client 调用点
+    # 必须经过统一的位模式复制助手，不能靠某个子项目单独关闭编译警告。
+    client_text = loaded.get("client/runtime_client.c", "")
+    entry_gate_text = loaded.get("client/runtime_entry_gate.c", "")
+    ctx.check(
+        "(CastlePluginQueryFn)" not in client_text
+        and "(CastleRuntimeGetApiFn)" not in client_text,
+        "Runtime Client不直接强转GetProcAddress函数指针",
+    )
+    ctx.check(
+        "(CastlePluginQueryFn)" not in entry_gate_text,
+        "Entry Gate不直接强转GetProcAddress函数指针",
+    )
+    schedule_text = loaded.get("source/runtime_schedule.c", "")
+    ctx.check(
+        "RuntimeScheduleWorkItem work[RUNTIME_SCHEDULE_MAX_WORK]" not in schedule_text,
+        "Schedule完整工作数组不再常驻worker线程栈",
     )
 
 
@@ -422,13 +451,13 @@ def check_release_artifacts(ctx: CheckContext, project_root: Path, required: boo
     asi_root = release_root / "mods" / "asi"
     expected_exports: dict[str, list[str]] = {
         "Castle_Runtime.dll": ["CastleRuntime_GetApi"],
-        "Castle_Backlog.asi": ["CastlePlugin_Query", "InitializeASI"],
-        "Castle_PadSupport.asi": ["CastlePad_GetApi", "CastlePlugin_Query", "InitializeASI"],
-        "Castle_SaveEnhance.asi": ["CastlePlugin_Query", "InitializeASI"],
-        "Castle_Widescreen.asi": ["CastlePlugin_Query", "InitializeASI"],
-        "BUGFix.asi": ["CastlePlugin_Query", "InitializeASI"],
-        "NoCD.asi": ["CastlePlugin_Query", "InitializeASI"],
-        "MaxGrowthAndDrop.asi": ["CastlePlugin_Query", "InitializeASI"],
+        "Castle_Backlog.asi": ["CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
+        "Castle_PadSupport.asi": ["CastlePad_GetApi", "CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
+        "Castle_SaveEnhance.asi": ["CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
+        "Castle_Widescreen.asi": ["CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
+        "BUGFix.asi": ["CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
+        "NoCD.asi": ["CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
+        "MaxGrowthAndDrop.asi": ["CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
     }
 
     for name, expected in expected_exports.items():

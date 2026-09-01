@@ -43,7 +43,7 @@ if not exist "%OUT%" mkdir "%OUT%"
 if exist "%ROOT%_build" rmdir /s /q "%ROOT%_build"
 mkdir "%ROOT%_build"
 
-set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wno-void-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast /I%SDK%\include /I%SDK%\client"
+set "CFLAGS=/nologo /c /O2 /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -fno-builtin -Wcast-function-type-mismatch -Wno-void-pointer-to-int-cast -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast /I%SDK%\include /I%SDK%\client"
 
 call :compile runtime.c runtime.obj || goto :fail
 call :compile pad_input.c pad_input.obj || goto :fail

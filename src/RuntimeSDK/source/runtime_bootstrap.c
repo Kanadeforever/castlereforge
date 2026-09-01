@@ -174,9 +174,10 @@ CastleResult Runtime_BootstrapLoadedPlugins(const CastleBootstrapRequestV1* requ
 
     old_state = InterlockedCompareExchange(&g_bootstrap_state, 1, 0);
     if (old_state == 2) {
-        /* ModLoader 的第二阶段已经做完；真实 Entry Gate 到达时才放行后台任务。 */
-        if (request->trigger_kind == CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE) {
-            Runtime_ScheduleNotifyGameEntry();
+        /* 普通 Entry Gate 或 Loader 的阶段2完成通知，都会幂等放行已登记任务。 */
+        if (request->trigger_kind == CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE ||
+            request->trigger_kind == CASTLE_BOOTSTRAP_TRIGGER_LOADER_READY) {
+            Runtime_ScheduleOpenBootstrapGate();
         }
         runtime_copy_bootstrap_result_(out_result);
         return CASTLE_STATUS_ALREADY_DONE;
@@ -264,8 +265,10 @@ CastleResult Runtime_BootstrapLoadedPlugins(const CastleBootstrapRequestV1* requ
     runtime_copy_bootstrap_result_(out_result);
     Runtime_DiagnosticAppend("[Bootstrap] loaded SDK plugins processed.");
     InterlockedExchange(&g_bootstrap_state, 2);
-    if (request->trigger_kind == CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE) {
-        Runtime_ScheduleNotifyGameEntry();
+    /* 普通 Loader 已位于 Entry Gate，可直接开闸；MODLoader 必须等待外层阶段2显式通知。 */
+    if (request->trigger_kind == CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE ||
+        request->trigger_kind == CASTLE_BOOTSTRAP_TRIGGER_LOADER_READY) {
+        Runtime_ScheduleOpenBootstrapGate();
     }
     return g_last_bootstrap_result.failed_plugins ?
         CASTLE_STATUS_OPTIONAL_UNAVAILABLE : CASTLE_OK;

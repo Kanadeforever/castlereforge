@@ -1209,6 +1209,7 @@ static UINT initialize_loaded_asi_(void) {
     UINT index;
     UINT initialized = 0u;
     typedef void (__cdecl *PFN_InitializeASI_)(void);
+    typedef void (__cdecl *PFN_NotifyLoaderReady_)(void);
 
     ModLoader_Log((const WCHAR*)L"[ASI阶段2] 全部 LoadLibrary 与 IAT 接入完成，开始按原顺序调用 InitializeASI。");
     for (index = 0u; index < g_loaded_asi_count; ++index) {
@@ -1218,6 +1219,29 @@ static UINT initialize_loaded_asi_(void) {
         ++initialized;
         ModLoader_LogTwo((const WCHAR*)L"[ASI兼容] 第二阶段已调用 InitializeASI：",
                          g_loaded_asi[index].entry->name);
+    }
+
+    /*
+     * Runtime 内部知道 SDK 插件何时全部初始化，却不知道 ModLoader 外层是否还在逐个执行
+     * InitializeASI。阶段2全部返回后，从任意一个 SDK ASI 调用同名 Client 桥，给 Runtime
+     * 一个准确的“外层循环也结束了”信号。
+     *
+     * ModLoader 不加载 Castle_Runtime.dll、不查询 Runtime API、不包含 SDK 头，也不拥有其
+     * 生命周期；没有该可选导出的传统/旧 ASI 组合继续按原逻辑运行。
+     */
+    for (index = 0u; index < g_loaded_asi_count; ++index) {
+        FARPROC ready_address = GetProcAddress(g_loaded_asi[index].module,
+            "CastleRuntimeClient_NotifyLoaderReady");
+        union {
+            FARPROC raw;
+            PFN_NotifyLoaderReady_ notify;
+        } ready;
+        if (!ready_address) continue;
+        ready.raw = ready_address;
+        ready.notify();
+        ModLoader_LogTwo((const WCHAR*)L"[ASI阶段2] 已通知 Runtime Client：全部 InitializeASI 完成；通知桥来自：",
+                         g_loaded_asi[index].entry->name);
+        break;
     }
     return initialized;
 }

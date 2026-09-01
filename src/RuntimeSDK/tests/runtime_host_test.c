@@ -199,6 +199,10 @@ void CASTLE_RUNTIME_CALL RuntimeTest_RecordBootstrap(CastleU32 token) {
     if (position >= 0 && position < 4) g_bootstrap_order[position] = token;
 }
 
+CastleU32 CASTLE_RUNTIME_CALL RuntimeTest_GetBootstrapOrderCount(void) {
+    return (CastleU32)InterlockedCompareExchange(&g_bootstrap_order_count, 0, 0);
+}
+
 static void CASTLE_RUNTIME_CALL test_window_observer_(
     const CastleWindowMessageV1* message, void* user_context) {
     WindowTestContext* context = (WindowTestContext*)user_context;
@@ -408,6 +412,7 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
     RuntimeTestGetU32Fn get_a_mode;
     RuntimeTestGetU32Fn get_a_handle;
     RuntimeTestGetU32Fn get_a_schedule_count;
+    RuntimeTestGetU32Fn get_a_schedule_early_count;
     RuntimeTestGetU32Fn get_b_count;
     RuntimeTestGetU32Fn get_b_mode;
     RuntimeTestGetU32Fn get_b_handle;
@@ -911,7 +916,8 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
         screen_projection.screen_x != 107 || screen_projection.screen_y != 0 ||
         screen_projection.visibility != CASTLE_VISIBILITY_VISIBLE ||
         screen_projection.actual_generation != display_generation) ExitProcess(97u);
-    world_request.requested_generation = display_generation - 1u;
+    /* 0 表示“不锁定代次”，所以不能用 generation-1：当前代次为1时会误变成合法0。 */
+    world_request.requested_generation = display_generation + 1u;
     if (display_api->WorldToScreen(&world_request, &screen_projection) !=
         CASTLE_ERROR_STALE_GENERATION) ExitProcess(98u);
 
@@ -1024,7 +1030,7 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
 
     render_call.flags = 0u;
     render_call.extra_frame_lease = 0u;
-    render_call.display_generation = display_generation - 1u;
+    render_call.display_generation = display_generation + 1u;
     if (render_api->RenderCurrentQueue(&render_call) !=
         CASTLE_ERROR_STALE_GENERATION) ExitProcess(127u);
     if (render_api->RegisterRenderProvider(handle,
@@ -1283,6 +1289,8 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
         "RuntimeTest_GetBootstrapHandle");
     get_a_schedule_count = (RuntimeTestGetU32Fn)GetProcAddress(bootstrap_plugin_a,
         "RuntimeTest_GetScheduleCount");
+    get_a_schedule_early_count = (RuntimeTestGetU32Fn)GetProcAddress(
+        bootstrap_plugin_a, "RuntimeTest_GetScheduleEarlyCount");
     get_b_count = (RuntimeTestGetU32Fn)GetProcAddress(bootstrap_plugin_b,
         "RuntimeTest_GetBootstrapCount");
     get_b_mode = (RuntimeTestGetU32Fn)GetProcAddress(bootstrap_plugin_b,
@@ -1290,6 +1298,7 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
     get_b_handle = (RuntimeTestGetU32Fn)GetProcAddress(bootstrap_plugin_b,
         "RuntimeTest_GetBootstrapHandle");
     if (!get_a_count || !get_a_mode || !get_a_handle || !get_a_schedule_count ||
+        !get_a_schedule_early_count ||
         !get_b_count || !get_b_mode || !get_b_handle) ExitProcess(133u);
 
     byte_zero_(&bootstrap_request, (CastleU32)sizeof(bootstrap_request));
@@ -1298,8 +1307,8 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
     bootstrap_request.struct_size = CASTLE_SIZEOF_BOOTSTRAP_REQUEST_V1;
     bootstrap_request.request_version = CASTLE_BOOTSTRAP_VERSION_1;
     /*
-     * 模拟 ModLoader 两阶段：先用 InitializeASI 完成插件登记，但此时 RPG 原始入口尚未执行。
-     * 测试插件 A 会在自己的 Bootstrap 回调里登记 1ms 周期任务，闸门开启前计数必须保持 0。
+     * 模拟 ModLoader 两阶段：A 先登记 1ms 周期任务，B 故意延迟 100ms 才登记自己。
+     * Runtime 必须等 A/B 的 Bootstrap 回调全部返回后才开闸，不能让 A 在 B 初始化中途运行。
      */
     bootstrap_request.trigger_kind = CASTLE_BOOTSTRAP_TRIGGER_INITIALIZE_ASI;
     bootstrap_request.trigger_module = descriptor.module;
@@ -1318,22 +1327,28 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
         get_a_handle() == 0u || get_b_handle() == 0u ||
         get_a_handle() == get_b_handle()) ExitProcess(24u);
 
-    /* 关闸观察窗口故意大于 1ms 周期一百倍；旧抢跑实现必然会在这里留下非零计数。 */
+    /*
+     * Runtime 内部整批已返回，但模拟的 ModLoader 外层阶段2尚未发通知；任务仍必须保持0。
+     * B 的100ms延迟同时保证旧“登记即运行”实现会稳定暴露。
+     */
     Sleep(100u);
-    if (get_a_schedule_count() != 0u) ExitProcess(135u);
+    if (get_a_schedule_count() != 0u ||
+        get_a_schedule_early_count() != 0u) ExitProcess(135u);
 
-    /* 第二次调用模拟主线程真正到达 Entry Gate；只有这里之后后台任务才允许运行。 */
-    bootstrap_request.trigger_kind = CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE;
+    /* 模拟 ModLoader 在所有 InitializeASI 返回后调用 Client 通知桥。 */
+    bootstrap_request.trigger_kind = CASTLE_BOOTSTRAP_TRIGGER_LOADER_READY;
     result = api->BootstrapLoadedPlugins(&bootstrap_request, &bootstrap_result);
     if (result != CASTLE_STATUS_ALREADY_DONE || get_a_count() != 1u ||
         get_b_count() != 1u || g_bootstrap_order_count != 2) ExitProcess(25u);
-    /* CI 机器可能繁忙，最多等待 1 秒，不用写死“30ms 内必须获得时间片”。 */
+
+    /* 通知后任务必须启动；CI 繁忙时最多等待 1 秒获得首次时间片。 */
     for (gate_wait_attempt = 0u;
          gate_wait_attempt < 100u && get_a_schedule_count() == 0u;
          ++gate_wait_attempt) {
         Sleep(10u);
     }
     if (get_a_schedule_count() == 0u) ExitProcess(136u);
+    if (get_a_schedule_early_count() != 0u) ExitProcess(135u);
 
     /* FreeLibrary 只能减少普通引用；已登记插件必须因 PIN 仍保持映射。 */
     FreeLibrary(bootstrap_plugin_a);

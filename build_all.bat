@@ -3,8 +3,9 @@ setlocal EnableExtensions DisableDelayedExpansion
 set "PATH=%SystemRoot%\System32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0;%PATH%"
 chcp 65001 >nul
 
-rem 这个echo off是必要的，不要删除  
 @echo off
+rem 上面这个echo off是必要的，不要删除  
+
 
 rem 先补齐 Windows 自带工具目录，同时保留 GitHub Actions 或用户已经加入 PATH 的 LLVM、Python 等工具。  
 rem 每个子项目都从这份完整环境继承工具路径，避免前一个构建初始化 Visual Studio 后影响下一个构建。  

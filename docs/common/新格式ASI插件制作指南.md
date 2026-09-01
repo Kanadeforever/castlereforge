@@ -164,19 +164,21 @@ BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) {
 }
 ```
 
-## 7. 两个标准导出
+## 7. 三个标准导出
 
 每个 SDK ASI 都必须导出：
 
 ```text
 CastlePlugin_Query
 InitializeASI
+CastleRuntimeClient_NotifyLoaderReady
 ```
 
 `InitializeASI` 只调用 `CastleRuntimeClient_RunNow()`。Castle Mod Loader 第二阶段会调用它；
 普通 ASI Loader 则由 Entry Gate 触发。两条路径竞争同一个幂等状态，不会初始化两次。
-MODLoader 路径会在阶段2保留 SDK Entry Gate：Schedule 任务可以先登记，但主线程真正经过
-RPG 入口前不会运行。插件不得因为任务尚未执行就额外创建一条临时 worker。
+MODLoader 路径会在阶段2恢复 SDK Entry Gate；Schedule 任务可以先登记，但外层所有
+`InitializeASI` 返回并调用 `CastleRuntimeClient_NotifyLoaderReady` 前不会运行。这个第三导出由
+SDK Client 实现，插件入口文件无需复制逻辑，也不得因为任务尚未执行就创建临时 worker。
 
 使用 `.def` 保证 x86 导出名未修饰：
 
@@ -184,6 +186,7 @@ RPG 入口前不会运行。插件不得因为任务尚未执行就额外创建�
 EXPORTS
     CastlePlugin_Query
     InitializeASI
+    CastleRuntimeClient_NotifyLoaderReady
 ```
 
 如果插件已有公开 API，例如 `CastlePad_GetApi`，保留原导出并追加这两个名字。

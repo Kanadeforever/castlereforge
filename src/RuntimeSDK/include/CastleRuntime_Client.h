@@ -56,6 +56,12 @@ CastleResult CASTLE_RUNTIME_CALL CastleRuntimeClient_OnProcessAttach(
 CastleResult CASTLE_RUNTIME_CALL CastleRuntimeClient_RunNow(void);
 
 /*
+ * 支持两阶段的 Loader 在全部 InitializeASI 返回后调用这个可选导出。
+ * Client 只把“外层阶段2完成”通知现有 Runtime；不加载或赋予 Loader Runtime 所有权。
+ */
+void CASTLE_RUNTIME_CALL CastleRuntimeClient_NotifyLoaderReady(void);
+
+/*
  * Entry Gate Owner 在 RPG.exe 原入口调用 BootstrapAll。
  * 这个函数会恢复 Gate，然后选择 Runtime 整合模式或无 Runtime 的 Standalone 模式。
  */

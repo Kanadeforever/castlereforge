@@ -6,3 +6,4 @@ EXPORTS
     CastlePad_GetApi
     CastlePlugin_Query
     InitializeASI
+    CastleRuntimeClient_NotifyLoaderReady

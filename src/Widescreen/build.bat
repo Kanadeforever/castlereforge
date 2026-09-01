@@ -36,7 +36,7 @@ if not defined LLD_LINK (
     goto :fail
 )
 
-set "CFLAGS=/nologo /c /O2 /Oi- /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc /I%SDK%\include /I%SDK%\client"
+set "CFLAGS=/nologo /c /O2 /Oi- /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-windows-msvc -Wcast-function-type-mismatch /I%SDK%\include /I%SDK%\client"
 
 "%CLANG_CL%" %CFLAGS% "%ROOT%source\runtime.c" /Fo"%OUT%\runtime.obj" || goto :fail
 

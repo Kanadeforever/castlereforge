@@ -17,6 +17,7 @@ r"""
 11. GUI 只能给存在同名 INI 的 ASI 显示“编辑”，并使用系统 RichEdit 动态加载、语法分色、保存前通用 INI 结构校验与原子写回；
 12. about5 必须取消 About 的 WS_EX_TOOLWINDOW，让它使用普通 Windows 标题栏，同时保留正文自适应、链接和 INI 自动换行；
 13. Core 与 GUI 自动补全 mods.ini 时，都必须把新条目写在节尾连续空行之前，让空行继续分隔 [ASI] 与 [Overrides]。
+14. 阶段2全部 InitializeASI 返回后，必须通过 SDK ASI 的可选 Client 桥发送一次 Loader-ready；MODLoader 仍不得加载或查询 Runtime DLL。
 """
 from __future__ import annotations
 import hashlib, pathlib, struct, subprocess, sys, re
@@ -389,6 +390,11 @@ ck(_load_all_start >= 0 and
    'ModLoader_LoadAsi 明确先完成全部第一阶段，再统一进入第二阶段')
 ck('[ASI阶段2]' in mod and '第二阶段已调用 InitializeASI' in mod,
    '两阶段切换和逐插件兼容回调均有明确日志')
+ck('CastleRuntimeClient_NotifyLoaderReady' in mod and
+   '已通知 Runtime Client：全部 InitializeASI 完成' in mod and
+   mod.find('CastleRuntimeClient_NotifyLoaderReady', _phase_two_start) >
+       mod.find('第二阶段已调用 InitializeASI', _phase_two_start),
+   '全部 InitializeASI 返回后才通过可选 Client 桥通知 Runtime 放行调度')
 ck('LoadLibraryW((const WCHAR*)L"Castle_Runtime.dll")' not in mod and
    'LoadLibraryExW((const WCHAR*)L"Castle_Runtime.dll"' not in mod and
    'GetModuleHandleW((const WCHAR*)L"Castle_Runtime.dll")' not in mod and
@@ -414,7 +420,7 @@ exe=OUT/'CastleModLoader.exe'; bootdll=OUT/'mods'/'CastleLocaleBootstrap.dll'; c
 # 这里不把编译后二进制 SHA 当成永久规则，因为不同链接器版本即使源码相同也可能生成不同字节。
 # 更稳妥的做法是把所有影响 RPG.exe 运行时的源码按固定顺序拼接后计算一个聚合 SHA-256；
 # 只要这些源码没有再动，就能确认后续工作没有把本次配置排版修复扩展到 Hook、Locale 或审计逻辑。
-CURRENT_RUNTIME_SOURCE_SHA256='89fb7b1502a1eb39f9d1ea94dbe92bbfa13585a0746f80aec1af1399e4279042'
+CURRENT_RUNTIME_SOURCE_SHA256='b2cfd5ed088272e969f5a88153087d569754d11cacede3d407400f42b03e8da4'
 _runtime_source_names=['core.c','entry_gate.c','mod_loader.c','override_loader.c','game_audit.c','locale_layer.c','native_locale.c','user32_locale.c','gdi_locale.c','locale_bootstrap.c','platform.h','runtime_support.c']
 _runtime_hash=hashlib.sha256()
 for _name in _runtime_source_names:
