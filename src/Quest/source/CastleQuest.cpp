@@ -52,6 +52,10 @@
 #include "RouteSearch.h"
 #include "CastleRuntime_Client.h"
 #include "CastleHook_API.h"
+#include "CastleDisplay_API.h"
+#include "CastleOverlay_API.h"
+#include "CastleSchedule_API.h"
+#include "CastleGameState_API.h"
 
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "gdi32.lib")
@@ -273,6 +277,12 @@ enum class HookOwnerMode {
     Integrated
 };
 static HookOwnerMode g_hookOwnerMode = HookOwnerMode::None;
+static const CastleDisplayApiV1* g_runtimeDisplayApi = nullptr;
+static const CastleOverlayApiV1* g_runtimeOverlayApi = nullptr;
+static const CastleScheduleApiV1* g_runtimeScheduleApi = nullptr;
+static const CastleGameStateApiV1* g_runtimeGameStateApi = nullptr;
+static CastleLeaseHandle g_runtimeOverlayClient = 0u;
+static CastleTaskHandle g_runtimeExplorationTask = 0u;
 
 // SDK Client 自己已经用原子状态机保证业务初始化只执行一次；这里的布尔值只是防止
 // 公共初始化辅助函数被本文件内部重复调用，不承担跨线程 Bootstrap 仲裁职责。
@@ -592,6 +602,7 @@ static bool BytesEqual(uintptr_t address, const BYTE* expected, size_t count) {
 struct DisplayGeometry {
     bool valid = false;
     bool widescreen = false;
+    uint32_t generation = 0;
     int outputWidth = 640;
     int outputHeight = 480;
     int logicalWidth = 640;
@@ -602,14 +613,6 @@ struct DisplayGeometry {
     int leftWorldPixels = 0;
     int rightWorldPixels = 0;
 };
-
-// 读取一个“全局 owner 指针槽”，并确认它至少指向 1 字节真实可读内存。
-// Backlog 用同一思路排除战斗、标题、Interface、存档点、客栈、炼化、商店等 UI。
-static bool GlobalPointerPresent(uintptr_t address) {
-    void* pointer = nullptr;
-    if (!SafeRead(address, pointer) || !pointer) return false;
-    return IsReadableRange(pointer, 1);
-}
 
 enum class VisualGateReason {
     Visible,
@@ -649,6 +652,34 @@ static const char* VisualGateReasonName(VisualGateReason reason) {
 // 注意：这只控制“画不画”。任务条件、GameVar 读取、日志取证仍可继续在后台执行，
 // 所以退出对话/菜单的下一帧就能恢复到正确任务状态。
 static VisualGateReason QueryQuestVisualGate(bool requireExplorationManager, bool sceneObjectListValid) {
+    CastleGameStateSnapshotV1 runtimeState = {};
+    if (!g_runtimeGameStateApi) return VisualGateReason::InvalidSnapshot;
+    runtimeState.magic = CASTLE_GAME_SNAPSHOT_MAGIC;
+    runtimeState.struct_size = CASTLE_SIZEOF_GAME_STATE_SNAPSHOT_V1;
+    runtimeState.version = CASTLE_GAME_STATE_STRUCTURE_VERSION_1;
+    if (g_runtimeGameStateApi->GetSnapshot(&runtimeState) < 0) {
+        return VisualGateReason::InvalidSnapshot;
+    }
+    if ((runtimeState.flags & CASTLE_GAME_FLAG_DIALOGUE_ACTIVE) != 0u)
+        return VisualGateReason::Dialogue;
+    if ((runtimeState.flags & (CASTLE_GAME_FLAG_BATTLE_ACTIVE |
+                               CASTLE_GAME_FLAG_MENU_ACTIVE)) != 0u)
+        return VisualGateReason::KnownUi;
+    if ((runtimeState.flags & CASTLE_GAME_FLAG_MOVIE_ACTIVE) != 0u)
+        return VisualGateReason::Movie;
+    if ((runtimeState.flags & CASTLE_GAME_FLAG_EVENT_TABLE_READY) == 0u)
+        return VisualGateReason::NoEventTable;
+    if (runtimeState.active_event_id != 0u) return VisualGateReason::EventBusy;
+    if (runtimeState.event_yield != 0u || runtimeState.event_blocked != 0u)
+        return VisualGateReason::EventYieldOrBlock;
+    if (runtimeState.map_input_gate == 0u) return VisualGateReason::InputClosed;
+    if (runtimeState.map_key_mode == 0u) return VisualGateReason::MapModeInactive;
+    if (requireExplorationManager && !sceneObjectListValid)
+        return VisualGateReason::NoExplorationManager;
+    return VisualGateReason::Visible;
+
+#if 0
+    // 旧版逐地址门控已经由 Runtime GameState 快照替代，保留在 Git 历史中即可。
     // 对话是否“真的正在画”不能只看 DialogueMode。Backlog 的已验证逻辑证明：
     // 当 DialogueId==0（没有真实对话）时，mode 并不参与“自由探索”资格判断；
     // 因此 Quest 也绝不能擅自断言“mode 非 0 = 有对话”，否则某些正常探索状态可能被永久隐藏。
@@ -707,6 +738,7 @@ static VisualGateReason QueryQuestVisualGate(bool requireExplorationManager, boo
         return VisualGateReason::NoExplorationManager;
 
     return VisualGateReason::Visible;
+#endif
 }
 
 static void MaybeLogVisualGate(VisualGateReason reason) {
@@ -722,6 +754,32 @@ static void MaybeLogVisualGate(VisualGateReason reason) {
 // 原版 0x978514 在 Hook 返回后却会恢复成游戏自己的 Camera。Quest 不能再只用那个恢复后的值。
 static DisplayGeometry CalculateDisplayGeometry(int originalCameraX, int originalCameraY, int surfaceWidth, int surfaceHeight) {
     DisplayGeometry out;
+    CastleDisplayGeometryV1 runtimeGeometry = {};
+    (void)originalCameraX;
+    (void)originalCameraY;
+    (void)surfaceWidth;
+    (void)surfaceHeight;
+    if (!g_runtimeDisplayApi) return out;
+    runtimeGeometry.magic = CASTLE_DISPLAY_GEOMETRY_MAGIC;
+    runtimeGeometry.struct_size = CASTLE_SIZEOF_DISPLAY_GEOMETRY_V1;
+    runtimeGeometry.api_version = CASTLE_DISPLAY_API_VERSION_1;
+    if (g_runtimeDisplayApi->GetGeometry(&runtimeGeometry) < 0) return out;
+    out.valid = runtimeGeometry.projection_scope != CASTLE_PROJECTION_NONE;
+    out.widescreen = runtimeGeometry.display_mode == CASTLE_DISPLAY_WIDE_WORLD;
+    out.generation = runtimeGeometry.generation;
+    out.outputWidth = static_cast<int>(runtimeGeometry.output_width);
+    out.outputHeight = static_cast<int>(runtimeGeometry.output_height);
+    out.logicalWidth = static_cast<int>(runtimeGeometry.logical_width);
+    out.logicalHeight = static_cast<int>(runtimeGeometry.logical_height);
+    out.sideWidth = runtimeGeometry.center_x;
+    out.effectiveCameraX = runtimeGeometry.effective_camera_x;
+    out.effectiveCameraY = runtimeGeometry.effective_camera_y;
+    out.leftWorldPixels = static_cast<int>(runtimeGeometry.left_world_width);
+    out.rightWorldPixels = static_cast<int>(runtimeGeometry.right_world_width);
+    return out;
+
+#if 0
+    // 已删除的 dev6d 临时算法保留在版本历史中；正式构建绝不能再复制 Widescreen CameraPlan。
     out.outputWidth = surfaceWidth > 0 ? surfaceWidth : 640;
     out.outputHeight = surfaceHeight > 0 ? surfaceHeight : 480;
     out.effectiveCameraX = originalCameraX;
@@ -781,17 +839,38 @@ static DisplayGeometry CalculateDisplayGeometry(int originalCameraX, int origina
 
     out.valid = true;
     return out;
+#endif
 }
 
 // marker.screenX 目前是“按原版 Camera 算出的 640 逻辑坐标”。
 // 先还原成世界/Controller 坐标，再换算到宽屏真正显示的 effectiveCameraX。
 // 这样 640 模式自然得到原值；854/1120 模式也不会把固定 +107/+240 当成万能补丁。
 static POINT ProjectLogicalPointToSurface(int logicalScreenX, int logicalScreenY,
-                                          int originalCameraX, const DisplayGeometry& geometry) {
+                                          int originalCameraX, int originalCameraY,
+                                          const DisplayGeometry& geometry) {
     const int worldLikeX = logicalScreenX + originalCameraX;
+    const int worldLikeY = logicalScreenY + originalCameraY;
     POINT out;
-    out.x = worldLikeX - geometry.effectiveCameraX + geometry.sideWidth;
-    out.y = logicalScreenY;
+    CastleWorldToScreenRequestV1 request = {};
+    CastleScreenProjectionV1 projection = {};
+    request.magic = CASTLE_WORLD_TO_SCREEN_MAGIC;
+    request.struct_size = CASTLE_SIZEOF_WORLD_TO_SCREEN_V1;
+    request.request_version = CASTLE_DISPLAY_STRUCTURE_VERSION_1;
+    request.requested_generation = geometry.generation;
+    request.world_x = worldLikeX;
+    request.world_y = worldLikeY;
+    projection.magic = CASTLE_SCREEN_PROJECTION_MAGIC;
+    projection.struct_size = CASTLE_SIZEOF_SCREEN_PROJECTION_V1;
+    projection.result_version = CASTLE_DISPLAY_STRUCTURE_VERSION_1;
+    if (g_runtimeDisplayApi &&
+        g_runtimeDisplayApi->WorldToScreen(&request, &projection) >= 0) {
+        out.x = projection.screen_x;
+        out.y = projection.screen_y;
+        return out;
+    }
+    // 代次过期或当前模式不可投影时返回远离画布的点，调用方会按既有规则隐藏/夹边。
+    out.x = -0x4000;
+    out.y = -0x4000;
     return out;
 }
 
@@ -5187,7 +5266,8 @@ static bool GetDebugMouseSurfacePoint(const LockedCanvas& c, const GameSnapshot&
         // 处理 16:9/21:9 的 effectiveCameraX 与 sideWidth；因此没有任何硬编码 +107/+240 补丁。
         const int logicalX = gameWorldX - snapshot.cameraX;
         const int logicalY = gameWorldY - snapshot.cameraY;
-        const POINT projected = ProjectLogicalPointToSurface(logicalX, logicalY, snapshot.cameraX, geometry);
+        const POINT projected = ProjectLogicalPointToSurface(
+            logicalX, logicalY, snapshot.cameraX, snapshot.cameraY, geometry);
 
         // 正常探索鼠标应该落在当前输出 Surface 附近。允许 32 像素小余量，是为了兼容原版在
         // 窗口边缘/裁剪前一帧可能短暂出现的轻微越界值；离谱值则进入下面的诊断回退。
@@ -5237,7 +5317,8 @@ static POINT RuntimeEntityDebugSurfacePoint(const RuntimeEntityView& e, const Ga
         logicalX = e.worldX - snapshot.cameraX;
         logicalY = e.worldY - snapshot.cameraY;
     }
-    POINT p = ProjectLogicalPointToSurface(logicalX, logicalY, snapshot.cameraX, geometry);
+    POINT p = ProjectLogicalPointToSurface(
+        logicalX, logicalY, snapshot.cameraX, snapshot.cameraY, geometry);
     p.x += g_markerOffsetX;
     p.y += g_markerYOffset + g_markerOffsetY;
     return p;
@@ -5423,7 +5504,8 @@ static DebugHoverSelection SelectDebugHover(const LockedCanvas& c, const GameSna
 
     for (size_t i = 0; i < markers.size(); ++i) {
         const ResolvedMarker& marker = markers[i];
-        POINT sp = ProjectLogicalPointToSurface(marker.screenX, marker.screenY, snapshot.cameraX, geometry);
+        POINT sp = ProjectLogicalPointToSurface(
+            marker.screenX, marker.screenY, snapshot.cameraX, snapshot.cameraY, geometry);
         sp.x += g_markerOffsetX;
         sp.y += g_markerYOffset + g_markerOffsetY;
         bool off = false;
@@ -5841,7 +5923,7 @@ static void DrawOverlayContentSoftware(LockedCanvas& c) {
             // marker.screenX/Y 是 resolver 产生的“原版 640 逻辑坐标”。
             // dev6d 在最后一刻才投影到当前 Surface，避免任务数据库/实体匹配层知道宽屏实现细节。
             const POINT surfacePoint = ProjectLogicalPointToSurface(
-                marker.screenX, marker.screenY, snapshot.cameraX, geometry);
+                marker.screenX, marker.screenY, snapshot.cameraX, snapshot.cameraY, geometry);
             const int sx = surfacePoint.x + g_markerOffsetX;
             const int sy = surfacePoint.y + g_markerYOffset + g_markerOffsetY;
             bool off = false;
@@ -5872,7 +5954,7 @@ static void DrawOverlayContentSoftware(LockedCanvas& c) {
             test.screenX = g_debugWorldX - snapshot.cameraX;
             test.screenY = g_debugWorldY - snapshot.cameraY;
             const POINT surfacePoint = ProjectLogicalPointToSurface(
-                test.screenX, test.screenY, snapshot.cameraX, geometry);
+                test.screenX, test.screenY, snapshot.cameraX, snapshot.cameraY, geometry);
             const int sx = surfacePoint.x + g_markerOffsetX;
             const int sy = surfacePoint.y + g_markerYOffset + g_markerOffsetY;
             bool off = false;
@@ -6167,6 +6249,18 @@ static bool ValidateOriginalBinarySurface() {
     return presentOk && explorationOk && getVarOk && controlledOk;
 }
 
+// Integrated 模式下，Present 与 ExplorationUpdate 的入口已经由 Runtime 中央桥接，
+// 因而这里不能再要求它们保持原版字节。Quest 自己只保留两条只读协议护栏。
+static bool ValidateIntegratedReadProtocol() {
+    const BYTE getVarBytes[11] = {0x8B, 0x4C, 0x24, 0x04, 0x85, 0xC9, 0x75, 0x03, 0x33, 0xC0, 0xC3};
+    const BYTE controlledBytes[5] = {0xA1, 0xF0, 0x8B, 0x46, 0x00};
+    const bool getVarOk = BytesEqual(Address::kGetGameVar, getVarBytes, sizeof(getVarBytes));
+    const bool controlledOk = BytesEqual(Address::kGetControlledEntity, controlledBytes, sizeof(controlledBytes));
+    Log("[版本护栏] Runtime已拥有Present/Exploration入口；Quest只读GET_VAR=%s ControlledEntity=%s。",
+        getVarOk ? "PASS" : "FAIL", controlledOk ? "PASS" : "FAIL");
+    return getVarOk && controlledOk;
+}
+
 // Standalone 探索入口安装。这里只有在 SDK Client 明确判定“同目录没有 Castle_Runtime.dll”后才会被调用。
 static bool InstallExplorationUpdateHookStandalone() {
     if (g_explorationUpdateHookInstalled) return true;
@@ -6264,168 +6358,135 @@ static CastleStringView SdkStringView(const char* text, CastleU32 length) {
     return view;
 }
 
-// Integrated 模式的核心：Quest 不直接写 RPG.exe，而是一次完整声明两个 6 字节独占代码补丁。
-// Runtime 先检查资源冲突与 expected_bytes，再原子提交；任一声明失败时两个入口都不会留下“装一半”的状态。
-static CastleResult InstallIntegratedHooks(const CastleRuntimeApiV1* runtimeApi,
-                                           CastlePluginHandle pluginHandle) {
-    static const char interfaceId[] = CASTLE_HOOK_INTERFACE_ID;
-    static const char transactionLabel[] = "Castle Quest hook transaction";
-    static const char presentLabel[] = "Castle Quest Present entry";
-    static const char explorationLabel[] = "Castle Quest ExplorationUpdate entry";
-
-    if (!runtimeApi || runtimeApi->magic != CASTLE_RUNTIME_API_MAGIC ||
-        runtimeApi->struct_size < CASTLE_SIZEOF_RUNTIME_API_V1 ||
-        runtimeApi->abi_version != CASTLE_RUNTIME_ABI_V1 || !runtimeApi->QueryInterface ||
-        !runtimeApi->GetRuntimeInfo || pluginHandle == 0u) {
-        Log("[RuntimeSDK] 根 API/插件句柄无效，拒绝建立 Hook 事务。");
-        return CASTLE_ERROR_ABI_MISMATCH;
-    }
-
+// 查询 Runtime 子接口的统一小助手。每张函数表仍由调用点继续检查 magic/size，
+// 这里只消除重复的 Query/Result 填充代码，不隐藏版本协商失败。
+static const void* QueryRuntimeInterface(const CastleRuntimeApiV1* runtimeApi,
+                                         const char* interfaceId,
+                                         CastleU32 interfaceIdLength,
+                                         CastleU32 version,
+                                         CastleU32 minimumSize,
+                                         CastleU32 requiredCapabilities) {
     CastleInterfaceQueryV1 query = {};
+    CastleInterfaceResultV1 result = {};
+    if (!runtimeApi || !runtimeApi->QueryInterface) return nullptr;
     query.magic = CASTLE_QUERY_MAGIC;
     query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
     query.request_version = CASTLE_QUERY_VERSION_1;
-    query.interface_id = SdkStringView(interfaceId, static_cast<CastleU32>(sizeof(interfaceId) - 1u));
-    query.requested_version = CASTLE_HOOK_API_VERSION_1;
-    query.minimum_struct_size = CASTLE_SIZEOF_HOOK_API_V1;
-    query.required_capabilities_low = CASTLE_RUNTIME_CAP_HOOK_TRANSACTION;
+    query.interface_id = SdkStringView(interfaceId, interfaceIdLength);
+    query.requested_version = version;
+    query.minimum_struct_size = minimumSize;
+    query.required_capabilities_low = requiredCapabilities;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    return runtimeApi->QueryInterface(&query, &result) == CASTLE_OK ?
+        result.api_pointer : nullptr;
+}
 
-    CastleInterfaceResultV1 interfaceResult = {};
-    interfaceResult.magic = CASTLE_INTERFACE_API_MAGIC;
-    interfaceResult.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
-    interfaceResult.result_version = CASTLE_QUERY_VERSION_1;
+// Runtime 的探索入口桥已经先保存本帧 manager，再调用这里。Quest 只复制一个已验证快照，
+// 不再拥有 0x00409580 的 E9，也不会与相邻 BUGFix/Controller 补丁形成连续入口链。
+static CastleResult CASTLE_RUNTIME_CALL QuestExplorationPhase(
+    CastleTaskHandle task, void*) {
+    CastleGameStateSnapshotV1 snapshot = {};
+    (void)task;
+    if (!g_runtimeGameStateApi) return CASTLE_ERROR_NOT_READY;
+    snapshot.magic = CASTLE_GAME_SNAPSHOT_MAGIC;
+    snapshot.struct_size = CASTLE_SIZEOF_GAME_STATE_SNAPSHOT_V1;
+    snapshot.version = CASTLE_GAME_STATE_STRUCTURE_VERSION_1;
+    CastleResult result = g_runtimeGameStateApi->GetSnapshot(&snapshot);
+    if (result < 0 || snapshot.exploration_manager == 0u) return result;
+    InterlockedExchangePointer(&g_explorationManager,
+        reinterpret_cast<void*>(static_cast<uintptr_t>(snapshot.exploration_manager)));
+    InterlockedIncrement(&g_explorationCaptureSerial);
+    return CASTLE_OK;
+}
 
-    CastleResult result = runtimeApi->QueryInterface(&query, &interfaceResult);
-    if (result < 0 || !interfaceResult.api_pointer) {
-        Log("[RuntimeSDK] Hook v1 接口查询失败：result=%ld。", static_cast<long>(result));
-        return result < 0 ? result : CASTLE_ERROR_INTERFACE_NOT_FOUND;
+// 所有正式叠加层都从 Runtime 的 renderer Present 桥进入。Quest 只画自己的像素，
+// 返回后 Runtime 必定继续调用原版 Present，所以任务系统失败不会导致游戏黑屏。
+static CastleResult CASTLE_RUNTIME_CALL QuestOverlayDraw(
+    const CastleOverlayContextV1* context, void*) {
+    if (!context || context->magic != CASTLE_OVERLAY_CONTEXT_MAGIC ||
+        context->render_context == 0u) return CASTLE_ERROR_INVALID_ARGUMENT;
+    ProcessHotkeys();
+    DrawOverlayToBackSurface(reinterpret_cast<void*>(
+        static_cast<uintptr_t>(context->render_context)));
+    return CASTLE_OK;
+}
+
+static CastleResult InstallIntegratedServices(const CastleRuntimeApiV1* runtimeApi,
+                                              CastlePluginHandle pluginHandle) {
+    static const char displayId[] = CASTLE_DISPLAY_INTERFACE_ID;
+    static const char overlayId[] = CASTLE_OVERLAY_INTERFACE_ID;
+    static const char scheduleId[] = CASTLE_SCHEDULE_INTERFACE_ID;
+    static const char gameStateId[] = CASTLE_GAME_STATE_INTERFACE_ID;
+    static const char overlayLabel[] = "Castle Quest overlay";
+    static const char explorationLabel[] = "Castle Quest exploration capture";
+    CastleOverlayClientV1 overlay = {};
+    CastleScheduledTaskV1 phaseTask = {};
+    CastleResult result;
+
+    g_runtimeDisplayApi = static_cast<const CastleDisplayApiV1*>(QueryRuntimeInterface(
+        runtimeApi, displayId, static_cast<CastleU32>(sizeof(displayId) - 1u),
+        CASTLE_DISPLAY_API_VERSION_1, CASTLE_SIZEOF_DISPLAY_API_V1, 0u));
+    g_runtimeOverlayApi = static_cast<const CastleOverlayApiV1*>(QueryRuntimeInterface(
+        runtimeApi, overlayId, static_cast<CastleU32>(sizeof(overlayId) - 1u),
+        CASTLE_OVERLAY_API_VERSION_1, CASTLE_SIZEOF_OVERLAY_API_V1,
+        CASTLE_OVERLAY_CAP_BEFORE_RENDERER_PRESENT));
+    g_runtimeScheduleApi = static_cast<const CastleScheduleApiV1*>(QueryRuntimeInterface(
+        runtimeApi, scheduleId, static_cast<CastleU32>(sizeof(scheduleId) - 1u),
+        CASTLE_SCHEDULE_API_VERSION_1, CASTLE_SIZEOF_SCHEDULE_API_V1,
+        CASTLE_SCHEDULE_CAP_GAME_PHASE));
+    g_runtimeGameStateApi = static_cast<const CastleGameStateApiV1*>(QueryRuntimeInterface(
+        runtimeApi, gameStateId, static_cast<CastleU32>(sizeof(gameStateId) - 1u),
+        CASTLE_GAME_STATE_API_VERSION_1, CASTLE_SIZEOF_GAME_STATE_API_V1,
+        CASTLE_GAME_STATE_CAP_SNAPSHOT));
+    if (!g_runtimeDisplayApi || !g_runtimeOverlayApi || !g_runtimeScheduleApi ||
+        !g_runtimeGameStateApi) {
+        Log("[RuntimeSDK] Display/Overlay/Schedule.GamePhase/GameState 任一接口缺失，Quest安全停用。");
+        return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     }
-    const CastleHookApiV1* hookApi = static_cast<const CastleHookApiV1*>(interfaceResult.api_pointer);
-    if (!hookApi || hookApi->magic != CASTLE_HOOK_API_MAGIC ||
-        hookApi->struct_size < CASTLE_SIZEOF_HOOK_API_V1 ||
-        hookApi->api_version != CASTLE_HOOK_API_VERSION_1 || !hookApi->BeginTransaction ||
-        !hookApi->AddExclusivePatch || !hookApi->PreflightTransaction ||
-        !hookApi->CommitTransaction || !hookApi->AbortTransaction) {
-        Log("[RuntimeSDK] Hook v1 函数表不完整或 ABI 不匹配。");
-        return CASTLE_ERROR_INTERFACE_VERSION;
-    }
 
-    CastleRuntimeInfoV1 info = {};
-    info.magic = CASTLE_RUNTIME_INFO_MAGIC;
-    info.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
-    info.info_version = CASTLE_RUNTIME_INFO_VERSION_1;
-    result = runtimeApi->GetRuntimeInfo(&info);
-    if (result < 0 || info.game_module == 0u) {
-        Log("[RuntimeSDK] 无法取得 RPG.exe 模块基址：result=%ld。", static_cast<long>(result));
-        return result < 0 ? result : CASTLE_ERROR_RUNTIME_FAULT;
-    }
+    overlay.magic = CASTLE_OVERLAY_CLIENT_MAGIC;
+    overlay.struct_size = CASTLE_SIZEOF_OVERLAY_CLIENT_V1;
+    overlay.version = CASTLE_OVERLAY_STRUCTURE_VERSION_1;
+    overlay.phase = CASTLE_OVERLAY_PHASE_BEFORE_PRESENT;
+    overlay.priority = CASTLE_OVERLAY_PRIORITY_DEFAULT;
+    overlay.draw = QuestOverlayDraw;
+    overlay.label = SdkStringView(overlayLabel,
+        static_cast<CastleU32>(sizeof(overlayLabel) - 1u));
+    result = g_runtimeOverlayApi->RegisterOverlay(pluginHandle, &overlay,
+                                                   &g_runtimeOverlayClient);
+    if (result < 0) return result;
 
-    const uintptr_t gameBase = static_cast<uintptr_t>(info.game_module);
-    // 本插件现阶段仍以台湾第三版 ImageBase=0x00400000 的绝对地址表工作。
-    // Runtime 的 module+rva 只能规范“谁来写”，不能把整套绝对地址自动变成可重定位地址。
-    // 所以这里必须先确认实际 RPG.exe 基址就是研究基线，否则两个 Hook 即使能算 RVA，
-    // 后续 GameVar/Camera/World 等只读绝对地址仍会指错位置。
-    if (gameBase != 0x00400000u) {
-        Log("[RuntimeSDK] RPG.exe 模块基址不是 0x00400000（实际=0x%08lX），拒绝安装。",
-            static_cast<unsigned long>(gameBase));
-        return CASTLE_ERROR_UNKNOWN_GAME_BUILD;
-    }
-
-    // trampoline 在事务提交前先准备好。这样提交一旦成功，Hook 第一次被执行时原函数指针已经可用。
-    // 如果后续事务失败，这两块内存会立即释放，不留下孤儿执行页。
-    void* explorationTrampoline = CreateEntryTrampoline(Address::kExplorationUpdate, kExplorationEntryBytes);
-    if (!explorationTrampoline) return CASTLE_ERROR_RUNTIME_FAULT;
-    void* presentTrampoline = CreateEntryTrampoline(Address::kPresent, kPresentEntryBytes);
-    if (!presentTrampoline) {
-        VirtualFree(explorationTrampoline, 0, MEM_RELEASE);
-        return CASTLE_ERROR_RUNTIME_FAULT;
-    }
-
-    BYTE explorationPatch[6] = {};
-    BYTE presentPatch[6] = {};
-    BuildRelativeJump6(Address::kExplorationUpdate,
-                       reinterpret_cast<uintptr_t>(&ExplorationUpdateHook), explorationPatch);
-    BuildRelativeJump6(Address::kPresent, reinterpret_cast<uintptr_t>(&PresentHook), presentPatch);
-
-    CastleTransactionHandle transaction = 0u;
-    result = hookApi->BeginTransaction(
-        pluginHandle,
-        SdkStringView(transactionLabel, static_cast<CastleU32>(sizeof(transactionLabel) - 1u)),
-        0u, &transaction);
-    if (result < 0 || transaction == 0u) {
-        VirtualFree(presentTrampoline, 0, MEM_RELEASE);
-        VirtualFree(explorationTrampoline, 0, MEM_RELEASE);
-        Log("[RuntimeSDK] BeginTransaction 失败：result=%ld。", static_cast<long>(result));
-        return result < 0 ? result : CASTLE_ERROR_TRANSACTION_STATE;
-    }
-
-    CastleExclusivePatchClaimV1 explorationClaim = {};
-    explorationClaim.magic = CASTLE_EXCLUSIVE_PATCH_MAGIC;
-    explorationClaim.struct_size = CASTLE_SIZEOF_EXCLUSIVE_PATCH_V1;
-    explorationClaim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
-    explorationClaim.flags = CASTLE_PATCH_FLAG_CODE;
-    explorationClaim.target.module = info.game_module;
-    explorationClaim.target.rva = static_cast<CastleU32>(Address::kExplorationUpdate - gameBase);
-    explorationClaim.target.size = 6u;
-    explorationClaim.expected_bytes = kExplorationEntryBytes;
-    explorationClaim.expected_size = 6u;
-    explorationClaim.replacement_bytes = explorationPatch;
-    explorationClaim.replacement_size = 6u;
-    explorationClaim.label = SdkStringView(
-        explorationLabel, static_cast<CastleU32>(sizeof(explorationLabel) - 1u));
-
-    CastleExclusivePatchClaimV1 presentClaim = {};
-    presentClaim.magic = CASTLE_EXCLUSIVE_PATCH_MAGIC;
-    presentClaim.struct_size = CASTLE_SIZEOF_EXCLUSIVE_PATCH_V1;
-    presentClaim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
-    presentClaim.flags = CASTLE_PATCH_FLAG_CODE;
-    presentClaim.target.module = info.game_module;
-    presentClaim.target.rva = static_cast<CastleU32>(Address::kPresent - gameBase);
-    presentClaim.target.size = 6u;
-    presentClaim.expected_bytes = kPresentEntryBytes;
-    presentClaim.expected_size = 6u;
-    presentClaim.replacement_bytes = presentPatch;
-    presentClaim.replacement_size = 6u;
-    presentClaim.label = SdkStringView(presentLabel, static_cast<CastleU32>(sizeof(presentLabel) - 1u));
-
-    CastleClaimHandle explorationClaimHandle = 0u;
-    CastleClaimHandle presentClaimHandle = 0u;
-    result = hookApi->AddExclusivePatch(transaction, &explorationClaim, &explorationClaimHandle);
-    if (result >= 0) result = hookApi->AddExclusivePatch(transaction, &presentClaim, &presentClaimHandle);
+    phaseTask.magic = CASTLE_SCHEDULE_TASK_MAGIC;
+    phaseTask.struct_size = CASTLE_SIZEOF_SCHEDULED_TASK_V1;
+    phaseTask.version = CASTLE_SCHEDULE_STRUCTURE_VERSION_1;
+    phaseTask.flags = CASTLE_SCHEDULE_TASK_START_ENABLED |
+                      CASTLE_SCHEDULE_TASK_GAME_EXPLORATION;
+    phaseTask.period_ms = 0u;
+    phaseTask.budget_ms = 2u;
+    phaseTask.phase = CASTLE_SCHEDULE_PHASE_NORMAL;
+    phaseTask.priority = CASTLE_SCHEDULE_PRIORITY_DEFAULT;
+    phaseTask.callback = QuestExplorationPhase;
+    phaseTask.label = SdkStringView(explorationLabel,
+        static_cast<CastleU32>(sizeof(explorationLabel) - 1u));
+    result = g_runtimeScheduleApi->RegisterGamePhaseCallback(
+        pluginHandle, &phaseTask, &g_runtimeExplorationTask);
     if (result < 0) {
-        hookApi->AbortTransaction(transaction);
-        VirtualFree(presentTrampoline, 0, MEM_RELEASE);
-        VirtualFree(explorationTrampoline, 0, MEM_RELEASE);
-        Log("[RuntimeSDK] ExclusivePatch 声明失败：result=%ld。", static_cast<long>(result));
+        g_runtimeOverlayApi->UnregisterOverlay(g_runtimeOverlayClient);
+        g_runtimeOverlayClient = 0u;
         return result;
     }
-
-    result = hookApi->PreflightTransaction(transaction);
+    result = g_runtimeOverlayApi->SetOverlayReady(g_runtimeOverlayClient, 1u);
     if (result < 0) {
-        hookApi->AbortTransaction(transaction);
-        VirtualFree(presentTrampoline, 0, MEM_RELEASE);
-        VirtualFree(explorationTrampoline, 0, MEM_RELEASE);
-        Log("[RuntimeSDK] Hook 事务预检失败：result=%ld。", static_cast<long>(result));
+        g_runtimeScheduleApi->UnregisterPeriodicTask(g_runtimeExplorationTask);
+        g_runtimeExplorationTask = 0u;
+        g_runtimeOverlayApi->UnregisterOverlay(g_runtimeOverlayClient);
+        g_runtimeOverlayClient = 0u;
         return result;
     }
-
-    result = hookApi->CommitTransaction(transaction);
-    if (result < 0) {
-        // Commit 失败后的回滚状态由 Runtime 自己维护；Quest 不再碰 RPG.exe，也不私自转 Standalone。
-        VirtualFree(presentTrampoline, 0, MEM_RELEASE);
-        VirtualFree(explorationTrampoline, 0, MEM_RELEASE);
-        Log("[RuntimeSDK] Hook 事务提交失败：result=%ld；未回退到私有 Hook。", static_cast<long>(result));
-        return result;
-    }
-
-    g_explorationUpdateTrampoline = explorationTrampoline;
-    g_originalExplorationUpdate = reinterpret_cast<ExplorationUpdateFn>(explorationTrampoline);
-    g_explorationUpdateHookInstalled = true;
-    g_presentTrampoline = presentTrampoline;
-    g_originalPresent = reinterpret_cast<PresentFn>(presentTrampoline);
-    g_presentHookInstalled = true;
     g_hookOwnerMode = HookOwnerMode::Integrated;
-    Log("[RuntimeSDK] 两个 ExclusivePatch 已作为同一 Hook 事务提交：ExplorationUpdate + Present。");
+    Log("[RuntimeSDK] Quest 已接入 GamePhase/Overlay/Display/GameState；不再拥有两个入口 Hook。");
     return CASTLE_OK;
 }
 
@@ -6475,11 +6536,11 @@ static CastleResult CASTLE_RUNTIME_CALL QuestIntegratedInitialize(
     const CastleRuntimeApiV1* runtimeApi, CastlePluginHandle pluginHandle, void*) {
     if (!InitializeBusinessCore()) return CASTLE_ERROR_RUNTIME_FAULT;
     Log("[模式] Integrated：Castle_Runtime.dll 可用；Quest 不直接修改 RPG.exe 代码段。");
-    if (!ValidateOriginalBinarySurface()) {
-        Log("[失败] Integrated 关键机器码不匹配；拒绝向 Runtime 提交 Hook 事务。");
+    if (!ValidateIntegratedReadProtocol()) {
+        Log("[失败] Integrated 只读协议不匹配；Quest安全停用。");
         return CASTLE_ERROR_EXPECTED_BYTES;
     }
-    return InstallIntegratedHooks(runtimeApi, pluginHandle);
+    return InstallIntegratedServices(runtimeApi, pluginHandle);
 }
 
 static void CASTLE_RUNTIME_CALL QuestRuntimeFault(CastleResult failure, void*) {
@@ -6525,8 +6586,7 @@ static const CastlePluginDescriptorV1 g_pluginDescriptor = {
     CASTLE_PLUGIN_DESC_MAGIC,
     CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,
     CASTLE_PLUGIN_DESCRIPTOR_V1,
-    CASTLE_PLUGIN_FLAG_REQUESTS_HOOKS |
-        CASTLE_PLUGIN_FLAG_OFFICIAL_MODULE,
+    CASTLE_PLUGIN_FLAG_OFFICIAL_MODULE,
     0u,
     {g_pluginId, static_cast<CastleU32>(sizeof(g_pluginId) - 1u)},
     {g_displayName, static_cast<CastleU32>(sizeof(g_displayName) - 1u)},

@@ -1,0 +1,4 @@
+EXPORTS
+    CastlePlugin_Query
+    InitializeASI
+    CastleRuntimeClient_NotifyLoaderReady

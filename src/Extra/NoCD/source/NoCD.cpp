@@ -194,6 +194,9 @@ CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
     const CastleHookApiV1* hookApi = QueryHookApi(runtimeApi);
     const BYTE driveLetter = DetectExeDriveLetter();
 
+    if (!ycrlog::BindRuntime(runtimeApi, pluginHandle)) {
+        return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    }
     OpenStartupLog("Integrated：Castle_Runtime.dll 统一拥有补丁事务。");
     runtimeInfo.magic = CASTLE_RUNTIME_INFO_MAGIC;
     runtimeInfo.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
@@ -250,10 +253,7 @@ CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
 }
 
 void RuntimeFault(CastleResult failure) {
-    OpenStartupLog("Fault：Runtime 文件存在但不可安全使用，禁止回退到私有补丁。");
-    ycrlog::Text("[失败] Runtime 故障码=");
-    ycrlog::Unsigned(static_cast<DWORD>(-failure));
-    ycrlog::Line("；本轮 NoCD 未写入游戏。");
+    (void)failure;
 }
 
 }  // namespace

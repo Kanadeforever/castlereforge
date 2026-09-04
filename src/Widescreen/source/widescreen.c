@@ -2090,15 +2090,14 @@ int Widescreen_RegisterRuntimeServices(const CastleRuntimeApiV1* runtime_api,
 /*
  * 安装顺序：
  * 1. 先把六块运行时缓冲区一次性分配好：宽屏帧、Present staging、原 backing 备份、队列快照、两块模糊工作区；任何一个失败都不安装 Hook。
- * 2. Runtime_ExactBuildProtocolOk 已经在 DllMain 里做过总预检；这里每个 Runtime_PatchCall 还会再核对一次原目标。
+ * 2. Runtime_ExactBuildProtocolOk 已经做过总预检；这里只安装两个 DirectDraw 重建 CALL 和 Bink 指针。
+ *    主 RenderQueue/Present CALL 由 Castle_Runtime 唯一拥有，本插件通过 Render Provider 被调用。
  * 3. 本版不碰 backing 分配、不碰 11 个低层 blitter；这正是和 POC1 的关键区别。
  */
 int Widescreen_Install(void) {
     int ok = 1;
     int patched_rebuild_init = 0;
     int patched_rebuild_lost = 0;
-    int patched_render_queue = 0;
-    int patched_present = 0;
 
     /*
      * 配置只在插件安装时读取一次。
@@ -2187,15 +2186,10 @@ int Widescreen_Install(void) {
                            Hook_DisplayRebuild, "Surface lost 后宽屏重建")) { ok = 0; goto rollback; }
     patched_rebuild_lost = 1;
 
-    if (!Runtime_PatchCall(CALL_RENDER_QUEUE, FN_RENDER_QUEUE,
-                           Hook_RenderQueue, "主帧绘制队列多 Camera 重放")) { ok = 0; goto rollback; }
-    patched_render_queue = 1;
-
-    if (!Runtime_PatchCall(CALL_DISPLAY_PRESENT, FN_DISPLAY_PRESENT,
-                           Hook_DisplayPresent, "动态 staging -> 当前宽屏 Present")) { ok = 0; goto rollback; }
-    patched_present = 1;
-
-    /* Bink 是函数指针槽，不是 E8 CALL。把它放在所有 CALL 之后；失败时先回滚全部 CALL。 */
+    /*
+     * Bink 是函数指针槽，不是 E8 CALL。RenderQueue/Present 已由 Runtime 桥接，所以这里
+     * 不再出现任何“读取当前 CALL 目标后覆盖”的双边兼容代码。
+     */
     if (!Runtime_PatchPointer(IAT_BINK_COPYTOBUFFER, Hook_BinkCopyToBuffer,
                               (void**)&g_original_bink_copy,
                               "Bink 640 居中与渐变黑边")) { ok = 0; goto rollback; }
@@ -2209,12 +2203,6 @@ rollback:
      * 倒序恢复，和安装顺序相反。Runtime_RestoreCall 还会确认“当前目标仍然是我们的 Hook”才写回，
      * 所以如果别的插件在极短窗口内接管了同一 CALL，也不会被我们粗暴覆盖。
      */
-    if (patched_present) {
-        Runtime_RestoreCall(CALL_DISPLAY_PRESENT, (u32)Hook_DisplayPresent, FN_DISPLAY_PRESENT);
-    }
-    if (patched_render_queue) {
-        Runtime_RestoreCall(CALL_RENDER_QUEUE, (u32)Hook_RenderQueue, FN_RENDER_QUEUE);
-    }
     if (patched_rebuild_lost) {
         Runtime_RestoreCall(CALL_DISPLAY_REBUILD_LOST, (u32)Hook_DisplayRebuild, FN_DISPLAY_REBUILD);
     }

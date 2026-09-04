@@ -5,6 +5,8 @@
 #include "pad_bridge.h"
 #include "CastleRuntime_API.h"
 #include "CastleHook_API.h"
+#include "CastleGameState_API.h"
+#include "CastleInput_API.h"
 
 /*
  * backlog.c
@@ -281,6 +283,13 @@ static int g_missing_name_panel_logged;
  * 剧情旁路只使用插件内部屏障，绝不再改真实 dialogue_id；自由探索 synthetic 才允许清 synthetic ID。
  */
 static int g_close_barrier_pending;
+static const CastleGameStateApiV1* g_runtime_game_state_api;
+static const CastleInputApiV1* g_runtime_input_api;
+static CastlePluginHandle g_runtime_plugin_handle;
+static CastleLeaseHandle g_dialogue_mutation_lease;
+static CastleLeaseHandle g_input_focus_lease;
+
+static CastleStringView backlog_sdk_view(const char* text, CastleU32 length);
 
 /* 把一个固定字节区清零；volatile 防止编译器把循环替换成 CRT memset。 */
 static void backlog_zero_bytes(u8* destination, u32 size) {
@@ -974,6 +983,40 @@ static void backlog_save_game_state(void) {
 static void backlog_open_on_game_thread(void) {
     if (g_active || g_history_count == 0u || !backlog_can_open_now()) return;
 
+    /*
+     * 两个租约必须在写任何游戏全局之前同时取得。若另一个模态插件正在使用对话或输入，
+     * Backlog 本次保持关闭，不制造半个 synthetic dialogue。
+     */
+    if (g_runtime_game_state_api && g_runtime_input_api) {
+        static const char mutation_label[] = "Backlog dialogue override";
+        static const char focus_label[] = "Backlog modal input";
+        CastleGameMutationRequestV1 mutation = {0};
+        CastleInputFocusRequestV1 focus = {0};
+        mutation.magic = CASTLE_GAME_MUTATION_MAGIC;
+        mutation.struct_size = CASTLE_SIZEOF_GAME_MUTATION_REQUEST_V1;
+        mutation.version = CASTLE_GAME_STATE_STRUCTURE_VERSION_1;
+        mutation.resource_mask = CASTLE_GAME_RESOURCE_DIALOGUE;
+        mutation.label = backlog_sdk_view(mutation_label,
+            (CastleU32)(sizeof(mutation_label) - 1u));
+        if (g_runtime_game_state_api->AcquireMutation(g_runtime_plugin_handle,
+                &mutation, &g_dialogue_mutation_lease) < 0) return;
+        focus.magic = CASTLE_INPUT_FOCUS_MAGIC;
+        focus.struct_size = CASTLE_SIZEOF_INPUT_FOCUS_REQUEST_V1;
+        focus.version = CASTLE_INPUT_STRUCTURE_VERSION_1;
+        focus.focus_kind = CASTLE_INPUT_FOCUS_MODAL;
+        focus.priority = CASTLE_INPUT_PRIORITY_DEFAULT;
+        focus.label = backlog_sdk_view(focus_label,
+            (CastleU32)(sizeof(focus_label) - 1u));
+        if (g_runtime_input_api->AcquireFocus(g_runtime_plugin_handle, &focus,
+                &g_input_focus_lease) < 0) {
+            g_runtime_game_state_api->ReleaseMutation(g_dialogue_mutation_lease);
+            g_dialogue_mutation_lease = 0u;
+            return;
+        }
+    } else {
+        return;
+    }
+
     backlog_save_game_state();
     g_missing_name_panel_logged = 0;
     g_selected_from_newest = 0u;
@@ -1104,6 +1147,14 @@ static void backlog_close_on_game_thread(void) {
             "真实对话继续保持打开前同一页面和人物资源。"
         );
         Runtime_Log("[Backlog] 已关闭；下一次 SceneWorld tick 恢复原游戏逻辑。");
+        if (g_runtime_input_api && g_input_focus_lease) {
+            g_runtime_input_api->ReleaseFocus(g_input_focus_lease);
+            g_input_focus_lease = 0u;
+        }
+        if (g_runtime_game_state_api && g_dialogue_mutation_lease) {
+            g_runtime_game_state_api->ReleaseMutation(g_dialogue_mutation_lease);
+            g_dialogue_mutation_lease = 0u;
+        }
         return;
     }
 
@@ -1140,6 +1191,14 @@ static void backlog_close_on_game_thread(void) {
         "[自由探索载体] synthetic dialogue 已销毁；打开前地图/事件/消息快照已恢复。"
     );
     Runtime_Log("[Backlog] 已关闭；下一次 SceneWorld tick 恢复原游戏逻辑。");
+    if (g_runtime_input_api && g_input_focus_lease) {
+        g_runtime_input_api->ReleaseFocus(g_input_focus_lease);
+        g_input_focus_lease = 0u;
+    }
+    if (g_runtime_game_state_api && g_dialogue_mutation_lease) {
+        g_runtime_game_state_api->ReleaseMutation(g_dialogue_mutation_lease);
+        g_dialogue_mutation_lease = 0u;
+    }
 }
 
 /* ↑：向更旧移动一格；已经在最旧处时环回最新。 */
@@ -1492,6 +1551,29 @@ static const CastleHookApiV1* backlog_query_hook_api(
     return (const CastleHookApiV1*)result.api_pointer;
 }
 
+static const void* backlog_query_interface_(const CastleRuntimeApiV1* runtime_api,
+                                            const char* interface_id,
+                                            CastleU32 interface_length,
+                                            CastleU32 version,
+                                            CastleU32 minimum_size,
+                                            CastleU32 capabilities) {
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 result = {0};
+    if (!runtime_api || !runtime_api->QueryInterface) return NULL;
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = backlog_sdk_view(interface_id, interface_length);
+    query.requested_version = version;
+    query.minimum_struct_size = minimum_size;
+    query.required_capabilities_low = capabilities;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    return runtime_api->QueryInterface(&query, &result) == CASTLE_OK ?
+        result.api_pointer : NULL;
+}
+
 static CastleResult backlog_add_runtime_hook(const CastleHookApiV1* hook_api,
     CastleTransactionHandle transaction, CastleModule game_module,
     CastleU32 target_rva, CastleU32 hook_kind, CastleAddress original_target,
@@ -1531,6 +1613,8 @@ static CastleResult backlog_get_next_slot(const CastleHookApiV1* hook_api,
 /* Runtime 模式把五个 CALL 和 SceneWorld vtable[0] 作为一个原子链事务提交。 */
 CastleResult Backlog_InstallIntegrated(const CastleRuntimeApiV1* runtime_api,
                                        CastlePluginHandle plugin_handle) {
+    static const char game_state_id[] = CASTLE_GAME_STATE_INTERFACE_ID;
+    static const char input_id[] = CASTLE_INPUT_INTERFACE_ID;
     static const char transaction_label[] = "Backlog render/update chains";
     static const char panel_signature_text[] =
         "org.castlereforge.signature.dialogue-panel-draw.v1";
@@ -1558,6 +1642,18 @@ CastleResult Backlog_InstallIntegrated(const CastleRuntimeApiV1* runtime_api,
 
     if (!Runtime_Config()->enabled) return CASTLE_OK;
     if (!hook_api || !runtime_api) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    g_runtime_game_state_api = (const CastleGameStateApiV1*)backlog_query_interface_(
+        runtime_api, game_state_id, (CastleU32)(sizeof(game_state_id) - 1u),
+        CASTLE_GAME_STATE_API_VERSION_1, CASTLE_SIZEOF_GAME_STATE_API_V1,
+        CASTLE_GAME_STATE_CAP_MUTATION_LEASE);
+    g_runtime_input_api = (const CastleInputApiV1*)backlog_query_interface_(
+        runtime_api, input_id, (CastleU32)(sizeof(input_id) - 1u),
+        CASTLE_INPUT_API_VERSION_1, CASTLE_SIZEOF_INPUT_API_V1,
+        CASTLE_INPUT_CAP_FOCUS_LEASE);
+    if (!g_runtime_game_state_api || !g_runtime_input_api) {
+        return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    }
+    g_runtime_plugin_handle = plugin_handle;
     info.magic = CASTLE_RUNTIME_INFO_MAGIC;
     info.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
     info.info_version = CASTLE_RUNTIME_INFO_VERSION_1;
@@ -1884,6 +1980,14 @@ void Backlog_Shutdown(void) {
         g_close_barrier_pending = 0;
         g_opened_over_live_dialogue = 0;
         g_active = 0;
+    }
+    if (g_runtime_input_api && g_input_focus_lease) {
+        g_runtime_input_api->ReleaseFocus(g_input_focus_lease);
+        g_input_focus_lease = 0u;
+    }
+    if (g_runtime_game_state_api && g_dialogue_mutation_lease) {
+        g_runtime_game_state_api->ReleaseMutation(g_dialogue_mutation_lease);
+        g_dialogue_mutation_lease = 0u;
     }
 
     if (g_hook_installed && *slot == (void*)Backlog_HookSceneUpdate && g_previous_scene_update) {

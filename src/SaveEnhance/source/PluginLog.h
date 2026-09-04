@@ -2,6 +2,7 @@
 #define CASTLE_SAVE_ENHANCE_PLUGIN_LOG_H
 
 #include "Win32Mini.h"
+#include "CastleLog_API.h"
 
 // ============================================================================
 // PluginLog.h
@@ -26,6 +27,13 @@ namespace ycrlog {
 // Windows 打开文件以后会返回一个 HANDLE，可以理解为“这个已经打开文件的编号/把手”。
 // INVALID_HANDLE_VALUE 表示目前没有可用日志文件。
 static HANDLE gLogFile = INVALID_HANDLE_VALUE;
+static const CastleLogApiV1* gRuntimeLogApi = nullptr;
+static CastlePluginHandle gRuntimeLogPlugin = 0u;
+
+inline void BindRuntime(const CastleLogApiV1* api, CastlePluginHandle plugin) {
+    gRuntimeLogApi = api;
+    gRuntimeLogPlugin = plugin;
+}
 
 inline SIZE_T StringLengthA(const char* text) {
     // char 字符串结尾有一个值为 0 的 '\0'。这里从第 0 个字符开始数，直到遇到结尾。
@@ -56,9 +64,18 @@ inline SIZE_T StringLengthW(const wchar_t* text) {
 inline void WriteRaw(const char* text, SIZE_T size) {
     // 这是所有文本输出最后都会经过的最底层函数。
     // 没有打开日志、没有文本、或者长度为 0 时什么都不做，日志失败不能拖垮游戏。
-    if (gLogFile == INVALID_HANDLE_VALUE || text == nullptr || size == 0u) {
+    if (text == nullptr || size == 0u) {
         return;
     }
+    if (gRuntimeLogApi != nullptr && gRuntimeLogPlugin != 0u &&
+        gRuntimeLogApi->WritePluginText != nullptr) {
+        CastleStringView view{};
+        view.data = text;
+        view.length = static_cast<CastleU32>(size);
+        gRuntimeLogApi->WritePluginText(gRuntimeLogPlugin, view);
+        return;
+    }
+    if (gLogFile == INVALID_HANDLE_VALUE) return;
 
     // WriteFile 需要一个 DWORD 接收“Windows 实际写了多少字节”。
     // 当前日志很短，SIZE_T 转 DWORD 不会溢出；即使写失败，也只损失诊断信息，不影响功能。
@@ -185,6 +202,7 @@ inline bool BuildModuleFilePath(
 }
 
 inline bool Open(HMODULE module, const wchar_t* filename) {
+    if (gRuntimeLogApi != nullptr && gRuntimeLogPlugin != 0u) return true;
     // 日志继续使用上面的共用路径构造器，只是它的目标固定为 ASI 同目录的日志文件。
     wchar_t path[520];
     if (!BuildModuleFilePath(module, filename, path, 520u)) {
@@ -210,6 +228,8 @@ inline void Close() {
         CloseHandle(gLogFile);
         gLogFile = INVALID_HANDLE_VALUE;
     }
+    gRuntimeLogApi = nullptr;
+    gRuntimeLogPlugin = 0u;
 }
 
 } // namespace ycrlog

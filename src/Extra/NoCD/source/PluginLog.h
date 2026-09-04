@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Win32Mini.h"
+#include "CastleLog_API.h"
 
 // ============================================================================
 // PluginLog.h
@@ -26,6 +27,29 @@ namespace ycrlog {
 // 每个 ASI 都只包含自己这一份头文件实例，所以这个句柄只属于当前插件。
 // INVALID_HANDLE_VALUE 表示“日志还没有成功打开”。
 static HANDLE gFile = INVALID_HANDLE_VALUE;
+static const CastleLogApiV1* gRuntimeLogApi = nullptr;
+static CastlePluginHandle gRuntimeLogPlugin = 0u;
+
+inline bool BindRuntime(const CastleRuntimeApiV1* runtimeApi,
+                        CastlePluginHandle plugin) {
+    CastleInterfaceQueryV1 query{};
+    CastleInterfaceResultV1 result{};
+    static const char interfaceId[] = CASTLE_LOG_INTERFACE_ID;
+    if (runtimeApi == nullptr || runtimeApi->QueryInterface == nullptr || plugin == 0u) return false;
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = {interfaceId, static_cast<CastleU32>(sizeof(interfaceId) - 1u)};
+    query.requested_version = CASTLE_LOG_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_LOG_API_V1;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (runtimeApi->QueryInterface(&query, &result) != CASTLE_OK) return false;
+    gRuntimeLogApi = static_cast<const CastleLogApiV1*>(result.api_pointer);
+    gRuntimeLogPlugin = plugin;
+    return gRuntimeLogApi != nullptr && gRuntimeLogApi->WritePluginText != nullptr;
+}
 
 // 手工计算窄字符串的字节长度。
 // 源码统一用 /utf-8 编译，因此中文窄字符串字面量本身就是 UTF-8 字节序列。
@@ -43,9 +67,15 @@ inline DWORD ByteLength(const char* text) {
 // 最底层写入函数。
 // 这里不补换行，只负责把给定的 length 个字节原样写到日志文件。
 inline void Raw(const char* text, DWORD length) {
-    if (gFile == INVALID_HANDLE_VALUE || text == nullptr || length == 0u) {
+    if (text == nullptr || length == 0u) {
         return;
     }
+    if (gRuntimeLogApi != nullptr && gRuntimeLogPlugin != 0u) {
+        CastleStringView view{text, static_cast<CastleU32>(length)};
+        gRuntimeLogApi->WritePluginText(gRuntimeLogPlugin, view);
+        return;
+    }
+    if (gFile == INVALID_HANDLE_VALUE) return;
     DWORD written = 0u;
     WriteFile(gFile, text, length, &written, nullptr);
 }
@@ -111,6 +141,7 @@ inline void Close() {
 //
 // logFileName 必须只提供文件名，不需要提供目录。
 inline bool Open(HMODULE module, const wchar_t* logFileName) {
+    if (gRuntimeLogApi != nullptr && gRuntimeLogPlugin != 0u) return true;
     // 如果极端情况下重复调用 Open，先关掉旧句柄，避免资源泄漏。
     Close();
 

@@ -38,6 +38,8 @@ static int g_sdk_batch_building;
 static u32 g_map_space_event_target = FN_MAP_SPACE_EVENT;
 static HMODULE g_self_module;
 static HANDLE g_log = INVALID_HANDLE_VALUE_;
+static const CastleLogApiV1* g_runtime_log_api;
+static CastlePluginHandle g_runtime_log_plugin;
 static u32 g_tick;
 
 /*
@@ -275,7 +277,7 @@ static void rt_load_config(void) {
 /* 日志固定创建在 ASI 同目录，并允许用户在游戏运行时以只读方式打开查看。 */
 static void rt_open_log(void) {
     char path[MAX_PATH_];
-    if (!g_api.create_file_a || g_log != INVALID_HANDLE_VALUE_) return;
+    if (g_runtime_log_api || !g_api.create_file_a || g_log != INVALID_HANDLE_VALUE_) return;
     if (!Runtime_BuildSiblingPath("Castle_PadSupport.log", path, MAX_PATH_)) return;
     g_log = g_api.create_file_a(path, GENERIC_WRITE_, FILE_SHARE_READ_, NULL, CREATE_ALWAYS_, FILE_ATTRIBUTE_NORMAL_, NULL);
 }
@@ -362,10 +364,22 @@ void Runtime_Log(const char* utf8_line) {
     SIZE_T n;
     static const char crlf[2] = {'\r','\n'};
 
-    if (!utf8_line || !g_api.write_file || g_log == INVALID_HANDLE_VALUE_) return;
-
+    if (!utf8_line) return;
     n = rt_strlen(utf8_line);
     if (n && rt_log_should_suppress(utf8_line, n)) return;
+    if (g_runtime_log_api && g_runtime_log_plugin && n != 0u) {
+        CastleLogRecordV1 record;
+        Runtime_MemZero((u8*)&record, sizeof(record));
+        record.magic = CASTLE_LOG_RECORD_MAGIC;
+        record.struct_size = CASTLE_SIZEOF_LOG_RECORD_V1;
+        record.version = CASTLE_LOG_STRUCTURE_VERSION_1;
+        record.level = CASTLE_LOG_INFO;
+        record.message.data = utf8_line;
+        record.message.length = (CastleU32)n;
+        (void)g_runtime_log_api->WritePluginLine(g_runtime_log_plugin, &record);
+        return;
+    }
+    if (!g_api.write_file || g_log == INVALID_HANDLE_VALUE_) return;
 
     if (n) g_api.write_file(g_log, utf8_line, (DWORD)n, &written, NULL);
     g_api.write_file(g_log, crlf, 2u, &written, NULL);
@@ -1723,6 +1737,31 @@ int Runtime_PatchMovEsiFunction(u32 address, void* replacement, const u8 expecte
 }
 
 /* ------------------------- 生命周期 ------------------------- */
+
+int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
+                       CastlePluginHandle plugin_handle) {
+    static const char interface_id[] = CASTLE_LOG_INTERFACE_ID;
+    CastleInterfaceQueryV1 query;
+    CastleInterfaceResultV1 result;
+    Runtime_MemZero((u8*)&query, sizeof(query));
+    Runtime_MemZero((u8*)&result, sizeof(result));
+    if (!runtime_api || !runtime_api->QueryInterface || plugin_handle == 0u) return 0;
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id.data = interface_id;
+    query.interface_id.length = (CastleU32)(sizeof(interface_id) - 1u);
+    query.requested_version = CASTLE_LOG_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_LOG_API_V1;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
+        !result.api_pointer) return 0;
+    g_runtime_log_api = (const CastleLogApiV1*)result.api_pointer;
+    g_runtime_log_plugin = plugin_handle;
+    return 1;
+}
 
 /* worker 的 Runtime 启动事务：读取配置、建立中文日志、解析 API、完整预检，全部通过后业务模块才可安装 Hook。 */
 int Runtime_Initialize(HMODULE self_module) {

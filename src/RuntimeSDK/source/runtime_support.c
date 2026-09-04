@@ -89,6 +89,7 @@ int Runtime_EnsureInitialized(void) {
          */
         (void)Runtime_LogInitialize();
         Runtime_FileInitialize();
+        Runtime_ModuleInitialize();
         Runtime_SymbolsInitialize();
         Runtime_GameStateInitialize();
         Runtime_ScheduleEnableGamePhase();

@@ -288,6 +288,9 @@ CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
     const auto* pathApi = static_cast<const CastlePathApiV1*>(QueryInterface(runtimeApi,
         pathId, static_cast<CastleU32>(sizeof(pathId) - 1u),
         CASTLE_PATH_API_VERSION_1, CASTLE_SIZEOF_PATH_API_V1));
+    if (!ycrlog::BindRuntime(runtimeApi, pluginHandle)) {
+        return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    }
     OpenStartupLog("Integrated：Runtime Path + 两个独立 Hook 事务。");
     runtimeInfo.magic = CASTLE_RUNTIME_INFO_MAGIC;
     runtimeInfo.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
@@ -324,10 +327,7 @@ CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
 }
 
 void RuntimeFault(CastleResult failure) {
-    OpenStartupLog("Fault：Runtime 文件存在但不可安全使用。");
-    ycrlog::Text("[失败] Runtime 故障码=");
-    ycrlog::Unsigned(static_cast<DWORD>(-failure));
-    ycrlog::Line("；未读取配置后私自修改游戏。");
+    (void)failure;
 }
 
 }  // namespace

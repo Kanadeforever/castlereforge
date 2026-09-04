@@ -92,7 +92,7 @@ static CastleResult initialize_standalone_(void) {
     if (!config->enabled) return CASTLE_OK;
     if (!Backlog_Install()) return CASTLE_ERROR_EXPECTED_BYTES;
     MouseInput_Initialize();
-    PadBridge_Initialize();
+    PadBridge_Initialize(NULL);
     InterlockedExchange(&g_worker_running, 1);
     thread = CreateThread(NULL, 0u, StandaloneWorker, NULL, 0u, NULL);
     if (!thread) {
@@ -120,7 +120,7 @@ static CastleResult initialize_integrated_(const CastleRuntimeApiV1* runtime_api
     if (!MouseInput_InitializeIntegrated(runtime_api, plugin_handle)) {
         Runtime_Log("[警告] Runtime Window 注册失败；键盘/Pad 保持可用，鼠标不可用。");
     }
-    PadBridge_Initialize();
+    PadBridge_Initialize(runtime_api);
     g_schedule_api = query_schedule_(runtime_api);
     if (!g_schedule_api) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     task.magic = CASTLE_SCHEDULE_TASK_MAGIC;
@@ -156,10 +156,9 @@ static CastleResult CASTLE_RUNTIME_CALL Backlog_Standalone(void* user_context) {
 
 static void CASTLE_RUNTIME_CALL Backlog_RuntimeFault(CastleResult failure,
                                                      void* user_context) {
-    (void)user_context;
-    Runtime_Initialize(g_plugin_module);
-    Runtime_Log("[失败] Castle_Runtime.dll 存在但不可用；Backlog 未安装私有 Hook/线程。");
     (void)failure;
+    (void)user_context;
+    /* Runtime 不可用时官方插件保持停用，不在 ASI 目录创建旁路日志。 */
 }
 
 static void CASTLE_RUNTIME_CALL Backlog_ProcessExit(void* user_context) {

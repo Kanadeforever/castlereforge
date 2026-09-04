@@ -359,8 +359,10 @@ int Runtime_ExactBuildProtocolOk(void) {
      */
     CHECK_CALL("初次 DirectDraw 重建", CALL_DISPLAY_REBUILD_INIT, FN_DISPLAY_REBUILD);
     CHECK_CALL("Surface lost DirectDraw 重建", CALL_DISPLAY_REBUILD_LOST, FN_DISPLAY_REBUILD);
-    CHECK_CALL("主帧绘制队列", CALL_RENDER_QUEUE, FN_RENDER_QUEUE);
-    CHECK_CALL("每帧显示 Present", CALL_DISPLAY_PRESENT, FN_DISPLAY_PRESENT);
+    /*
+     * 主帧 RenderQueue/Present 的 CALL 已由 Castle_Runtime 在任何官方插件初始化前接管。
+     * Widescreen 现在只注册 Render Provider，不能再把“CALL 仍指向原函数”当成插件预检条件。
+     */
 #undef CHECK_CALL
 
     if (ok) {

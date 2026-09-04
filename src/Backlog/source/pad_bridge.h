@@ -2,17 +2,18 @@
 #define CASTLE_BACKLOG_PAD_BRIDGE_H
 
 #include "platform.h"
+#include "CastleRuntime_API.h"
 
 /*
  * pad_bridge.h
  *
  * Backlog 本身不再加载 SDL3.dll，也不打开任何手柄。
- * 如果 Castle_PadSupport.asi 已经加载，本层只通过正式导出 CastlePad_GetApi 取得 Public API v1。
+ * 本层只查询 Runtime Input v1，不识别 Castle_PadSupport.asi 文件名或私有导出。
  * 它不会扫描 PadSupport 的机器码/内部结构，不会调用 SDL3，也不会维护第二份手柄状态。
  *
  * 这意味着：
- * - 单独安装 Castle_Backlog.asi：只有键盘和鼠标；
- * - 同时安装 Castle_PadSupport.asi：才会获得 LB、方向键和“取消”语义。
+ * - Runtime 没有 Input Provider：只有键盘和鼠标；
+ * - Controller 发布 Input Provider：获得 LB、方向键和“取消”语义。
  */
 
 typedef enum PadBridgeButton {
@@ -24,13 +25,13 @@ typedef enum PadBridgeButton {
     PAD_BRIDGE_CANCEL
 } PadBridgeButton;
 
-/* 初始化为“尚未绑定”，并立即尝试一次发现 PadSupport。 */
-void PadBridge_Initialize(void);
+/* 查询 Runtime Input 门面并准备第一份只读快照。 */
+void PadBridge_Initialize(const CastleRuntimeApiV1* runtime_api);
 
-/* worker 每 tick 调用；PadSupport 后加载时会自动低频重试绑定。 */
+/* worker 每 tick 调用；Provider 尚未就绪时只把本帧标记为不可用。 */
 void PadBridge_Poll(void);
 
-/* 是否已经成功绑定 PadSupport Public API v1，并且 API 当前 ready + connected。 */
+/* 是否取得 Runtime 输入快照，并且 Provider 当前 ready + connected。 */
 int PadBridge_Available(void);
 
 /*
@@ -45,7 +46,7 @@ int PadBridge_Down(PadBridgeButton button);
  */
 int PadBridge_BlocksBacklogInput(void);
 
-/* 清掉本地 API 表指针；不会卸载或修改 Castle_PadSupport.asi。 */
+/* 清掉本地 Runtime 门面和快照；不会卸载或修改输入 Provider。 */
 void PadBridge_Shutdown(void);
 
 #endif /* CASTLE_BACKLOG_PAD_BRIDGE_H */

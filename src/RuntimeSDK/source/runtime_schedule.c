@@ -707,8 +707,21 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_register_periodic_(
 static CastleResult CASTLE_RUNTIME_CALL schedule_set_enabled_(CastleTaskHandle handle,
                                                                CastleU32 enabled) {
     RuntimePeriodicTask* task;
+    CastleU32 index;
     if (enabled > 1u) return CASTLE_ERROR_INVALID_ARGUMENT;
     Runtime_Lock(&g_schedule_lock);
+    if ((handle & 0x80000000u) != 0u) {
+        for (index = 0u; index < RUNTIME_SCHEDULE_MAX_GAME_PHASE; ++index) {
+            RuntimeGamePhaseTask* phase_task = &g_game_phase_tasks[index];
+            if (!phase_task->used || phase_task->handle != handle) continue;
+            phase_task->enabled = enabled;
+            if (enabled) phase_task->failure_count = 0u;
+            Runtime_Unlock(&g_schedule_lock);
+            return CASTLE_OK;
+        }
+        Runtime_Unlock(&g_schedule_lock);
+        return CASTLE_ERROR_INVALID_ARGUMENT;
+    }
     task = schedule_resolve_locked_(handle, NULL);
     if (!task) {
         Runtime_Unlock(&g_schedule_lock);
@@ -737,7 +750,21 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_set_enabled_(CastleTaskHandle h
 
 static CastleResult CASTLE_RUNTIME_CALL schedule_unregister_(CastleTaskHandle handle) {
     RuntimePeriodicTask* task;
+    CastleU32 index;
     Runtime_Lock(&g_schedule_lock);
+    if ((handle & 0x80000000u) != 0u) {
+        for (index = 0u; index < RUNTIME_SCHEDULE_MAX_GAME_PHASE; ++index) {
+            if (g_game_phase_tasks[index].used &&
+                g_game_phase_tasks[index].handle == handle) {
+                Runtime_ByteZero(&g_game_phase_tasks[index],
+                                 (CastleU32)sizeof(g_game_phase_tasks[index]));
+                Runtime_Unlock(&g_schedule_lock);
+                return CASTLE_OK;
+            }
+        }
+        Runtime_Unlock(&g_schedule_lock);
+        return CASTLE_ERROR_INVALID_ARGUMENT;
+    }
     task = schedule_resolve_locked_(handle, NULL);
     if (!task) {
         Runtime_Unlock(&g_schedule_lock);
@@ -756,12 +783,39 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_unregister_(CastleTaskHandle ha
 static CastleResult CASTLE_RUNTIME_CALL schedule_get_stats_(CastleTaskHandle handle,
     CastleScheduleTaskStatsV1* out_stats) {
     RuntimePeriodicTask* task;
+    CastleU32 index;
     if (!out_stats || out_stats->magic != CASTLE_SCHEDULE_STATS_MAGIC ||
         out_stats->struct_size < CASTLE_SIZEOF_SCHEDULE_STATS_V1 ||
         out_stats->version != CASTLE_SCHEDULE_STRUCTURE_VERSION_1) {
         return CASTLE_ERROR_INVALID_ARGUMENT;
     }
     Runtime_Lock(&g_schedule_lock);
+    if ((handle & 0x80000000u) != 0u) {
+        for (index = 0u; index < RUNTIME_SCHEDULE_MAX_GAME_PHASE; ++index) {
+            RuntimeGamePhaseTask* phase_task = &g_game_phase_tasks[index];
+            if (!phase_task->used || phase_task->handle != handle) continue;
+            out_stats->flags = CASTLE_SCHEDULE_TASK_GAME_EXPLORATION;
+            out_stats->task_handle = phase_task->handle;
+            out_stats->plugin_handle = phase_task->plugin;
+            out_stats->state = phase_task->enabled ? CASTLE_SCHEDULE_TASK_WAITING :
+                                                     CASTLE_SCHEDULE_TASK_DISABLED;
+            out_stats->enabled = phase_task->enabled;
+            out_stats->period_ms = 0u;
+            out_stats->budget_ms = phase_task->budget_ms;
+            out_stats->run_count = 0u;
+            out_stats->missed_count = 0u;
+            out_stats->over_budget_count = 0u;
+            out_stats->failure_count = phase_task->failure_count;
+            out_stats->last_result = CASTLE_OK;
+            out_stats->last_duration_ms = 0u;
+            out_stats->max_duration_ms = 0u;
+            out_stats->generation = handle >> 8u;
+            Runtime_Unlock(&g_schedule_lock);
+            return CASTLE_OK;
+        }
+        Runtime_Unlock(&g_schedule_lock);
+        return CASTLE_ERROR_INVALID_ARGUMENT;
+    }
     task = schedule_resolve_locked_(handle, NULL);
     if (!task) {
         Runtime_Unlock(&g_schedule_lock);

@@ -145,6 +145,7 @@ typedef struct CastleStringView {
 #define CASTLE_RUNTIME_CAP_SAVE_V1                    (1ul << 16)
 #define CASTLE_RUNTIME_CAP_OVERLAY_V1                 (1ul << 17)
 #define CASTLE_RUNTIME_CAP_FILE_V1                    (1ul << 18)
+#define CASTLE_RUNTIME_CAP_MODULE_V1                  (1ul << 19)
 
 /* Bootstrap 触发来源。数字只用于诊断和测试，不能改变最终激活语义。 */
 #define CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE     1u

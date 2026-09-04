@@ -28,6 +28,8 @@ static CastleResult CASTLE_RUNTIME_CALL log_get_plugin_path_(
     CastleU32* out_length);
 static CastleResult CASTLE_RUNTIME_CALL log_get_directory_(
     char* output, CastleU32 output_capacity, CastleU32* out_length);
+static CastleResult CASTLE_RUNTIME_CALL log_write_plugin_text_(
+    CastlePluginHandle plugin, CastleStringView text);
 
 static const CastleLogApiV1 g_log_api = {
     CASTLE_LOG_API_MAGIC,
@@ -39,7 +41,8 @@ static const CastleLogApiV1 g_log_api = {
     log_write_plugin_,
     log_flush_plugin_,
     log_get_plugin_path_,
-    log_get_directory_
+    log_get_directory_,
+    log_write_plugin_text_
 };
 
 /* ASCII 文件夹名只需要不区分大小写比较；这里不受系统区域设置影响。 */
@@ -256,6 +259,18 @@ static CastleResult log_write_line_handle_(HANDLE file, CastleStringView message
     return CASTLE_OK;
 }
 
+static CastleResult log_write_text_handle_(HANDLE file, CastleStringView text) {
+    DWORD written = 0u;
+    if (file == INVALID_HANDLE_VALUE || !text.data || text.length == 0u) {
+        return CASTLE_ERROR_INVALID_ARGUMENT;
+    }
+    if (!WriteFile(file, text.data, text.length, &written, NULL) ||
+        written != text.length || !FlushFileBuffers(file)) {
+        return CASTLE_ERROR_RUNTIME_FAULT;
+    }
+    return CASTLE_OK;
+}
+
 int Runtime_LogInitialize(void) {
     WCHAR runtime_path[RUNTIME_PATH_WIDE_CAP];
     CastleU32 runtime_path_length = 0u;
@@ -357,4 +372,17 @@ static CastleResult CASTLE_RUNTIME_CALL log_get_directory_(
     Runtime_ByteCopy(output, g_log_directory_utf8, g_log_directory_utf8_length);
     output[g_log_directory_utf8_length] = '\0';
     return CASTLE_OK;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL log_write_plugin_text_(
+    CastlePluginHandle plugin, CastleStringView text) {
+    RuntimePluginLogRecord* record;
+    CastleResult result;
+    if (!text.data || text.length == 0u) return CASTLE_ERROR_INVALID_ARGUMENT;
+    Runtime_Lock(&g_log_lock);
+    record = log_get_or_open_record_(plugin);
+    result = record ? log_write_text_handle_(record->file, text) :
+                      CASTLE_ERROR_RUNTIME_FAULT;
+    Runtime_Unlock(&g_log_lock);
+    return result;
 }

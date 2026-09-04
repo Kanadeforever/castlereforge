@@ -3,6 +3,7 @@
 
 #include "platform.h"
 #include "CastleRuntime_API.h"
+#include "CastleLog_API.h"
 
 /*
  * runtime.h
@@ -123,6 +124,8 @@ void Runtime_BindEarlyApi(void);
 
 /* Worker 线程启动后调用，完成剩余 API、配置和日志初始化。 */
 int Runtime_Initialize(HMODULE self_module);
+int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
+                       CastlePluginHandle plugin_handle);
 void Runtime_Shutdown(void);
 
 const RuntimeApi* Runtime_Api(void);

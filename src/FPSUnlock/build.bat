@@ -23,6 +23,7 @@ rem 统一输出目录：仓库根 build\（基于本脚本位置定位，与运
 set "ROOT=%~dp0"
 set "OUT=%ROOT%..\..\build"
 set "OBJ_DIR=%ROOT%_build"
+set "SDK=%ROOT%..\RuntimeSDK"
 
 rem 仅删除已知的临时对象/库文件，以免过期的输出被误认为成功的新构建。  
 if exist "%OBJ_DIR%" rmdir /s /q "%OBJ_DIR%"
@@ -59,7 +60,10 @@ rem                                 意外的运行时辅助函数。
 rem /utf-8                        : 源代码/注释为UTF-8。   
 rem /W4 /WX                       : 高警告级别，并将每个警告视为   
 rem                                 错误，以便可疑代码无法通过构建。   
-clang-cl --target=i686-pc-windows-msvc /nologo /c /O2 /GS- /GR- /Oi- /utf-8 /W4 /WX /Fo"%OBJ_DIR%\Castle_FPSUnlock.obj" "%ROOT%source\Castle_FPSUnlock.cpp" || goto :fail
+clang-cl --target=i686-pc-windows-msvc /nologo /c /TP /O2 /GS- /GR- /Oi- /utf-8 /W4 /WX /I"%SDK%\include" /I"%SDK%\client" /Fo"%OBJ_DIR%\Castle_FPSUnlock.obj" "%ROOT%source\Castle_FPSUnlock.cpp" || goto :fail
+clang-cl --target=i686-pc-windows-msvc /nologo /c /TC /O2 /GS- /Oi- /utf-8 /W4 /WX /I"%SDK%\include" /I"%SDK%\client" /Fo"%OBJ_DIR%\runtime_client.obj" "%SDK%\client\runtime_client.c" || goto :fail
+clang-cl --target=i686-pc-windows-msvc /nologo /c /TC /O2 /GS- /Oi- /utf-8 /W4 /WX /I"%SDK%\include" /I"%SDK%\client" /Fo"%OBJ_DIR%\runtime_entry_gate.obj" "%SDK%\client\runtime_entry_gate.c" || goto :fail
+clang-cl --target=i686-pc-windows-msvc /nologo /c /TC /O2 /GS- /Oi- /utf-8 /W4 /WX /I"%SDK%\include" /Fo"%OBJ_DIR%\runtime_client_support.obj" "%SDK%\client\runtime_client_support.c" || goto :fail
 
 rem 链接真实的 x86 DLL，但使用 ASI 加载器所期望的 .asi 扩展名。   
 rem /nodefaultlib 使二进制文件独立于 MSVCRT/UCRT。   
@@ -67,7 +71,7 @@ rem /entry:DllMain@12 直接指向 stdcall 32 位 DLL 入口函数。
 rem /dynamicbase + /nxcompat 在旧游戏加载器允许的情况下保留现代 ASLR/NX 安全性。   
 rem /timestamp:0 使 PE 头具有确定性，因此从相同源码进行的两次   
 rem 干净构建可以逐字节进行比较。   
-lld-link /dll /machine:x86 /nodefaultlib /entry:DllMain@12 /dynamicbase /nxcompat /timestamp:0 /out:"%OUT%\Castle_FPSUnlock.asi" /implib:"%OBJ_DIR%\Castle_FPSUnlock.lib" "%OBJ_DIR%\Castle_FPSUnlock.obj" || goto :fail
+lld-link /dll /machine:x86 /nodefaultlib /entry:DllMain@12 /dynamicbase /nxcompat /timestamp:0 /def:"%ROOT%source\Castle_FPSUnlock.def" /out:"%OUT%\Castle_FPSUnlock.asi" /implib:"%OBJ_DIR%\Castle_FPSUnlock.lib" "%OBJ_DIR%\Castle_FPSUnlock.obj" "%OBJ_DIR%\runtime_client.obj" "%OBJ_DIR%\runtime_entry_gate.obj" "%OBJ_DIR%\runtime_client_support.obj" kernel32.lib || goto :fail
 
 rem 清理中间对象目录；lib 便于高级调试但实际游戏只需要  
 rem Castle_FPSUnlock.asi 和 Castle_FPSUnlock.ini。  

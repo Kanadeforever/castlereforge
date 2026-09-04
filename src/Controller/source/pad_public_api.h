@@ -1,6 +1,8 @@
 #ifndef CASTLE_PAD_PUBLIC_API_INTERNAL_H
 #define CASTLE_PAD_PUBLIC_API_INTERNAL_H
 
+#include "CastleRuntime_API.h"
+
 /*
  * pad_public_api.h
  *
@@ -29,5 +31,13 @@ void CastlePad_PublicApiPublishFrame(void);
  * 导出的 CastlePad_GetApi 本身仍然存在；调用者会从 IsReady() 得到 0，而不是拿到悬空表。
  */
 void CastlePad_PublicApiReset(void);
+
+/*
+ * Integrated 初始化时把同一份稳定快照注册为 Runtime Input Provider。
+ * 旧 CastlePad_GetApi 导出继续保留给仓库外第三方，官方插件只查询 Runtime 门面。
+ */
+int CastlePad_RegisterRuntimeInputProvider(const CastleRuntimeApiV1* runtime_api,
+                                           CastlePluginHandle plugin_handle);
+void CastlePad_RuntimeInputProviderShutdown(void);
 
 #endif /* CASTLE_PAD_PUBLIC_API_INTERNAL_H */

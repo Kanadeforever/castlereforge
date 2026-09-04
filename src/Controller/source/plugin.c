@@ -229,7 +229,13 @@ static int plugin_initialize_controller(const CastleRuntimeApiV1* runtime_api,
     }
     ControlModes_Initialize();
     CastlePad_PublicApiReset();
+    if (integrated && !CastlePad_RegisterRuntimeInputProvider(runtime_api,
+                                                               plugin_handle)) {
+        Runtime_Log("[致命] 无法注册 Runtime Input Provider；官方输入联动不会退回 ASI 直连。");
+        return 0;
+    }
     Runtime_Log("[公共API] CastlePad_GetApi v1 已启用；外部只读取版本化快照。");
+    if (integrated) Runtime_Log("[RuntimeSDK] Controller 权威 Input Provider 已就绪。");
     g_worker_running = 1;
     g_controller_initialized = 1;
     Runtime_Log(integrated
@@ -427,6 +433,9 @@ static CastleResult CASTLE_RUNTIME_CALL Controller_Integrated(
     static const char task_label[] = "Controller ordered 8ms tick";
     CastleScheduledTaskV1 task = {0};
     (void)user_context;
+    if (!Runtime_BindSdkLog(runtime_api, plugin_handle)) {
+        return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    }
     g_runtime_schedule_mode = 1;
     if (!plugin_initialize_controller(runtime_api, plugin_handle, 1)) {
         return CASTLE_ERROR_EXPECTED_BYTES;
@@ -469,14 +478,14 @@ static void CASTLE_RUNTIME_CALL Controller_RuntimeFault(CastleResult failure,
                                                         void* user_context) {
     (void)failure;
     (void)user_context;
-    Runtime_Initialize(g_plugin_module);
-    Runtime_Log("[失败] Castle_Runtime.dll 存在但不可用；Controller 未安装私有 Hook/线程。");
+    /* Runtime 不可用时官方插件保持停用，不在 ASI 目录创建旁路日志。 */
 }
 
 static void CASTLE_RUNTIME_CALL Controller_ProcessExit(void* user_context) {
     (void)user_context;
     g_worker_running = 0;
     CastlePad_PublicApiReset();
+    CastlePad_RuntimeInputProviderShutdown();
 }
 
 static const char g_plugin_id[] = "org.castlereforge.controller";

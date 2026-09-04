@@ -43,6 +43,11 @@ typedef CastleResult (CASTLE_RUNTIME_CALL *CastleWritePluginLogFn)(
     CastlePluginHandle plugin,
     const CastleLogRecordV1* record);
 
+/* 分段日志器使用本函数拼接同一行；Runtime 不自动追加 CRLF。 */
+typedef CastleResult (CASTLE_RUNTIME_CALL *CastleWritePluginLogTextFn)(
+    CastlePluginHandle plugin,
+    CastleStringView text);
+
 typedef CastleResult (CASTLE_RUNTIME_CALL *CastleFlushPluginLogFn)(
     CastlePluginHandle plugin);
 
@@ -57,7 +62,7 @@ typedef CastleResult (CASTLE_RUNTIME_CALL *CastleGetLogDirectoryUtf8Fn)(
     CastleU32 output_capacity,
     CastleU32* out_length);
 
-/* 16 字节表头 + 4 个函数指针 = 32 字节。 */
+/* 16 字节表头 + 5 个函数指针 = 36 字节。 */
 typedef struct CastleLogApiV1 {
     CastleU32 magic;
     CastleU32 struct_size;
@@ -67,10 +72,11 @@ typedef struct CastleLogApiV1 {
     CastleFlushPluginLogFn FlushPluginLog;
     CastleGetPluginLogPathUtf8Fn GetPluginLogPathUtf8;
     CastleGetLogDirectoryUtf8Fn GetLogDirectoryUtf8;
+    CastleWritePluginLogTextFn WritePluginText;
 } CastleLogApiV1;
 
 #define CASTLE_SIZEOF_LOG_RECORD_V1 24u
-#define CASTLE_SIZEOF_LOG_API_V1    32u
+#define CASTLE_SIZEOF_LOG_API_V1    36u
 
 #pragma pack(pop)
 

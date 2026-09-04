@@ -1,6 +1,7 @@
 #include "runtime.h"
 #include "game_addresses.h"
 #include "CastlePath_API.h"
+#include "CastleLog_API.h"
 
 /*
  * runtime.c
@@ -20,6 +21,8 @@ static HMODULE g_plugin_module;
 static RuntimeConfig g_config;
 static char g_plugin_path[MAX_PATH];
 static HANDLE g_log_file = INVALID_HANDLE_VALUE;
+static const CastleLogApiV1* g_runtime_log_api;
+static CastlePluginHandle g_runtime_log_plugin;
 
 /* 用最普通的循环计算 NUL 结尾字符串长度，避免链接 C 运行库 strlen。 */
 static u32 runtime_text_length(const char* text) {
@@ -157,8 +160,20 @@ void Runtime_Log(const char* text) {
     static const char newline[] = "\r\n";
     u32 length;
 
-    if (!text || g_log_file == INVALID_HANDLE_VALUE) return;
+    if (!text) return;
     length = runtime_text_length(text);
+    if (g_runtime_log_api && g_runtime_log_plugin && length != 0u) {
+        CastleLogRecordV1 record = {0};
+        record.magic = CASTLE_LOG_RECORD_MAGIC;
+        record.struct_size = CASTLE_SIZEOF_LOG_RECORD_V1;
+        record.version = CASTLE_LOG_STRUCTURE_VERSION_1;
+        record.level = CASTLE_LOG_INFO;
+        record.message.data = text;
+        record.message.length = length;
+        (void)g_runtime_log_api->WritePluginLine(g_runtime_log_plugin, &record);
+        return;
+    }
+    if (g_log_file == INVALID_HANDLE_VALUE) return;
     if (length != 0u) WriteFile(g_log_file, text, (DWORD)length, &written, NULL);
     WriteFile(g_log_file, newline, 2u, &written, NULL);
     FlushFileBuffers(g_log_file);
@@ -619,7 +634,7 @@ static int runtime_exact_game_protocol_ok(int managed_hook_sites) {
 static int runtime_finish_initialize(int managed_hook_sites) {
     char log_path[MAX_PATH];
 
-    if (Runtime_BuildSiblingPath("Castle_Backlog.log", log_path, MAX_PATH)) {
+    if (!g_runtime_log_api && Runtime_BuildSiblingPath("Castle_Backlog.log", log_path, MAX_PATH)) {
         g_log_file = CreateFileA(log_path, GENERIC_WRITE, FILE_SHARE_READ, NULL,
                                  CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     }
@@ -655,6 +670,7 @@ int Runtime_InitializeIntegrated(HMODULE plugin_module,
                                  const CastleRuntimeApiV1* runtime_api,
                                  CastlePluginHandle plugin_handle) {
     static const char interface_id[] = CASTLE_PATH_INTERFACE_ID;
+    static const char log_interface_id[] = CASTLE_LOG_INTERFACE_ID;
     CastleInterfaceQueryV1 query = {0};
     CastleInterfaceResultV1 result = {0};
     const CastlePathApiV1* path_api;
@@ -679,5 +695,14 @@ int Runtime_InitializeIntegrated(HMODULE plugin_module,
             g_plugin_path, MAX_PATH, &path_length) != CASTLE_OK ||
         path_length == 0u) return 0;
     g_plugin_path[MAX_PATH - 1] = '\0';
+    query.interface_id.data = log_interface_id;
+    query.interface_id.length = (CastleU32)(sizeof(log_interface_id) - 1u);
+    query.requested_version = CASTLE_LOG_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_LOG_API_V1;
+    result.api_pointer = NULL;
+    if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
+        !result.api_pointer) return 0;
+    g_runtime_log_api = (const CastleLogApiV1*)result.api_pointer;
+    g_runtime_log_plugin = plugin_handle;
     return runtime_finish_initialize(1);
 }

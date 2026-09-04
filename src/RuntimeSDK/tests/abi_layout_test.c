@@ -25,6 +25,7 @@
 #include "CastleSave_API.h"
 #include "CastleOverlay_API.h"
 #include "CastleFile_API.h"
+#include "CastleModule_API.h"
 
 /* 使用唯一 typedef 名制造编译期断言，不需要 C11 _Static_assert 或 C++ static_assert。 */
 #define CASTLE_ABI_ASSERT(name, expression) \
@@ -240,6 +241,8 @@ CASTLE_ABI_ASSERT(log_api_write_offset,
     offsetof(CastleLogApiV1, WritePluginLine) == 16u);
 CASTLE_ABI_ASSERT(log_api_directory_offset,
     offsetof(CastleLogApiV1, GetLogDirectoryUtf8) == 28u);
+CASTLE_ABI_ASSERT(log_api_text_offset,
+    offsetof(CastleLogApiV1, WritePluginText) == 32u);
 
 /* Clock ABI 只暴露数值和 Runtime 租约，不把 WinMM 类型泄漏给插件。 */
 CASTLE_ABI_ASSERT(clock_state_size,
@@ -320,6 +323,16 @@ CASTLE_ABI_ASSERT(file_info_name_offset,
     offsetof(CastleFileInfoV1, name_utf8) == 28u);
 CASTLE_ABI_ASSERT(file_api_atomic_offset,
     offsetof(CastleFileApiV1, WritePluginFileAtomic) == 20u);
+
+/* Module ABI 返回 x86 数字地址，不把 HMODULE/FARPROC 类型放进公共头。 */
+CASTLE_ABI_ASSERT(module_state_size,
+    sizeof(CastleModuleStateV1) == CASTLE_SIZEOF_MODULE_STATE_V1);
+CASTLE_ABI_ASSERT(module_api_size,
+    sizeof(CastleModuleApiV1) == CASTLE_SIZEOF_MODULE_API_V1);
+CASTLE_ABI_ASSERT(module_state_owner_offset,
+    offsetof(CastleModuleStateV1, first_owner) == 20u);
+CASTLE_ABI_ASSERT(module_api_get_proc_offset,
+    offsetof(CastleModuleApiV1, GetProcedure) == 24u);
 
 /*
  * 生成一个外部函数，防止极端编译器把整个测试翻译单元当成“完全空文件”特殊处理。

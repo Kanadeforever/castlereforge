@@ -3,6 +3,8 @@
 #include "pad_input.h"
 #include "input_router.h"
 #include "control_modes.h"
+#include "runtime.h"
+#include "CastleInput_API.h"
 
 /*
  * pad_public_api.c
@@ -62,6 +64,8 @@ typedef struct CastlePadPublishedSnapshot {
 
 /* 静态区会在 DLL 加载时归零；Reset 还会把 UNKNOWN 等非零默认值补正确。 */
 static CastlePadPublishedSnapshot g_public_snapshot;
+static const CastleInputApiV1* g_runtime_input_api;
+static CastleProviderHandle g_runtime_input_provider;
 
 /*
  * 公共按钮编号与当前内部 PadButton 的翻译。
@@ -195,6 +199,101 @@ static CastlePadS32 public_read_s32(volatile CastlePadS32* field) {
     } while (before != after || (after & 1u) != 0u);
 
     return value;
+}
+
+/*
+ * Runtime 一次要取完整快照，所以这里不能逐字段调用 public_read_u32：字段之间可能跨过
+ * 一次 worker 发布。我们在同一对偶数 generation 之间复制全部标量，保证整帧一致。
+ */
+static CastleResult CASTLE_RUNTIME_CALL public_copy_runtime_snapshot(
+    CastleInputSnapshotV1* out_snapshot) {
+    CastlePadU32 before;
+    CastlePadU32 after;
+    CastlePadU32 axis;
+    if (!out_snapshot || out_snapshot->magic != CASTLE_INPUT_SNAPSHOT_MAGIC ||
+        out_snapshot->struct_size < CASTLE_SIZEOF_INPUT_SNAPSHOT_V1 ||
+        out_snapshot->version != CASTLE_INPUT_STRUCTURE_VERSION_1) {
+        return CASTLE_ERROR_INVALID_ARGUMENT;
+    }
+    do {
+        before = g_public_snapshot.generation;
+        if ((before & 1u) != 0u) continue;
+        out_snapshot->flags = 0u;
+        out_snapshot->generation = before;
+        out_snapshot->ready = g_public_snapshot.ready;
+        out_snapshot->connected = g_public_snapshot.connected;
+        out_snapshot->game_foreground = g_public_snapshot.foreground;
+        out_snapshot->control_mode = g_public_snapshot.control_mode;
+        out_snapshot->allows_external_ui_input =
+            g_public_snapshot.allows_external_ui_input;
+        out_snapshot->button_down = g_public_snapshot.button_down;
+        out_snapshot->button_pressed = g_public_snapshot.button_pressed;
+        out_snapshot->button_released = g_public_snapshot.button_released;
+        out_snapshot->action_down = g_public_snapshot.action_down;
+        out_snapshot->action_pressed = g_public_snapshot.action_pressed;
+        out_snapshot->action_released = g_public_snapshot.action_released;
+        for (axis = 0u; axis < CASTLE_INPUT_AXIS_COUNT; ++axis) {
+            out_snapshot->axes[axis] = g_public_snapshot.axes[axis];
+        }
+        after = g_public_snapshot.generation;
+    } while (before != after || (after & 1u) != 0u);
+    out_snapshot->generation = after;
+    return CASTLE_OK;
+}
+
+static const CastleInputProviderV1 g_runtime_input_provider_api = {
+    CASTLE_INPUT_PROVIDER_MAGIC,
+    CASTLE_SIZEOF_INPUT_PROVIDER_V1,
+    CASTLE_INPUT_API_VERSION_1,
+    CASTLE_INPUT_CAP_PHYSICAL_SNAPSHOT | CASTLE_INPUT_CAP_SEMANTIC_SNAPSHOT,
+    public_copy_runtime_snapshot
+};
+
+int CastlePad_RegisterRuntimeInputProvider(const CastleRuntimeApiV1* runtime_api,
+                                           CastlePluginHandle plugin_handle) {
+    static const char interface_id[] = CASTLE_INPUT_INTERFACE_ID;
+    static const char provider_id_text[] = "org.castlereforge.padsupport.input";
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 result = {0};
+    CastleStringView provider_id;
+    if (!runtime_api || !runtime_api->QueryInterface || plugin_handle == 0u) return 0;
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id.data = interface_id;
+    query.interface_id.length = (CastleU32)(sizeof(interface_id) - 1u);
+    query.requested_version = CASTLE_INPUT_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_INPUT_API_V1;
+    query.required_capabilities_low = CASTLE_INPUT_CAP_EXTERNAL_PROVIDER;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
+        !result.api_pointer) return 0;
+    g_runtime_input_api = (const CastleInputApiV1*)result.api_pointer;
+    provider_id.data = provider_id_text;
+    provider_id.length = (CastleU32)(sizeof(provider_id_text) - 1u);
+    if (g_runtime_input_api->RegisterInputProvider(plugin_handle, provider_id,
+            &g_runtime_input_provider_api, &g_runtime_input_provider) != CASTLE_OK ||
+        g_runtime_input_provider == 0u) {
+        g_runtime_input_api = NULL;
+        return 0;
+    }
+    if (g_runtime_input_api->SetInputProviderReady(g_runtime_input_provider, 1u) !=
+        CASTLE_OK) {
+        g_runtime_input_api = NULL;
+        g_runtime_input_provider = 0u;
+        return 0;
+    }
+    return 1;
+}
+
+void CastlePad_RuntimeInputProviderShutdown(void) {
+    if (g_runtime_input_api && g_runtime_input_provider) {
+        g_runtime_input_api->SetInputProviderReady(g_runtime_input_provider, 0u);
+    }
+    g_runtime_input_provider = 0u;
+    g_runtime_input_api = NULL;
 }
 
 void CastlePad_PublicApiReset(void) {

@@ -739,6 +739,9 @@ CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
                                   CastlePluginHandle pluginHandle) {
     CastleRuntimeInfoV1 runtimeInfo{};
     const CastleHookApiV1* hookApi = QueryHookApi(runtimeApi);
+    if (!ycrlog::BindRuntime(runtimeApi, pluginHandle)) {
+        return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    }
     OpenStartupLog("Integrated：历史修复与 Crash 双路径分别由 Runtime 事务拥有。");
     runtimeInfo.magic = CASTLE_RUNTIME_INFO_MAGIC;
     runtimeInfo.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
@@ -760,10 +763,7 @@ CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
 }
 
 void RuntimeFault(CastleResult failure) {
-    OpenStartupLog("Fault：Runtime 文件存在但不可安全使用。");
-    ycrlog::Text("[失败] Runtime 故障码=");
-    ycrlog::Unsigned(static_cast<DWORD>(-failure));
-    ycrlog::Line("；本轮 BUGFix 未写入游戏。");
+    (void)failure;
 }
 
 } // namespace

@@ -42,6 +42,7 @@ static const CastleRuntimeApiV1 g_runtime_api_v1 = {
         CASTLE_RUNTIME_CAP_SAVE_V1 |
         CASTLE_RUNTIME_CAP_OVERLAY_V1 |
         CASTLE_RUNTIME_CAP_FILE_V1 |
+        CASTLE_RUNTIME_CAP_MODULE_V1 |
         CASTLE_RUNTIME_CAP_GAME_PHASE_SCHEDULE_V1,
     0u,
     runtime_get_info_,
@@ -381,6 +382,26 @@ static CastleResult CASTLE_RUNTIME_CALL runtime_query_interface_(
         out_result->actual_version = file_api->api_version;
         out_result->actual_struct_size = file_api->struct_size;
         out_result->capabilities_low = file_api->capability_flags;
+        out_result->provider_generation = 1u;
+        return CASTLE_OK;
+    }
+
+    if (Runtime_StringEquals(query->interface_id.data, query->interface_id.length,
+                             CASTLE_MODULE_INTERFACE_ID,
+                             (CastleU32)(sizeof(CASTLE_MODULE_INTERFACE_ID) - 1u))) {
+        const CastleModuleApiV1* module_api = Runtime_GetModuleApiV1();
+        if (query->requested_version != CASTLE_MODULE_API_VERSION_1) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        if (query->minimum_struct_size > module_api->struct_size ||
+            (query->required_capabilities_low & ~module_api->capability_flags) != 0u ||
+            query->required_capabilities_high != 0u) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        out_result->api_pointer = module_api;
+        out_result->actual_version = module_api->api_version;
+        out_result->actual_struct_size = module_api->struct_size;
+        out_result->capabilities_low = module_api->capability_flags;
         out_result->provider_generation = 1u;
         return CASTLE_OK;
     }
