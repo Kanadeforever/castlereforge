@@ -51,6 +51,7 @@ typedef struct CastleGameStateSnapshotV1 {
     CastleAddress data_center;
     CastleAddress event_table;
     CastleAddress game_window;
+    CastleAddress exploration_manager;
 
     CastleS32 camera_x;
     CastleS32 camera_y;
@@ -132,7 +133,7 @@ typedef struct CastleGameStateApiV1 {
     CastleGetGameMutationStateFn GetMutationState;
 } CastleGameStateApiV1;
 
-#define CASTLE_SIZEOF_GAME_STATE_SNAPSHOT_V1 148u
+#define CASTLE_SIZEOF_GAME_STATE_SNAPSHOT_V1 152u
 #define CASTLE_SIZEOF_GAME_MUTATION_REQUEST_V1 28u
 #define CASTLE_SIZEOF_GAME_MUTATION_STATE_V1 36u
 #define CASTLE_SIZEOF_GAME_STATE_API_V1 32u

@@ -2,10 +2,16 @@
 
 #define RUNTIME_SCHEDULE_MAX_PERIODIC 128u
 #define RUNTIME_SCHEDULE_MAX_POSTED   128u
+#define RUNTIME_SCHEDULE_MAX_GAME_PHASE 64u
+#define RUNTIME_SCHEDULE_MAX_GAME_POSTED 64u
 #define RUNTIME_SCHEDULE_MAX_WORK     \
     (RUNTIME_SCHEDULE_MAX_PERIODIC + RUNTIME_SCHEDULE_MAX_POSTED)
 #define RUNTIME_SCHEDULE_ID_CAP       RUNTIME_PLUGIN_ID_CAP
 #define RUNTIME_SCHEDULE_ISOLATE_AFTER 3u
+#define RUNTIME_EXPLORATION_UPDATE_RVA 0x00009580u
+
+typedef void (__fastcall *RuntimeExplorationUpdateFn)(void* manager,
+                                                       void* unused_edx);
 
 /* 周期任务记录只由调度锁保护；回调执行时仅复制需要的字段到栈上。 */
 typedef struct RuntimePeriodicTask {
@@ -49,6 +55,35 @@ typedef struct RuntimePostedTask {
     CastleU32 plugin_id_length;
 } RuntimePostedTask;
 
+/* 游戏线程任务不进入后台 worker；它们只在 Runtime 的探索入口桥中复制并执行。 */
+typedef struct RuntimeGamePhaseTask {
+    int used;
+    CastleTaskHandle handle;
+    CastlePluginHandle plugin;
+    CastleScheduledTaskFn callback;
+    void* user_context;
+    CastleU32 budget_ms;
+    CastleU32 phase;
+    CastleU32 priority;
+    CastleU32 enabled;
+    CastleU32 failure_count;
+    char plugin_id[RUNTIME_SCHEDULE_ID_CAP];
+    CastleU32 plugin_id_length;
+} RuntimeGamePhaseTask;
+
+typedef struct RuntimeGamePostedTask {
+    int used;
+    CastleU32 sequence;
+    CastlePluginHandle plugin;
+    CastleScheduledTaskFn callback;
+    void* user_context;
+    CastleU32 budget_ms;
+    CastleU32 phase;
+    CastleU32 priority;
+    char plugin_id[RUNTIME_SCHEDULE_ID_CAP];
+    CastleU32 plugin_id_length;
+} RuntimeGamePostedTask;
+
 /* WorkItem 是回调前复制出的不可变快照，Runtime 持锁期间绝不调用 callback。 */
 typedef struct RuntimeScheduleWorkItem {
     CastleU32 periodic;
@@ -68,17 +103,28 @@ typedef struct RuntimeScheduleWorkItem {
 static volatile LONG g_schedule_lock;
 static RuntimePeriodicTask g_periodic_tasks[RUNTIME_SCHEDULE_MAX_PERIODIC];
 static RuntimePostedTask g_posted_tasks[RUNTIME_SCHEDULE_MAX_POSTED];
+static RuntimeGamePhaseTask g_game_phase_tasks[RUNTIME_SCHEDULE_MAX_GAME_PHASE];
+static RuntimeGamePostedTask g_game_posted_tasks[RUNTIME_SCHEDULE_MAX_GAME_POSTED];
 /*
  * 全进程只有一个 Schedule worker，因此工作快照无需放在线程栈，也无需为每个线程复制。
  * 256 项完整批次约占数十 KB；放入 Runtime 私有静态区可把插件回调前的线程栈恢复为干净状态。
  */
 static RuntimeScheduleWorkItem g_schedule_work[RUNTIME_SCHEDULE_MAX_WORK];
+static RuntimeScheduleWorkItem g_game_phase_work[
+    RUNTIME_SCHEDULE_MAX_GAME_PHASE + RUNTIME_SCHEDULE_MAX_GAME_POSTED];
 static CastleU32 g_periodic_generation;
 static CastleU32 g_post_sequence;
 static HANDLE g_schedule_event;
 static HANDLE g_schedule_thread;
 /* 1 允许创建/运行后台线程；0 表示插件仍在 Bootstrap，任务只能登记不能执行。 */
 static volatile LONG g_schedule_callbacks_allowed;
+static volatile LONG g_game_phase_available;
+static volatile LONG g_game_phase_generation;
+static volatile LONG g_game_phase_current;
+static volatile LONG g_game_phase_thread_id;
+static CastleU32 g_game_phase_handle_generation;
+static RuntimeExplorationUpdateFn g_original_exploration_update;
+static void* g_exploration_trampoline;
 
 static CastleResult CASTLE_RUNTIME_CALL schedule_register_periodic_(
     CastlePluginHandle plugin, const CastleScheduledTaskV1* task,
@@ -99,7 +145,7 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_get_game_phase_(
     CastleGamePhaseStateV1* out_state);
 static DWORD WINAPI schedule_thread_main_(LPVOID unused);
 
-static const CastleScheduleApiV1 g_schedule_api = {
+static CastleScheduleApiV1 g_schedule_api = {
     CASTLE_SCHEDULE_API_MAGIC,
     CASTLE_SIZEOF_SCHEDULE_API_V1,
     CASTLE_SCHEDULE_API_VERSION_1,
@@ -113,6 +159,20 @@ static const CastleScheduleApiV1 g_schedule_api = {
     schedule_post_game_,
     schedule_get_game_phase_
 };
+
+static int schedule_valid_game_descriptor_(const CastleScheduledTaskV1* task) {
+    CastleU32 allowed_flags = CASTLE_SCHEDULE_TASK_START_ENABLED |
+                              CASTLE_SCHEDULE_TASK_GAME_EXPLORATION;
+    if (!task || task->magic != CASTLE_SCHEDULE_TASK_MAGIC ||
+        task->struct_size < CASTLE_SIZEOF_SCHEDULED_TASK_V1 ||
+        task->version != CASTLE_SCHEDULE_STRUCTURE_VERSION_1 ||
+        !task->callback || task->period_ms != 0u || task->budget_ms > 60000u ||
+        task->phase > CASTLE_SCHEDULE_PHASE_LATE ||
+        task->priority > CASTLE_SCHEDULE_PRIORITY_LATE ||
+        (task->flags & ~allowed_flags) != 0u ||
+        (task->flags & CASTLE_SCHEDULE_TASK_GAME_EXPLORATION) == 0u) return 0;
+    return 1;
+}
 
 static CastleU32 schedule_saturating_add_(CastleU32 value, CastleU32 addition) {
     CastleU32 maximum = (CastleU32)~0ul;
@@ -226,6 +286,132 @@ static void schedule_sort_work_(RuntimeScheduleWorkItem* items, CastleU32 count)
         }
         items[position] = value;
     }
+}
+
+static CastleU32 schedule_collect_game_phase_work_(void) {
+    CastleU32 index;
+    CastleU32 count = 0u;
+    Runtime_Lock(&g_schedule_lock);
+    for (index = 0u; index < RUNTIME_SCHEDULE_MAX_GAME_POSTED; ++index) {
+        RuntimeGamePostedTask* posted = &g_game_posted_tasks[index];
+        RuntimeScheduleWorkItem* item;
+        if (!posted->used) continue;
+        item = &g_game_phase_work[count++];
+        Runtime_ByteZero(item, (CastleU32)sizeof(*item));
+        item->handle = 0u;
+        item->callback = posted->callback;
+        item->user_context = posted->user_context;
+        item->budget_ms = posted->budget_ms;
+        item->phase = posted->phase;
+        item->priority = posted->priority;
+        item->sequence = posted->sequence;
+        Runtime_ByteCopy(item->plugin_id, posted->plugin_id,
+                         posted->plugin_id_length + 1u);
+        item->plugin_id_length = posted->plugin_id_length;
+        Runtime_ByteZero(posted, (CastleU32)sizeof(*posted));
+    }
+    for (index = 0u; index < RUNTIME_SCHEDULE_MAX_GAME_PHASE; ++index) {
+        RuntimeGamePhaseTask* task = &g_game_phase_tasks[index];
+        RuntimeScheduleWorkItem* item;
+        if (!task->used || !task->enabled) continue;
+        item = &g_game_phase_work[count++];
+        Runtime_ByteZero(item, (CastleU32)sizeof(*item));
+        item->handle = task->handle;
+        item->callback = task->callback;
+        item->user_context = task->user_context;
+        item->budget_ms = task->budget_ms;
+        item->phase = task->phase;
+        item->priority = task->priority;
+        item->sequence = task->handle;
+        Runtime_ByteCopy(item->plugin_id, task->plugin_id,
+                         task->plugin_id_length + 1u);
+        item->plugin_id_length = task->plugin_id_length;
+    }
+    Runtime_Unlock(&g_schedule_lock);
+    schedule_sort_work_(g_game_phase_work, count);
+    return count;
+}
+
+static void schedule_record_game_phase_fault_(CastleTaskHandle handle,
+                                              CastleResult result,
+                                              CastleU32 duration,
+                                              CastleU32 budget) {
+    CastleU32 index;
+    if (result >= 0 && (budget == 0u || duration <= budget)) return;
+    if (handle == 0u) {
+        Runtime_DiagnosticAppend("[Schedule] posted game-thread task reported a fault/overrun.");
+        return;
+    }
+    Runtime_Lock(&g_schedule_lock);
+    for (index = 0u; index < RUNTIME_SCHEDULE_MAX_GAME_PHASE; ++index) {
+        RuntimeGamePhaseTask* task = &g_game_phase_tasks[index];
+        if (!task->used || task->handle != handle) continue;
+        ++task->failure_count;
+        if (task->failure_count >= RUNTIME_SCHEDULE_ISOLATE_AFTER) task->enabled = 0u;
+        break;
+    }
+    Runtime_Unlock(&g_schedule_lock);
+}
+
+static void schedule_dispatch_exploration_(void* manager) {
+    CastleU32 count;
+    CastleU32 index;
+    Runtime_GameStateSetExplorationManager(manager);
+    InterlockedExchange(&g_game_phase_thread_id, (LONG)GetCurrentThreadId());
+    InterlockedExchange(&g_game_phase_current,
+                        (LONG)CASTLE_GAME_PHASE_EXPLORATION_UPDATE);
+    InterlockedIncrement(&g_game_phase_generation);
+    count = schedule_collect_game_phase_work_();
+    for (index = 0u; index < count; ++index) {
+        CastleU32 started = GetTickCount();
+        CastleResult result = g_game_phase_work[index].callback(
+            g_game_phase_work[index].handle,
+            g_game_phase_work[index].user_context);
+        CastleU32 duration = GetTickCount() - started;
+        schedule_record_game_phase_fault_(g_game_phase_work[index].handle,
+                                          result, duration,
+                                          g_game_phase_work[index].budget_ms);
+    }
+    InterlockedExchange(&g_game_phase_current, (LONG)CASTLE_GAME_PHASE_IDLE);
+}
+
+static void __fastcall schedule_exploration_hook_(void* manager, void* unused_edx) {
+    (void)unused_edx;
+    schedule_dispatch_exploration_(manager);
+    if (g_original_exploration_update) g_original_exploration_update(manager, NULL);
+}
+
+static int schedule_install_exploration_hook_(void) {
+    CastleU8* target;
+    CastleU8* trampoline;
+    CastleU8 patch[6];
+    CastleS32 relative;
+    static const CastleU8 expected[6] = {0x83u,0xECu,0x08u,0x56u,0x8Bu,0xF1u};
+    if (!Runtime_GameProfileSupported()) return 0;
+    target = (CastleU8*)(ULONG_PTR)Runtime_GetGameModuleValue() +
+             RUNTIME_EXPLORATION_UPDATE_RVA;
+    if (!Runtime_MemoryRangeReadable(target, 6u) ||
+        !Runtime_MemoryEquals(target, expected, 6u)) return 0;
+    trampoline = (CastleU8*)VirtualAlloc(NULL, 32u, MEM_RESERVE | MEM_COMMIT,
+                                         PAGE_EXECUTE_READWRITE);
+    if (!trampoline) return 0;
+    Runtime_ByteCopy(trampoline, expected, 6u);
+    trampoline[6] = 0xE9u;
+    relative = (CastleS32)((target + 6u) - (trampoline + 11u));
+    Runtime_ByteCopy(trampoline + 7u, &relative, 4u);
+    FlushInstructionCache(GetCurrentProcess(), trampoline, 11u);
+    patch[0] = 0xE9u;
+    relative = (CastleS32)((CastleU8*)(void*)&schedule_exploration_hook_ -
+                           (target + 5u));
+    Runtime_ByteCopy(patch + 1u, &relative, 4u);
+    patch[5] = 0x90u;
+    if (Runtime_WriteMemory(target, patch, 6u, 1) < 0) {
+        VirtualFree(trampoline, 0u, MEM_RELEASE);
+        return 0;
+    }
+    g_exploration_trampoline = trampoline;
+    g_original_exploration_update = (RuntimeExplorationUpdateFn)trampoline;
+    return 1;
 }
 
 static CastleU32 schedule_collect_work_(RuntimeScheduleWorkItem* work,
@@ -389,9 +575,27 @@ void Runtime_ScheduleInitialize(void) {
     g_schedule_thread = NULL;
     /* 测试宿主直接使用 Schedule 时保持旧行为；真实 Bootstrap 会在登记插件前主动关闸。 */
     g_schedule_callbacks_allowed = 1;
+    g_game_phase_available = 0;
+    g_game_phase_generation = 0;
+    g_game_phase_current = CASTLE_GAME_PHASE_IDLE;
+    g_game_phase_thread_id = 0;
+    g_game_phase_handle_generation = 0u;
+    g_original_exploration_update = NULL;
+    g_exploration_trampoline = NULL;
     Runtime_ByteZero(g_periodic_tasks, (CastleU32)sizeof(g_periodic_tasks));
     Runtime_ByteZero(g_posted_tasks, (CastleU32)sizeof(g_posted_tasks));
     Runtime_ByteZero(g_schedule_work, (CastleU32)sizeof(g_schedule_work));
+    Runtime_ByteZero(g_game_phase_tasks, (CastleU32)sizeof(g_game_phase_tasks));
+    Runtime_ByteZero(g_game_posted_tasks, (CastleU32)sizeof(g_game_posted_tasks));
+    Runtime_ByteZero(g_game_phase_work, (CastleU32)sizeof(g_game_phase_work));
+}
+
+void Runtime_ScheduleEnableGamePhase(void) {
+    if (schedule_install_exploration_hook_()) {
+        InterlockedExchange(&g_game_phase_available, 1);
+        g_schedule_api.capability_flags |= CASTLE_SCHEDULE_CAP_GAME_PHASE;
+        Runtime_DiagnosticAppend("[Schedule] exploration game-thread phase bridge installed.");
+    }
 }
 
 void Runtime_ScheduleCloseBootstrapGate(void) {
@@ -629,18 +833,89 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_post_background_(
 static CastleResult CASTLE_RUNTIME_CALL schedule_register_game_phase_(
     CastlePluginHandle plugin, const CastleScheduledTaskV1* task,
     CastleTaskHandle* out_task) {
-    if (!out_task || !Runtime_GetPluginModule(plugin) ||
-        !schedule_valid_descriptor_(task, 1)) return CASTLE_ERROR_INVALID_ARGUMENT;
+    RuntimeGamePhaseTask* record = NULL;
+    CastleU32 index;
+    CastleU32 id_length = 0u;
+    char plugin_id[RUNTIME_SCHEDULE_ID_CAP];
+    if (!out_task || !Runtime_GetPluginModule(plugin)) return CASTLE_ERROR_INVALID_ARGUMENT;
     *out_task = 0u;
-    return CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
+    if (InterlockedCompareExchange(&g_game_phase_available, 0, 0) == 0) {
+        return CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
+    }
+    if (!schedule_valid_game_descriptor_(task) ||
+        !schedule_copy_plugin_id_(plugin, plugin_id, &id_length)) {
+        return CASTLE_ERROR_INVALID_ARGUMENT;
+    }
+    Runtime_Lock(&g_schedule_lock);
+    for (index = 0u; index < RUNTIME_SCHEDULE_MAX_GAME_PHASE; ++index) {
+        if (!g_game_phase_tasks[index].used) {
+            record = &g_game_phase_tasks[index];
+            break;
+        }
+    }
+    if (!record) {
+        Runtime_Unlock(&g_schedule_lock);
+        return CASTLE_ERROR_RESOURCE_CONFLICT;
+    }
+    ++g_game_phase_handle_generation;
+    if (g_game_phase_handle_generation == 0u) ++g_game_phase_handle_generation;
+    Runtime_ByteZero(record, (CastleU32)sizeof(*record));
+    record->used = 1;
+    record->handle = 0x80000000u |
+        ((g_game_phase_handle_generation & 0x007FFFFFu) << 8u) | (index + 1u);
+    record->plugin = plugin;
+    record->callback = task->callback;
+    record->user_context = task->user_context;
+    record->budget_ms = task->budget_ms;
+    record->phase = task->phase;
+    record->priority = task->priority;
+    record->enabled = (task->flags & CASTLE_SCHEDULE_TASK_START_ENABLED) != 0u;
+    Runtime_ByteCopy(record->plugin_id, plugin_id, id_length + 1u);
+    record->plugin_id_length = id_length;
+    *out_task = record->handle;
+    Runtime_Unlock(&g_schedule_lock);
+    return CASTLE_OK;
 }
 
 static CastleResult CASTLE_RUNTIME_CALL schedule_post_game_(
     CastlePluginHandle plugin, const CastleScheduledTaskV1* task) {
-    if (!Runtime_GetPluginModule(plugin) || !schedule_valid_descriptor_(task, 0)) {
+    CastleU32 index;
+    CastleU32 id_length = 0u;
+    char plugin_id[RUNTIME_SCHEDULE_ID_CAP];
+    RuntimeGamePostedTask* record = NULL;
+    if (!Runtime_GetPluginModule(plugin)) return CASTLE_ERROR_INVALID_ARGUMENT;
+    if (InterlockedCompareExchange(&g_game_phase_available, 0, 0) == 0) {
+        return CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
+    }
+    if (!schedule_valid_game_descriptor_(task) ||
+        !schedule_copy_plugin_id_(plugin, plugin_id, &id_length)) {
         return CASTLE_ERROR_INVALID_ARGUMENT;
     }
-    return CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
+    Runtime_Lock(&g_schedule_lock);
+    for (index = 0u; index < RUNTIME_SCHEDULE_MAX_GAME_POSTED; ++index) {
+        if (!g_game_posted_tasks[index].used) {
+            record = &g_game_posted_tasks[index];
+            break;
+        }
+    }
+    if (!record) {
+        Runtime_Unlock(&g_schedule_lock);
+        return CASTLE_ERROR_RESOURCE_CONFLICT;
+    }
+    ++g_post_sequence;
+    Runtime_ByteZero(record, (CastleU32)sizeof(*record));
+    record->used = 1;
+    record->sequence = g_post_sequence;
+    record->plugin = plugin;
+    record->callback = task->callback;
+    record->user_context = task->user_context;
+    record->budget_ms = task->budget_ms;
+    record->phase = task->phase;
+    record->priority = task->priority;
+    Runtime_ByteCopy(record->plugin_id, plugin_id, id_length + 1u);
+    record->plugin_id_length = id_length;
+    Runtime_Unlock(&g_schedule_lock);
+    return CASTLE_OK;
 }
 
 static CastleResult CASTLE_RUNTIME_CALL schedule_get_game_phase_(
@@ -651,9 +926,13 @@ static CastleResult CASTLE_RUNTIME_CALL schedule_get_game_phase_(
         return CASTLE_ERROR_INVALID_ARGUMENT;
     }
     out_state->flags = 0u;
-    out_state->available = 0u;
-    out_state->generation = 0u;
-    out_state->current_phase = 0u;
-    out_state->game_thread_id = 0u;
-    return CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
+    out_state->available = (CastleU32)InterlockedCompareExchange(
+        &g_game_phase_available, 0, 0);
+    out_state->generation = (CastleU32)InterlockedCompareExchange(
+        &g_game_phase_generation, 0, 0);
+    out_state->current_phase = (CastleU32)InterlockedCompareExchange(
+        &g_game_phase_current, 0, 0);
+    out_state->game_thread_id = (CastleU32)InterlockedCompareExchange(
+        &g_game_phase_thread_id, 0, 0);
+    return out_state->available ? CASTLE_OK : CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
 }

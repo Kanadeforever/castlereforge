@@ -1,6 +1,8 @@
 #include "runtime_internal.h"
 
 #define RUNTIME_RENDER_PROVIDER_ID_CAP 128u
+#define RUNTIME_RENDER_QUEUE_CALL_RVA  0x0004A9C6u
+#define RUNTIME_PRESENT_CALL_RVA       0x0004A9E6u
 
 /* x86 fastcall 的前两个参数进入 ECX/EDX，可安全调用“只有 ECX=this”的原版成员函数。 */
 typedef void (__fastcall *RuntimeRenderOriginalFn)(void* render_context,
@@ -28,6 +30,7 @@ static CastleLeaseHandle g_extra_frame_lease;
 static CastlePluginHandle g_extra_frame_owner;
 static CastleU32 g_extra_frame_display_generation;
 static CastleU32 g_extra_frame_generation;
+static int g_render_bridge_ready;
 
 static CastleResult CASTLE_RUNTIME_CALL render_get_state_(CastleRenderStateV1* out_state);
 static CastleResult CASTLE_RUNTIME_CALL render_current_queue_(const CastleRenderCallV1* call);
@@ -43,6 +46,90 @@ static CastleResult CASTLE_RUNTIME_CALL render_set_provider_ready_(
     CastleProviderHandle provider, CastleU32 ready);
 static CastleResult CASTLE_RUNTIME_CALL render_get_provider_state_(
     CastleProviderHandle provider, CastleRenderStateV1* out_state);
+
+/*
+ * 原版主循环的两个 CALL 从本版本起只指向 Runtime。Widescreen 是可选后端，FPSUnlock 是
+ * 额外帧消费者；任何插件都不再读取 CALL 当前目标来猜加载顺序。
+ */
+static void __fastcall render_queue_bridge_(void* render_context, void* unused_edx) {
+    CastleRenderCallV1 call;
+    CastleU32 display_generation = 0u;
+    CastleResult result;
+    (void)unused_edx;
+    Runtime_ByteZero(&call, (CastleU32)sizeof(call));
+    call.magic = CASTLE_RENDER_CALL_MAGIC;
+    call.struct_size = CASTLE_SIZEOF_RENDER_CALL_V1;
+    call.version = CASTLE_RENDER_STRUCTURE_VERSION_1;
+    call.render_context = (CastleAddress)(ULONG_PTR)render_context;
+    (void)Runtime_GetCurrentDisplayGeneration(&display_generation);
+    call.display_generation = display_generation;
+    result = render_current_queue_(&call);
+    if (result < 0 && g_original_render_queue) {
+        g_original_render_queue(render_context, NULL);
+    }
+}
+
+static void __fastcall render_present_bridge_(void* render_context, void* unused_edx) {
+    CastleRenderCallV1 call;
+    CastleU32 display_generation = 0u;
+    CastleResult result;
+    (void)unused_edx;
+    Runtime_ByteZero(&call, (CastleU32)sizeof(call));
+    call.magic = CASTLE_RENDER_CALL_MAGIC;
+    call.struct_size = CASTLE_SIZEOF_RENDER_CALL_V1;
+    call.version = CASTLE_RENDER_STRUCTURE_VERSION_1;
+    call.render_context = (CastleAddress)(ULONG_PTR)render_context;
+    (void)Runtime_GetCurrentDisplayGeneration(&display_generation);
+    call.display_generation = display_generation;
+    result = render_present_(&call);
+    if (result < 0 && g_original_present) g_original_present(render_context, NULL);
+}
+
+static int render_read_call_target_(CastleU8* site, void** out_target) {
+    CastleS32 relative;
+    if (!site || !out_target || !Runtime_MemoryRangeReadable(site, 5u) ||
+        site[0] != 0xE8u) return 0;
+    Runtime_ByteCopy(&relative, site + 1u, 4u);
+    *out_target = site + 5u + relative;
+    return 1;
+}
+
+static int render_patch_call_(CastleU8* site, const void* expected,
+                              const void* replacement) {
+    CastleU8 patch[5];
+    CastleS32 relative;
+    void* actual = NULL;
+    if (!render_read_call_target_(site, &actual) || actual != expected) return 0;
+    patch[0] = 0xE8u;
+    relative = (CastleS32)((const CastleU8*)replacement - (site + 5u));
+    Runtime_ByteCopy(patch + 1u, &relative, 4u);
+    return Runtime_WriteMemory(site, patch, 5u, 1) >= 0;
+}
+
+static int render_install_bridges_(void) {
+    CastleU8* base;
+    CastleU8* queue_site;
+    CastleU8* present_site;
+    CastleU8 original_queue_call[5];
+    if (!Runtime_GameProfileSupported() || !g_original_render_queue ||
+        !g_original_present) return 0;
+    base = (CastleU8*)(ULONG_PTR)Runtime_GetGameModuleValue();
+    queue_site = base + RUNTIME_RENDER_QUEUE_CALL_RVA;
+    present_site = base + RUNTIME_PRESENT_CALL_RVA;
+    if (!Runtime_MemoryRangeReadable(queue_site, 5u) ||
+        !Runtime_MemoryRangeReadable(present_site, 5u)) return 0;
+    Runtime_ByteCopy(original_queue_call, queue_site, 5u);
+    if (!render_patch_call_(queue_site, (const void*)g_original_render_queue,
+                            (const void*)&render_queue_bridge_)) return 0;
+    if (!render_patch_call_(present_site, (const void*)g_original_present,
+                            (const void*)&render_present_bridge_)) {
+        /* 两个公共点必须同成同败；第二项失败时恢复第一项，不能留下半套渲染路径。 */
+        (void)Runtime_WriteMemory(queue_site, original_queue_call, 5u, 1);
+        return 0;
+    }
+    Runtime_DiagnosticAppend("[Render] central RenderQueue/Present bridges installed.");
+    return 1;
+}
 
 static const CastleRenderApiV1 g_render_api = {
     CASTLE_RENDER_API_MAGIC,
@@ -121,6 +208,7 @@ void Runtime_RenderInitialize(void) {
     g_extra_frame_owner = 0u;
     g_extra_frame_display_generation = 0u;
     g_extra_frame_generation = 0u;
+    g_render_bridge_ready = render_install_bridges_();
 }
 
 const CastleRenderApiV1* Runtime_GetRenderApiV1(void) {
@@ -182,7 +270,8 @@ static CastleResult render_copy_state_(CastleRenderStateV1* out_state,
         Runtime_Unlock(&g_render_lock);
         return out_state->ready ? CASTLE_OK : CASTLE_ERROR_NOT_READY;
     }
-    out_state->ready = g_original_render_queue && g_original_present ? 1u : 0u;
+    out_state->ready = g_render_bridge_ready && g_original_render_queue &&
+                       g_original_present ? 1u : 0u;
     out_state->backend_plugin = 0u;
     out_state->provider_handle = 0u;
     out_state->display_provider_generation = Runtime_GetDisplayProviderGeneration();

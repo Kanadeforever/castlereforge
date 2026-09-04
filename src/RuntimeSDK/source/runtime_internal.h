@@ -22,6 +22,8 @@
 #include "../include/CastleInput_API.h"
 #include "../include/CastleGameState_API.h"
 #include "../include/CastleSave_API.h"
+#include "../include/CastleOverlay_API.h"
+#include "../include/CastleFile_API.h"
 
 #define RUNTIME_MAX_PLUGINS       128u
 #define RUNTIME_PLUGIN_ID_CAP     128u
@@ -87,6 +89,7 @@ const CastlePathApiV1* Runtime_GetPathApiV1(void);
 void Runtime_ScheduleInitialize(void);
 void Runtime_ScheduleCloseBootstrapGate(void);
 void Runtime_ScheduleOpenBootstrapGate(void);
+void Runtime_ScheduleEnableGamePhase(void);
 const CastleScheduleApiV1* Runtime_GetScheduleApiV1(void);
 
 /* 已确认游戏 profile 与内部公共符号。未知构建时这些函数安全返回不可用。 */
@@ -126,10 +129,19 @@ const CastleInputApiV1* Runtime_GetInputApiV1(void);
 /* 公共游戏状态快照和临时可写资源的独占租约。 */
 void Runtime_GameStateInitialize(void);
 const CastleGameStateApiV1* Runtime_GetGameStateApiV1(void);
+void Runtime_GameStateSetExplorationManager(void* manager);
 
 /* 手动槽位策略与 Runtime 唯一的 SaveAction 原生 disabled 桥。 */
 void Runtime_SaveInitialize(void);
 const CastleSaveApiV1* Runtime_GetSaveApiV1(void);
+
+/* renderer Present 中央桥和有序覆盖层回调。 */
+void Runtime_OverlayInitialize(void);
+const CastleOverlayApiV1* Runtime_GetOverlayApiV1(void);
+
+/* 插件私有文件的根边界、读取、枚举和原子替换。 */
+void Runtime_FileInitialize(void);
+const CastleFileApiV1* Runtime_GetFileApiV1(void);
 
 /* 诊断环。 */
 int Runtime_LogInitialize(void);

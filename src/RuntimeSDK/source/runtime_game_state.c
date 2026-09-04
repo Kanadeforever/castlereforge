@@ -50,6 +50,7 @@ static CastlePluginHandle g_game_resource_owner[RUNTIME_GAME_RESOURCE_COUNT];
 static CastleLeaseHandle g_game_resource_lease[RUNTIME_GAME_RESOURCE_COUNT];
 static CastleU32 g_game_resource_generation[RUNTIME_GAME_RESOURCE_COUNT];
 static CastleU32 g_game_next_lease;
+static void* volatile g_game_exploration_manager;
 
 static CastleResult CASTLE_RUNTIME_CALL game_state_snapshot_(
     CastleGameStateSnapshotV1* out_snapshot);
@@ -103,9 +104,14 @@ void Runtime_GameStateInitialize(void) {
     Runtime_ByteZero(g_game_resource_owner, (CastleU32)sizeof(g_game_resource_owner));
     Runtime_ByteZero(g_game_resource_lease, (CastleU32)sizeof(g_game_resource_lease));
     g_game_next_lease = 1u;
+    g_game_exploration_manager = NULL;
     for (index = 0u; index < RUNTIME_GAME_RESOURCE_COUNT; ++index) {
         g_game_resource_generation[index] = 1u;
     }
+}
+
+void Runtime_GameStateSetExplorationManager(void* manager) {
+    InterlockedExchangePointer(&g_game_exploration_manager, manager);
 }
 
 const CastleGameStateApiV1* Runtime_GetGameStateApiV1(void) {
@@ -128,6 +134,8 @@ static CastleResult CASTLE_RUNTIME_CALL game_state_snapshot_(
     out_snapshot->data_center = game_read_u32_(GS_DATA_CENTER_RVA);
     out_snapshot->event_table = game_read_u32_(GS_EVENT_TABLE_RVA);
     out_snapshot->game_window = game_read_u32_(GS_GAME_WINDOW_RVA);
+    out_snapshot->exploration_manager = (CastleAddress)(ULONG_PTR)
+        InterlockedCompareExchangePointer(&g_game_exploration_manager, NULL, NULL);
     out_snapshot->camera_x = game_read_s32_(GS_CAMERA_X_RVA);
     out_snapshot->camera_y = game_read_s32_(GS_CAMERA_Y_RVA);
     out_snapshot->camera_view_width = game_read_s32_(GS_CAMERA_VIEW_W_RVA);

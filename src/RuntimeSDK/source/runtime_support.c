@@ -88,9 +88,12 @@ int Runtime_EnsureInitialized(void) {
          * 磁盘日志失败不影响协调安全；内存诊断环仍然保持可用。
          */
         (void)Runtime_LogInitialize();
+        Runtime_FileInitialize();
         Runtime_SymbolsInitialize();
         Runtime_GameStateInitialize();
+        Runtime_ScheduleEnableGamePhase();
         Runtime_SaveInitialize();
+        Runtime_OverlayInitialize();
         Runtime_DisplayInitialize();
         Runtime_RenderInitialize();
         if (!Runtime_WindowInitialize()) {

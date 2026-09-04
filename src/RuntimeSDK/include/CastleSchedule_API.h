@@ -37,6 +37,12 @@
 /* 周期任务登记后是否立即启用。未设置时先登记为禁用，由插件准备完毕后显式开启。 */
 #define CASTLE_SCHEDULE_TASK_START_ENABLED (1ul << 0)
 
+/* 游戏线程回调只在明确登记的阶段执行；本版首先开放探索管理器 Update 入口。 */
+#define CASTLE_SCHEDULE_TASK_GAME_EXPLORATION (1ul << 8)
+
+#define CASTLE_GAME_PHASE_IDLE               0u
+#define CASTLE_GAME_PHASE_EXPLORATION_UPDATE 1u
+
 /* 可查询状态。一次性投递不创建公开句柄，因此只使用周期任务状态。 */
 #define CASTLE_SCHEDULE_TASK_DISABLED   1u
 #define CASTLE_SCHEDULE_TASK_WAITING    2u

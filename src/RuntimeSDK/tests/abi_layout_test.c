@@ -23,6 +23,8 @@
 #include "CastleInput_API.h"
 #include "CastleGameState_API.h"
 #include "CastleSave_API.h"
+#include "CastleOverlay_API.h"
+#include "CastleFile_API.h"
 
 /* 使用唯一 typedef 名制造编译期断言，不需要 C11 _Static_assert 或 C++ static_assert。 */
 #define CASTLE_ABI_ASSERT(name, expression) \
@@ -275,9 +277,9 @@ CASTLE_ABI_ASSERT(game_mutation_state_size,
 CASTLE_ABI_ASSERT(game_state_api_size,
     sizeof(CastleGameStateApiV1) == CASTLE_SIZEOF_GAME_STATE_API_V1);
 CASTLE_ABI_ASSERT(game_snapshot_camera_offset,
-    offsetof(CastleGameStateSnapshotV1, camera_x) == 36u);
+    offsetof(CastleGameStateSnapshotV1, camera_x) == 40u);
 CASTLE_ABI_ASSERT(game_snapshot_ui_offset,
-    offsetof(CastleGameStateSnapshotV1, battle_ui) == 104u);
+    offsetof(CastleGameStateSnapshotV1, battle_ui) == 108u);
 CASTLE_ABI_ASSERT(game_state_api_acquire_offset,
     offsetof(CastleGameStateApiV1, AcquireMutation) == 20u);
 
@@ -292,6 +294,32 @@ CASTLE_ABI_ASSERT(save_policy_label_offset,
     offsetof(CastleManualSavePolicyV1, label) == 28u);
 CASTLE_ABI_ASSERT(save_api_ui_state_offset,
     offsetof(CastleSaveApiV1, GetSaveUiState) == 28u);
+
+/* Overlay 回调只拿一次 Present 上下文，不持有原版 renderer 生命周期之外的指针。 */
+CASTLE_ABI_ASSERT(overlay_context_size,
+    sizeof(CastleOverlayContextV1) == CASTLE_SIZEOF_OVERLAY_CONTEXT_V1);
+CASTLE_ABI_ASSERT(overlay_client_size,
+    sizeof(CastleOverlayClientV1) == CASTLE_SIZEOF_OVERLAY_CLIENT_V1);
+CASTLE_ABI_ASSERT(overlay_state_size,
+    sizeof(CastleOverlayStateV1) == CASTLE_SIZEOF_OVERLAY_STATE_V1);
+CASTLE_ABI_ASSERT(overlay_api_size,
+    sizeof(CastleOverlayApiV1) == CASTLE_SIZEOF_OVERLAY_API_V1);
+CASTLE_ABI_ASSERT(overlay_client_callback_offset,
+    offsetof(CastleOverlayClientV1, draw) == 24u);
+CASTLE_ABI_ASSERT(overlay_api_unregister_offset,
+    offsetof(CastleOverlayApiV1, UnregisterOverlay) == 24u);
+
+/* File ABI 由调用方提供缓冲区，Runtime 不跨 DLL malloc/free。 */
+CASTLE_ABI_ASSERT(file_buffer_size,
+    sizeof(CastleFileBufferV1) == CASTLE_SIZEOF_FILE_BUFFER_V1);
+CASTLE_ABI_ASSERT(file_info_size,
+    sizeof(CastleFileInfoV1) == CASTLE_SIZEOF_FILE_INFO_V1);
+CASTLE_ABI_ASSERT(file_api_size,
+    sizeof(CastleFileApiV1) == CASTLE_SIZEOF_FILE_API_V1);
+CASTLE_ABI_ASSERT(file_info_name_offset,
+    offsetof(CastleFileInfoV1, name_utf8) == 28u);
+CASTLE_ABI_ASSERT(file_api_atomic_offset,
+    offsetof(CastleFileApiV1, WritePluginFileAtomic) == 20u);
 
 /*
  * 生成一个外部函数，防止极端编译器把整个测试翻译单元当成“完全空文件”特殊处理。
