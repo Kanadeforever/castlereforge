@@ -77,11 +77,20 @@ int Runtime_EnsureInitialized(void) {
         Runtime_RegistryInitialize();
         Runtime_HookInitialize();
         Runtime_ScheduleInitialize();
+        Runtime_ClockInitialize();
+        Runtime_InputInitialize();
         if (!Runtime_PathInitialize()) {
             InterlockedExchange(&g_initialize_state, -1);
             return 0;
         }
+        /*
+         * 日志必须在 Path 成功以后打开，才能从 Runtime 的真实位置推导 mods\logs。
+         * 磁盘日志失败不影响协调安全；内存诊断环仍然保持可用。
+         */
+        (void)Runtime_LogInitialize();
         Runtime_SymbolsInitialize();
+        Runtime_GameStateInitialize();
+        Runtime_SaveInitialize();
         Runtime_DisplayInitialize();
         Runtime_RenderInitialize();
         if (!Runtime_WindowInitialize()) {

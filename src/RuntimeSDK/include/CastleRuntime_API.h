@@ -123,6 +123,7 @@ typedef struct CastleStringView {
 #define CASTLE_ERROR_LATE_LOAD_UNSUPPORTED         ((CastleResult)-16)
 #define CASTLE_ERROR_ENTRY_GATE_CONFLICT           ((CastleResult)-17)
 #define CASTLE_ERROR_BUFFER_TOO_SMALL              ((CastleResult)-18)
+#define CASTLE_ERROR_RUNTIME_REQUIRED               ((CastleResult)-19)
 
 /* 根能力位 low 32 位。某个功能没有真实实现时，对应位必须保持 0。 */
 #define CASTLE_RUNTIME_CAP_PLUGIN_REGISTRY           (1ul << 0)
@@ -138,6 +139,10 @@ typedef struct CastleStringView {
 #define CASTLE_RUNTIME_CAP_WINDOW_V1                  (1ul << 10)
 #define CASTLE_RUNTIME_CAP_RENDER_V1                  (1ul << 11)
 #define CASTLE_RUNTIME_CAP_GAME_PHASE_SCHEDULE_V1     (1ul << 12)
+#define CASTLE_RUNTIME_CAP_LOG_V1                     (1ul << 13)
+#define CASTLE_RUNTIME_CAP_INPUT_V1                   (1ul << 14)
+#define CASTLE_RUNTIME_CAP_GAME_STATE_V1              (1ul << 15)
+#define CASTLE_RUNTIME_CAP_SAVE_V1                    (1ul << 16)
 
 /* Bootstrap 触发来源。数字只用于诊断和测试，不能改变最终激活语义。 */
 #define CASTLE_BOOTSTRAP_TRIGGER_ENTRY_GATE     1u

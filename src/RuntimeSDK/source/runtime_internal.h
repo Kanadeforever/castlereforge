@@ -17,6 +17,11 @@
 #include "../include/CastleDisplay_API.h"
 #include "../include/CastleWindow_API.h"
 #include "../include/CastleRender_API.h"
+#include "../include/CastleLog_API.h"
+#include "../include/CastleClock_API.h"
+#include "../include/CastleInput_API.h"
+#include "../include/CastleGameState_API.h"
+#include "../include/CastleSave_API.h"
 
 #define RUNTIME_MAX_PLUGINS       128u
 #define RUNTIME_PLUGIN_ID_CAP     128u
@@ -66,6 +71,7 @@ int Runtime_MemoryEquals(const void* memory, const CastleU8* expected,
                          CastleU32 size);
 CastleResult Runtime_WriteMemory(void* target, const CastleU8* bytes,
                                  CastleU32 size, int executable);
+int Runtime_MemoryRangeReadable(const void* memory, CastleU32 size);
 
 /* Path/进程信息。 */
 int Runtime_PathInitialize(void);
@@ -109,7 +115,26 @@ void Runtime_RenderInitialize(void);
 const CastleRenderApiV1* Runtime_GetRenderApiV1(void);
 CastleU32 Runtime_GetRenderProviderGeneration(void);
 
+/* 单调毫秒时钟与成对的 1ms Windows 计时器精度租约。 */
+void Runtime_ClockInitialize(void);
+const CastleClockApiV1* Runtime_GetClockApiV1(void);
+
+/* 权威输入快照、Provider 注册和覆盖层焦点租约。 */
+void Runtime_InputInitialize(void);
+const CastleInputApiV1* Runtime_GetInputApiV1(void);
+
+/* 公共游戏状态快照和临时可写资源的独占租约。 */
+void Runtime_GameStateInitialize(void);
+const CastleGameStateApiV1* Runtime_GetGameStateApiV1(void);
+
+/* 手动槽位策略与 Runtime 唯一的 SaveAction 原生 disabled 桥。 */
+void Runtime_SaveInitialize(void);
+const CastleSaveApiV1* Runtime_GetSaveApiV1(void);
+
 /* 诊断环。 */
+int Runtime_LogInitialize(void);
+const CastleLogApiV1* Runtime_GetLogApiV1(void);
+void Runtime_LogRuntimeLine(const char* utf8_line);
 void Runtime_DiagnosticsInitialize(void);
 void Runtime_DiagnosticAppend(const char* utf8_line);
 CastleU32 Runtime_DiagnosticGeneration(void);

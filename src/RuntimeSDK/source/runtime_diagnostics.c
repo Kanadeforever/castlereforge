@@ -40,6 +40,12 @@ void Runtime_DiagnosticAppend(const char* utf8_line) {
     InterlockedIncrement(&g_diagnostic_generation);
 
     Runtime_Unlock(&g_diagnostic_lock);
+
+    /*
+     * 先完成内存提交再写磁盘，避免日志文件暂时卡住时占用诊断锁。
+     * Runtime_LogRuntimeLine 失败会静默退化，绝不能改变上面的安全诊断结果。
+     */
+    Runtime_LogRuntimeLine(utf8_line);
 }
 
 CastleU32 Runtime_DiagnosticGeneration(void) {

@@ -328,6 +328,19 @@ CastleResult CASTLE_RUNTIME_CALL Client_BootstrapPlugin(
     }
 
     if (mode == CASTLE_CLIENT_BOOTSTRAP_STANDALONE) {
+        /*
+         * 官方插件从本版本起必须由 Runtime 协调。文件完全缺失也只能安全停用，不能再
+         * 调用遗留 StandaloneHost 私自写游戏代码。未设置本标志的第三方 SDK 插件仍可
+         * 使用原来的可选 Runtime 模式，因此这个变化不会偷改通用 SDK 的既有语义。
+         */
+        if ((config->flags & CASTLE_CLIENT_FLAG_REQUIRE_RUNTIME) != 0u) {
+            if (config->runtime_fault) {
+                config->runtime_fault(CASTLE_ERROR_RUNTIME_REQUIRED,
+                                      config->user_context);
+            }
+            InterlockedExchange(&g_client_state, CASTLE_CLIENT_RUNTIME_FAULT);
+            return CASTLE_ERROR_RUNTIME_REQUIRED;
+        }
         if (!config->standalone_initialize) {
             InterlockedExchange(&g_client_state, CASTLE_CLIENT_PLUGIN_FAILED);
             return CASTLE_ERROR_INVALID_ARGUMENT;

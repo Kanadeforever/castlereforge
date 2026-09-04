@@ -19,6 +19,11 @@ static int runtime_range_committed_(const BYTE* begin, CastleU32 size) {
     return 1;
 }
 
+int Runtime_MemoryRangeReadable(const void* memory, CastleU32 size) {
+    if (!memory || size == 0u) return 0;
+    return runtime_range_committed_((const BYTE*)memory, size);
+}
+
 void* Runtime_ResolveTarget(const CastleTargetAddressV1* target) {
     BYTE* base;
     BYTE* address;

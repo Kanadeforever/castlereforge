@@ -363,7 +363,7 @@ static const char kBuildId[] = "runtimesdk-v1";
 static const CastlePluginDescriptorV1 gPluginDescriptor = {
     CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,
     CASTLE_PLUGIN_DESCRIPTOR_V1,
-    CASTLE_PLUGIN_FLAG_SUPPORTS_STANDALONE | CASTLE_PLUGIN_FLAG_REQUESTS_HOOKS |
+    CASTLE_PLUGIN_FLAG_REQUESTS_HOOKS |
         CASTLE_PLUGIN_FLAG_OFFICIAL_MODULE,
     0u,
     {kPluginId, static_cast<CastleU32>(sizeof(kPluginId) - 1u)},
@@ -373,7 +373,7 @@ static const CastlePluginDescriptorV1 gPluginDescriptor = {
 };
 static const CastleRuntimeClientConfigV1 gClientConfig = {
     CASTLE_CLIENT_CONFIG_MAGIC, CASTLE_SIZEOF_CLIENT_CONFIG_V1,
-    CASTLE_CLIENT_CONFIG_VERSION_1, 0u,
+    CASTLE_CLIENT_CONFIG_VERSION_1, CASTLE_CLIENT_FLAG_REQUIRE_RUNTIME,
     MaxGrowth_Integrated, MaxGrowth_Standalone, MaxGrowth_RuntimeFault,
     MaxGrowth_ProcessExit, nullptr
 };

@@ -27,6 +27,12 @@
 #define CASTLE_PLUGIN_FLAG_PROVIDES_BACKEND    (1ul << 2)
 #define CASTLE_PLUGIN_FLAG_OFFICIAL_MODULE     (1ul << 3)
 
+/*
+ * 官方整合插件设置 REQUIRE_RUNTIME 后，不再允许 Client 在 DLL 缺失时启动 StandaloneHost。
+ * SDK 仍保留可选运行时能力，供不属于官方整合包的第三方插件自行选择兼容策略。
+ */
+#define CASTLE_CLIENT_FLAG_REQUIRE_RUNTIME     (1ul << 0)
+
 /* ClientBootstrap 的模式。数值与 Runtime 根 Bootstrap 模式保持一致。 */
 #define CASTLE_CLIENT_BOOTSTRAP_STANDALONE CASTLE_BOOTSTRAP_MODE_STANDALONE
 #define CASTLE_CLIENT_BOOTSTRAP_INTEGRATED CASTLE_BOOTSTRAP_MODE_INTEGRATED

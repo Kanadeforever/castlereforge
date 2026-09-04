@@ -34,7 +34,12 @@ static const CastleRuntimeApiV1 g_runtime_api_v1 = {
         CASTLE_RUNTIME_CAP_SERVICE_PROVIDER |
         CASTLE_RUNTIME_CAP_DISPLAY_V1 |
         CASTLE_RUNTIME_CAP_WINDOW_V1 |
-        CASTLE_RUNTIME_CAP_RENDER_V1,
+        CASTLE_RUNTIME_CAP_RENDER_V1 |
+        CASTLE_RUNTIME_CAP_LOG_V1 |
+        CASTLE_RUNTIME_CAP_CLOCK_V1 |
+        CASTLE_RUNTIME_CAP_INPUT_V1 |
+        CASTLE_RUNTIME_CAP_GAME_STATE_V1 |
+        CASTLE_RUNTIME_CAP_SAVE_V1,
     0u,
     runtime_get_info_,
     runtime_bootstrap_,
@@ -234,6 +239,106 @@ static CastleResult CASTLE_RUNTIME_CALL runtime_query_interface_(
         out_result->actual_struct_size = render_api->struct_size;
         out_result->capabilities_low = render_api->capability_flags;
         out_result->provider_generation = Runtime_GetRenderProviderGeneration();
+        return CASTLE_OK;
+    }
+
+    if (Runtime_StringEquals(query->interface_id.data, query->interface_id.length,
+                             CASTLE_LOG_INTERFACE_ID,
+                             (CastleU32)(sizeof(CASTLE_LOG_INTERFACE_ID) - 1u))) {
+        const CastleLogApiV1* log_api = Runtime_GetLogApiV1();
+        if (query->requested_version != CASTLE_LOG_API_VERSION_1) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        if (query->minimum_struct_size > log_api->struct_size ||
+            (query->required_capabilities_low & ~log_api->capability_flags) != 0u ||
+            query->required_capabilities_high != 0u) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        out_result->api_pointer = log_api;
+        out_result->actual_version = log_api->api_version;
+        out_result->actual_struct_size = log_api->struct_size;
+        out_result->capabilities_low = log_api->capability_flags;
+        out_result->provider_generation = 1u;
+        return CASTLE_OK;
+    }
+
+    if (Runtime_StringEquals(query->interface_id.data, query->interface_id.length,
+                             CASTLE_CLOCK_INTERFACE_ID,
+                             (CastleU32)(sizeof(CASTLE_CLOCK_INTERFACE_ID) - 1u))) {
+        const CastleClockApiV1* clock_api = Runtime_GetClockApiV1();
+        if (query->requested_version != CASTLE_CLOCK_API_VERSION_1) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        if (query->minimum_struct_size > clock_api->struct_size ||
+            (query->required_capabilities_low & ~clock_api->capability_flags) != 0u ||
+            query->required_capabilities_high != 0u) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        out_result->api_pointer = clock_api;
+        out_result->actual_version = clock_api->api_version;
+        out_result->actual_struct_size = clock_api->struct_size;
+        out_result->capabilities_low = clock_api->capability_flags;
+        out_result->provider_generation = 1u;
+        return CASTLE_OK;
+    }
+
+    if (Runtime_StringEquals(query->interface_id.data, query->interface_id.length,
+                             CASTLE_INPUT_INTERFACE_ID,
+                             (CastleU32)(sizeof(CASTLE_INPUT_INTERFACE_ID) - 1u))) {
+        const CastleInputApiV1* input_api = Runtime_GetInputApiV1();
+        if (query->requested_version != CASTLE_INPUT_API_VERSION_1) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        if (query->minimum_struct_size > input_api->struct_size ||
+            (query->required_capabilities_low & ~input_api->capability_flags) != 0u ||
+            query->required_capabilities_high != 0u) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        out_result->api_pointer = input_api;
+        out_result->actual_version = input_api->api_version;
+        out_result->actual_struct_size = input_api->struct_size;
+        out_result->capabilities_low = input_api->capability_flags;
+        out_result->provider_generation = 1u;
+        return CASTLE_OK;
+    }
+
+    if (Runtime_StringEquals(query->interface_id.data, query->interface_id.length,
+                             CASTLE_GAME_STATE_INTERFACE_ID,
+                             (CastleU32)(sizeof(CASTLE_GAME_STATE_INTERFACE_ID) - 1u))) {
+        const CastleGameStateApiV1* game_state_api = Runtime_GetGameStateApiV1();
+        if (query->requested_version != CASTLE_GAME_STATE_API_VERSION_1) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        if (query->minimum_struct_size > game_state_api->struct_size ||
+            (query->required_capabilities_low & ~game_state_api->capability_flags) != 0u ||
+            query->required_capabilities_high != 0u) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        out_result->api_pointer = game_state_api;
+        out_result->actual_version = game_state_api->api_version;
+        out_result->actual_struct_size = game_state_api->struct_size;
+        out_result->capabilities_low = game_state_api->capability_flags;
+        out_result->provider_generation = 1u;
+        return CASTLE_OK;
+    }
+
+    if (Runtime_StringEquals(query->interface_id.data, query->interface_id.length,
+                             CASTLE_SAVE_INTERFACE_ID,
+                             (CastleU32)(sizeof(CASTLE_SAVE_INTERFACE_ID) - 1u))) {
+        const CastleSaveApiV1* save_api = Runtime_GetSaveApiV1();
+        if (query->requested_version != CASTLE_SAVE_API_VERSION_1) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        if (query->minimum_struct_size > save_api->struct_size ||
+            (query->required_capabilities_low & ~save_api->capability_flags) != 0u ||
+            query->required_capabilities_high != 0u) {
+            return CASTLE_ERROR_INTERFACE_VERSION;
+        }
+        out_result->api_pointer = save_api;
+        out_result->actual_version = save_api->api_version;
+        out_result->actual_struct_size = save_api->struct_size;
+        out_result->capabilities_low = save_api->capability_flags;
+        out_result->provider_generation = 1u;
         return CASTLE_OK;
     }
 

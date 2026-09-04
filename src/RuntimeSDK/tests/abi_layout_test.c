@@ -18,6 +18,11 @@
 #include "CastleSchedule_API.h"
 #include "CastleWindow_API.h"
 #include "CastleRender_API.h"
+#include "CastleLog_API.h"
+#include "CastleClock_API.h"
+#include "CastleInput_API.h"
+#include "CastleGameState_API.h"
+#include "CastleSave_API.h"
 
 /* 使用唯一 typedef 名制造编译期断言，不需要 C11 _Static_assert 或 C++ static_assert。 */
 #define CASTLE_ABI_ASSERT(name, expression) \
@@ -222,6 +227,72 @@ CASTLE_ABI_ASSERT(render_api_begin_extra_offset,
 CASTLE_ABI_ASSERT(render_api_provider_state_offset,
     offsetof(CastleRenderApiV1, GetRenderProviderState) == 44u);
 
+/* Log ABI 只传 UTF-8 视图和插件句柄，不跨 DLL 共享 FILE/HANDLE。 */
+CASTLE_ABI_ASSERT(log_record_size,
+    sizeof(CastleLogRecordV1) == CASTLE_SIZEOF_LOG_RECORD_V1);
+CASTLE_ABI_ASSERT(log_api_size,
+    sizeof(CastleLogApiV1) == CASTLE_SIZEOF_LOG_API_V1);
+CASTLE_ABI_ASSERT(log_record_message_offset,
+    offsetof(CastleLogRecordV1, message) == 16u);
+CASTLE_ABI_ASSERT(log_api_write_offset,
+    offsetof(CastleLogApiV1, WritePluginLine) == 16u);
+CASTLE_ABI_ASSERT(log_api_directory_offset,
+    offsetof(CastleLogApiV1, GetLogDirectoryUtf8) == 28u);
+
+/* Clock ABI 只暴露数值和 Runtime 租约，不把 WinMM 类型泄漏给插件。 */
+CASTLE_ABI_ASSERT(clock_state_size,
+    sizeof(CastleClockStateV1) == CASTLE_SIZEOF_CLOCK_STATE_V1);
+CASTLE_ABI_ASSERT(clock_api_size,
+    sizeof(CastleClockApiV1) == CASTLE_SIZEOF_CLOCK_API_V1);
+CASTLE_ABI_ASSERT(clock_state_lease_count_offset,
+    offsetof(CastleClockStateV1, active_lease_count) == 24u);
+CASTLE_ABI_ASSERT(clock_api_acquire_offset,
+    offsetof(CastleClockApiV1, AcquireTimerResolution) == 20u);
+
+/* Input ABI 的快照是纯 32 位标量，允许 Controller worker 无锁发布稳定副本。 */
+CASTLE_ABI_ASSERT(input_snapshot_size,
+    sizeof(CastleInputSnapshotV1) == CASTLE_SIZEOF_INPUT_SNAPSHOT_V1);
+CASTLE_ABI_ASSERT(input_focus_request_size,
+    sizeof(CastleInputFocusRequestV1) == CASTLE_SIZEOF_INPUT_FOCUS_REQUEST_V1);
+CASTLE_ABI_ASSERT(input_focus_state_size,
+    sizeof(CastleInputFocusStateV1) == CASTLE_SIZEOF_INPUT_FOCUS_STATE_V1);
+CASTLE_ABI_ASSERT(input_provider_size,
+    sizeof(CastleInputProviderV1) == CASTLE_SIZEOF_INPUT_PROVIDER_V1);
+CASTLE_ABI_ASSERT(input_api_size,
+    sizeof(CastleInputApiV1) == CASTLE_SIZEOF_INPUT_API_V1);
+CASTLE_ABI_ASSERT(input_snapshot_axes_offset,
+    offsetof(CastleInputSnapshotV1, axes) == 64u);
+CASTLE_ABI_ASSERT(input_api_register_offset,
+    offsetof(CastleInputApiV1, RegisterInputProvider) == 32u);
+
+/* GameState 快照只保存值和 x86 地址，不把 Runtime 私有对象指针跨 ABI 借出。 */
+CASTLE_ABI_ASSERT(game_state_snapshot_size,
+    sizeof(CastleGameStateSnapshotV1) == CASTLE_SIZEOF_GAME_STATE_SNAPSHOT_V1);
+CASTLE_ABI_ASSERT(game_mutation_request_size,
+    sizeof(CastleGameMutationRequestV1) == CASTLE_SIZEOF_GAME_MUTATION_REQUEST_V1);
+CASTLE_ABI_ASSERT(game_mutation_state_size,
+    sizeof(CastleGameMutationStateV1) == CASTLE_SIZEOF_GAME_MUTATION_STATE_V1);
+CASTLE_ABI_ASSERT(game_state_api_size,
+    sizeof(CastleGameStateApiV1) == CASTLE_SIZEOF_GAME_STATE_API_V1);
+CASTLE_ABI_ASSERT(game_snapshot_camera_offset,
+    offsetof(CastleGameStateSnapshotV1, camera_x) == 36u);
+CASTLE_ABI_ASSERT(game_snapshot_ui_offset,
+    offsetof(CastleGameStateSnapshotV1, battle_ui) == 104u);
+CASTLE_ABI_ASSERT(game_state_api_acquire_offset,
+    offsetof(CastleGameStateApiV1, AcquireMutation) == 20u);
+
+/* Save ABI 只接收槽位策略；原版 SaveAction 指针永远留在 Runtime 内部。 */
+CASTLE_ABI_ASSERT(save_policy_size,
+    sizeof(CastleManualSavePolicyV1) == CASTLE_SIZEOF_MANUAL_SAVE_POLICY_V1);
+CASTLE_ABI_ASSERT(save_ui_state_size,
+    sizeof(CastleSaveUiStateV1) == CASTLE_SIZEOF_SAVE_UI_STATE_V1);
+CASTLE_ABI_ASSERT(save_api_size,
+    sizeof(CastleSaveApiV1) == CASTLE_SIZEOF_SAVE_API_V1);
+CASTLE_ABI_ASSERT(save_policy_label_offset,
+    offsetof(CastleManualSavePolicyV1, label) == 28u);
+CASTLE_ABI_ASSERT(save_api_ui_state_offset,
+    offsetof(CastleSaveApiV1, GetSaveUiState) == 28u);
+
 /*
  * 生成一个外部函数，防止极端编译器把整个测试翻译单元当成“完全空文件”特殊处理。
  * 返回值本身没有业务意义，测试成功的标准是本文件能通过编译。
@@ -230,5 +301,6 @@ int castle_runtime_abi_layout_anchor(void) {
     return (int)(CASTLE_RUNTIME_ABI_V1 + CASTLE_HOOK_API_VERSION_1 +
                  CASTLE_DISPLAY_API_VERSION_1 + CASTLE_PATH_API_VERSION_1 +
                  CASTLE_SCHEDULE_API_VERSION_1 + CASTLE_WINDOW_API_VERSION_1 +
-                 CASTLE_RENDER_API_VERSION_1);
+                 CASTLE_RENDER_API_VERSION_1 + CASTLE_LOG_API_VERSION_1 +
+                 CASTLE_CLOCK_API_VERSION_1);
 }

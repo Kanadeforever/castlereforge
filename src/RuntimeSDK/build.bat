@@ -78,6 +78,16 @@ cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_support.obj" "%ROOT%source\runtime_sup
 if errorlevel 1 goto :fail
 cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_path.obj" "%ROOT%source\runtime_path.c"
 if errorlevel 1 goto :fail
+cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_log.obj" "%ROOT%source\runtime_log.c"
+if errorlevel 1 goto :fail
+cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_clock.obj" "%ROOT%source\runtime_clock.c"
+if errorlevel 1 goto :fail
+cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_input.obj" "%ROOT%source\runtime_input.c"
+if errorlevel 1 goto :fail
+cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_game_state.obj" "%ROOT%source\runtime_game_state.c"
+if errorlevel 1 goto :fail
+cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_save.obj" "%ROOT%source\runtime_save.c"
+if errorlevel 1 goto :fail
 cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_schedule.obj" "%ROOT%source\runtime_schedule.c"
 if errorlevel 1 goto :fail
 cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_symbols.obj" "%ROOT%source\runtime_symbols.c"
@@ -105,7 +115,7 @@ cl.exe %RUNTIME_CFLAGS% /Fo"%OUT%\runtime_crt_support.obj" "%ROOT%client\runtime
 if errorlevel 1 goto :fail
 
 echo [6/10] 链接PE32无CRT Castle_Runtime.dll...  
-link.exe /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 /subsystem:windows /dynamicbase /nxcompat /def:"%ROOT%source\CastleRuntime.def" /out:"%OUT%\Castle_Runtime.dll" "%OUT%\runtime_entry.obj" "%OUT%\runtime_support.obj" "%OUT%\runtime_path.obj" "%OUT%\runtime_schedule.obj" "%OUT%\runtime_symbols.obj" "%OUT%\runtime_display.obj" "%OUT%\runtime_window.obj" "%OUT%\runtime_render.obj" "%OUT%\runtime_memory.obj" "%OUT%\runtime_diagnostics.obj" "%OUT%\runtime_registry.obj" "%OUT%\runtime_bootstrap.obj" "%OUT%\runtime_hook.obj" "%OUT%\runtime_api.obj" "%OUT%\runtime_crt_support.obj" kernel32.lib
+link.exe /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 /subsystem:windows /dynamicbase /nxcompat /def:"%ROOT%source\CastleRuntime.def" /out:"%OUT%\Castle_Runtime.dll" "%OUT%\runtime_entry.obj" "%OUT%\runtime_support.obj" "%OUT%\runtime_path.obj" "%OUT%\runtime_log.obj" "%OUT%\runtime_clock.obj" "%OUT%\runtime_input.obj" "%OUT%\runtime_game_state.obj" "%OUT%\runtime_save.obj" "%OUT%\runtime_schedule.obj" "%OUT%\runtime_symbols.obj" "%OUT%\runtime_display.obj" "%OUT%\runtime_window.obj" "%OUT%\runtime_render.obj" "%OUT%\runtime_memory.obj" "%OUT%\runtime_diagnostics.obj" "%OUT%\runtime_registry.obj" "%OUT%\runtime_bootstrap.obj" "%OUT%\runtime_hook.obj" "%OUT%\runtime_api.obj" "%OUT%\runtime_crt_support.obj" kernel32.lib
 if errorlevel 1 goto :fail
 
 echo [7/10] 编译Client、Entry Gate和无CRT x86测试宿主...  

@@ -2969,7 +2969,7 @@ static const char gSdkBuild[] = "runtimesdk-v1";
 static const CastlePluginDescriptorV1 gSdkDescriptor = {
     CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,
     CASTLE_PLUGIN_DESCRIPTOR_V1,
-    CASTLE_PLUGIN_FLAG_SUPPORTS_STANDALONE | CASTLE_PLUGIN_FLAG_REQUESTS_HOOKS |
+    CASTLE_PLUGIN_FLAG_REQUESTS_HOOKS |
         CASTLE_PLUGIN_FLAG_OFFICIAL_MODULE,
     0u,
     {gSdkPluginId, static_cast<CastleU32>(sizeof(gSdkPluginId) - 1u)},
@@ -2979,7 +2979,7 @@ static const CastlePluginDescriptorV1 gSdkDescriptor = {
 };
 static const CastleRuntimeClientConfigV1 gSdkClientConfig = {
     CASTLE_CLIENT_CONFIG_MAGIC, CASTLE_SIZEOF_CLIENT_CONFIG_V1,
-    CASTLE_CLIENT_CONFIG_VERSION_1, 0u,
+    CASTLE_CLIENT_CONFIG_VERSION_1, CASTLE_CLIENT_FLAG_REQUIRE_RUNTIME,
     SaveEnhance_Integrated, SaveEnhance_Standalone, SaveEnhance_RuntimeFault,
     SaveEnhance_ProcessExit, nullptr
 };
