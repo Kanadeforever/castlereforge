@@ -40,6 +40,7 @@ static HMODULE g_self_module;
 static HANDLE g_log = INVALID_HANDLE_VALUE_;
 static const CastleLogApiV1* g_runtime_log_api;
 static CastlePluginHandle g_runtime_log_plugin;
+static const CastleModuleApiV1* g_runtime_module_api;
 static u32 g_tick;
 
 /*
@@ -368,8 +369,7 @@ void Runtime_Log(const char* utf8_line) {
     n = rt_strlen(utf8_line);
     if (n && rt_log_should_suppress(utf8_line, n)) return;
     if (g_runtime_log_api && g_runtime_log_plugin && n != 0u) {
-        CastleLogRecordV1 record;
-        Runtime_MemZero((u8*)&record, sizeof(record));
+        CastleLogRecordV1 record = {0};
         record.magic = CASTLE_LOG_RECORD_MAGIC;
         record.struct_size = CASTLE_SIZEOF_LOG_RECORD_V1;
         record.version = CASTLE_LOG_STRUCTURE_VERSION_1;
@@ -1741,10 +1741,8 @@ int Runtime_PatchMovEsiFunction(u32 address, void* replacement, const u8 expecte
 int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
                        CastlePluginHandle plugin_handle) {
     static const char interface_id[] = CASTLE_LOG_INTERFACE_ID;
-    CastleInterfaceQueryV1 query;
-    CastleInterfaceResultV1 result;
-    Runtime_MemZero((u8*)&query, sizeof(query));
-    Runtime_MemZero((u8*)&result, sizeof(result));
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 result = {0};
     if (!runtime_api || !runtime_api->QueryInterface || plugin_handle == 0u) return 0;
     query.magic = CASTLE_QUERY_MAGIC;
     query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
@@ -1760,7 +1758,38 @@ int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
         !result.api_pointer) return 0;
     g_runtime_log_api = (const CastleLogApiV1*)result.api_pointer;
     g_runtime_log_plugin = plugin_handle;
+    query.interface_id.data = CASTLE_MODULE_INTERFACE_ID;
+    query.interface_id.length =
+        (CastleU32)(sizeof(CASTLE_MODULE_INTERFACE_ID) - 1u);
+    query.requested_version = CASTLE_MODULE_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_MODULE_API_V1;
+    result.api_pointer = NULL;
+    if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
+        !result.api_pointer) return 0;
+    g_runtime_module_api = (const CastleModuleApiV1*)result.api_pointer;
     return 1;
+}
+
+HMODULE Runtime_LoadPluginDependency(const char* relative_path) {
+    CastleModule module = 0u;
+    CastleStringView path;
+    if (!g_runtime_module_api || !relative_path || !g_runtime_log_plugin) return NULL;
+    path.data = relative_path;
+    path.length = (CastleU32)rt_strlen(relative_path);
+    if (g_runtime_module_api->LoadPluginDependency(g_runtime_log_plugin, path,
+            CASTLE_MODULE_LOAD_PIN, &module) < 0) return NULL;
+    return (HMODULE)(SIZE_T)module;
+}
+
+void* Runtime_GetModuleProcedure(HMODULE module, const char* procedure_name) {
+    CastleAddress address = 0u;
+    CastleStringView name;
+    if (!g_runtime_module_api || !module || !procedure_name) return NULL;
+    name.data = procedure_name;
+    name.length = (CastleU32)rt_strlen(procedure_name);
+    if (g_runtime_module_api->GetProcedure((CastleModule)(SIZE_T)module,
+            name, &address) < 0) return NULL;
+    return (void*)(SIZE_T)address;
 }
 
 /* worker 的 Runtime 启动事务：读取配置、建立中文日志、解析 API、完整预检，全部通过后业务模块才可安装 Hook。 */

@@ -51,4 +51,10 @@ void GameAudit_RecordGetFileAttributesW(LPVOID caller, LPCWSTR path, DWORD resul
  */
 UINT GameAudit_StateHookCount(void);
 
+/*
+ * 必须在全部 ASI/Runtime 初始化之后调用。这样 Runtime 已拥有的生命周期入口会因字节变化
+ * 被审计层自动跳过，不会在 Runtime 看不见的上游提前安装 E9。
+ */
+UINT GameAudit_InstallDeferredStateHooks(void);
+
 #endif /* CASTLE_GAME_AUDIT_H */

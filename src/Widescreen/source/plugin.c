@@ -14,6 +14,9 @@ static CastleResult initialize_standalone(void) {
 
 static CastleResult initialize_integrated(const CastleRuntimeApiV1* runtime_api,
                                           CastlePluginHandle plugin_handle) {
+    if (!Runtime_BindSdkLog(runtime_api, plugin_handle)) {
+        return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    }
     if (!Runtime_Initialize(g_plugin_module)) return CASTLE_ERROR_RUNTIME_FAULT;
     if (!Runtime_ExactBuildProtocolOk()) return CASTLE_ERROR_UNKNOWN_GAME_BUILD;
     if (!Runtime_BeginSdkHookTransaction(runtime_api, plugin_handle)) {
@@ -47,8 +50,7 @@ static void CASTLE_RUNTIME_CALL Widescreen_RuntimeFault(CastleResult failure,
                                                         void* user_context) {
     (void)failure;
     (void)user_context;
-    Runtime_Initialize(g_plugin_module);
-    Runtime_Log("[失败] Castle_Runtime.dll 存在但不可用；Widescreen 未回退到私有 Hook。");
+    /* Runtime 不可用时官方插件保持停用，不在 ASI 目录创建旁路日志。 */
 }
 
 static void CASTLE_RUNTIME_CALL Widescreen_ProcessExit(void* user_context) {

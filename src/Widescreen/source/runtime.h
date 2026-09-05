@@ -6,6 +6,8 @@
 
 /* 启动最小 Win32 API、日志；Shutdown 只负责关闭日志句柄。 */
 int Runtime_Initialize(HMODULE self_module);
+int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
+                       CastlePluginHandle plugin_handle);
 void Runtime_Shutdown(void);
 
 /* 写一行 UTF-8 日志；Hex 版本把 32 位数字按 0xXXXXXXXX 输出，方便和反汇编地址直接核对。 */

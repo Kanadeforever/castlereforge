@@ -1190,6 +1190,12 @@ static UINT install_state_hooks_(void) {
 
 UINT GameAudit_StateHookCount(void) { return g_state_hook_count; }
 
+UINT GameAudit_InstallDeferredStateHooks(void) {
+    if (!g_ready || g_state_hook_count != 0u) return g_state_hook_count;
+    g_state_hook_count = install_state_hooks_();
+    return g_state_hook_count;
+}
+
 /* ---------- 崩溃/异常旁路观察 ---------- */
 
 static LONG CALLBACK vectored_exception_(EXCEPTION_POINTERS_AUDIT_* info) {
@@ -1272,7 +1278,7 @@ int GameAudit_Initialize(void) {
     if (!g_game_image_size) return 0;
 
     /* 每次启动都清空 game.log。它与 modloader.log 一样代表“本轮唯一时间线”。 */
-    g_log = CreateFileW((const WCHAR*)L"mods\\game.log", GENERIC_WRITE_, FILE_SHARE_READ_ | FILE_SHARE_WRITE_,
+    g_log = CreateFileW((const WCHAR*)L"mods\\logs\\game.log", GENERIC_WRITE_, FILE_SHARE_READ_ | FILE_SHARE_WRITE_,
                         NULL_PTR, CREATE_ALWAYS_, FILE_ATTRIBUTE_NORMAL_, NULL_PTR);
     if (g_log == INVALID_HANDLE_VALUE_) return 0;
     WriteFile(g_log, bom, 3u, &wrote, NULL_PTR);
@@ -1337,7 +1343,12 @@ int GameAudit_Initialize(void) {
 
     log_line_((const WCHAR*)L"AUDIT", (const WCHAR*)L"读档/新游戏诊断重点：NEW_GAME_BEGIN、LOAD_READER、DESERIALIZE_CORE、REBUILD_ROLE_PTRS、RESTORE_WORLD，以及 active Event 与 deferred continuation 是否在生命周期边界正确清理。");
 
-    g_state_hook_count = install_state_hooks_();
+    /*
+     * 状态入口 Hook 延后到全部 ASI 初始化之后。Runtime 若已接管某个入口，下面的严格
+     * expected bytes 会让审计层跳过该点；其余入口仍保留原版审计，不影响早期 I/O 观察。
+     */
+    log_line_((const WCHAR*)L"AUDIT/StateHook",
+              (const WCHAR*)L"生命周期入口 Hook 已延后，等待全部 ASI/Runtime 初始化完成。");
     g_vectored_handler = AddVectoredExceptionHandler(1u, (LPVOID)&vectored_exception_);
     if (g_vectored_handler)
         log_line_((const WCHAR*)L"AUDIT/Exception", (const WCHAR*)L"VEH 严重异常旁路观察已安装；只记录后继续 EXCEPTION_CONTINUE_SEARCH，不吞掉游戏异常。");

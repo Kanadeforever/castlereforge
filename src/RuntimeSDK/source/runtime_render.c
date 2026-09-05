@@ -30,6 +30,7 @@ static CastleLeaseHandle g_extra_frame_lease;
 static CastlePluginHandle g_extra_frame_owner;
 static CastleU32 g_extra_frame_display_generation;
 static CastleU32 g_extra_frame_generation;
+static CastleLeaseHandle g_extra_game_state_lease;
 static int g_render_bridge_ready;
 
 static CastleResult CASTLE_RUNTIME_CALL render_get_state_(CastleRenderStateV1* out_state);
@@ -208,6 +209,7 @@ void Runtime_RenderInitialize(void) {
     g_extra_frame_owner = 0u;
     g_extra_frame_display_generation = 0u;
     g_extra_frame_generation = 0u;
+    g_extra_game_state_lease = 0u;
     g_render_bridge_ready = render_install_bridges_();
 }
 
@@ -292,6 +294,7 @@ static CastleResult render_invoke_(const CastleRenderCallV1* call, int present) 
     CastleU32 actual_display_generation = 0u;
     CastleU32 linked_geometry_generation = 0u;
     CastleResult result;
+    CastleLeaseHandle transient_game_lease = 0u;
     if (!render_valid_call_(call)) return CASTLE_ERROR_INVALID_ARGUMENT;
     result = render_validate_display_generation_(call->display_generation,
                                                  &actual_display_generation);
@@ -316,15 +319,43 @@ static CastleResult render_invoke_(const CastleRenderCallV1* call, int present) 
     Runtime_Unlock(&g_render_lock);
 
     if (provider_api) {
+        if (!present && (call->flags & CASTLE_RENDER_CALL_EXTRA_WORLD_FRAME) == 0u) {
+            static const char label[] = "Runtime render provider frame";
+            CastleGameMutationRequestV1 mutation;
+            const CastleGameStateApiV1* game_state_api = Runtime_GetGameStateApiV1();
+            Runtime_ByteZero(&mutation, (CastleU32)sizeof(mutation));
+            mutation.magic = CASTLE_GAME_MUTATION_MAGIC;
+            mutation.struct_size = CASTLE_SIZEOF_GAME_MUTATION_REQUEST_V1;
+            mutation.version = CASTLE_GAME_STATE_STRUCTURE_VERSION_1;
+            mutation.resource_mask = CASTLE_GAME_RESOURCE_CAMERA |
+                                     CASTLE_GAME_RESOURCE_DRAW_QUEUE |
+                                     CASTLE_GAME_RESOURCE_DIALOGUE;
+            mutation.label.data = label;
+            mutation.label.length = (CastleU32)(sizeof(label) - 1u);
+            if (game_state_api->AcquireMutation(provider_plugin, &mutation,
+                    &transient_game_lease) < 0) return CASTLE_ERROR_RESOURCE_CONFLICT;
+        }
         if (!Runtime_DisplayProviderReadyForPlugin(display_provider, provider_plugin,
-                NULL, &linked_geometry_generation)) return CASTLE_ERROR_NOT_READY;
+                NULL, &linked_geometry_generation)) {
+            if (transient_game_lease) {
+                Runtime_GetGameStateApiV1()->ReleaseMutation(transient_game_lease);
+            }
+            return CASTLE_ERROR_NOT_READY;
+        }
         if (linked_geometry_generation != actual_display_generation) {
+            if (transient_game_lease) {
+                Runtime_GetGameStateApiV1()->ReleaseMutation(transient_game_lease);
+            }
             return CASTLE_ERROR_STALE_GENERATION;
         }
         provider_call = *call;
         provider_call.display_generation = actual_display_generation;
-        return present ? provider_api->PresentCurrentDisplay(&provider_call) :
-                         provider_api->RenderCurrentQueue(&provider_call);
+        result = present ? provider_api->PresentCurrentDisplay(&provider_call) :
+                           provider_api->RenderCurrentQueue(&provider_call);
+        if (transient_game_lease) {
+            Runtime_GetGameStateApiV1()->ReleaseMutation(transient_game_lease);
+        }
+        return result;
     }
     if (!original) return CASTLE_ERROR_NOT_READY;
     original((void*)(ULONG_PTR)call->render_context, NULL);
@@ -345,15 +376,32 @@ static CastleResult CASTLE_RUNTIME_CALL render_begin_extra_(CastlePluginHandle p
     CastleU32* out_display_generation) {
     CastleU32 actual_generation = 0u;
     CastleResult result;
+    CastleLeaseHandle game_state_lease = 0u;
+    CastleGameMutationRequestV1 mutation;
+    static const char label[] = "Runtime extra world frame";
     if (!out_lease || !out_display_generation || !Runtime_GetPluginModule(plugin)) {
         return CASTLE_ERROR_INVALID_ARGUMENT;
     }
     result = render_validate_display_generation_(requested_display_generation,
                                                  &actual_generation);
     if (result < 0) return result;
+    Runtime_ByteZero(&mutation, (CastleU32)sizeof(mutation));
+    mutation.magic = CASTLE_GAME_MUTATION_MAGIC;
+    mutation.struct_size = CASTLE_SIZEOF_GAME_MUTATION_REQUEST_V1;
+    mutation.version = CASTLE_GAME_STATE_STRUCTURE_VERSION_1;
+    mutation.resource_mask = CASTLE_GAME_RESOURCE_CAMERA |
+                             CASTLE_GAME_RESOURCE_DRAW_QUEUE |
+                             CASTLE_GAME_RESOURCE_DIALOGUE |
+                             CASTLE_GAME_RESOURCE_WORLD;
+    mutation.label.data = label;
+    mutation.label.length = (CastleU32)(sizeof(label) - 1u);
+    result = Runtime_GetGameStateApiV1()->AcquireMutation(plugin, &mutation,
+                                                          &game_state_lease);
+    if (result < 0) return result;
     Runtime_Lock(&g_render_lock);
     if (g_extra_frame_lease != 0u) {
         Runtime_Unlock(&g_render_lock);
+        Runtime_GetGameStateApiV1()->ReleaseMutation(game_state_lease);
         return CASTLE_ERROR_RESOURCE_CONFLICT;
     }
     ++g_extra_frame_generation;
@@ -361,6 +409,7 @@ static CastleResult CASTLE_RUNTIME_CALL render_begin_extra_(CastlePluginHandle p
     g_extra_frame_lease = g_extra_frame_generation;
     g_extra_frame_owner = plugin;
     g_extra_frame_display_generation = actual_generation;
+    g_extra_game_state_lease = game_state_lease;
     *out_lease = g_extra_frame_lease;
     *out_display_generation = actual_generation;
     Runtime_Unlock(&g_render_lock);
@@ -368,6 +417,7 @@ static CastleResult CASTLE_RUNTIME_CALL render_begin_extra_(CastlePluginHandle p
 }
 
 static CastleResult CASTLE_RUNTIME_CALL render_end_extra_(CastleLeaseHandle lease) {
+    CastleLeaseHandle game_state_lease;
     if (lease == 0u) return CASTLE_ERROR_INVALID_ARGUMENT;
     Runtime_Lock(&g_render_lock);
     if (g_extra_frame_lease == 0u || lease != g_extra_frame_lease) {
@@ -377,7 +427,12 @@ static CastleResult CASTLE_RUNTIME_CALL render_end_extra_(CastleLeaseHandle leas
     g_extra_frame_lease = 0u;
     g_extra_frame_owner = 0u;
     g_extra_frame_display_generation = 0u;
+    game_state_lease = g_extra_game_state_lease;
+    g_extra_game_state_lease = 0u;
     Runtime_Unlock(&g_render_lock);
+    if (game_state_lease) {
+        Runtime_GetGameStateApiV1()->ReleaseMutation(game_state_lease);
+    }
     return CASTLE_OK;
 }
 

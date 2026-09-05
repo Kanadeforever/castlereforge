@@ -79,15 +79,7 @@ static PadInputState g_pad;
  * 失败不是游戏致命错误：返回 0 后原版键鼠继续工作，worker 会按低频策略重试。
  */
 static int pad_load_sdl(int verbose_failure) {
-    const RuntimeApi* api = Runtime_Api();
-    char path[MAX_PATH_];
-
     if (g_pad.initialized) return 1;
-    if (!api->load_library_a || !api->get_proc_address) return 0;
-    if (!Runtime_BuildSiblingPath("SDL3.dll", path, MAX_PATH_)) {
-        if (verbose_failure) Runtime_Log("[SDL3] 无法生成 SDL3.dll 的同目录绝对路径，暂时停用手柄输入。");
-        return 0;
-    }
 
     /*
      * 只从 ASI 所在目录加载 SDL3.dll。
@@ -97,13 +89,13 @@ static int pad_load_sdl(int verbose_failure) {
      * 如果前一次已经成功 LoadLibrary、只是 SDL_Init 暂时失败，就直接复用模块句柄。
      * 这样重试不会不断增加同一个 DLL 的引用计数。
      */
-    if (!g_pad.sdl_module) g_pad.sdl_module = api->load_library_a(path);
+    if (!g_pad.sdl_module) g_pad.sdl_module = Runtime_LoadPluginDependency("SDL3.dll");
     if (!g_pad.sdl_module) {
         if (verbose_failure) Runtime_Log("[SDL3] 同目录 SDL3.dll 加载失败；原版键鼠不受影响，手柄会低频重试。");
         return 0;
     }
 
-#define PAD_RESOLVE(field, type, name) g_pad.field = (type)api->get_proc_address(g_pad.sdl_module, name)
+#define PAD_RESOLVE(field, type, name) g_pad.field = (type)Runtime_GetModuleProcedure(g_pad.sdl_module, name)
     PAD_RESOLVE(init, PFN_SDL_Init, "SDL_Init");
     PAD_RESOLVE(update_gamepads, PFN_SDL_UpdateGamepads, "SDL_UpdateGamepads");
     PAD_RESOLVE(get_gamepads, PFN_SDL_GetGamepads, "SDL_GetGamepads");
@@ -124,7 +116,7 @@ static int pad_load_sdl(int verbose_failure) {
         return 0;
     }
 
-    Runtime_PinModuleFromAddress("SDL3 已固定驻留", (const void*)g_pad.init);
+    Runtime_Log("[SDL3] 模块已由 Runtime Module v1 固定驻留。");
     if (!g_pad.init(SDL_INIT_GAMEPAD_)) {
         if (verbose_failure) Runtime_Log("[SDL3] SDL_Init(SDL_INIT_GAMEPAD) 失败；稍后会低频重试。");
         return 0;

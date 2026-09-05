@@ -5,6 +5,7 @@
 #include "CastlePath_API.h"
 #include "CastleInput_API.h"
 #include "CastleSave_API.h"
+#include "CastleModule_API.h"
 
 // ============================================================================
 // Castle_SaveEnhance.cpp  v0.1.0-test7
@@ -279,6 +280,17 @@ GetForegroundWindowFunction gGetForegroundWindow = nullptr;
 GetWindowThreadProcessIdFunction gGetWindowThreadProcessId = nullptr;
 HMODULE gWinmmModule = nullptr;
 PlaySoundWFunction gPlaySoundW = nullptr;
+const CastleModuleApiV1* gRuntimeModuleApi = nullptr;
+CastlePluginHandle gRuntimePluginHandle = 0u;
+
+CastleAddress ResolveRuntimeProcedure(CastleModule module, const char* name) {
+    CastleAddress address = 0u;
+    CastleStringView view{};
+    if (gRuntimeModuleApi == nullptr || module == 0u || name == nullptr) return 0u;
+    view.data = name;
+    while (name[view.length] != '\0') ++view.length;
+    return gRuntimeModuleApi->GetProcedure(module, view, &address) >= 0 ? address : 0u;
+}
 
 bool ResolveUser32() {
     if (gGetAsyncKeyState != nullptr && gGetForegroundWindow != nullptr &&
@@ -286,18 +298,28 @@ bool ResolveUser32() {
         return true;
     }
     if (gUser32Module == nullptr) {
-        // 在 Map Tick 里才第一次执行这里，不在 DllMain loader lock 中主动 LoadLibrary。
-        gUser32Module = LoadLibraryW(L"user32.dll");
+        CastleModule module = 0u;
+        CastleStringView name{"user32.dll", 10u};
+        if (gRuntimeModuleApi == nullptr ||
+            gRuntimeModuleApi->LoadSystemModule(gRuntimePluginHandle, name,
+                CASTLE_MODULE_LOAD_PIN, &module) < 0) return false;
+        gUser32Module = reinterpret_cast<HMODULE>(static_cast<SIZE_T>(module));
     }
     if (gUser32Module == nullptr) {
         return false;
     }
     gGetAsyncKeyState = reinterpret_cast<GetAsyncKeyStateFunction>(
-        GetProcAddress(gUser32Module, "GetAsyncKeyState"));
+        static_cast<SIZE_T>(ResolveRuntimeProcedure(
+            static_cast<CastleModule>(reinterpret_cast<SIZE_T>(gUser32Module)),
+            "GetAsyncKeyState")));
     gGetForegroundWindow = reinterpret_cast<GetForegroundWindowFunction>(
-        GetProcAddress(gUser32Module, "GetForegroundWindow"));
+        static_cast<SIZE_T>(ResolveRuntimeProcedure(
+            static_cast<CastleModule>(reinterpret_cast<SIZE_T>(gUser32Module)),
+            "GetForegroundWindow")));
     gGetWindowThreadProcessId = reinterpret_cast<GetWindowThreadProcessIdFunction>(
-        GetProcAddress(gUser32Module, "GetWindowThreadProcessId"));
+        static_cast<SIZE_T>(ResolveRuntimeProcedure(
+            static_cast<CastleModule>(reinterpret_cast<SIZE_T>(gUser32Module)),
+            "GetWindowThreadProcessId")));
     return gGetAsyncKeyState != nullptr && gGetForegroundWindow != nullptr &&
            gGetWindowThreadProcessId != nullptr;
 }
@@ -976,9 +998,19 @@ SoundCacheEntry* LoadScaledSound(const wchar_t* filename) {
 
 bool ResolvePlaySound() {
     if (gPlaySoundW != nullptr) return true;
-    if (gWinmmModule == nullptr) gWinmmModule = LoadLibraryW(L"winmm.dll");
+    if (gWinmmModule == nullptr) {
+        CastleModule module = 0u;
+        CastleStringView name{"winmm.dll", 9u};
+        if (gRuntimeModuleApi == nullptr ||
+            gRuntimeModuleApi->LoadSystemModule(gRuntimePluginHandle, name,
+                CASTLE_MODULE_LOAD_PIN, &module) < 0) return false;
+        gWinmmModule = reinterpret_cast<HMODULE>(static_cast<SIZE_T>(module));
+    }
     if (gWinmmModule == nullptr) return false;
-    gPlaySoundW = reinterpret_cast<PlaySoundWFunction>(GetProcAddress(gWinmmModule, "PlaySoundW"));
+    gPlaySoundW = reinterpret_cast<PlaySoundWFunction>(
+        static_cast<SIZE_T>(ResolveRuntimeProcedure(
+            static_cast<CastleModule>(reinterpret_cast<SIZE_T>(gWinmmModule)),
+            "PlaySoundW")));
     return gPlaySoundW != nullptr;
 }
 
@@ -2404,6 +2436,7 @@ static bool BindRuntimeInputAndSave(const CastleRuntimeApiV1* runtimeApi,
                                     CastlePluginHandle pluginHandle) {
     static const char inputId[] = CASTLE_INPUT_INTERFACE_ID;
     static const char saveId[] = CASTLE_SAVE_INTERFACE_ID;
+    static const char moduleId[] = CASTLE_MODULE_INTERFACE_ID;
     static const char quickLabel[] = "SaveEnhance quick slot";
     static const char autoLabel[] = "SaveEnhance rolling auto slots";
     CastleManualSavePolicyV1 policy{};
@@ -2416,7 +2449,12 @@ static bool BindRuntimeInputAndSave(const CastleRuntimeApiV1* runtimeApi,
         runtimeApi, saveId, static_cast<CastleU32>(sizeof(saveId) - 1u),
         CASTLE_SAVE_API_VERSION_1, CASTLE_SIZEOF_SAVE_API_V1,
         CASTLE_SAVE_CAP_MANUAL_SLOT_POLICY));
-    if (gRuntimeInputApi == nullptr || gRuntimeSaveApi == nullptr) return false;
+    gRuntimeModuleApi = static_cast<const CastleModuleApiV1*>(QueryRuntimeInterface(
+        runtimeApi, moduleId, static_cast<CastleU32>(sizeof(moduleId) - 1u),
+        CASTLE_MODULE_API_VERSION_1, CASTLE_SIZEOF_MODULE_API_V1, 0u));
+    gRuntimePluginHandle = pluginHandle;
+    if (gRuntimeInputApi == nullptr || gRuntimeSaveApi == nullptr ||
+        gRuntimeModuleApi == nullptr) return false;
 
     policy.magic = CASTLE_SAVE_POLICY_MAGIC;
     policy.struct_size = CASTLE_SIZEOF_MANUAL_SAVE_POLICY_V1;

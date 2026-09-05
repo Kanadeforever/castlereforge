@@ -39,6 +39,22 @@ static LONG g_early_prepared;
 static LONG g_initialized;
 static LONG g_early_locale_ready;
 
+static void log_uint_(const WCHAR* prefix, UINT value) {
+    WCHAR number[16];
+    WCHAR reversed[16];
+    UINT count = 0u;
+    UINT index;
+    do {
+        reversed[count++] = (WCHAR)('0' + (value % 10u));
+        value /= 10u;
+    } while (value && count < 15u);
+    for (index = 0u; index < count; ++index) {
+        number[index] = reversed[count - 1u - index];
+    }
+    number[count] = 0;
+    ModLoader_LogTwo(prefix, number);
+}
+
 /*
  * Launcher 注入 PE Import Descriptor 时必须指定一个真实导出符号，Windows 才会为这项 DLL 依赖建立 IAT。
  * 这里使用 __cdecl，确保 x86 导出表名称就是稳定的“CastleModCore_Bootstrap”，不出现 @0 装饰。
@@ -155,7 +171,7 @@ DLL_EXPORT int __cdecl CastleModCore_Initialize(void) {
      */
     if (ModLoader_IsGameLogEnabled()) {
         if (!GameAudit_Initialize()) {
-            ModLoader_Log((const WCHAR*)L"[致命] GameLog=1，但无法建立 mods\\game.log 原版游戏审计层；为避免用户误以为本轮已经留证，停止进入游戏。");
+            ModLoader_Log((const WCHAR*)L"[致命] GameLog=1，但无法建立 mods\\logs\\game.log 原版游戏审计层；为避免用户误以为本轮已经留证，停止进入游戏。");
             g_initialized = -1;
             return 0;
         }
@@ -192,7 +208,7 @@ DLL_EXPORT int __cdecl CastleModCore_Initialize(void) {
             for (i = 0u; i < n; ++i) number[i] = temp[n - 1u - i];
             number[n] = 0;
             ModLoader_LogTwo((const WCHAR*)L"[游戏审计] 已确认生命周期状态断点数量=", number);
-            ModLoader_Log((const WCHAR*)L"[游戏审计] GameLog=1：已启用独立 mods\\game.log；原版 I/O、状态与严重异常只写入该日志。");
+            ModLoader_Log((const WCHAR*)L"[游戏审计] GameLog=1：已启用独立 mods\\logs\\game.log；原版 I/O、状态与严重异常只写入该日志。");
         }
     } else {
         /*
@@ -207,6 +223,11 @@ DLL_EXPORT int __cdecl CastleModCore_Initialize(void) {
 
     ModLoader_Log((const WCHAR*)L"[启动阶段] 最后加载 mods\\asi 中启用的代码 Mod。");
     ModLoader_LoadAsi();
+    if (ModLoader_IsGameLogEnabled()) {
+        UINT deferred_state_hooks = GameAudit_InstallDeferredStateHooks();
+        log_uint_((const WCHAR*)L"[游戏审计] ASI/Runtime 初始化后安装的生命周期状态断点数量=",
+                  deferred_state_hooks);
+    }
     ModLoader_Log((const WCHAR*)L"[完成] Pre-Loader 全部前置工作已完成，现在进入 RPG.exe 原始入口。");
 
     g_initialized = 1;

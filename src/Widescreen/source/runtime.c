@@ -1,6 +1,7 @@
 ﻿#include "runtime.h"
 #include "game_addresses.h"
 #include "CastleHook_API.h"
+#include "CastleLog_API.h"
 
 /*
  * runtime.c
@@ -36,6 +37,8 @@ static CastleTransactionHandle g_sdk_transaction;
 static CastleClaimHandle g_sdk_pointer_claim;
 static void** g_sdk_pointer_output;
 static int g_sdk_transaction_building;
+static const CastleLogApiV1* g_runtime_log_api;
+static CastlePluginHandle g_runtime_log_plugin;
 
 static SIZE_T text_len(const char* s) {
     SIZE_T n = 0;
@@ -158,7 +161,21 @@ static int build_log_path(char* out, SIZE_T cap) {
 void Runtime_Log(const char* text) {
     static const char crlf[2] = {'\r','\n'};
     DWORD written = 0;
-    if (!g_WriteFile || g_log == INVALID_HANDLE_VALUE_ || !text) return;
+    if (!text) return;
+    if (g_runtime_log_api && g_runtime_log_plugin) {
+        CastleLogRecordV1 record = {0};
+        record.magic = CASTLE_LOG_RECORD_MAGIC;
+        record.struct_size = CASTLE_SIZEOF_LOG_RECORD_V1;
+        record.version = CASTLE_LOG_STRUCTURE_VERSION_1;
+        record.level = CASTLE_LOG_INFO;
+        record.message.data = text;
+        record.message.length = (CastleU32)text_len(text);
+        if (record.message.length != 0u) {
+            (void)g_runtime_log_api->WritePluginLine(g_runtime_log_plugin, &record);
+        }
+        return;
+    }
+    if (!g_WriteFile || g_log == INVALID_HANDLE_VALUE_) return;
     g_WriteFile(g_log, text, (DWORD)text_len(text), &written, NULL);
     g_WriteFile(g_log, crlf, 2u, &written, NULL);
 }
@@ -625,6 +642,29 @@ void* Runtime_Alloc(SIZE_T size) {
     return g_VirtualAlloc(NULL, size, MEM_COMMIT_ | MEM_RESERVE_, PAGE_READWRITE_);
 }
 
+int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
+                       CastlePluginHandle plugin_handle) {
+    static const char interface_id[] = CASTLE_LOG_INTERFACE_ID;
+    CastleInterfaceQueryV1 query = {0};
+    CastleInterfaceResultV1 result = {0};
+    if (!runtime_api || !runtime_api->QueryInterface || plugin_handle == 0u) return 0;
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id.data = interface_id;
+    query.interface_id.length = (CastleU32)(sizeof(interface_id) - 1u);
+    query.requested_version = CASTLE_LOG_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_LOG_API_V1;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
+        !result.api_pointer) return 0;
+    g_runtime_log_api = (const CastleLogApiV1*)result.api_pointer;
+    g_runtime_log_plugin = plugin_handle;
+    return 1;
+}
+
 int Runtime_Initialize(HMODULE self_module) {
     HMODULE kernel32;
     char log_path[MAX_PATH_];
@@ -657,7 +697,7 @@ int Runtime_Initialize(HMODULE self_module) {
     g_GetPrivateProfileIntA = (PFN_GetPrivateProfileIntA)g_GetProcAddress(kernel32, "GetPrivateProfileIntA");
     if (!g_VirtualProtect || !g_GetTickCount || !g_GetPrivateProfileIntA) return 0;
 
-    if (build_log_path(log_path, sizeof(log_path))) {
+    if (!g_runtime_log_api && build_log_path(log_path, sizeof(log_path))) {
         g_log = g_CreateFileA(log_path, GENERIC_WRITE_, FILE_SHARE_READ_, NULL,
                               CREATE_ALWAYS_, FILE_ATTRIBUTE_NORMAL_, NULL);
         if (g_log != INVALID_HANDLE_VALUE_) {
@@ -673,9 +713,12 @@ int Runtime_Initialize(HMODULE self_module) {
 }
 
 void Runtime_Shutdown(void) {
+    if (g_runtime_log_api) Runtime_Log("[结束] Castle_Widescreen 卸载。");
     if (g_CloseHandle && g_log != INVALID_HANDLE_VALUE_) {
         Runtime_Log("[结束] Castle_Widescreen 卸载。");
         g_CloseHandle(g_log);
         g_log = INVALID_HANDLE_VALUE_;
     }
+    g_runtime_log_api = NULL;
+    g_runtime_log_plugin = 0u;
 }

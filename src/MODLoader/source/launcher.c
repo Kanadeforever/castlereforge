@@ -357,6 +357,7 @@ static void show_error_(const WCHAR* text) {
 
 static int initialize_paths_and_config_(void) {
     WCHAR module_path[CASTLE_PATH_CAP];
+    WCHAR log_directory[CASTLE_PATH_CAP];
 
     /*
      * GUI 时代仍然沿用 v0.2.1 已经实机验证过的相对路径规则。
@@ -369,12 +370,16 @@ static int initialize_paths_and_config_(void) {
 
     if (!wcopy_(g_mods, CASTLE_PATH_CAP, (const WCHAR*)L"mods")) return 0;
     ensure_dir_(g_mods);
+    if (!path_join_(log_directory, CASTLE_PATH_CAP, g_mods,
+                    (const WCHAR*)L"logs")) return 0;
+    ensure_dir_(log_directory);
     if (!path_join_(g_loader_ini, CASTLE_PATH_CAP, g_mods, (const WCHAR*)L"CastleModLoader.ini")) return 0;
     if (!read_loader_ini_()) {
         show_error_((const WCHAR*)L"无法读取或生成 mods\\CastleModLoader.ini。请检查文件是否被占用、只读或尺寸异常。");
         return 0;
     }
-    if (!path_join_(g_log_path, CASTLE_PATH_CAP, g_mods, (const WCHAR*)L"modloader.log")) return 0;
+    if (!path_join_(g_log_path, CASTLE_PATH_CAP, g_mods,
+                    (const WCHAR*)L"logs\\modloader.log")) return 0;
 
     /*
      * 关键 GUI 行为：仅打开管理界面绝不能清空上一轮 modloader.log。
@@ -401,8 +406,8 @@ static int open_log_for_launch_(void) {
     log_line_((const WCHAR*)L"《幽城幻剑录》Mod Loader Pre-Loader v0.3.0-dev9 启动。旧日志已清空。");
     log_two_((const WCHAR*)L"[Loader配置] 配置文件：", g_loader_ini);
     log_line_(g_game_log_enabled ?
-              (const WCHAR*)L"[Loader配置] GameLog=1：本轮启用 mods\\game.log 原版游戏审计。" :
-              (const WCHAR*)L"[Loader配置] GameLog=0：本轮不建立 game.log，也不安装仅用于游戏审计的 I/O/状态 Hook。");
+              (const WCHAR*)L"[Loader配置] GameLog=1：本轮启用 mods\\logs\\game.log 原版游戏审计。" :
+              (const WCHAR*)L"[Loader配置] GameLog=0：本轮不建立 mods\\logs\\game.log，也不安装仅用于游戏审计的 I/O/状态 Hook。");
     if (g_loader_ini_had_invalid_value)
         log_line_((const WCHAR*)L"[Loader配置警告] CastleModLoader.ini 存在无法识别的日志开关值；该项已保持安全默认值 1。正式值请使用 1 或 0。");
     return 1;

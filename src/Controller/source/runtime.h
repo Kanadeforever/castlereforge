@@ -4,6 +4,7 @@
 #include "platform.h"
 #include "CastleRuntime_API.h"
 #include "CastleLog_API.h"
+#include "CastleModule_API.h"
 
 /*
  * runtime.h
@@ -126,6 +127,8 @@ void Runtime_BindEarlyApi(void);
 int Runtime_Initialize(HMODULE self_module);
 int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
                        CastlePluginHandle plugin_handle);
+HMODULE Runtime_LoadPluginDependency(const char* relative_path);
+void* Runtime_GetModuleProcedure(HMODULE module, const char* procedure_name);
 void Runtime_Shutdown(void);
 
 const RuntimeApi* Runtime_Api(void);

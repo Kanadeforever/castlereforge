@@ -56,6 +56,7 @@
 #include "CastleOverlay_API.h"
 #include "CastleSchedule_API.h"
 #include "CastleGameState_API.h"
+#include "CastleLog_API.h"
 
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "gdi32.lib")
@@ -283,6 +284,8 @@ static const CastleScheduleApiV1* g_runtimeScheduleApi = nullptr;
 static const CastleGameStateApiV1* g_runtimeGameStateApi = nullptr;
 static CastleLeaseHandle g_runtimeOverlayClient = 0u;
 static CastleTaskHandle g_runtimeExplorationTask = 0u;
+static const CastleLogApiV1* g_runtimeLogApi = nullptr;
+static CastlePluginHandle g_runtimeLogPlugin = 0u;
 
 // SDK Client 自己已经用原子状态机保证业务初始化只执行一次；这里的布尔值只是防止
 // 公共初始化辅助函数被本文件内部重复调用，不承担跨线程 Bootstrap 仲裁职责。
@@ -487,6 +490,17 @@ static bool IEqualsAscii(const std::string& a, const std::string& b) {
 }
 
 static void LogRaw(const std::string& line) {
+    if (g_runtimeLogApi && g_runtimeLogPlugin && !line.empty()) {
+        CastleLogRecordV1 record = {};
+        record.magic = CASTLE_LOG_RECORD_MAGIC;
+        record.struct_size = CASTLE_SIZEOF_LOG_RECORD_V1;
+        record.version = CASTLE_LOG_STRUCTURE_VERSION_1;
+        record.level = CASTLE_LOG_INFO;
+        record.message.data = line.data();
+        record.message.length = static_cast<CastleU32>(line.size());
+        g_runtimeLogApi->WritePluginLine(g_runtimeLogPlugin, &record);
+        return;
+    }
     // dev4 不再使用 fopen/_wfopen，因为 C Runtime 默认的共享模式可能让外部编辑器在游戏运行时打不开日志。
     // 这里直接使用 Win32 文件句柄，并在 OpenLog() 中显式声明 FILE_SHARE_READ | FILE_SHARE_WRITE |
     // FILE_SHARE_DELETE。这样 ASI 保持日志句柄打开时，记事本、Notepad++ 等仍可以同时读取该文件。
@@ -515,6 +529,12 @@ static void Log(const char* format, ...) {
 }
 
 static void OpenLog() {
+    if (g_runtimeLogApi && g_runtimeLogPlugin) {
+        LogRaw("《幽城幻剑录》Castle_Quest v0.1-dev6zd 启动。");
+        LogRaw("[边界] Quest通过Runtime GamePhase/Overlay/Display/GameState运行，不再拥有Present与探索入口Hook。");
+        LogRaw("[构建] RuntimeSDK Client 与版本化服务已接入；任务业务仍保持独立。");
+        return;
+    }
     std::wstring path = JoinPath(g_moduleDir, L"Castle_Quest.log");
 
     // CREATE_ALWAYS 与旧版行为一致：每次启动清空上一轮日志。
@@ -6534,6 +6554,12 @@ static CastleResult CASTLE_RUNTIME_CALL QuestStandaloneInitialize(void*) {
 
 static CastleResult CASTLE_RUNTIME_CALL QuestIntegratedInitialize(
     const CastleRuntimeApiV1* runtimeApi, CastlePluginHandle pluginHandle, void*) {
+    g_runtimeLogApi = static_cast<const CastleLogApiV1*>(QueryRuntimeInterface(
+        runtimeApi, CASTLE_LOG_INTERFACE_ID,
+        static_cast<CastleU32>(sizeof(CASTLE_LOG_INTERFACE_ID) - 1u),
+        CASTLE_LOG_API_VERSION_1, CASTLE_SIZEOF_LOG_API_V1, 0u));
+    g_runtimeLogPlugin = pluginHandle;
+    if (!g_runtimeLogApi) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     if (!InitializeBusinessCore()) return CASTLE_ERROR_RUNTIME_FAULT;
     Log("[模式] Integrated：Castle_Runtime.dll 可用；Quest 不直接修改 RPG.exe 代码段。");
     if (!ValidateIntegratedReadProtocol()) {
@@ -6544,12 +6570,8 @@ static CastleResult CASTLE_RUNTIME_CALL QuestIntegratedInitialize(
 }
 
 static void CASTLE_RUNTIME_CALL QuestRuntimeFault(CastleResult failure, void*) {
-    // Fault 的硬规则：Runtime 文件“存在但坏了”不能解释成“没有 Runtime”。
-    // 这里只允许准备日志并记录错误，绝不调用 Standalone 安装函数，避免绕开主项目的所有权协调。
-    if (g_moduleDir.empty()) g_moduleDir = GetModuleDirectory(g_module);
-    if (g_log == INVALID_HANDLE_VALUE) OpenLog();
-    Log("[RuntimeSDK][故障] Castle_Runtime.dll 存在但不可安全使用：result=%ld。", static_cast<long>(failure));
-    Log("[RuntimeSDK][故障] 本次启动不会回退到 Quest 私有 Hook；请修复/移除损坏 Runtime 后重启。");
+    (void)failure;
+    // Runtime 不可用时没有合法的 mods\logs 出口；官方 Quest 保持停用，不创建旁路日志。
 }
 
 static void CloseBusinessResources() {
@@ -6557,11 +6579,15 @@ static void CloseBusinessResources() {
         DeleteObject(g_font);
         g_font = nullptr;
     }
-    if (g_log != INVALID_HANDLE_VALUE) {
+    if (g_runtimeLogApi && g_runtimeLogPlugin) {
+        LogRaw("[结束] Castle_Quest 进入进程退出/卸载收尾。");
+    } else if (g_log != INVALID_HANDLE_VALUE) {
         LogRaw("[结束] Castle_Quest 进入进程退出/卸载收尾。");
         CloseHandle(g_log);
         g_log = INVALID_HANDLE_VALUE;
     }
+    g_runtimeLogApi = nullptr;
+    g_runtimeLogPlugin = 0u;
 }
 
 static void CASTLE_RUNTIME_CALL QuestProcessExit(void*) {

@@ -11,31 +11,37 @@ rem 先补齐 Windows 自带工具目录，同时保留 GitHub Actions 或用户
 rem 每个子项目都从这份完整环境继承工具路径，避免前一个构建初始化 Visual Studio 后影响下一个构建。  
 set "ROOT=%~dp0"
 
-echo [1/9] RuntimeSDK 核心  
+echo [1/11] RuntimeSDK 核心  
 call "%ROOT%src\RuntimeSDK\build.bat" < nul || goto :fail
 cls
-echo [2/9] 对话历史  
+echo [2/11] 对话历史  
 call "%ROOT%src\Backlog\build.bat" < nul || goto :fail
 cls
-echo [3/9] 控制器支持  
+echo [3/11] 控制器支持  
 call "%ROOT%src\Controller\build.bat" < nul || goto :fail
 cls
-echo [4/9] 宽屏  
+echo [4/11] 宽屏  
 call "%ROOT%src\Widescreen\build.bat" < nul || goto :fail
 cls
-echo [5/9] 安全扩展存档  
+echo [5/11] 安全扩展存档  
 call "%ROOT%src\SaveEnhance\build.bat" < nul || goto :fail
 cls
-echo [6/9] 问题修复  
+echo [6/11] 问题修复  
 call "%ROOT%src\Extra\BUGFix\build.bat" < nul || goto :fail
 cls
-echo [7/9] 免CD  
+echo [7/11] 免CD  
 call "%ROOT%src\Extra\NoCD\build.bat" < nul || goto :fail
 cls
-echo [8/9] 最大成长和最大掉宝  
+echo [8/11] 最大成长和最大掉宝  
 call "%ROOT%src\Extra\MaxGrowthAndDrop\build.bat" < nul || goto :fail
 cls
-echo [9/9] 模组加载器  
+echo [9/11] 帧率解锁  
+call "%ROOT%src\FPSUnlock\build.bat" < nul || goto :fail
+cls
+echo [10/11] 任务系统  
+call "%ROOT%src\Quest\build.bat" < nul || goto :fail
+cls
+echo [11/11] 模组加载器  
 call "%ROOT%src\MODLoader\build.bat" < nul || goto :fail
 cls
 echo [移动] 移动 Runtime、ASI 与同名 INI 到 mods\asi...  
@@ -47,6 +53,11 @@ for %%F in ("%ROOT%build\*.asi") do (
 )
 if not exist "%ROOT%build\Castle_Runtime.dll" goto :fail
 move /y "%ROOT%build\Castle_Runtime.dll" "%ROOT%build\mods\asi\Castle_Runtime.dll" >nul || goto :fail
+if exist "%ROOT%build\Castle_Quest" (
+    if exist "%ROOT%build\mods\asi\Castle_Quest" rmdir /s /q "%ROOT%build\mods\asi\Castle_Quest"
+    move /y "%ROOT%build\Castle_Quest" "%ROOT%build\mods\asi\Castle_Quest" >nul || goto :fail
+)
+if not exist "%ROOT%build\mods\logs" mkdir "%ROOT%build\mods\logs" || goto :fail
 
 rem SaveEnhance 的外置 WAV 固定从 ASI 同目录下 Castle_SaveEnhance 子目录读取。  
 set "SAVE_SOUND_DIR=%ROOT%build\mods\asi\Castle_SaveEnhance"
@@ -72,7 +83,7 @@ cls
 echo [移动] 完成  
 cls
 echo.
-echo [完成] Runtime/ASI/INI 位于 build\mods\asi，加载器位于 build\。FPSUnlock 仍未纳入。  
+echo [完成] Runtime、全部官方ASI及配置位于 build\mods\asi，统一日志目录为 build\mods\logs，加载器位于 build\。  
 pause
 exit /b 0
 

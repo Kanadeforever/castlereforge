@@ -1290,6 +1290,7 @@ int ModLoader_IsGameLogEnabled(void) {
 
 int ModLoader_Begin(HMODULE self_module) {
     WCHAR log_path[YCR_PATH_CAP];
+    WCHAR log_directory[YCR_PATH_CAP];
     DWORD wrote = 0;
     static const BYTE bom[3] = {0xEFu, 0xBBu, 0xBFu};
 
@@ -1329,7 +1330,13 @@ int ModLoader_Begin(HMODULE self_module) {
         if (!CreateDirectoryW(g_mods_root, NULL_PTR) && GetLastError() != ERROR_ALREADY_EXISTS_) return 0;
     }
 
-    if (!path_join_(log_path, YCR_PATH_CAP, g_mods_root, (const WCHAR*)L"modloader.log")) return 0;
+    if (!path_join_(log_directory, YCR_PATH_CAP, g_mods_root,
+                    (const WCHAR*)L"logs")) return 0;
+    if (!directory_exists_(log_directory) &&
+        !CreateDirectoryW(log_directory, NULL_PTR) &&
+        GetLastError() != ERROR_ALREADY_EXISTS_) return 0;
+    if (!path_join_(log_path, YCR_PATH_CAP, g_mods_root,
+                    (const WCHAR*)L"logs\\modloader.log")) return 0;
 
     /*
      * ModLoaderLog=0 时 Core 也完全不打开 modloader.log。ModLoader_Log() 本来就会在 g_log 无效时静默返回，

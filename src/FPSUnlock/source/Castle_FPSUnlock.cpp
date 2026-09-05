@@ -733,10 +733,7 @@ static void ApplyPredictedMotion(const MotionState* predicted) {
 }
 
 static void RenderExtraWorldFrame() {
-    static const char mutation_label[] = "FPSUnlock predicted world frame";
-    CastleGameMutationRequestV1 mutation;
     CastleRenderCallV1 render_call;
-    CastleLeaseHandle mutation_lease = 0u;
     CastleLeaseHandle render_lease = 0u;
     CastleU32 display_generation = 0u;
     CastleResult render_result;
@@ -753,24 +750,8 @@ static void RenderExtraWorldFrame() {
         return;
     }
 
-    memset(&mutation, 0, sizeof(mutation));
-    mutation.magic = CASTLE_GAME_MUTATION_MAGIC;
-    mutation.struct_size = CASTLE_SIZEOF_GAME_MUTATION_REQUEST_V1;
-    mutation.version = CASTLE_GAME_STATE_STRUCTURE_VERSION_1;
-    mutation.resource_mask = CASTLE_GAME_RESOURCE_CAMERA |
-                             CASTLE_GAME_RESOURCE_DRAW_QUEUE |
-                             CASTLE_GAME_RESOURCE_DIALOGUE |
-                             CASTLE_GAME_RESOURCE_WORLD;
-    mutation.label.data = mutation_label;
-    mutation.label.length = sizeof(mutation_label) - 1u;
-    if (g_game_state_api->AcquireMutation(g_runtime_plugin, &mutation,
-            &mutation_lease) < 0) {
-        ++g_skip_runtime_gate;
-        return;
-    }
     if (g_render_api->BeginExtraWorldFrame(g_runtime_plugin, 0u, &render_lease,
             &display_generation) < 0) {
-        g_game_state_api->ReleaseMutation(mutation_lease);
         ++g_skip_runtime_gate;
         return;
     }
@@ -841,7 +822,6 @@ static void RenderExtraWorldFrame() {
 
     g_inside_extra_render = FALSE_VALUE;
     g_render_api->EndExtraWorldFrame(render_lease);
-    g_game_state_api->ReleaseMutation(mutation_lease);
 }
 
 // ----------------------------------------------------------------------------
