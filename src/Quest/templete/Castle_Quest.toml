@@ -51,28 +51,30 @@ QuestPanelInitiallyOpen = false
 SoftwareBackend = true
 
 [Visual]
-# 中文文字只在独立内存 DIB 中用本字体栅格化，再复制到锁定的 DirectDraw 像素。
+# 中文文字使用的 Windows 字体名称。文字只在独立内存 DIB 中栅格化，再复制到锁定像素；
 # Quest 不会对游戏 Surface 调用 GetDC。
 FontName = "Microsoft JhengHei UI"
+# 任务标题、目标与注释的基础字号，单位为逻辑像素。
 FontSize = 14
+# 世界 Marker 和任务清单图标的基础尺寸，单位为逻辑像素。
 MarkerSize = 14
 
 # 任务 Tracker 固定在屏幕 9 点方向，贴左边缘并按总高度围绕 Y 轴中点展开。
-# MaxWidth 是换行最大像素宽度，实际还会受当前 Surface 一半宽度限制。
+# 任务区域文字换行允许使用的最大宽度，实际还会受当前 Surface 一半宽度限制。
 QuestHudMaxWidth = 440
+# 任务区域左边缘距离输出画面左边缘的像素数。
 QuestHudMarginLeft = 12
 
 # 两种纵向间距都以像素为单位，支持 Ctrl+F8 热重载。
-# QuestItemSpacing：一个任务块结束到下一个任务标题之间的额外距离；
-# QuestObjectiveSpacing：同一任务标题到第一行任务说明之间的额外距离。
-# 两项有效范围 0～64，超出时自动夹到安全范围。
+# 一个任务块结束到下一个任务标题之间的额外距离，有效范围 0～64。
 QuestItemSpacing = 0
+# 同一任务标题到第一行任务说明之间的额外距离，有效范围 0～64。
 QuestObjectiveSpacing = 0
 
 # player_notes 使用青色显示。下面两项只调任务注释的纵向留白。
-# QuestNoteSpacing：objective 正文结束到第一条任务注释之间的额外像素，范围 0～64；
-# QuestNoteLineSpacing：任务注释各行之间的额外像素，范围 0～32。
+# objective 正文结束到第一条任务注释之间的额外像素，范围 0～64。
 QuestNoteSpacing = 3
+# 多条任务注释相邻两行之间的额外像素，范围 0～32。
 QuestNoteLineSpacing = 2
 
 # 实体 Marker 锚点 A/B 开关：
@@ -82,9 +84,12 @@ QuestNoteLineSpacing = 2
 # 填写未知字符串时插件会记录警告并回退到 WorldCamera。
 EntityProjection = "WorldCamera"
 
-# 下面三项只做最终屏幕像素偏移，不可用来补偿某张地图的坐标错误。
+# 所有 Marker 在最终投影点基础上统一向上移动的像素数。
+# 本项不可用于补偿某张地图的坐标错误。
 MarkerYOffset = -34
+# 所有 Marker 在最终投影后统一追加的横向像素微调；正数向右，负数向左。
 MarkerOffsetX = 0
+# 所有 Marker 在最终投影后统一追加的纵向像素微调；正数向下，负数向上。
 MarkerOffsetY = 0
 
 [MarkerColor]
@@ -111,6 +116,7 @@ ShowDiagnosticWindow = true
 # 是否默认显示全场景对象调试框。对象来自 Runtime GamePhase 发布的探索管理器，
 # 不是已经证伪的 0x89F7F0 五角色槽。Ctrl+F11 可在当前会话中临时打开。
 ShowRuntimeEntities = false
+# 是否把所有可交互实体都纳入调试显示；false 时只显示当前诊断所需的精简集合。
 ShowAllInteractiveEntities = false
 
 # true = 比较每帧 5000 个 GameVar，只在变化时写日志。
@@ -120,5 +126,7 @@ LogGameVarChanges = true
 
 # 纯世界测试点只作为人工验证工具；正式任务优先绑定真实 Event/Entity/触发区域。
 TestWorldMarker = false
+# 测试世界点的原版世界 X 坐标，仅在 TestWorldMarker=true 时使用。
 WorldX = 0
+# 测试世界点的原版世界 Y 坐标，仅在 TestWorldMarker=true 时使用。
 WorldY = 0

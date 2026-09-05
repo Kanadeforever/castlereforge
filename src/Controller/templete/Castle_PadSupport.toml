@@ -72,6 +72,7 @@ VisualHitCount = 2
 # 等待原版菜单状态稳定的最长毫秒数。
 SettleTimeoutMs = 240
 
-# 按住方向键开始连发前的初始延时，以及连发后的重复间隔，单位毫秒。
+# 按住方向键开始连发前的初始延时，单位毫秒。
 RepeatInitialMs = 176
+# 初始延时结束后，两次连续导航之间的重复间隔，单位毫秒。
 RepeatIntervalMs = 96

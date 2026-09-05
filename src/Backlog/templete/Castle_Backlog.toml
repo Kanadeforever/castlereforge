@@ -36,10 +36,15 @@ RepeatDelayMs = 350
 RepeatIntervalMs = 100
 
 [Keyboard]
-# 这里只写 Virtual-Key 名称，省略 VK_ 前缀；值必须放在英文双引号中。
+# 打开 Backlog 的键；这里只写 Virtual-Key 名称，省略 VK_ 前缀。
 Open = "B"
+# 关闭 Backlog 的键；默认 ESC。
 Exit = "ESC"
+# 向上一条浏览历史的键；默认方向键上。
 Up = "UP"
+# 向下一条浏览历史的键；默认方向键下。
 Down = "DOWN"
+# 向较新一页翻动的键；默认方向键左。
 Left = "LEFT"
+# 向较旧一页翻动的键；默认方向键右。
 Right = "RIGHT"
