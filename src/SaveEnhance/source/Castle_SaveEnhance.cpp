@@ -2,10 +2,10 @@
 #include "PluginLog.h"
 #include "CastleRuntime_Client.h"
 #include "CastleHook_API.h"
-#include "CastlePath_API.h"
 #include "CastleInput_API.h"
 #include "CastleSave_API.h"
 #include "CastleModule_API.h"
+#include "CastleToml_API.h"
 
 // ============================================================================
 // Castle_SaveEnhance.cpp  v0.1.0-test7
@@ -388,10 +388,6 @@ bool AppendW(wchar_t* path, SIZE_T capacity, const wchar_t* suffix) {
     return true;
 }
 
-bool BuildIniPath(wchar_t* out, SIZE_T capacity) {
-    return GetSelfDirectory(out, capacity) && AppendW(out, capacity, L"Castle_SaveEnhance.ini");
-}
-
 bool BuildAutoRingStatePath(wchar_t* out, SIZE_T capacity) {
     // 和日志共用同一条“模块路径 -> 所在目录 -> 追加目标名”路线。
     // RPG.exe 实际位于 exe 子目录，游戏存档位于它的 ../multimedia/save，所以不能再写 exe/Save。
@@ -476,16 +472,34 @@ struct Config {
 };
 
 Config gConfig = {};
-wchar_t gIniPath[520] = {};
+const CastleTomlApiV1* gRuntimeTomlApi = nullptr;
+CastleTomlDocumentHandle gRuntimeTomlDocument = 0u;
 
-DWORD ClampDword(DWORD value, DWORD low, DWORD high) {
-    if (value < low) return low;
-    if (value > high) return high;
-    return value;
+CastleS32 ReadTomlS32(const char* table, const char* key, CastleS32 fallback,
+                      CastleS32 minimum, CastleS32 maximum) {
+    CastleS32 value = fallback;
+    if (!gRuntimeTomlApi || !gRuntimeTomlDocument) return fallback;
+    CastleStringView tableView{table, static_cast<CastleU32>(ycrlog::StringLengthA(table))};
+    CastleStringView keyView{key, static_cast<CastleU32>(ycrlog::StringLengthA(key))};
+    return gRuntimeTomlApi->GetS32(gRuntimeTomlDocument, tableView, keyView,
+        fallback, minimum, maximum, &value) >= 0 ? value : fallback;
 }
 
-void ReadSoundValue(const wchar_t* key, wchar_t* out, DWORD capacity) {
-    GetPrivateProfileStringW(L"Sound", key, L"", out, capacity, gIniPath);
+void ReadSoundValue(const char* key, wchar_t* out, DWORD capacity) {
+    char utf8[576]{};
+    CastleU32 length = 0u;
+    CastleStringView empty{"", 0u};
+    CastleStringView table{"Sound", 5u};
+    CastleStringView keyView{key, static_cast<CastleU32>(ycrlog::StringLengthA(key))};
+    out[0] = L'\0';
+    if (gRuntimeTomlApi && gRuntimeTomlDocument &&
+        gRuntimeTomlApi->GetString(gRuntimeTomlDocument, table, keyView, empty,
+            utf8, static_cast<CastleU32>(sizeof(utf8)), &length) >= 0 &&
+        length != 0u) {
+        const int converted = MultiByteToWideChar(65001u, 0u, utf8,
+            static_cast<int>(length), out, static_cast<int>(capacity - 1u));
+        if (converted > 0) out[converted] = L'\0';
+    }
     if (out[0] != L'\0' && !IsValidWavFilename(out)) {
         // 无效内容直接变成空配置。这样“填错名字”不会在每次存档时反复尝试危险路径。
         out[0] = L'\0';
@@ -493,31 +507,29 @@ void ReadSoundValue(const wchar_t* key, wchar_t* out, DWORD capacity) {
 }
 
 void LoadConfig() {
-    gConfig.quickEnable = GetPrivateProfileIntW(L"Quick", L"Enable", 1, gIniPath) != 0u;
-    gConfig.controllerEnable =
-        GetPrivateProfileIntW(L"Quick", L"ControllerEnable", 1, gIniPath) != 0u;
-    gConfig.quickLoadPresses = ClampDword(
-        GetPrivateProfileIntW(L"Quick", L"QuickLoadPresses", 2, gIniPath), 2u, 3u);
-    gConfig.quickLoadWindowMs = ClampDword(
-        GetPrivateProfileIntW(L"Quick", L"QuickLoadWindowMs", 1200, gIniPath), 300u, 3000u);
-
-    gConfig.autoEnable = GetPrivateProfileIntW(L"AutoSave", L"Enable", 1, gIniPath) != 0u;
+    gConfig.quickEnable = ReadTomlS32("Quick", "Enable", 1, 0, 1) != 0;
+    gConfig.controllerEnable = ReadTomlS32("Quick", "ControllerEnable", 1, 0, 1) != 0;
+    gConfig.quickLoadPresses = static_cast<DWORD>(
+        ReadTomlS32("Quick", "QuickLoadPresses", 2, 2, 3));
+    gConfig.quickLoadWindowMs = static_cast<DWORD>(
+        ReadTomlS32("Quick", "QuickLoadWindowMs", 1200, 300, 3000));
+    gConfig.autoEnable = ReadTomlS32("AutoSave", "Enable", 1, 0, 1) != 0;
     gConfig.saveOnSceneChange =
-        GetPrivateProfileIntW(L"AutoSave", L"SaveOnSceneChange", 1, gIniPath) != 0u;
-    gConfig.intervalMinutes = ClampDword(
-        GetPrivateProfileIntW(L"AutoSave", L"IntervalMinutes", 5, gIniPath), 0u, 1440u);
+        ReadTomlS32("AutoSave", "SaveOnSceneChange", 0, 0, 1) != 0;
+    gConfig.intervalMinutes = static_cast<DWORD>(
+        ReadTomlS32("AutoSave", "IntervalMinutes", 5, 0, 1440));
 
     // Volume 是 SaveEnhance 外置 WAV 自己的音量百分比。
     // 0=静音，100=原 WAV 振幅；默认 70，避免提示音比老游戏本体突然响很多。
-    gConfig.soundVolume = ClampDword(
-        GetPrivateProfileIntW(L"Sound", L"Volume", 70, gIniPath), 0u, 100u);
-    ReadSoundValue(L"QuickSaveSuccess", gConfig.sound.quickSaveSuccess, 192u);
-    ReadSoundValue(L"QuickSaveFailed", gConfig.sound.quickSaveFailed, 192u);
-    ReadSoundValue(L"QuickLoadConfirm", gConfig.sound.quickLoadConfirm, 192u);
-    ReadSoundValue(L"QuickLoadSuccess", gConfig.sound.quickLoadSuccess, 192u);
-    ReadSoundValue(L"QuickLoadFailed", gConfig.sound.quickLoadFailed, 192u);
-    ReadSoundValue(L"AutoSaveSuccess", gConfig.sound.autoSaveSuccess, 192u);
-    ReadSoundValue(L"AutoSaveFailed", gConfig.sound.autoSaveFailed, 192u);
+    gConfig.soundVolume = static_cast<DWORD>(
+        ReadTomlS32("Sound", "Volume", 70, 0, 100));
+    ReadSoundValue("QuickSaveSuccess", gConfig.sound.quickSaveSuccess, 192u);
+    ReadSoundValue("QuickSaveFailed", gConfig.sound.quickSaveFailed, 192u);
+    ReadSoundValue("QuickLoadConfirm", gConfig.sound.quickLoadConfirm, 192u);
+    ReadSoundValue("QuickLoadSuccess", gConfig.sound.quickLoadSuccess, 192u);
+    ReadSoundValue("QuickLoadFailed", gConfig.sound.quickLoadFailed, 192u);
+    ReadSoundValue("AutoSaveSuccess", gConfig.sound.autoSaveSuccess, 192u);
+    ReadSoundValue("AutoSaveFailed", gConfig.sound.autoSaveFailed, 192u);
 }
 
 bool BuildSaveAnsiPath(DWORD slot, char* out, SIZE_T capacity) {
@@ -2380,35 +2392,6 @@ extern "C" __declspec(naked) void NextPageBaseLoopHelper() {
 // - DllMain 只保存自身 HMODULE，并关闭无用的线程 attach/detach 通知；
 // - 所有文件 I/O、INI、兼容模块查询、内存检查、VirtualProtect 和 Hook 写入都放进 InitializeASI；
 // - 这样也保证 SaveEnhance 看见的是 Loader 已经准备好的最终 Locale/Overrides 环境。
-static bool BuildIniPathRuntime(const CastleRuntimeApiV1* runtimeApi,
-                                CastlePluginHandle pluginHandle) {
-    static const char interfaceId[] = CASTLE_PATH_INTERFACE_ID;
-    static const wchar_t relativeName[] = L"Castle_SaveEnhance.ini";
-    CastleInterfaceQueryV1 query{};
-    CastleInterfaceResultV1 result{};
-    CastleWideStringView relative{};
-    CastleU32 outputLength = 0u;
-    query.magic = CASTLE_QUERY_MAGIC;
-    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
-    query.request_version = CASTLE_QUERY_VERSION_1;
-    query.interface_id = SdkView(interfaceId,
-        static_cast<CastleU32>(sizeof(interfaceId) - 1u));
-    query.requested_version = CASTLE_PATH_API_VERSION_1;
-    query.minimum_struct_size = CASTLE_SIZEOF_PATH_API_V1;
-    result.magic = CASTLE_INTERFACE_API_MAGIC;
-    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
-    result.result_version = CASTLE_QUERY_VERSION_1;
-    if (!runtimeApi || runtimeApi->QueryInterface(&query, &result) != CASTLE_OK) {
-        return false;
-    }
-    const auto* pathApi = static_cast<const CastlePathApiV1*>(result.api_pointer);
-    relative.data = reinterpret_cast<const CastleU16*>(relativeName);
-    relative.length = static_cast<CastleU32>(WLen(relativeName));
-    return pathApi && pathApi->BuildPluginRelativePathWide(pluginHandle,
-        relative, reinterpret_cast<CastleU16*>(gIniPath), 520u,
-        &outputLength) == CASTLE_OK;
-}
-
 static const void* QueryRuntimeInterface(const CastleRuntimeApiV1* runtimeApi,
                                          const char* interfaceId,
                                          CastleU32 interfaceLength,
@@ -2437,6 +2420,7 @@ static bool BindRuntimeInputAndSave(const CastleRuntimeApiV1* runtimeApi,
     static const char inputId[] = CASTLE_INPUT_INTERFACE_ID;
     static const char saveId[] = CASTLE_SAVE_INTERFACE_ID;
     static const char moduleId[] = CASTLE_MODULE_INTERFACE_ID;
+    static const char tomlId[] = CASTLE_TOML_INTERFACE_ID;
     static const char quickLabel[] = "SaveEnhance quick slot";
     static const char autoLabel[] = "SaveEnhance rolling auto slots";
     CastleManualSavePolicyV1 policy{};
@@ -2452,9 +2436,17 @@ static bool BindRuntimeInputAndSave(const CastleRuntimeApiV1* runtimeApi,
     gRuntimeModuleApi = static_cast<const CastleModuleApiV1*>(QueryRuntimeInterface(
         runtimeApi, moduleId, static_cast<CastleU32>(sizeof(moduleId) - 1u),
         CASTLE_MODULE_API_VERSION_1, CASTLE_SIZEOF_MODULE_API_V1, 0u));
+    gRuntimeTomlApi = static_cast<const CastleTomlApiV1*>(QueryRuntimeInterface(
+        runtimeApi, tomlId, static_cast<CastleU32>(sizeof(tomlId) - 1u),
+        CASTLE_TOML_API_VERSION_1, CASTLE_SIZEOF_TOML_API_V1, 0u));
     gRuntimePluginHandle = pluginHandle;
     if (gRuntimeInputApi == nullptr || gRuntimeSaveApi == nullptr ||
-        gRuntimeModuleApi == nullptr) return false;
+        gRuntimeModuleApi == nullptr || gRuntimeTomlApi == nullptr) return false;
+    {
+        CastleStringView configPath{"Castle_SaveEnhance.toml", 23u};
+        (void)gRuntimeTomlApi->OpenPluginDocument(pluginHandle, configPath,
+            &gRuntimeTomlDocument);
+    }
 
     policy.magic = CASTLE_SAVE_POLICY_MAGIC;
     policy.struct_size = CASTLE_SIZEOF_MANUAL_SAVE_POLICY_V1;
@@ -2506,8 +2498,7 @@ static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
     // 到这个时刻 LoadLibraryExW 已经返回，所以 GetModuleHandle/VirtualQuery/VirtualProtect 等正式
     // 初始化工作不再发生在 DllMain Loader Lock 中。
     gExeBase = ycr::GetExeBase();
-    const bool pathReady = integrated ? BuildIniPathRuntime(runtimeApi, pluginHandle) :
-                                        BuildIniPath(gIniPath, 520u);
+    const bool pathReady = integrated;
     if (gExeBase == nullptr || !pathReady) {
         ycrlog::Line("[启动失败] 无法取得 RPG.exe 基址或 Castle_SaveEnhance.ini 路径。");
         ycrlog::Line("[状态] SaveEnhance 未完整安装；本轮不修改任何存档逻辑。");
@@ -2577,6 +2568,10 @@ static void CASTLE_RUNTIME_CALL SaveEnhance_ProcessExit(void* userContext) {
     }
     gAutoSlotPolicy = 0u;
     gQuickSlotPolicy = 0u;
+    if (gRuntimeTomlApi != nullptr && gRuntimeTomlDocument != 0u) {
+        gRuntimeTomlApi->CloseDocument(gRuntimeTomlDocument);
+    }
+    gRuntimeTomlDocument = 0u;
     ycrlog::Line("[退出] Castle_SaveEnhance 随进程结束。");
     ycrlog::Close();
 }

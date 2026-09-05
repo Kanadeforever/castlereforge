@@ -95,7 +95,7 @@ link /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 /def:"%RO
   /out:"%OUT%\Castle_PadSupport.asi"
 if errorlevel 1 goto :fail
 
-copy /y "%ROOT%templete\Castle_PadSupport.ini" "%OUT%\Castle_PadSupport.ini" >nul
+copy /y "%ROOT%templete\Castle_PadSupport.toml" "%OUT%\Castle_PadSupport.toml" >nul
 if errorlevel 1 goto :fail
 
 

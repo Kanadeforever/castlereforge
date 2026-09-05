@@ -57,6 +57,7 @@
 #include "CastleSchedule_API.h"
 #include "CastleGameState_API.h"
 #include "CastleLog_API.h"
+#include "CastleToml_API.h"
 
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "gdi32.lib")
@@ -286,6 +287,7 @@ static CastleLeaseHandle g_runtimeOverlayClient = 0u;
 static CastleTaskHandle g_runtimeExplorationTask = 0u;
 static const CastleLogApiV1* g_runtimeLogApi = nullptr;
 static CastlePluginHandle g_runtimeLogPlugin = 0u;
+static const CastleTomlApiV1* g_runtimeTomlApi = nullptr;
 
 // SDK Client 自己已经用原子状态机保证业务初始化只执行一次；这里的布尔值只是防止
 // 公共初始化辅助函数被本文件内部重复调用，不承担跨线程 Bootstrap 仲裁职责。
@@ -1421,84 +1423,54 @@ static GameSnapshot CaptureSnapshot() {
 // 它只支持我们需要的： [Section] 与 key=value。没有“神秘兼容行为”，出错更容易诊断。
 class IniFile {
 public:
-    bool Load(const std::wstring& path) {
-        sections_.clear();
-        HANDLE h = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
-                               OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-        if (h == INVALID_HANDLE_VALUE) return false;
-        LARGE_INTEGER size = {};
-        if (!GetFileSizeEx(h, &size) || size.QuadPart < 0 || size.QuadPart > 16 * 1024 * 1024) {
-            CloseHandle(h);
-            return false;
+    ~IniFile() {
+        if (document_ != 0u && g_runtimeTomlApi) {
+            g_runtimeTomlApi->CloseDocument(document_);
         }
-        std::string data(static_cast<size_t>(size.QuadPart), '\0');
-        DWORD read = 0;
-        BOOL ok = data.empty() || ReadFile(h, &data[0], static_cast<DWORD>(data.size()), &read, nullptr);
-        CloseHandle(h);
-        if (!ok) return false;
-        data.resize(read);
-        if (data.size() >= 3 && static_cast<unsigned char>(data[0]) == 0xEF &&
-            static_cast<unsigned char>(data[1]) == 0xBB && static_cast<unsigned char>(data[2]) == 0xBF) {
-            data.erase(0, 3);
-        }
+    }
 
-        std::string current;
-        std::istringstream stream(data);
-        std::string line;
-        while (std::getline(stream, line)) {
-            if (!line.empty() && line.back() == '\r') line.pop_back();
-            std::string t = Trim(line);
-            if (t.empty() || t[0] == ';' || t[0] == '#') continue;
-            if (t.size() >= 2 && t.front() == '[' && t.back() == ']') {
-                current = Trim(t.substr(1, t.size() - 2));
-                continue;
-            }
-            size_t eq = t.find('=');
-            if (eq == std::string::npos || current.empty()) continue;
-            std::string key = Trim(t.substr(0, eq));
-            std::string value = Trim(t.substr(eq + 1));
-            sections_[current][key] = value;
-        }
-        return true;
+    bool Load(const std::wstring& path) {
+        (void)path;
+        if (!g_runtimeTomlApi || !g_runtimeLogPlugin) return false;
+        CastleStringView relative{"Castle_Quest.toml", 17u};
+        return g_runtimeTomlApi->OpenPluginDocument(
+            g_runtimeLogPlugin, relative, &document_) >= 0;
     }
 
     std::string Get(const std::string& section, const std::string& key, const std::string& def = "") const {
-        auto s = FindSection(section);
-        if (s == sections_.end()) return def;
-        for (const auto& kv : s->second) {
-            if (IEqualsAscii(kv.first, key)) return kv.second;
+        char output[2048]{};
+        CastleU32 length = 0u;
+        if (!g_runtimeTomlApi || !document_) return def;
+        CastleStringView table{section.data(), static_cast<CastleU32>(section.size())};
+        CastleStringView name{key.data(), static_cast<CastleU32>(key.size())};
+        CastleStringView fallback{def.data(), static_cast<CastleU32>(def.size())};
+        if (g_runtimeTomlApi->GetString(document_, table, name, fallback,
+                output, static_cast<CastleU32>(sizeof(output)), &length) < 0) {
+            return def;
         }
-        return def;
+        return std::string(output, output + length);
     }
 
     int GetInt(const std::string& section, const std::string& key, int def) const {
-        std::string v = Get(section, key, "");
-        if (v.empty()) return def;
-        char* end = nullptr;
-        long n = std::strtol(v.c_str(), &end, 0);
-        return end && *end == '\0' ? static_cast<int>(n) : def;
+        CastleS32 value = def;
+        if (!g_runtimeTomlApi || !document_) return def;
+        CastleStringView table{section.data(), static_cast<CastleU32>(section.size())};
+        CastleStringView name{key.data(), static_cast<CastleU32>(key.size())};
+        return g_runtimeTomlApi->GetS32(document_, table, name, def,
+            INT_MIN, INT_MAX, &value) >= 0 ? static_cast<int>(value) : def;
     }
 
     bool GetBool(const std::string& section, const std::string& key, bool def) const {
-        std::string v = ToLowerAscii(Get(section, key, ""));
-        if (v.empty()) return def;
-        if (v == "1" || v == "true" || v == "yes" || v == "on") return true;
-        if (v == "0" || v == "false" || v == "no" || v == "off") return false;
-        return def;
+        CastleU32 value = def ? 1u : 0u;
+        if (!g_runtimeTomlApi || !document_) return def;
+        CastleStringView table{section.data(), static_cast<CastleU32>(section.size())};
+        CastleStringView name{key.data(), static_cast<CastleU32>(key.size())};
+        return g_runtimeTomlApi->GetBool(document_, table, name,
+            def ? 1u : 0u, &value) >= 0 ? value != 0u : def;
     }
-
-    const std::map<std::string, std::map<std::string, std::string>>& Sections() const { return sections_; }
 
 private:
-    using SectionMap = std::map<std::string, std::map<std::string, std::string>>;
-    SectionMap sections_;
-
-    SectionMap::const_iterator FindSection(const std::string& section) const {
-        for (auto it = sections_.begin(); it != sections_.end(); ++it) {
-            if (IEqualsAscii(it->first, section)) return it;
-        }
-        return sections_.end();
-    }
+    CastleTomlDocumentHandle document_ = 0u;
 };
 
 // dev6q：继续把 INI 中的“255,205,70”解析成三个 0~255 整数。
@@ -6052,9 +6024,9 @@ static void RecreateFont() {
 
 static bool LoadMainConfig() {
     IniFile ini;
-    std::wstring path = JoinPath(g_moduleDir, L"Castle_Quest.ini");
+    std::wstring path = JoinPath(g_moduleDir, L"Castle_Quest.toml");
     if (!ini.Load(path)) {
-        Log("[配置] Castle_Quest.ini 不存在或无法读取，使用内置 dev6zd 默认值。");
+        Log("[配置] Castle_Quest.toml 不存在或无法读取，使用内置 dev6zd 默认值。");
         RecreateFont();
         return false;
     }
@@ -6559,7 +6531,11 @@ static CastleResult CASTLE_RUNTIME_CALL QuestIntegratedInitialize(
         static_cast<CastleU32>(sizeof(CASTLE_LOG_INTERFACE_ID) - 1u),
         CASTLE_LOG_API_VERSION_1, CASTLE_SIZEOF_LOG_API_V1, 0u));
     g_runtimeLogPlugin = pluginHandle;
-    if (!g_runtimeLogApi) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    g_runtimeTomlApi = static_cast<const CastleTomlApiV1*>(QueryRuntimeInterface(
+        runtimeApi, CASTLE_TOML_INTERFACE_ID,
+        static_cast<CastleU32>(sizeof(CASTLE_TOML_INTERFACE_ID) - 1u),
+        CASTLE_TOML_API_VERSION_1, CASTLE_SIZEOF_TOML_API_V1, 0u));
+    if (!g_runtimeLogApi || !g_runtimeTomlApi) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     if (!InitializeBusinessCore()) return CASTLE_ERROR_RUNTIME_FAULT;
     Log("[模式] Integrated：Castle_Runtime.dll 可用；Quest 不直接修改 RPG.exe 代码段。");
     if (!ValidateIntegratedReadProtocol()) {

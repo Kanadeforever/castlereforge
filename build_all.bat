@@ -11,45 +11,53 @@ rem 先补齐 Windows 自带工具目录，同时保留 GitHub Actions 或用户
 rem 每个子项目都从这份完整环境继承工具路径，避免前一个构建初始化 Visual Studio 后影响下一个构建。  
 set "ROOT=%~dp0"
 
-echo [1/11] RuntimeSDK 核心  
+rem 总构建必须证明本轮源码真的产生了每个正式文件，不能让上一次留下的 ASI 冒充成功。  
+rem 这里只删除 build 发行树里由本脚本重新生成的精确文件名，不触碰用户源码或其它目录。  
+if not exist "%ROOT%build" mkdir "%ROOT%build" || goto :fail
+for %%F in (Castle_Runtime.dll Castle_Backlog.asi Castle_Backlog.toml Castle_PadSupport.asi Castle_PadSupport.toml Castle_Widescreen.asi Castle_Widescreen.toml Castle_SaveEnhance.asi Castle_SaveEnhance.toml BUGFix.asi NoCD.asi MaxGrowthAndDrop.asi MaxGrowthAndDrop.toml Castle_Quest.asi Castle_Quest.toml) do (
+    if exist "%ROOT%build\%%F" del /q "%ROOT%build\%%F" >nul 2>nul
+    if exist "%ROOT%build\mods\asi\%%F" del /q "%ROOT%build\mods\asi\%%F" >nul 2>nul
+)
+if exist "%ROOT%build\Castle_Quest" rmdir /s /q "%ROOT%build\Castle_Quest"
+if exist "%ROOT%build\mods\asi\Castle_Quest" rmdir /s /q "%ROOT%build\mods\asi\Castle_Quest"
+
+echo [1/10] RuntimeSDK 核心  
 call "%ROOT%src\RuntimeSDK\build.bat" < nul || goto :fail
 cls
-echo [2/11] 对话历史  
+echo [2/10] 对话历史  
 call "%ROOT%src\Backlog\build.bat" < nul || goto :fail
 cls
-echo [3/11] 控制器支持  
+echo [3/10] 控制器支持  
 call "%ROOT%src\Controller\build.bat" < nul || goto :fail
 cls
-echo [4/11] 宽屏  
+echo [4/10] 宽屏  
 call "%ROOT%src\Widescreen\build.bat" < nul || goto :fail
 cls
-echo [5/11] 安全扩展存档  
+echo [5/10] 安全扩展存档  
 call "%ROOT%src\SaveEnhance\build.bat" < nul || goto :fail
 cls
-echo [6/11] 问题修复  
+echo [6/10] 问题修复  
 call "%ROOT%src\Extra\BUGFix\build.bat" < nul || goto :fail
 cls
-echo [7/11] 免CD  
+echo [7/10] 免CD  
 call "%ROOT%src\Extra\NoCD\build.bat" < nul || goto :fail
 cls
-echo [8/11] 最大成长和最大掉宝  
+echo [8/10] 最大成长和最大掉宝  
 call "%ROOT%src\Extra\MaxGrowthAndDrop\build.bat" < nul || goto :fail
 cls
-echo [9/11] 帧率解锁  
-call "%ROOT%src\FPSUnlock\build.bat" < nul || goto :fail
-cls
-echo [10/11] 任务系统  
+echo [9/10] 任务系统  
 call "%ROOT%src\Quest\build.bat" < nul || goto :fail
 cls
-echo [11/11] 模组加载器  
+echo [10/10] 模组加载器  
 call "%ROOT%src\MODLoader\build.bat" < nul || goto :fail
 cls
-echo [移动] 移动 Runtime、ASI 与同名 INI 到 mods\asi...  
+echo [移动] 移动 Runtime、ASI 与同名 TOML 到 mods\asi...  
 @echo off
 if not exist "%ROOT%build\mods\asi" mkdir "%ROOT%build\mods\asi"
 for %%F in ("%ROOT%build\*.asi") do (
     move /y "%%F" "%ROOT%build\mods\asi\" >nul || goto :fail
     if exist "%%~dpnF.ini" move /y "%%~dpnF.ini" "%ROOT%build\mods\asi\" >nul || goto :fail
+    if exist "%%~dpnF.toml" move /y "%%~dpnF.toml" "%ROOT%build\mods\asi\" >nul || goto :fail
 )
 if not exist "%ROOT%build\Castle_Runtime.dll" goto :fail
 move /y "%ROOT%build\Castle_Runtime.dll" "%ROOT%build\mods\asi\Castle_Runtime.dll" >nul || goto :fail
@@ -58,6 +66,11 @@ if exist "%ROOT%build\Castle_Quest" (
     move /y "%ROOT%build\Castle_Quest" "%ROOT%build\mods\asi\Castle_Quest" >nul || goto :fail
 )
 if not exist "%ROOT%build\mods\logs" mkdir "%ROOT%build\mods\logs" || goto :fail
+
+rem 官方 ASI 已统一改用 TOML；主动清除旧版残留 INI，避免发行目录同时出现两份互相矛盾的配置。  
+for %%F in (Castle_Backlog Castle_PadSupport Castle_SaveEnhance Castle_Widescreen MaxGrowthAndDrop Castle_Quest) do (
+    if exist "%ROOT%build\mods\asi\%%F.ini" del /q "%ROOT%build\mods\asi\%%F.ini" >nul 2>nul
+)
 
 rem SaveEnhance 的外置 WAV 固定从 ASI 同目录下 Castle_SaveEnhance 子目录读取。  
 set "SAVE_SOUND_DIR=%ROOT%build\mods\asi\Castle_SaveEnhance"

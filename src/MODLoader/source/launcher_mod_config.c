@@ -427,7 +427,7 @@ static int add_item_(LauncherModItem_* items, UINT* count, const WCHAR* name, in
     items[*count].enabled = enabled ? 1 : 0;
     items[*count].present = 0;
     items[*count].usable = 0;
-    items[*count].has_ini = 0;
+    items[*count].has_toml = 0;
     ++*count;
     return 1;
 }
@@ -629,23 +629,23 @@ static void refresh_item_presence_(const WCHAR* asi_root, const WCHAR* overrides
         }
 
         /*
-         * 第二步只检查“同名 INI”：Controller.asi 只对应 Controller.ini。
+         * 第二步只检查“同名 TOML”：Castle_PadSupport.asi 只对应 Castle_PadSupport.toml。
          * 不能为了显示编辑按钮去猜别的配置文件名，否则一个目录里有多个插件时很容易把 A 插件的设置打开成 B 插件的。
-         * 即使 ASI 主文件暂时缺失，也仍把 has_ini 按磁盘事实记录下来；GUI 会在绘制时要求 present=1 才显示编辑按钮，
+         * 即使 ASI 主文件暂时缺失，也仍把 has_toml 按磁盘事实记录下来；GUI 会在绘制时要求 present=1 才显示编辑按钮，
          * 这样模型信息完整，同时不会在“文件缺失”行上堆无意义动作。
          */
-        g_asi[i].has_ini = 0;
+        g_asi[i].has_toml = 0;
         file_name[0] = 0;
         if (wcopy_(file_name, MAX_PATH_, g_asi[i].name) &&
-            wappend_(file_name, MAX_PATH_, (const WCHAR*)L".ini") &&
+            wappend_(file_name, MAX_PATH_, (const WCHAR*)L".toml") &&
             path_join_(path, CASTLE_PATH_CAP, asi_root, file_name)) {
-            g_asi[i].has_ini = file_exists_(path);
+            g_asi[i].has_toml = file_exists_(path);
         }
     }
 
     for (i = 0u; i < g_override_count; ++i) {
-        /* Overrides 只代表一个目录树，不参与“同名 INI 插件设置”功能。 */
-        g_overrides[i].has_ini = 0;
+        /* Overrides 只代表一个目录树，不参与“同名 TOML 插件设置”功能。 */
+        g_overrides[i].has_toml = 0;
         if (path_join_(path, CASTLE_PATH_CAP, overrides_root, g_overrides[i].name)) {
             g_overrides[i].present = directory_exists_(path);
             g_overrides[i].usable = g_overrides[i].present && directory_has_regular_file_recursive_(path);

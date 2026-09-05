@@ -30,11 +30,11 @@ typedef struct LauncherModItem_ {
     int usable;
 
     /*
-     * has_ini=1 只用于 ASI：表示 mods\asi 中存在与该插件同名的 .ini。
-     * 例如 Controller.asi 对应 Controller.ini。GUI 只有在这个字段为 1 时才画“编辑”按钮。
-     * Overrides 没有“同名 INI 编辑”语义，所以该字段固定为 0。
+     * has_toml=1 只用于 ASI：表示 mods\asi 中存在与该插件同名的 .toml。
+     * 例如 Castle_PadSupport.asi 对应 Castle_PadSupport.toml。只有字段为 1 才画“编辑”按钮。
+     * Overrides 没有“同名 TOML 编辑”语义，所以该字段固定为 0。
      */
-    int has_ini;
+    int has_toml;
 } LauncherModItem_;
 
 /*

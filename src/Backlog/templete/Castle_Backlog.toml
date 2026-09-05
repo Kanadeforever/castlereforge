@@ -1,0 +1,45 @@
+# Castle Backlog v0.4.0
+# 本文件是标准 UTF-8 TOML，由同目录 Castle_Runtime.dll 的 TOML v1 服务统一读取。
+# 修改后需要重新启动游戏；当前版本不在运行中热重载本文件。
+#
+# 键盘键位使用 Win32 Virtual-Key 名称，但省略最前面的 VK_。
+# 例如：B 表示 VK_B，UP 表示 VK_UP，RETURN 表示 VK_RETURN，F5 表示 VK_F5。
+#
+# 鼠标操作是固定语义，不另外制造一套映射：
+# - BACKLOG 未打开：滚轮向上可以打开并观看历史；
+# - BACKLOG 已打开：滚轮上下翻动历史，鼠标右键退出。
+#
+# 手柄输入通过 Runtime Input 服务读取，不按文件名连接其它 ASI：
+# - 同时启用 Castle_PadSupport.asi 时，LB 打开，LB 或“取消”退出，十字键浏览；
+# - 处于调查、RT 临时鼠标或 Back 常驻鼠标模式时，BACKLOG 完全忽略手柄输入；
+# - 没有 PadSupport 时键盘和鼠标功能仍然正常，但不会凭空获得手柄输入。
+
+[Backlog]
+# 1 = 启用；0 = 插件仍登记到 Runtime，但不安装业务 Hook，也不处理输入。
+Enabled = 1
+
+# 内存中最多保留多少条历史对话。范围错误时会由插件夹到安全值。
+MaxEntries = 128
+
+# 每次向上或向下翻页跨过多少条记录。
+PageSize = 4
+
+# 相邻历史对话框的纵向距离，单位是原版 640×480 UI 像素。
+# 110 时同屏最多显示 4 条；111～160 时自动改成同屏最多 3 条。
+# 默认 160，让完整原版大对话框保持自然间距，同时保护最上方姓名坐标。
+PanelStrideY = 160
+
+# 长按方向键或十字键时，第一次自动重复前等待多久，单位毫秒。
+RepeatDelayMs = 350
+
+# 开始自动重复后，每隔多少毫秒再滚动一格。
+RepeatIntervalMs = 100
+
+[Keyboard]
+# 这里只写 Virtual-Key 名称，省略 VK_ 前缀；值必须放在英文双引号中。
+Open = "B"
+Exit = "ESC"
+Up = "UP"
+Down = "DOWN"
+Left = "LEFT"
+Right = "RIGHT"

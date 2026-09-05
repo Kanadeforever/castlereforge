@@ -26,18 +26,18 @@ set "MANIFEST=%DATADIR%\manifest.toml"
 set "SOURCE_MAIN=%SRC%\CastleQuest.cpp"
 set "SOURCE_ROUTE=%SRC%\RouteSearch.cpp"
 set "SOURCE_DEF=%SRC%\CastleQuest.def"
-set "INI=%TEMPLATE%\Castle_Quest.ini"
+set "INI=%TEMPLATE%\Castle_Quest.toml"
 
 set "OBJ=%ROOT%_build"
 set "RELEASE=%OBJ%\release"
 
 set "TARGETDIR=%REPOROOT%\build"
 set "TARGETASI=%TARGETDIR%\Castle_Quest.asi"
-set "TARGETINI=%TARGETDIR%\Castle_Quest.ini"
+set "TARGETINI=%TARGETDIR%\Castle_Quest.toml"
 set "TARGETDATA=%TARGETDIR%\Castle_Quest"
 
 set "TARGETASI_NEW=%TARGETDIR%\Castle_Quest.asi.__new"
-set "TARGETINI_NEW=%TARGETDIR%\Castle_Quest.ini.__new"
+set "TARGETINI_NEW=%TARGETDIR%\Castle_Quest.toml.__new"
 set "TARGETDATA_NEW=%TARGETDIR%\Castle_Quest.__new"
 
 rem =============================================================================  
@@ -60,7 +60,7 @@ if not exist "%SOURCE_DEF%" (
 )
 
 if not exist "%INI%" (
-    echo [构建] 缺少 templete\Castle_Quest.ini。  
+    echo [构建] 缺少 templete\Castle_Quest.toml。  
     goto :fail
 )
 
@@ -350,7 +350,7 @@ rem ============================================================================
 copy /y "%OBJ%\Castle_Quest.asi" "%RELEASE%\Castle_Quest.asi" >nul
 if errorlevel 1 goto :release_bad
 
-copy /y "%INI%" "%RELEASE%\Castle_Quest.ini" >nul
+copy /y "%INI%" "%RELEASE%\Castle_Quest.toml" >nul
 if errorlevel 1 goto :release_bad
 
 xcopy "%DATADIR%" "%RELEASE%\Castle_Quest\" /E /I /Y /Q >nul
@@ -391,7 +391,7 @@ if exist "%TARGETDATA_NEW%" rmdir /s /q "%TARGETDATA_NEW%"
 copy /y "%RELEASE%\Castle_Quest.asi" "%TARGETASI_NEW%" >nul
 if errorlevel 1 goto :release_bad
 
-copy /y "%RELEASE%\Castle_Quest.ini" "%TARGETINI_NEW%" >nul
+copy /y "%RELEASE%\Castle_Quest.toml" "%TARGETINI_NEW%" >nul
 if errorlevel 1 goto :release_bad
 
 xcopy "%RELEASE%\Castle_Quest" "%TARGETDATA_NEW%\" /E /I /Y /Q >nul
@@ -414,8 +414,8 @@ rem ============================================================================
 if exist "%OBJ%" rmdir /s /q "%OBJ%"
 
 echo [构建] 成功：build\Castle_Quest.asi。  
-echo [构建] 成功：build\Castle_Quest.ini。  
-echo [构建] 成功：build\Castle_Quest\，共 %EXPECTED_DATA_COUNT% 个任务数据文件。  
+echo [构建] 成功：build\Castle_Quest.toml。  
+echo [构建] 成功：build\Castle_Quest 数据目录，共 %EXPECTED_DATA_COUNT% 个任务数据文件。  
 echo [构建] Manifest：Base=%BASE_COUNT% Addon=%ADDON_COUNT% Stage=%STAGE_COUNT%。  
 pause
 exit /b 0

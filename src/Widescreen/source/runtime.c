@@ -2,6 +2,7 @@
 #include "game_addresses.h"
 #include "CastleHook_API.h"
 #include "CastleLog_API.h"
+#include "CastleToml_API.h"
 
 /*
  * runtime.c
@@ -39,6 +40,8 @@ static void** g_sdk_pointer_output;
 static int g_sdk_transaction_building;
 static const CastleLogApiV1* g_runtime_log_api;
 static CastlePluginHandle g_runtime_log_plugin;
+static const CastleTomlApiV1* g_runtime_toml_api;
+static CastleTomlDocumentHandle g_runtime_toml_document;
 
 static SIZE_T text_len(const char* s) {
     SIZE_T n = 0;
@@ -212,24 +215,20 @@ u32 Runtime_ReadPluginIniU32(
     const char* section, const char* key,
     u32 default_value, u32 min_value, u32 max_value)
 {
-    char ini_path[MAX_PATH_];
-    const u32 missing_sentinel = 0x7FFFFFFFu;
-    u32 value;
-
+    CastleS32 value;
+    CastleStringView table_view;
+    CastleStringView key_view;
     if (!section || !key || min_value > max_value) return default_value;
-    if (!g_GetPrivateProfileIntA) return default_value;
-    if (!build_sibling_path("Castle_Widescreen.ini", ini_path, sizeof(ini_path))) return default_value;
-
-    /*
-     * GetPrivateProfileIntA 在“文件不存在 / 节不存在 / 键不存在 / 文本不是合法整数”时返回默认值。
-     * 这里故意传一个远超本插件合法范围的哨兵值，这样能把“缺项”与合法的 0ms（瞬间切换）区分开。
-     */
-    value = g_GetPrivateProfileIntA(section, key, (i32)missing_sentinel, ini_path);
-    if (value == missing_sentinel) return default_value;
-
-    /* 超出文档允许范围时不做截断，而是完整回退默认值，避免一个手误变成十几秒黑屏。 */
-    if (value < min_value || value > max_value) return default_value;
-    return value;
+    if (!g_runtime_toml_api || !g_runtime_toml_document) return default_value;
+    table_view.data = section;
+    table_view.length = (CastleU32)text_len(section);
+    key_view.data = key;
+    key_view.length = (CastleU32)text_len(key);
+    if (g_runtime_toml_api->GetS32(g_runtime_toml_document,
+            table_view, key_view,
+            (CastleS32)default_value, (CastleS32)min_value,
+            (CastleS32)max_value, &value) < 0) return default_value;
+    return (u32)value;
 }
 
 static int call_target_is(u32 call_address, u32 expected_target) {
@@ -647,6 +646,7 @@ int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
     static const char interface_id[] = CASTLE_LOG_INTERFACE_ID;
     CastleInterfaceQueryV1 query = {0};
     CastleInterfaceResultV1 result = {0};
+    CastleStringView config_path;
     if (!runtime_api || !runtime_api->QueryInterface || plugin_handle == 0u) return 0;
     query.magic = CASTLE_QUERY_MAGIC;
     query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
@@ -662,6 +662,18 @@ int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
         !result.api_pointer) return 0;
     g_runtime_log_api = (const CastleLogApiV1*)result.api_pointer;
     g_runtime_log_plugin = plugin_handle;
+    query.interface_id.data = CASTLE_TOML_INTERFACE_ID;
+    query.interface_id.length = (CastleU32)(sizeof(CASTLE_TOML_INTERFACE_ID) - 1u);
+    query.requested_version = CASTLE_TOML_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_TOML_API_V1;
+    result.api_pointer = NULL;
+    if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
+        !result.api_pointer) return 0;
+    g_runtime_toml_api = (const CastleTomlApiV1*)result.api_pointer;
+    config_path.data = "Castle_Widescreen.toml";
+    config_path.length = 22u;
+    (void)g_runtime_toml_api->OpenPluginDocument(plugin_handle,
+        config_path, &g_runtime_toml_document);
     return 1;
 }
 
@@ -721,4 +733,9 @@ void Runtime_Shutdown(void) {
     }
     g_runtime_log_api = NULL;
     g_runtime_log_plugin = 0u;
+    if (g_runtime_toml_api && g_runtime_toml_document) {
+        g_runtime_toml_api->CloseDocument(g_runtime_toml_document);
+    }
+    g_runtime_toml_api = NULL;
+    g_runtime_toml_document = 0u;
 }

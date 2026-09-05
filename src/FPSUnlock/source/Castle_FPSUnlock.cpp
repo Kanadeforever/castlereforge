@@ -72,8 +72,8 @@ typedef unsigned long SIZE_T;
 #include "CastleDisplay_API.h"
 #include "CastleGameState_API.h"
 #include "CastleModule_API.h"
-#include "CastlePath_API.h"
 #include "CastleLog_API.h"
+#include "CastleToml_API.h"
 
 static const BOOL FALSE_VALUE = 0;
 static const BOOL TRUE_VALUE = 1;
@@ -173,7 +173,6 @@ static const DWORD ADDR_IAT_OUTPUT_DEBUG_STRING_A = 0x00460118;
 typedef void (__stdcall* OutputDebugStringAFn)(LPCSTR);
 typedef BOOL (__stdcall* WaitMessageFn)();
 typedef DWORD (__stdcall* MsgWaitForMultipleObjectsExFn)(DWORD, const HANDLE*, DWORD, DWORD, DWORD);
-typedef unsigned int (__stdcall* GetPrivateProfileIntAFn)(LPCSTR, LPCSTR, int, LPCSTR);
 
 typedef void (__thiscall* GameThisVoidFn)(LPVOID);
 typedef void (__cdecl* GameCdeclVoidFn)();
@@ -200,10 +199,8 @@ extern "C" SIZE_T strlen(const char* text) {
 // ----------------------------------------------------------------------------
 
 static HINSTANCE g_module_instance = (HINSTANCE)0;
-static char g_ini_path[260];
 
 static MsgWaitForMultipleObjectsExFn g_msg_wait_for_multiple_objects_ex = (MsgWaitForMultipleObjectsExFn)0;
-static GetPrivateProfileIntAFn g_get_private_profile_int_a = (GetPrivateProfileIntAFn)0;
 static WaitMessageFn g_original_wait_message = (WaitMessageFn)0;
 static GameThisVoidFn g_next_legacy_frame = (GameThisVoidFn)0;
 static GameCdeclVoidFn g_next_pre_draw = (GameCdeclVoidFn)0;
@@ -220,8 +217,9 @@ static const CastleRenderApiV1* g_render_api = (const CastleRenderApiV1*)0;
 static const CastleDisplayApiV1* g_display_api = (const CastleDisplayApiV1*)0;
 static const CastleGameStateApiV1* g_game_state_api = (const CastleGameStateApiV1*)0;
 static const CastleModuleApiV1* g_module_api = (const CastleModuleApiV1*)0;
-static const CastlePathApiV1* g_path_api = (const CastlePathApiV1*)0;
 static const CastleLogApiV1* g_log_api = (const CastleLogApiV1*)0;
+static const CastleTomlApiV1* g_toml_api = (const CastleTomlApiV1*)0;
+static CastleTomlDocumentHandle g_toml_document = 0u;
 static CastleLeaseHandle g_clock_lease = 0;
 static CastleClaimHandle g_legacy_claim = 0;
 static CastleClaimHandle g_pre_draw_claim = 0;
@@ -936,11 +934,10 @@ static const void* QueryRuntimeInterface(const CastleRuntimeApiV1* runtime_api,
 
 static BOOL ResolveApis(const CastleRuntimeApiV1* runtime_api,
                         CastlePluginHandle plugin) {
-    CastleModule kernel32 = 0u;
     CastleModule user32 = 0u;
     CastleAddress address = 0u;
     CastleU32 path_length = 0u;
-    static const char config_name[] = "Castle_FPSUnlock.ini";
+    static const char config_name[] = "Castle_FPSUnlock.toml";
     g_runtime_api = runtime_api;
     g_runtime_plugin = plugin;
     g_hook_api = (const CastleHookApiV1*)QueryRuntimeInterface(runtime_api,
@@ -961,55 +958,54 @@ static BOOL ResolveApis(const CastleRuntimeApiV1* runtime_api,
     g_module_api = (const CastleModuleApiV1*)QueryRuntimeInterface(runtime_api,
         CASTLE_MODULE_INTERFACE_ID, CASTLE_MODULE_API_VERSION_1,
         CASTLE_SIZEOF_MODULE_API_V1, 0u);
-    g_path_api = (const CastlePathApiV1*)QueryRuntimeInterface(runtime_api,
-        CASTLE_PATH_INTERFACE_ID, CASTLE_PATH_API_VERSION_1,
-        CASTLE_SIZEOF_PATH_API_V1, 0u);
     g_log_api = (const CastleLogApiV1*)QueryRuntimeInterface(runtime_api,
         CASTLE_LOG_INTERFACE_ID, CASTLE_LOG_API_VERSION_1,
         CASTLE_SIZEOF_LOG_API_V1, 0u);
+    g_toml_api = (const CastleTomlApiV1*)QueryRuntimeInterface(runtime_api,
+        CASTLE_TOML_INTERFACE_ID, CASTLE_TOML_API_VERSION_1,
+        CASTLE_SIZEOF_TOML_API_V1, 0u);
     if (!g_hook_api || !g_clock_api || !g_render_api || !g_display_api ||
-        !g_game_state_api || !g_module_api || !g_path_api || !g_log_api) {
+        !g_game_state_api || !g_module_api || !g_log_api ||
+        !g_toml_api) {
         return FALSE_VALUE;
     }
-
-    if (g_path_api->BuildPluginRelativePathUtf8(plugin, RuntimeView(config_name),
-            g_ini_path, 260u, &path_length) != CASTLE_OK || path_length == 0u) {
-        return FALSE_VALUE;
+    (void)path_length;
+    if (g_toml_api->OpenPluginDocument(plugin, RuntimeView(config_name),
+            &g_toml_document) < 0) {
+        g_toml_document = 0u;
     }
-    if (g_module_api->LoadSystemModule(plugin, RuntimeView("kernel32.dll"),
-            CASTLE_MODULE_LOAD_PIN, &kernel32) < 0 ||
-        g_module_api->LoadSystemModule(plugin, RuntimeView("user32.dll"),
+    if (g_module_api->LoadSystemModule(plugin, RuntimeView("user32.dll"),
             CASTLE_MODULE_LOAD_PIN, &user32) < 0) return FALSE_VALUE;
-    if (g_module_api->GetProcedure(kernel32, RuntimeView("GetPrivateProfileIntA"),
-            &address) < 0) return FALSE_VALUE;
-    memcpy(&g_get_private_profile_int_a, &address,
-           sizeof(g_get_private_profile_int_a));
     if (g_module_api->GetProcedure(user32,
             RuntimeView("MsgWaitForMultipleObjectsEx"), &address) < 0) {
         return FALSE_VALUE;
     }
     memcpy(&g_msg_wait_for_multiple_objects_ex, &address,
            sizeof(g_msg_wait_for_multiple_objects_ex));
-    return g_get_private_profile_int_a && g_msg_wait_for_multiple_objects_ex ?
-        TRUE_VALUE : FALSE_VALUE;
+    return g_msg_wait_for_multiple_objects_ex ? TRUE_VALUE : FALSE_VALUE;
+}
+
+static LONG ReadTomlInteger(const char* table, const char* key,
+                            LONG default_value, LONG minimum, LONG maximum) {
+    CastleS32 value = default_value;
+    if (!g_toml_api || !g_toml_document) return default_value;
+    if (g_toml_api->GetS32(g_toml_document, RuntimeView(table), RuntimeView(key),
+            default_value, minimum, maximum, &value) < 0) return default_value;
+    return value;
 }
 
 static void ReadConfig() {
-    if (!g_get_private_profile_int_a) return;
-
-    g_config_enable = g_get_private_profile_int_a(
-        "FrameRate", "Enable", 1, g_ini_path) ? TRUE_VALUE : FALSE_VALUE;
-    g_config_log_stats = g_get_private_profile_int_a(
-        "FrameRate", "LogStats", 1, g_ini_path) ? TRUE_VALUE : FALSE_VALUE;
+    g_config_enable = ReadTomlInteger(
+        "FrameRate", "Enable", 1, 0, 1) ? TRUE_VALUE : FALSE_VALUE;
+    g_config_log_stats = ReadTomlInteger(
+        "FrameRate", "LogStats", 1, 0, 1) ? TRUE_VALUE : FALSE_VALUE;
 
     // v1.3 当前正式实现只支持 60。读取这个键主要为了以后扩展时保持 INI 兼容；非法值回60。
-    DWORD fps = g_get_private_profile_int_a("FrameRate", "TargetFPS", 60, g_ini_path);
+    DWORD fps = (DWORD)ReadTomlInteger("FrameRate", "TargetFPS", 60, 60, 60);
     g_config_target_fps = (fps == 60) ? 60 : 60;
 
-    LONG max_step = (LONG)g_get_private_profile_int_a(
-        "Interpolation", "MaxPredictionStep", 96, g_ini_path);
-    if (max_step < 8) max_step = 8;
-    if (max_step > 512) max_step = 512;
+    LONG max_step = ReadTomlInteger(
+        "Interpolation", "MaxPredictionStep", 96, 8, 512);
     g_config_max_prediction_step = max_step;
 }
 
@@ -1183,6 +1179,7 @@ static void CASTLE_RUNTIME_CALL FPSUnlockProcessExit(void* /*user_context*/) {
     MaybeLogStats();
     LogLine("[退出] Castle_FPSUnlock v1.4 随进程结束。");
     if (g_clock_api && g_clock_lease) g_clock_api->ReleaseTimerResolution(g_clock_lease);
+    if (g_toml_api && g_toml_document) g_toml_api->CloseDocument(g_toml_document);
     g_clock_lease = 0u;
     g_timer_resolution_raised = FALSE_VALUE;
 }

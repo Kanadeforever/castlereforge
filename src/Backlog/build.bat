@@ -65,7 +65,7 @@ link /nologo /Brepro /dll /nodefaultlib /machine:x86 /entry:DllMain@12 ^
   kernel32.lib user32.lib /out:"%OUT%\Castle_Backlog.asi"
 if errorlevel 1 goto :fail
 
-copy /y "%ROOT%templete\Castle_Backlog.ini" "%OUT%\Castle_Backlog.ini" >nul || goto :fail
+copy /y "%ROOT%templete\Castle_Backlog.toml" "%OUT%\Castle_Backlog.toml" >nul || goto :fail
 
 del /q "%OUT%\Castle_Backlog.lib" 2>nul
 del /q "%OUT%\Castle_Backlog.exp" 2>nul

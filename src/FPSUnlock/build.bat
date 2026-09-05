@@ -78,9 +78,9 @@ rem Castle_FPSUnlock.asi 和 Castle_FPSUnlock.ini。
 rmdir /s /q "%OBJ_DIR%" 2>nul
 
 rem 将运行时 INI（templete 模板）复制到 ASI 旁边，输出统一到仓库根 build\。  
-copy /y "%ROOT%templete\Castle_FPSUnlock.ini" "%OUT%\Castle_FPSUnlock.ini" >nul || goto :fail
+copy /y "%ROOT%templete\Castle_FPSUnlock.toml" "%OUT%\Castle_FPSUnlock.toml" >nul || goto :fail
 
-echo [成功] build\Castle_FPSUnlock.asi 和 Castle_FPSUnlock.ini 已成功构建。  
+echo [成功] build\Castle_FPSUnlock.asi 和 Castle_FPSUnlock.toml 已成功构建。  
 pause
 exit /b 0
 

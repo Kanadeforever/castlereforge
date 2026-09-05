@@ -53,7 +53,7 @@ set "CFLAGS=/nologo /c /O2 /Oi- /GS- /Zl /W4 /WX /utf-8 /TC --target=i686-pc-win
     /def:"%ROOT%source\Widescreen.def" kernel32.lib ^
     /implib:"%OUT%\Castle_Widescreen.lib" /out:"%TARGET%" || goto :fail
 
-copy /y "%ROOT%templete\Castle_Widescreen.ini" "%ROOT%..\..\build\Castle_Widescreen.ini" >nul || goto :fail
+copy /y "%ROOT%templete\Castle_Widescreen.toml" "%ROOT%..\..\build\Castle_Widescreen.toml" >nul || goto :fail
 
 if exist "%OUT%" rmdir /s /q "%OUT%"
 echo [构建] 完成： %TARGET%  

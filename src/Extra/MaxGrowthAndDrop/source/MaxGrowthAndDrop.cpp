@@ -3,6 +3,7 @@
 #include "CastleRuntime_Client.h"
 #include "CastleHook_API.h"
 #include "CastlePath_API.h"
+#include "CastleToml_API.h"
 
 // ============================================================================
 // MaxGrowthAndDrop.asi
@@ -274,20 +275,19 @@ CastleResult InitializeStandalone() {
 CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
                                   CastlePluginHandle pluginHandle) {
     static const char hookId[] = CASTLE_HOOK_INTERFACE_ID;
-    static const char pathId[] = CASTLE_PATH_INTERFACE_ID;
+    static const char tomlId[] = CASTLE_TOML_INTERFACE_ID;
     static const char growthLabel[] = "MaxGrowth transaction";
     static const char dropLabel[] = "MaxDrop transaction";
     CastleRuntimeInfoV1 runtimeInfo{};
-    wchar_t iniPath[1024]{};
-    CastleU32 iniLength = 0u;
+    CastleTomlDocumentHandle document = 0u;
     bool enableGrowth;
     bool enableDrop;
     const auto* hookApi = static_cast<const CastleHookApiV1*>(QueryInterface(runtimeApi,
         hookId, static_cast<CastleU32>(sizeof(hookId) - 1u),
         CASTLE_HOOK_API_VERSION_1, CASTLE_SIZEOF_HOOK_API_V1));
-    const auto* pathApi = static_cast<const CastlePathApiV1*>(QueryInterface(runtimeApi,
-        pathId, static_cast<CastleU32>(sizeof(pathId) - 1u),
-        CASTLE_PATH_API_VERSION_1, CASTLE_SIZEOF_PATH_API_V1));
+    const auto* tomlApi = static_cast<const CastleTomlApiV1*>(QueryInterface(runtimeApi,
+        tomlId, static_cast<CastleU32>(sizeof(tomlId) - 1u),
+        CASTLE_TOML_API_VERSION_1, CASTLE_SIZEOF_TOML_API_V1));
     if (!ycrlog::BindRuntime(runtimeApi, pluginHandle)) {
         return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     }
@@ -295,18 +295,25 @@ CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
     runtimeInfo.magic = CASTLE_RUNTIME_INFO_MAGIC;
     runtimeInfo.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
     runtimeInfo.info_version = CASTLE_RUNTIME_INFO_VERSION_1;
-    CastleWideStringView relativeIni{};
-    relativeIni.data = reinterpret_cast<const CastleU16*>(kIniFileName);
-    relativeIni.length = static_cast<CastleU32>(ycr::WideLength(kIniFileName));
-    if (!hookApi || !pathApi || runtimeApi->GetRuntimeInfo(&runtimeInfo) != CASTLE_OK ||
-        pathApi->BuildPluginRelativePathWide(pluginHandle, relativeIni,
-            reinterpret_cast<CastleU16*>(iniPath), 1024u, &iniLength) != CASTLE_OK) {
-        ycrlog::Line("[失败] Runtime Hook/Path 不可用；未回退到私有游戏写入。");
+    if (!hookApi || !tomlApi || runtimeApi->GetRuntimeInfo(&runtimeInfo) != CASTLE_OK) {
+        ycrlog::Line("[失败] Runtime Hook/TOML 不可用；未回退到私有游戏写入。");
         return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     }
-    CreateDefaultIniIfMissing(iniPath);
-    enableGrowth = ReadSwitch(iniPath, kGrowthKey);
-    enableDrop = ReadSwitch(iniPath, kDropKey);
+    {
+        CastleStringView path{"MaxGrowthAndDrop.toml", 21u};
+        CastleStringView table{"MaxGrowthAndDrop", 16u};
+        CastleS32 growth = 1;
+        CastleS32 drop = 1;
+        if (tomlApi->OpenPluginDocument(pluginHandle, path, &document) >= 0) {
+            (void)tomlApi->GetS32(document, table,
+                CastleStringView{"MaxGrowth", 9u}, 1, 0, 1, &growth);
+            (void)tomlApi->GetS32(document, table,
+                CastleStringView{"MaxDrop", 7u}, 1, 0, 1, &drop);
+            tomlApi->CloseDocument(document);
+        }
+        enableGrowth = growth != 0;
+        enableDrop = drop != 0;
+    }
     LogConfiguration(enableGrowth, enableDrop);
 
     const CastleResult growthResult = ApplyRuntimePatchSet(hookApi,

@@ -41,6 +41,8 @@ static HANDLE g_log = INVALID_HANDLE_VALUE_;
 static const CastleLogApiV1* g_runtime_log_api;
 static CastlePluginHandle g_runtime_log_plugin;
 static const CastleModuleApiV1* g_runtime_module_api;
+static const CastleTomlApiV1* g_runtime_toml_api;
+static CastleTomlDocumentHandle g_runtime_toml_document;
 static u32 g_tick;
 
 /*
@@ -197,13 +199,19 @@ int Runtime_BuildSiblingPath(const char* leaf, char* out, SIZE_T cap) {
 
 /* 读取一个 INI 整数并强制夹在已验证安全范围，防止错误配置产生极端计时/阈值。 */
 static int rt_cfg_int(const char* section, const char* key, int defv, int minv, int maxv) {
-    char path[MAX_PATH_];
-    int v;
-    if (!g_api.get_private_profile_int_a || !Runtime_BuildSiblingPath("Castle_PadSupport.ini", path, MAX_PATH_)) return defv;
-    v = (int)g_api.get_private_profile_int_a(section, key, defv, path);
-    if (v < minv) v = minv;
-    if (v > maxv) v = maxv;
-    return v;
+    CastleS32 value = (CastleS32)defv;
+    CastleStringView table;
+    CastleStringView name;
+    if (!g_runtime_toml_api || !g_runtime_toml_document) return defv;
+    table.data = section;
+    table.length = (CastleU32)rt_strlen(section);
+    name.data = key;
+    name.length = (CastleU32)rt_strlen(key);
+    if (g_runtime_toml_api->GetS32(g_runtime_toml_document, table, name,
+            (CastleS32)defv, (CastleS32)minv, (CastleS32)maxv, &value) < 0) {
+        return defv;
+    }
+    return (int)value;
 }
 
 static void rt_load_config(void) {
@@ -1767,6 +1775,21 @@ int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
     if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
         !result.api_pointer) return 0;
     g_runtime_module_api = (const CastleModuleApiV1*)result.api_pointer;
+    query.interface_id.data = CASTLE_TOML_INTERFACE_ID;
+    query.interface_id.length = (CastleU32)(sizeof(CASTLE_TOML_INTERFACE_ID) - 1u);
+    query.requested_version = CASTLE_TOML_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_TOML_API_V1;
+    result.api_pointer = NULL;
+    if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
+        !result.api_pointer) return 0;
+    g_runtime_toml_api = (const CastleTomlApiV1*)result.api_pointer;
+    {
+        CastleStringView config_path;
+        config_path.data = "Castle_PadSupport.toml";
+        config_path.length = 22u;
+        (void)g_runtime_toml_api->OpenPluginDocument(plugin_handle,
+            config_path, &g_runtime_toml_document);
+    }
     return 1;
 }
 
@@ -1831,6 +1854,11 @@ int Runtime_Initialize(HMODULE self_module) {
 }
 
 void Runtime_Shutdown(void) {
+    if (g_runtime_toml_api && g_runtime_toml_document) {
+        g_runtime_toml_api->CloseDocument(g_runtime_toml_document);
+    }
+    g_runtime_toml_document = 0u;
+    g_runtime_toml_api = NULL;
     if (g_log != INVALID_HANDLE_VALUE_ && g_api.close_handle) {
         Runtime_Log("[退出] ASI 正在卸载，关闭日志。");
         g_api.close_handle(g_log);

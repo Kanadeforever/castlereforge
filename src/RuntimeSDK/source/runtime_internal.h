@@ -25,6 +25,7 @@
 #include "../include/CastleOverlay_API.h"
 #include "../include/CastleFile_API.h"
 #include "../include/CastleModule_API.h"
+#include "../include/CastleToml_API.h"
 
 #define RUNTIME_MAX_PLUGINS       128u
 #define RUNTIME_PLUGIN_ID_CAP     128u
@@ -147,6 +148,10 @@ const CastleFileApiV1* Runtime_GetFileApiV1(void);
 /* 插件相对依赖与固定系统模块的统一加载、导出查询和驻留所有权。 */
 void Runtime_ModuleInitialize(void);
 const CastleModuleApiV1* Runtime_GetModuleApiV1(void);
+
+/* 插件 TOML 配置文档句柄和严格标量读取。 */
+void Runtime_TomlInitialize(void);
+const CastleTomlApiV1* Runtime_GetTomlApiV1(void);
 
 /* 诊断环。 */
 int Runtime_LogInitialize(void);

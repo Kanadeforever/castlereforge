@@ -2,6 +2,7 @@
 #include "game_addresses.h"
 #include "CastlePath_API.h"
 #include "CastleLog_API.h"
+#include "CastleToml_API.h"
 
 /*
  * runtime.c
@@ -23,6 +24,8 @@ static char g_plugin_path[MAX_PATH];
 static HANDLE g_log_file = INVALID_HANDLE_VALUE;
 static const CastleLogApiV1* g_runtime_log_api;
 static CastlePluginHandle g_runtime_log_plugin;
+static const CastleTomlApiV1* g_runtime_toml_api;
+static CastleTomlDocumentHandle g_runtime_toml_document;
 
 /* 用最普通的循环计算 NUL 结尾字符串长度，避免链接 C 运行库 strlen。 */
 static u32 runtime_text_length(const char* text) {
@@ -185,43 +188,42 @@ void Runtime_Log(const char* text) {
  */
 void Runtime_ReadIniText(const char* section, const char* key, const char* fallback,
                          char* output, u32 output_size) {
-    char ini_path[MAX_PATH];
+    CastleStringView table;
+    CastleStringView name;
+    CastleStringView default_value;
+    CastleU32 length = 0u;
     if (!output || output_size == 0u) return;
     output[0] = '\0';
-    if (!Runtime_BuildSiblingPath("Castle_Backlog.ini", ini_path, MAX_PATH)) {
+    if (!g_runtime_toml_api || !g_runtime_toml_document) {
         runtime_copy_text(output, output_size, fallback);
         return;
     }
-    GetPrivateProfileStringA(section, key, fallback, output, (DWORD)output_size, ini_path);
+    table.data = section;
+    table.length = runtime_text_length(section);
+    name.data = key;
+    name.length = runtime_text_length(key);
+    default_value.data = fallback;
+    default_value.length = runtime_text_length(fallback);
+    if (g_runtime_toml_api->GetString(g_runtime_toml_document, table, name,
+            default_value, output, output_size, &length) < 0) {
+        runtime_copy_text(output, output_size, fallback);
+    }
     output[output_size - 1u] = '\0';
 }
 
 /* 读取整数配置，解析失败时写日志并回到默认值，绝不把坏字符串直接带进业务层。 */
 static u32 runtime_read_ini_u32(const char* section, const char* key, u32 fallback) {
-    char text[64];
-    char fallback_text[16];
-    u32 value;
-    u32 divisor = 1000000000u;
-    u32 index = 0u;
-    int started = 0;
-
-    /* 手工把 fallback 写成十进制字符串，避免 sprintf。 */
-    while (divisor != 0u) {
-        u32 digit = (fallback / divisor) % 10u;
-        if (digit != 0u || started || divisor == 1u) {
-            fallback_text[index++] = (char)('0' + digit);
-            started = 1;
-        }
-        divisor /= 10u;
-    }
-    fallback_text[index] = '\0';
-
-    Runtime_ReadIniText(section, key, fallback_text, text, (u32)sizeof(text));
-    if (!Runtime_ParseU32(text, &value)) {
-        Runtime_Log("[配置] 发现无法解析的整数，已回退该项默认值。");
-        return fallback;
-    }
-    return value;
+    CastleS32 value = (CastleS32)fallback;
+    CastleStringView table;
+    CastleStringView name;
+    if (!g_runtime_toml_api || !g_runtime_toml_document) return fallback;
+    table.data = section;
+    table.length = runtime_text_length(section);
+    name.data = key;
+    name.length = runtime_text_length(key);
+    if (g_runtime_toml_api->GetS32(g_runtime_toml_document, table, name,
+            (CastleS32)fallback, 0, 0x7FFFFFFF, &value) < 0) return fallback;
+    return (u32)value;
 }
 
 /* 把配置限制在 min_value..max_value，防止极端数值造成大循环或超出静态历史容量。 */
@@ -704,5 +706,20 @@ int Runtime_InitializeIntegrated(HMODULE plugin_module,
         !result.api_pointer) return 0;
     g_runtime_log_api = (const CastleLogApiV1*)result.api_pointer;
     g_runtime_log_plugin = plugin_handle;
+    query.interface_id.data = CASTLE_TOML_INTERFACE_ID;
+    query.interface_id.length = (CastleU32)(sizeof(CASTLE_TOML_INTERFACE_ID) - 1u);
+    query.requested_version = CASTLE_TOML_API_VERSION_1;
+    query.minimum_struct_size = CASTLE_SIZEOF_TOML_API_V1;
+    result.api_pointer = NULL;
+    if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
+        !result.api_pointer) return 0;
+    g_runtime_toml_api = (const CastleTomlApiV1*)result.api_pointer;
+    {
+        CastleStringView config_path;
+        config_path.data = "Castle_Backlog.toml";
+        config_path.length = 19u;
+        (void)g_runtime_toml_api->OpenPluginDocument(plugin_handle,
+            config_path, &g_runtime_toml_document);
+    }
     return runtime_finish_initialize(1);
 }

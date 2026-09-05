@@ -458,6 +458,7 @@ def check_release_artifacts(ctx: CheckContext, project_root: Path, required: boo
         "BUGFix.asi": ["CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
         "NoCD.asi": ["CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
         "MaxGrowthAndDrop.asi": ["CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
+        "Castle_Quest.asi": ["CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady", "InitializeASI"],
     }
 
     for name, expected in expected_exports.items():
@@ -489,6 +490,27 @@ def check_release_artifacts(ctx: CheckContext, project_root: Path, required: boo
     )
     for path in packaged_docs:
         ctx.check(path.is_file(), f"SaveEnhance随包说明存在：{path.name}")
+
+    # 正式发行的配置必须和源码迁移后的单一 TOML 入口完全一致。
+    # 这里既检查新文件存在，也拒绝旧 INI 残留，防止用户改错文件却以为配置没有生效。
+    expected_toml = (
+        "Castle_Backlog.toml",
+        "Castle_PadSupport.toml",
+        "Castle_SaveEnhance.toml",
+        "Castle_Widescreen.toml",
+        "MaxGrowthAndDrop.toml",
+        "Castle_Quest.toml",
+    )
+    for name in expected_toml:
+        ctx.check((asi_root / name).is_file(), f"发行TOML配置存在：{name}")
+        old_ini = asi_root / f"{Path(name).stem}.ini"
+        ctx.check(not old_ini.exists(), f"发行目录无旧INI残留：{old_ini.name}")
+
+    quest_data = asi_root / "Castle_Quest"
+    ctx.check((quest_data / "manifest.toml").is_file(),
+              "Quest发行数据库存在：Castle_Quest/manifest.toml")
+    logs_root = release_root / "mods" / "logs"
+    ctx.check(logs_root.is_dir(), "统一空日志目录存在：build/mods/logs")
 
     garbage_suffixes = {".obj", ".lib", ".exp", ".ilk", ".pdb"}
     garbage = sorted(

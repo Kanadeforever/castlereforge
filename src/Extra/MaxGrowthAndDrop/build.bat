@@ -56,6 +56,8 @@ link.exe %LFLAGS% /DEF:"%SRC_DIR%\MaxGrowthAndDrop.def" /IMPLIB:"%OBJ_DIR%\MaxGr
 if errorlevel 1 goto :fail
 call :check_pe "%OUT_DIR%\MaxGrowthAndDrop.asi"
 if errorlevel 1 goto :fail
+copy /y "%SCRIPT_DIR%templete\MaxGrowthAndDrop.toml" "%OUT_DIR%\MaxGrowthAndDrop.toml" >nul
+if errorlevel 1 goto :fail
 
 rmdir /s /q "%OBJ_DIR%" 2>nul
 echo.

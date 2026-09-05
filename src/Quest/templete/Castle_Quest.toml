@@ -1,0 +1,124 @@
+# 《幽城幻剑录》任务系统 ASI v0.1-dev6zd
+# 文件编码：标准 UTF-8 TOML；建议使用 CRLF 换行。
+# 本配置由同目录 Castle_Runtime.dll 的 TOML v1 服务统一读取。
+#
+# 当前运行时结构：
+# 1. mods\asi 根目录放 Castle_Runtime.dll、Castle_Quest.asi 与 Castle_Quest.toml；
+# 2. 额外任务数据统一放入 mods\asi\Castle_Quest\；
+# 3. 数据目录固定为 manifest.toml + 25 份 Q*.toml + 25 份同名 Q*_addon.toml，
+#    共 51 个 TOML、0 个子目录，运行时不存在 routes.toml；
+# 4. Q*.toml 保存原版任务链；Marker、文案修正和人工插入步骤优先写同名 _addon.toml；
+# 5. 当前详细原始层为 25 Quest / 146 Canonical Stage / 556 Stage-local Route；
+# 6. [[warning]] 与旧 Guidance 运行机制均已废止，人工体验步骤只允许由 Addon [[insert]] 提供；
+# 7. [[override]] 只覆盖明确填写的字段；[[insert]] 用 after+before 锚定原始相邻 Stage；
+# 8. 人工插入步骤只观察指定 Event 是否真实执行，不写 GameVar，也不阻断原版剧情；
+# 9. Ctrl+F8 成功热重载会保留本进程已完成的 Addon Stage 稳定键，不会因改文案重新触发；
+# 10. 自动 TOUCH_EA 只有当前 RuntimeEntity 存在且 TouchBox 有效时才显示；
+# 11. 自动 MANUAL_EB/NPC 只有当前 RuntimeEntity 存在时才显示，NPC 移动时 Marker 跟随；
+# 12. 不存在 FrozenRouteWorld 自动离线回退，离线坐标只作研究和诊断证据；
+# 13. 明确人工 manual_world 仍为最高优先级并允许独立存在；
+# 14. 世界 Marker 通过 Runtime Display.WorldToScreen 投影，不复制宽屏 CameraPlan；
+# 15. Longinus 仍有三段跨场景导航标记为 unresolved，禁止在缺少证据时猜造 Route。
+#
+# 注意：MarkerYOffset 只负责视觉偏移，不是世界地图坐标修复。
+# 世界地图入口与普通地点都遵守“当前真实原版事件”规则，禁止按单张截图写固定场景偏移。
+
+[General]
+# 任务系统总开关。false 时插件仍登记到 Runtime，但不启用任务业务。
+Enable = true
+
+# 是否显示投影到世界画面的任务 Marker。
+WorldMarkers = true
+
+# 是否显示左侧常驻轻量任务区域。
+QuestHud = true
+
+# 启动时是否打开完整任务记录面板；false 表示启动时不占据画面。
+QuestPanelInitiallyOpen = false
+
+# 快捷键总表：所有功能键都必须配合 Ctrl，单独按 F6～F11 不执行 Quest 功能。
+# Ctrl+F6  = 隐藏/显示左侧常驻轻量任务区域；
+# Ctrl+F7  = 打开/关闭完整任务记录面板；
+# Ctrl+F8  = 事务式热重载本配置与 25 组 Base+Addon 数据；
+# Ctrl+F9  = 隐藏/显示顶部诊断窗口；
+# Ctrl+F10 = 隐藏/显示世界 Marker；
+# Ctrl+F11 = 隐藏/显示场景对象调试框。
+
+[Overlay]
+# true = 使用 Lock/Unlock 软件像素后端。
+# false = 完全不绘制 Quest Overlay，但任务读取、日志和热键仍然运行，便于 A/B 排查。
+# Overlay 的 Present 时序由 Runtime 统一拥有，Quest 不再安装自己的 Present Hook。
+SoftwareBackend = true
+
+[Visual]
+# 中文文字只在独立内存 DIB 中用本字体栅格化，再复制到锁定的 DirectDraw 像素。
+# Quest 不会对游戏 Surface 调用 GetDC。
+FontName = "Microsoft JhengHei UI"
+FontSize = 14
+MarkerSize = 14
+
+# 任务 Tracker 固定在屏幕 9 点方向，贴左边缘并按总高度围绕 Y 轴中点展开。
+# MaxWidth 是换行最大像素宽度，实际还会受当前 Surface 一半宽度限制。
+QuestHudMaxWidth = 440
+QuestHudMarginLeft = 12
+
+# 两种纵向间距都以像素为单位，支持 Ctrl+F8 热重载。
+# QuestItemSpacing：一个任务块结束到下一个任务标题之间的额外距离；
+# QuestObjectiveSpacing：同一任务标题到第一行任务说明之间的额外距离。
+# 两项有效范围 0～64，超出时自动夹到安全范围。
+QuestItemSpacing = 0
+QuestObjectiveSpacing = 0
+
+# player_notes 使用青色显示。下面两项只调任务注释的纵向留白。
+# QuestNoteSpacing：objective 正文结束到第一条任务注释之间的额外像素，范围 0～64；
+# QuestNoteLineSpacing：任务注释各行之间的额外像素，范围 0～32。
+QuestNoteSpacing = 3
+QuestNoteLineSpacing = 2
+
+# 实体 Marker 锚点 A/B 开关：
+# WorldCamera = 采用 Runtime 发布的世界坐标和 Display 投影（正式默认）；
+# ControllerCamera = 旧 SF2 controller 根坐标算法，只用于回退和诊断对照。
+# Route Exit 成功读取 TouchBox 时会优先使用原版 Section 0 触发矩形中心。
+# 填写未知字符串时插件会记录警告并回退到 WorldCamera。
+EntityProjection = "WorldCamera"
+
+# 下面三项只做最终屏幕像素偏移，不可用来补偿某张地图的坐标错误。
+MarkerYOffset = -34
+MarkerOffsetX = 0
+MarkerOffsetY = 0
+
+[MarkerColor]
+# Marker 与任务清单图标的 RGB 配色。
+# 字符串格式固定为 "R,G,B"，三个十进制值都必须在 0～255；Ctrl+F8 后生效。
+# 本节只改变图标和 Marker，不改变任务名称文字颜色。
+
+# 主线：世界 Marker 使用菱形加感叹号；任务清单左侧使用五角星。
+Main = "255,205,70"
+
+# 普通不限时支线：世界 Marker 与任务清单均使用菱形加感叹号。
+Side = "80,220,220"
+
+# 限时或易错过支线：两处都使用固定像素沙漏。
+Timed = "255,150,60"
+
+# 同时限时且结局相关的支线：仍使用沙漏，但采用较柔和的暖红色。
+EndingTimed = "190,75,75"
+
+[Debug]
+# 是否在启动时显示顶部诊断窗口。正式发行可改为 false；Ctrl+F9 仍可临时切换。
+ShowDiagnosticWindow = true
+
+# 是否默认显示全场景对象调试框。对象来自 Runtime GamePhase 发布的探索管理器，
+# 不是已经证伪的 0x89F7F0 五角色槽。Ctrl+F11 可在当前会话中临时打开。
+ShowRuntimeEntities = false
+ShowAllInteractiveEntities = false
+
+# true = 比较每帧 5000 个 GameVar，只在变化时写日志。
+# 16 项以内完整记录；17～64 项记录前 16 项和摘要；更多时输出重点变量摘要。
+# 全程只读，不 Hook EVE，也不写 GameVar。
+LogGameVarChanges = true
+
+# 纯世界测试点只作为人工验证工具；正式任务优先绑定真实 Event/Entity/触发区域。
+TestWorldMarker = false
+WorldX = 0
+WorldY = 0

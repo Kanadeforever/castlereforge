@@ -5,6 +5,7 @@
 #include "CastleRuntime_API.h"
 #include "CastleLog_API.h"
 #include "CastleModule_API.h"
+#include "CastleToml_API.h"
 
 /*
  * runtime.h

@@ -1,0 +1,21 @@
+# Castle_FPSUnlock v1.4 实验版配置
+# 本文件是标准 UTF-8 TOML，由同目录 Castle_Runtime.dll 的 TOML v1 服务统一读取。
+# FPSUnlock 尚未完成，不进入 build_all 正式发行链；单独构建和测试时仍必须携带 Runtime。
+
+[FrameRate]
+# 1 = 启用 FPSUnlock；0 = ASI 仍登记到 Runtime，但不安装任何游戏 Hook。
+Enable = 1
+
+# 当前实验实现固定为 60。
+# 原版逻辑仍约 20Hz；普通地图只从混合 Draw Queue 中抽取 world 层绘制额外画面。
+TargetFPS = 60
+
+# 1 = 每约 10 秒写一次统计，方便确认当前场景是否得到额外世界帧；
+# 0 = 只写启动、保护和退出等关键日志。
+LogStats = 1
+
+[Interpolation]
+# 单个真实 20Hz Tick 允许用于速度预测的最大像素位移。
+# 超过本值通常意味着传送、切图或剧情强制跳位，该轴会停止预测并直接采用真实位置。
+# 合法范围 8～512，默认 96。
+MaxPredictionStep = 96

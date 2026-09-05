@@ -14,7 +14,7 @@ set "SDK=%ROOT%..\RuntimeSDK"
 set "OUT=%ROOT%..\..\build"
 set "OBJ=%ROOT%_build"
 set "TOOLS_CACHE=%ROOT%tools\__pycache__"
-set "TEMPLATE_INI=%ROOT%templete\Castle_SaveEnhance.ini"
+set "TEMPLATE_INI=%ROOT%templete\Castle_SaveEnhance.toml"
 
 set "POWERSHELL_EXE=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
 
@@ -81,7 +81,7 @@ if not exist "%POWERSHELL_EXE%" (
 
 if not exist "%TEMPLATE_INI%" (
     echo [错误] 找不到：  
-    echo        templete\Castle_SaveEnhance.ini 
+    echo        templete\Castle_SaveEnhance.toml 
     goto :fail
 )
 
@@ -113,7 +113,7 @@ if errorlevel 1 (
 )
 
 del /q "%OUT%\Castle_SaveEnhance.asi" 2>nul
-del /q "%OUT%\Castle_SaveEnhance.ini" 2>nul
+del /q "%OUT%\Castle_SaveEnhance.toml" 2>nul
 
 rem ============================================================ 
 rem 编译  
@@ -213,9 +213,9 @@ rem ============================================================
 rem 复制配置  
 rem ============================================================ 
 
-echo [4/4] 复制 Castle_SaveEnhance.ini...  
+echo [4/4] 复制 Castle_SaveEnhance.toml...  
 
-copy /y "%TEMPLATE_INI%" "%OUT%\Castle_SaveEnhance.ini" >nul
+copy /y "%TEMPLATE_INI%" "%OUT%\Castle_SaveEnhance.toml" >nul
 if errorlevel 1 (
     echo [错误] 复制 INI 失败。  
     goto :fail
@@ -231,7 +231,7 @@ if exist "%TOOLS_CACHE%" rmdir /s /q "%TOOLS_CACHE%"
 echo.
 echo [成功] 已生成：  
 echo   build\Castle_SaveEnhance.asi 
-echo   build\Castle_SaveEnhance.ini 
+echo   build\Castle_SaveEnhance.toml 
 echo.
 echo [验证] PE32 / i386  
 echo [验证] DLL 标志存在  
@@ -246,7 +246,7 @@ exit /b 0
 :fail
 
 del /q "%OUT%\Castle_SaveEnhance.asi" 2>nul
-del /q "%OUT%\Castle_SaveEnhance.ini" 2>nul
+del /q "%OUT%\Castle_SaveEnhance.toml" 2>nul
 
 if exist "%OBJ%" rmdir /s /q "%OBJ%"
 if exist "%TOOLS_CACHE%" rmdir /s /q "%TOOLS_CACHE%"

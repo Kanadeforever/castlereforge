@@ -26,6 +26,7 @@
 #include "CastleOverlay_API.h"
 #include "CastleFile_API.h"
 #include "CastleModule_API.h"
+#include "CastleToml_API.h"
 
 /* 使用唯一 typedef 名制造编译期断言，不需要 C11 _Static_assert 或 C++ static_assert。 */
 #define CASTLE_ABI_ASSERT(name, expression) \
@@ -333,6 +334,10 @@ CASTLE_ABI_ASSERT(module_state_owner_offset,
     offsetof(CastleModuleStateV1, first_owner) == 20u);
 CASTLE_ABI_ASSERT(module_api_get_proc_offset,
     offsetof(CastleModuleApiV1, GetProcedure) == 24u);
+CASTLE_ABI_ASSERT(toml_api_size,
+    sizeof(CastleTomlApiV1) == CASTLE_SIZEOF_TOML_API_V1);
+CASTLE_ABI_ASSERT(toml_api_string_offset,
+    offsetof(CastleTomlApiV1, GetString) == 32u);
 
 /*
  * 生成一个外部函数，防止极端编译器把整个测试翻译单元当成“完全空文件”特殊处理。

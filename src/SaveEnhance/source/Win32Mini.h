@@ -116,6 +116,8 @@ DWORD WINAPI GetModuleFileNameW(HMODULE module, LPWSTR filename, DWORD size);
 FARPROC WINAPI GetProcAddress(HMODULE module, LPCSTR procName);
 HMODULE WINAPI LoadLibraryW(LPCWSTR filename);
 BOOL WINAPI FreeLibrary(HMODULE module);
+int WINAPI MultiByteToWideChar(UINT codePage, DWORD flags, LPCSTR source,
+                               int sourceLength, LPWSTR output, int outputLength);
 
 // ---- INI --------------------------------------------------------------------
 UINT WINAPI GetPrivateProfileIntW(LPCWSTR section, LPCWSTR key, int defaultValue, LPCWSTR filename);
