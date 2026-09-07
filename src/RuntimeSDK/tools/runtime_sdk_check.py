@@ -75,6 +75,15 @@ def check_required_files(ctx: CheckContext, sdk_root: Path) -> dict[str, str]:
         "include/CastleSchedule_API.h",
         "include/CastleWindow_API.h",
         "include/CastleRender_API.h",
+        "include/CastleLog_API.h",
+        "include/CastleClock_API.h",
+        "include/CastleInput_API.h",
+        "include/CastleGameState_API.h",
+        "include/CastleSave_API.h",
+        "include/CastleOverlay_API.h",
+        "include/CastleFile_API.h",
+        "include/CastleModule_API.h",
+        "include/CastleToml_API.h",
         "source/CastleRuntime.def",
         "tests/abi_layout_test.c",
         "tests/runtime_host_test.c",
@@ -84,6 +93,15 @@ def check_required_files(ctx: CheckContext, sdk_root: Path) -> dict[str, str]:
         "tests/bootstrap_plugin_test.c",
         "source/runtime_schedule.c",
         "source/runtime_bootstrap.c",
+        "source/runtime_log.c",
+        "source/runtime_clock.c",
+        "source/runtime_input.c",
+        "source/runtime_game_state.c",
+        "source/runtime_save.c",
+        "source/runtime_overlay.c",
+        "source/runtime_file.c",
+        "source/runtime_module.c",
+        "source/runtime_toml.c",
         "client/client_internal.h",
         "client/runtime_client.c",
         "client/runtime_entry_gate.c",
@@ -173,6 +191,71 @@ def check_tokens(ctx: CheckContext, loaded: dict[str, str]) -> None:
             "RegisterRenderProvider",
             "GetRenderProviderState",
         ),
+        "include/CastleLog_API.h": (
+            'CASTLE_LOG_INTERFACE_ID "org.castlereforge.runtime.log"',
+            "CASTLE_SIZEOF_LOG_RECORD_V1 24u",
+            "CASTLE_SIZEOF_LOG_API_V1    36u",
+            "WritePluginLine",
+            "WritePluginText",
+            "GetLogDirectoryUtf8",
+        ),
+        "include/CastleClock_API.h": (
+            'CASTLE_CLOCK_INTERFACE_ID "org.castlereforge.runtime.clock"',
+            "CASTLE_SIZEOF_CLOCK_STATE_V1 32u",
+            "CASTLE_SIZEOF_CLOCK_API_V1   32u",
+            "AcquireTimerResolution",
+            "ReleaseTimerResolution",
+        ),
+        "include/CastleInput_API.h": (
+            'CASTLE_INPUT_INTERFACE_ID "org.castlereforge.game.input"',
+            "CASTLE_SIZEOF_INPUT_SNAPSHOT_V1 88u",
+            "CASTLE_SIZEOF_INPUT_API_V1 40u",
+            "RegisterInputProvider",
+            "AcquireFocus",
+        ),
+        "include/CastleGameState_API.h": (
+            'CASTLE_GAME_STATE_INTERFACE_ID "org.castlereforge.game.state"',
+            "CASTLE_SIZEOF_GAME_STATE_SNAPSHOT_V1 152u",
+            "CASTLE_SIZEOF_GAME_STATE_API_V1 32u",
+            "AcquireMutation",
+            "GetMutationState",
+        ),
+        "include/CastleSave_API.h": (
+            'CASTLE_SAVE_INTERFACE_ID "org.castlereforge.game.save"',
+            "CASTLE_SIZEOF_MANUAL_SAVE_POLICY_V1 36u",
+            "CASTLE_SIZEOF_SAVE_API_V1           32u",
+            "RegisterManualSavePolicy",
+            "IsManualSaveAllowed",
+        ),
+        "include/CastleOverlay_API.h": (
+            'CASTLE_OVERLAY_INTERFACE_ID "org.castlereforge.game.overlay"',
+            "CASTLE_SIZEOF_OVERLAY_CLIENT_V1  40u",
+            "CASTLE_SIZEOF_OVERLAY_API_V1     32u",
+            "RegisterOverlay",
+            "SetOverlayReady",
+        ),
+        "include/CastleFile_API.h": (
+            'CASTLE_FILE_INTERFACE_ID "org.castlereforge.runtime.file"',
+            "CASTLE_SIZEOF_FILE_BUFFER_V1 32u",
+            "CASTLE_SIZEOF_FILE_API_V1    36u",
+            "ReadPluginFile",
+            "WritePluginFileAtomic",
+        ),
+        "include/CastleModule_API.h": (
+            'CASTLE_MODULE_INTERFACE_ID "org.castlereforge.runtime.module"',
+            "CASTLE_SIZEOF_MODULE_STATE_V1 32u",
+            "CASTLE_SIZEOF_MODULE_API_V1   36u",
+            "LoadPluginDependency",
+            "LoadSystemModule",
+        ),
+        "include/CastleToml_API.h": (
+            'CASTLE_TOML_INTERFACE_ID "org.castlereforge.runtime.toml"',
+            "CASTLE_SIZEOF_TOML_API_V1 36u",
+            "OpenPluginDocument",
+            "GetBool",
+            "GetS32",
+            "GetString",
+        ),
         "build.bat": (
             "runtime_crt_support.obj",
             "client\\runtime_client_support.c",
@@ -198,6 +281,8 @@ def check_tokens(ctx: CheckContext, loaded: dict[str, str]) -> None:
         "tests/client_bootstrap_test.c": (
             "observed_error_mode != SEM_NOGPFAULTERRORBOX",
             "entry[index] != original[index]",
+            "CASTLE_CLIENT_FLAG_REQUIRE_RUNTIME",
+            "CASTLE_ERROR_RUNTIME_REQUIRED",
         ),
         "source/runtime_schedule.c": (
             "g_schedule_callbacks_allowed",
@@ -208,6 +293,20 @@ def check_tokens(ctx: CheckContext, loaded: dict[str, str]) -> None:
         ),
         "source/runtime_bootstrap.c": (
             "Runtime_ScheduleOpenBootstrapGate();",
+        ),
+        "source/runtime_log.c": (
+            "Castle_Runtime.log",
+            "log_write_plugin_text_",
+            "FlushFileBuffers",
+        ),
+        "source/runtime_file.c": (
+            "MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH",
+            "RUNTIME_FILE_MAX_BYTES",
+        ),
+        "source/runtime_toml.c": (
+            "toml_utf8_valid_",
+            "toml_document_valid_",
+            "Runtime_GetFileApiV1",
         ),
         "tests/bootstrap_plugin_test.c": (
             "Bootstrap gate schedule probe",
@@ -485,7 +584,7 @@ def check_release_artifacts(ctx: CheckContext, project_root: Path, required: boo
             ctx.check(False, f"发行PE解析成功：{name} :: {error}")
 
     packaged_docs = (
-        asi_root / "Castle_SaveEnhance" / "音效放置与INI配置说明.md",
+        asi_root / "Castle_SaveEnhance" / "音效放置与TOML配置说明.md",
         asi_root / "Castle_SaveEnhance" / "SaveEnhance实机测试清单.md",
     )
     for path in packaged_docs:
@@ -505,6 +604,10 @@ def check_release_artifacts(ctx: CheckContext, project_root: Path, required: boo
         ctx.check((asi_root / name).is_file(), f"发行TOML配置存在：{name}")
         old_ini = asi_root / f"{Path(name).stem}.ini"
         ctx.check(not old_ini.exists(), f"发行目录无旧INI残留：{old_ini.name}")
+
+    ctx.check(not (asi_root / "Castle_FPSUnlock.asi").exists() and
+              not (asi_root / "Castle_FPSUnlock.toml").exists(),
+              "未完成FPSUnlock未混入build_all发行树")
 
     quest_data = asi_root / "Castle_Quest"
     ctx.check((quest_data / "manifest.toml").is_file(),

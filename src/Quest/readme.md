@@ -4,12 +4,14 @@
 
 Castle_Quest 已按 CastleReforge 主项目结构迁移到 `src/Quest/`。本目录可以直接移动到主仓库的 `src/Quest/`；任务系统不再复制一份 RuntimeSDK，而是编译时引用同级 `src/RuntimeSDK/` 的公共头和 Client 源码。
 
-当前版本只做“已经有必要”的 SDK 接入：
+当前 SDK 接入：
 
-- RuntimeSDK 生命周期接入；
-- Integrated 模式下，Quest 的 `0x00409580` ExplorationUpdate 与 `0x004064E0` Present 两个固定 E9 入口改由 Runtime Hook v1 的同一 `ExclusivePatch` 事务拥有；
-- Standalone 模式继续保留已经验证过的 Quest 本地 Hook；
-- Runtime 文件存在但不可安全使用时进入 Fault，只写诊断，不允许偷偷回退 Standalone；
+- 官方版强制依赖同目录 `Castle_Runtime.dll`；
+- `0x00409580` ExplorationUpdate 由 Runtime Schedule GamePhase 拥有；
+- `0x004064E0` Present 由 Runtime Overlay 拥有；
+- Quest 使用 Display.WorldToScreen 和 GameState，不再保留本地入口 Hook；
+- 配置由 Runtime TOML 读取，日志由 Runtime Log 写入 `mods/logs`；
+- Runtime 缺失或故障时安全停用；
 - `.state` 增强存档本版不实现，只在任务系统文档中冻结未来由主 SDK 统一管理 TOML 状态读写的接口边界。
 
 `readme.md` 是本子项目唯一构建说明。
@@ -32,7 +34,7 @@ CastleReforge/
       │  ├─ RouteSearch.cpp
       │  └─ RouteSearch.h
       ├─ templete/
-      │  ├─ Castle_Quest.ini
+      │  ├─ Castle_Quest.toml
       │  └─ Castle_Quest/
       │     ├─ manifest.toml
       │     ├─ Q001_main_story.toml
@@ -77,7 +79,7 @@ Q001 的 `guide_get_chicken_soup` 虽保留旧稳定 `stage_id`，但它对应�
 
 ## 4. Addon 热重载状态
 
-Ctrl+F8 会事务式重新读取 INI、manifest、25 Base 和 25 Addon。任一文件失败时继续使用上一套完整有效数据库。
+Ctrl+F8 会事务式重新读取 TOML 配置、manifest、25 Base 和 25 Addon。任一文件失败时继续使用上一套完整有效数据库。
 
 本版修复了一个开发期问题：**成功热重载不再清空当前进程中的 Addon Insert 完成集合**。完成身份只认：
 
@@ -89,26 +91,14 @@ addon.quest_id + insert.stage_id
 
 这意味着当前有一个明确的临时限制：如果不退出游戏就在同一进程读取更早 TSF，人工步骤不会自动回滚。跨游戏重启/跨 TSF 的正确持久化与回滚等待主 SDK 的共享 `.state` 服务。
 
-## 5. RuntimeSDK 三种运行路径
+## 5. RuntimeSDK 运行路径
 
-### Integrated
+正常情况下 Client 登记 Quest 后，由 Runtime 提供 Schedule、Overlay、Display、GameState、TOML
+和 Log。Quest 不直接修改 RPG.exe 的 Present 或探索入口。
 
-当 `Castle_Runtime.dll` 可用时，RuntimeSDK Client 进入 Integrated。Quest 不直接 `VirtualProtect` 修改两个游戏入口，而是向 Hook v1 提交两个 6 字节 `ExclusivePatch`：
-
-```text
-RPG.exe RVA 对应 VA 0x00409580：ExplorationUpdate
-RPG.exe RVA 对应 VA 0x004064E0：Present
-```
-
-两项先声明、再预检、最后同事务提交。任何冲突、expected bytes 不符或提交失败都不能留下半安装状态。
-
-### Standalone
-
-同目录完全没有 `Castle_Runtime.dll` 时，RuntimeSDK Client 才允许调用 Quest 的 Standalone 初始化；这条路径继续使用已经验证过的本地 6 字节 E9 Hook，并保留二进制版本护栏。
-
-### Runtime Fault
-
-如果 Runtime 文件存在但 ABI、初始化或安全条件失败，Quest 只记录错误，不安装本地 Hook。这样不会绕过主项目的补丁所有权协调。
+官方 Client 设置 `CASTLE_CLIENT_FLAG_REQUIRE_RUNTIME`。同目录完全没有 Runtime，或 Runtime 的
+PE/ABI/初始化失败时，Quest 不加载任务业务、不安装本地 Hook，也不在 ASI 目录创建旁路日志。
+保留的 standalone ABI 回调只返回 `CASTLE_ERROR_RUNTIME_REQUIRED`。
 
 ## 6. 构建
 
@@ -129,7 +119,6 @@ CastleQuest.cpp
 RouteSearch.cpp
 RuntimeSDK/client/runtime_client.c
 RuntimeSDK/client/runtime_entry_gate.c
-RuntimeSDK/client/runtime_client_support.c
 ```
 
 并通过 `CastleQuest.def` 固定三个无修饰导出：
@@ -158,7 +147,7 @@ Quest 自己的 `build.bat` 成功后只替换它自己拥有的三个发行项�
 ```text
 build/
 ├─ Castle_Quest.asi
-├─ Castle_Quest.ini
+├─ Castle_Quest.toml
 └─ Castle_Quest/
    ├─ manifest.toml
    ├─ 25 个 Base
@@ -167,13 +156,13 @@ build/
 
 它**不会清空整个主项目 `build/`**，因此不会删除其他子项目已经产生的发行文件。
 
-主项目当前 `build_all.bat` 最后会把根 `build\*.asi` 和同名 INI 移入 `build\mods\asi\`。合并 Quest 时，除增加：
+主项目 `build_all.bat` 会把根 `build\*.asi` 和同名 TOML 移入 `build\mods\asi\`，并移动任务数据目录。
 
 ```bat
 call "%ROOT%src\Quest\build.bat" < nul || goto :fail
 ```
 
-之外，还需要在最终打包阶段把 Quest 数据目录移动到 ASI 同目录：
+最终打包阶段再把 Quest 数据目录移动到 ASI 同目录：
 
 ```text
 build\Castle_Quest\
@@ -186,23 +175,25 @@ build\mods\asi\Castle_Quest\
 ```text
 build\mods\asi\
 ├─ Castle_Quest.asi
-├─ Castle_Quest.ini
+├─ Castle_Quest.toml
+├─ Castle_Runtime.dll
 └─ Castle_Quest\
    └─ 51 个 TOML
 ```
 
-本源码包没有修改主项目的 `build_all.bat`，因为用户会在合并子项目时统一调整构建序号和最终移动步骤。
+当前主项目已经完成上述 build_all 接入，并用发行检查器验证 Quest ASI、TOML 与 manifest。
 
 ## 8. `.state` 后续边界
 
 本版**不创建、不读写 `.state`**。
 
-已经冻结的未来方向是：原版 `TSF` 永远不修改；Remastered 独有进度由与 TSF 同名的 `.state` 承担，但 `.state` 是跨项目共享能力，最终由主 RuntimeSDK/公共 SDK 的状态服务统一负责 TOML 解析、内存树、模块命名空间、写入顺序、事务和安全落盘。Quest 只读写自己的模块状态，不直接拥有共享文件。
+当前没有任何插件实际创建 `.state`。未来真实需求落地时，原版 `TSF` 永远不修改；Remastered
+独有进度由同名 `.state` 承担，并由 Runtime 专用 State 服务统一负责 TOML、命名空间、写入顺序
+和原子落盘。Quest 只提交自己的模块状态，不直接拥有共享文件。
 
 任务系统未来首先需要保存的是 Addon Insert 完成集合；能从原版 GameState/TSF 推导出来的 Base 任务进度不重复保存。
 
 ## 9. 当前验证边界
 
-本迁移包完成的是源码、TOML、结构和静态接口审计。当前 Linux 会话没有主项目完整 Windows SDK/clang-cl 链接环境，因此不声称已经生成或实机加载过 dev6zd ASI。
-
-合并到主项目后，应以 `src\Quest\build.bat` 的真实 x86 编译结果和游戏实机日志完成最终验收。
+当前 Windows x86 构建、51 文件数据合同和 RuntimeSDK 接口编译已经通过。游戏实机仍需按
+`docs/Quest/实机验证清单.md` 与公共联合验收标准确认，机器构建不能冒充实机结果。

@@ -1,21 +1,26 @@
-> 当前权威版本：v0.3-refactor44（SaveAction原生disabled导航 + 天书根层B退出候选，2026-08-29）。天书根槽位层取消键经Shell原版退出队列关闭整个主Interface；深层三项/YesNo不变。Controller Public API v1冻结，未来公共能力转为项目级SDK设计。
+> **2026-09-06 RuntimeSDK 当前基线：** 官方 `Castle_PadSupport.asi` 必须与
+> `Castle_Runtime.dll` 同目录；配置为 `Castle_PadSupport.toml`，日志为
+> `mods/logs/Castle_PadSupport.log`。SDL3 由 Runtime Module 加载，输入通过 Runtime Input
+> Provider 发布，SaveAction 由 Runtime Save 统一拥有。下文标为历史的 INI/旧 Loader 记录只作追溯。
+
+> 当前业务基线：v0.3-refactor44（SaveAction原生disabled导航 + 天书根层B退出候选，2026-08-29）。
 
 # refactor44 构建与部署
 
 - 架构仍为 Win32 / x86 / PE32 ASI，**30 个独立 C 编译单元**。
 - Windows 正式入口：本目录 `build.bat`；x86 clang-cl/MSVC ABI；`/W4 /WX /utf-8 /GS- /Zl /nodefaultlib`。
-- 本轮没有新增 DLL、第三方依赖或INI键；R42的 `AutoFocusNearest` 与 `SwapConfirmCancel` 保持原样。
-- 实机部署仍只替换 `Castle_PadSupport.asi` 与 `Castle_PadSupport.ini`；绝不覆盖 `RPG.exe`。
+- 本轮没有新增第三方 DLL；原有配置键迁入 TOML，语义保持不变。
+- 实机部署使用 `Castle_Runtime.dll`、`Castle_PadSupport.asi` 与 `Castle_PadSupport.toml`；绝不覆盖 `RPG.exe`。
 - 本文件 `src/Controller/readme.md` 是面向 GitHub 的构建说明，允许保留英文名；`docs/Controller` 不重复放构建说明，其余非代码文档全部使用简体中文名。
-- `build.bat` 会生成 ASI、从 `templete/` 复制默认 INI 到仓库根 `build\`；任一复制失败都中止。
-- 用户补回的INI中文注释和20个公开键全部原样保留，本轮只更新版本注释。
+- `build.bat` 会生成 ASI、从 `templete/` 复制默认 TOML 到仓库根 `build\`；任一复制失败都中止。
+- TOML 中文注释和全部公开键已恢复，并保证每个键有独立解释。
 - SaveAction可用状态只在现有游戏线程Hit/Event Hook内捕获；不新增Hook、地址或外部插件依赖。
 - Public API v1头、实现、DEF与ABI不变；本需求通过原版Button disabled协作。
 - 天书B代码提交为 `90054c6`，30/30严格编译通过；按用户指令暂未更新或运行专项验证工具。
 - 不继续扩展Controller Public API；未来项目级SDK另行立项。
 - Swap=0为Xbox位置（南确定/东取消），Swap=1为PS传统布局（东/O确定、南/X取消）；菜单、调查和鼠标左右键跟随语义，RB+ABXY快捷与X/Y固定物理功能不变。
 - 自动聚焦只在会话 `active:0→1` 的第一帧执行一次，并复用R40 `inv_select_shoulder_target(+1)`；关闭时不进入该分支。
-- 最终构建大小、ASI/INI哈希和PASS计数以本轮《文件校验清单》为准；机器PASS不冒充实机PASS。
+- 最终构建大小、ASI/TOML哈希和PASS计数以本轮构建输出为准；机器PASS不冒充实机PASS。
 
 ## 本轮部署后优先实机验证
 

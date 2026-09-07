@@ -22,6 +22,9 @@ build.bat
 成功后输出到仓库根 `build\`：
 
 - `Castle_Backlog.asi`；
-- `Castle_Backlog.ini`。
+- `Castle_Backlog.toml`。
+
+运行时还必须在同一目录提供 `Castle_Runtime.dll`。Backlog 可不依赖 ModLoader、Controller 或
+其它业务插件，但不再支持无 Runtime 的官方旁路；日志由 Runtime 写入 `mods/logs`。
 
 脚本使用 `/nodefaultlib`，最终 ASI 只静态导入稳定的 `KERNEL32.dll` 与 `USER32.dll`。请勿把 SDL3 改成链接时依赖，否则会破坏“无 SDL 仍可使用键盘”的硬要求。

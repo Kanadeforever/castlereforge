@@ -2,7 +2,6 @@
 #include "PluginLog.h"
 #include "CastleRuntime_Client.h"
 #include "CastleHook_API.h"
-#include "CastlePath_API.h"
 #include "CastleToml_API.h"
 
 // ============================================================================
@@ -10,13 +9,10 @@
 // ----------------------------------------------------------------------------
 // 把旧五合一补丁里的“最大成长”和“最大掉宝”拆成两个互相独立的开关。
 //
-// 配置文件：MaxGrowthAndDrop.ini
-// - MaxGrowth=1：最大成长（默认开启）
-// - MaxGrowth=0：恢复原版随机成长
-// - MaxDrop=1：最大掉宝（默认开启）
-// - MaxDrop=0：恢复原版掉宝概率
-//
-// 如果 INI 不存在，ASI 会在自身目录自动生成一份，并默认两项都为 1。
+// 配置文件：MaxGrowthAndDrop.toml，由 Runtime TOML 服务读取。
+// - MaxGrowth = 1：最大成长（默认开启）；0：恢复原版随机成长。
+// - MaxDrop = 1：最大掉宝（默认开启）；0：恢复原版掉宝概率。
+// 配置缺失或键缺失时安全采用默认值，ASI 自己不再创建或改写配置文件。
 // ============================================================================
 
 namespace {
@@ -75,94 +71,6 @@ const ycr::Patch kGrowthPatches[] = {
     {0x00043C03u, kGrowthOriginal3, kGrowthPatched3, 2},
     {0x00043D7Du, kGrowthOriginal4, kGrowthPatched4, 6},
 };
-
-// ------------------------------- INI 处理 -------------------------------------
-const wchar_t kIniFileName[] = L"MaxGrowthAndDrop.ini";
-const wchar_t kIniSection[]  = L"MaxGrowthAndDrop";
-const wchar_t kGrowthKey[]   = L"MaxGrowth";
-const wchar_t kDropKey[]     = L"MaxDrop";
-
-// 默认 INI 使用 UTF-16LE，并在第一个字符写入 BOM(U+FEFF)。
-// 这样 Windows 的 GetPrivateProfileIntW 可以稳定读取中文注释和 ASCII 配置键。
-const wchar_t kDefaultIniText[] =
-    L"\uFEFF; 幽城幻剑录 - 最大成长 / 最大掉宝设置\r\n"
-    L"; 数值说明：1 = 开启，0 = 关闭。\r\n"
-    L"; 两项默认都开启；修改后重新启动游戏即可生效。\r\n"
-    L"\r\n"
-    L"[MaxGrowthAndDrop]\r\n"
-    L"; 最大成长：升级时把随机成长结果固定到旧五合一补丁使用的最大值。\r\n"
-    L"MaxGrowth=1\r\n"
-    L"\r\n"
-    L"; 最大掉宝：把旧五合一的掉落随机判断固定到高掉落结果。\r\n"
-    L"MaxDrop=1\r\n";
-
-// 把 ASI 自己的完整路径改造成同目录下的 MaxGrowthAndDrop.ini。
-// 例如：
-//   D:\Game\MaxGrowthAndDrop.asi
-// 变成：
-//   D:\Game\MaxGrowthAndDrop.ini
-bool BuildIniPath(HMODULE module, wchar_t* outPath, DWORD capacity) {
-    const DWORD length = GetModuleFileNameW(module, outPath, capacity);
-    if (length == 0u || length >= capacity) {
-        return false;
-    }
-
-    // 从末尾往前找最后一个 '\\' 或 '/'，它后面就是原 ASI 文件名。
-    DWORD fileNameStart = length;
-    while (fileNameStart > 0u) {
-        const wchar_t ch = outPath[fileNameStart - 1u];
-        if (ch == L'\\' || ch == L'/') {
-            break;
-        }
-        --fileNameStart;
-    }
-
-    const SIZE_T iniNameLength = ycr::WideLength(kIniFileName);
-    if (fileNameStart + iniNameLength + 1u > capacity) {
-        return false;
-    }
-
-    // 把旧文件名覆盖为固定的新文件名。
-    for (SIZE_T i = 0; i < iniNameLength; ++i) {
-        outPath[fileNameStart + i] = kIniFileName[i];
-    }
-    outPath[fileNameStart + iniNameLength] = L'\0';
-    return true;
-}
-
-// INI 不存在时创建默认文件。
-// CREATE_NEW 的好处是：如果用户文件恰好在我们检查后、创建前出现，也不会覆盖它。
-void CreateDefaultIniIfMissing(const wchar_t* iniPath) {
-    if (GetFileAttributesW(iniPath) != INVALID_FILE_ATTRIBUTES) {
-        return;
-    }
-
-    HANDLE file = CreateFileW(
-        iniPath,
-        GENERIC_WRITE,
-        FILE_SHARE_READ,
-        nullptr,
-        CREATE_NEW,
-        FILE_ATTRIBUTE_NORMAL,
-        nullptr);
-
-    if (file == INVALID_HANDLE_VALUE) {
-        return;
-    }
-
-    DWORD written = 0;
-    const DWORD bytesToWrite = static_cast<DWORD>(
-        ycr::WideLength(kDefaultIniText) * sizeof(wchar_t));
-
-    WriteFile(file, kDefaultIniText, bytesToWrite, &written, nullptr);
-    CloseHandle(file);
-}
-
-// 任何非 0 值都按“开启”处理，0 才是关闭。
-// 如果 INI 无法读取，defaultValue=1 保证行为仍然符合“默认全部开启”的要求。
-bool ReadSwitch(const wchar_t* iniPath, const wchar_t* key) {
-    return GetPrivateProfileIntW(kIniSection, key, 1, iniPath) != 0u;
-}
 
 CastleStringView View(const char* text, CastleU32 length) {
     CastleStringView value{};
@@ -247,31 +155,6 @@ CastleResult ApplyRuntimePatchSet(const CastleHookApiV1* hookApi,
     return hookApi->CommitTransaction(transaction);
 }
 
-CastleResult InitializeStandalone() {
-    wchar_t iniPath[1024]{};
-    bool enableGrowth = true;
-    bool enableDrop = true;
-    OpenStartupLog("Standalone：使用插件本地 Path 与双态补丁器。");
-    if (BuildIniPath(gPluginModule, iniPath, 1024u)) {
-        CreateDefaultIniIfMissing(iniPath);
-        enableGrowth = ReadSwitch(iniPath, kGrowthKey);
-        enableDrop = ReadSwitch(iniPath, kDropKey);
-    } else {
-        ycrlog::Line("[警告] 无法构造 INI 路径，按默认值开启两项。");
-    }
-    LogConfiguration(enableGrowth, enableDrop);
-    const bool growthOk = ycr::SetPatchSetState(kGrowthPatches,
-        sizeof(kGrowthPatches) / sizeof(kGrowthPatches[0]), enableGrowth);
-    const bool dropOk = ycr::SetPatchSetState(kDropPatches,
-        sizeof(kDropPatches) / sizeof(kDropPatches[0]), enableDrop);
-    ycrlog::Line(growthOk ? "[补丁] 最大成长状态已应用。" :
-        "[失败] 最大成长机器码未知或写入失败。");
-    ycrlog::Line(dropOk ? "[补丁] 最大掉宝状态已应用。" :
-        "[失败] 最大掉宝机器码未知或写入失败。");
-    if (!growthOk && !dropOk) return CASTLE_ERROR_EXPECTED_BYTES;
-    return growthOk && dropOk ? CASTLE_OK : CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
-}
-
 CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
                                   CastlePluginHandle pluginHandle) {
     static const char hookId[] = CASTLE_HOOK_INTERFACE_ID;
@@ -348,7 +231,7 @@ static CastleResult CASTLE_RUNTIME_CALL MaxGrowth_Integrated(
 
 static CastleResult CASTLE_RUNTIME_CALL MaxGrowth_Standalone(void* userContext) {
     (void)userContext;
-    return InitializeStandalone();
+    return CASTLE_ERROR_RUNTIME_REQUIRED;
 }
 
 static void CASTLE_RUNTIME_CALL MaxGrowth_RuntimeFault(CastleResult failure,

@@ -8,25 +8,14 @@
 // ----------------------------------------------------------------------------
 // 四个正式 ASI 共用的极小日志工具。
 //
-// 设计目标：
-// 1. 每次启动游戏时都使用 CREATE_ALWAYS 打开日志，因此旧日志会先被清空；
-// 2. 文件开头写 UTF-8 BOM（EF BB BF），正文使用 UTF-8 字节；
-// 3. 每一行都明确写入 CRLF（\r\n），不依赖编辑器自动转换换行；
-// 4. 不使用 iostream、printf、std::string 等 C/C++ 运行库功能，继续只依赖
-//    Windows 自带的 kernel32.dll；
-// 5. 日志文件始终放在 ASI 自己所在的目录，而不是依赖进程当前工作目录。
-//
-// 对刚接触编程的人来说，可以把这里理解成：
-// “先找到插件自己放在哪个文件夹，把插件文件名替换成 xxx.log，然后把文字一个字节
-//  一个字节写进去”。UTF-8 BOM 是文件最前面的三个特殊字节，用来帮助记事本等程序
-// 更稳定地识别这是一份 UTF-8 文本。
+// 官方 ASI 必须由 Castle_Runtime.dll 承载，日志只交给 Runtime Log 服务。
+// 目录、UTF-8 BOM、并发锁和刷新由 Runtime 负责，插件不再持有文件句柄。
 // ============================================================================
 
 namespace ycrlog {
 
 // 每个 ASI 都只包含自己这一份头文件实例，所以这个句柄只属于当前插件。
 // INVALID_HANDLE_VALUE 表示“日志还没有成功打开”。
-static HANDLE gFile = INVALID_HANDLE_VALUE;
 static const CastleLogApiV1* gRuntimeLogApi = nullptr;
 static CastlePluginHandle gRuntimeLogPlugin = 0u;
 
@@ -70,14 +59,9 @@ inline void Raw(const char* text, DWORD length) {
     if (text == nullptr || length == 0u) {
         return;
     }
-    if (gRuntimeLogApi != nullptr && gRuntimeLogPlugin != 0u) {
-        CastleStringView view{text, static_cast<CastleU32>(length)};
-        gRuntimeLogApi->WritePluginText(gRuntimeLogPlugin, view);
-        return;
-    }
-    if (gFile == INVALID_HANDLE_VALUE) return;
-    DWORD written = 0u;
-    WriteFile(gFile, text, length, &written, nullptr);
+    if (gRuntimeLogApi == nullptr || gRuntimeLogPlugin == 0u) return;
+    CastleStringView view{text, static_cast<CastleU32>(length)};
+    gRuntimeLogApi->WritePluginText(gRuntimeLogPlugin, view);
 }
 
 // 写一段 UTF-8 文本，不自动换行。
@@ -127,78 +111,15 @@ inline void Hex32(DWORD value) {
 // 关闭日志。
 // Windows 卸载 ASI 时调用，避免句柄一直占着文件。
 inline void Close() {
-    if (gFile != INVALID_HANDLE_VALUE) {
-        CloseHandle(gFile);
-        gFile = INVALID_HANDLE_VALUE;
-    }
+    gRuntimeLogApi = nullptr;
+    gRuntimeLogPlugin = 0u;
 }
 
-// 生成“ASI 同目录下的固定日志名”，并使用 CREATE_ALWAYS 打开。
-// 例如：
-//   D:\Game\BUGFix.asi
-// 会变成：
-//   D:\Game\BUGFix.log
-//
-// logFileName 必须只提供文件名，不需要提供目录。
+// 保留旧调用形状，避免业务文件因日志后端迁移而出现无关改动；参数不再参与路径构造。
 inline bool Open(HMODULE module, const wchar_t* logFileName) {
-    if (gRuntimeLogApi != nullptr && gRuntimeLogPlugin != 0u) return true;
-    // 如果极端情况下重复调用 Open，先关掉旧句柄，避免资源泄漏。
-    Close();
-
-    if (logFileName == nullptr) {
-        return false;
-    }
-
-    wchar_t path[1024];
-    path[0] = L'\0';
-    const DWORD length = GetModuleFileNameW(module, path, 1024u);
-    if (length == 0u || length >= 1024u) {
-        return false;
-    }
-
-    // 找最后一个路径分隔符。它后面的内容就是原 ASI 文件名。
-    DWORD fileNameStart = 0u;
-    for (DWORD i = 0u; i < length; ++i) {
-        if (path[i] == L'\\' || path[i] == L'/') {
-            fileNameStart = i + 1u;
-        }
-    }
-
-    // 把原文件名覆盖成调用者指定的日志名。
-    DWORD i = 0u;
-    while (logFileName[i] != L'\0') {
-        if (fileNameStart + i + 1u >= 1024u) {
-            return false;
-        }
-        path[fileNameStart + i] = logFileName[i];
-        ++i;
-    }
-    path[fileNameStart + i] = L'\0';
-
-    // CREATE_ALWAYS 的语义是：
-    // - 文件不存在：新建；
-    // - 文件已经存在：把长度截成 0，再从头写。
-    // 这正好满足“每次运行之前清空旧日志”的要求。
-    gFile = CreateFileW(
-        path,
-        GENERIC_WRITE,
-        FILE_SHARE_READ | FILE_SHARE_WRITE,
-        nullptr,
-        CREATE_ALWAYS,
-        FILE_ATTRIBUTE_NORMAL,
-        nullptr);
-    if (gFile == INVALID_HANDLE_VALUE) {
-        return false;
-    }
-
-    // UTF-8 BOM。正文仍然是标准 UTF-8；BOM 只是帮助 Windows 文本工具识别编码。
-    const char bom[3] = {
-        static_cast<char>(0xEF),
-        static_cast<char>(0xBB),
-        static_cast<char>(0xBF)
-    };
-    Raw(bom, 3u);
-    return true;
+    (void)module;
+    (void)logFileName;
+    return gRuntimeLogApi != nullptr && gRuntimeLogPlugin != 0u;
 }
 
 } // namespace ycrlog

@@ -163,22 +163,6 @@ const CastleHookApiV1* QueryHookApi(const CastleRuntimeApiV1* runtimeApi) {
     return static_cast<const CastleHookApiV1*>(result.api_pointer);
 }
 
-CastleResult InitializeStandalone() {
-    OpenStartupLog("Standalone：同目录不存在 Castle_Runtime.dll，使用插件本地安全补丁器。");
-    const bool recognized = IsCdScanFunctionRecognized();
-    const bool patched = recognized && ycr::SetPatchSetState(&kSkipCdScan, 1, true);
-    if (!patched) {
-        ycrlog::Line(recognized
-            ? "[失败] 光盘扫描函数已识别，但本地内存补丁写入失败。"
-            : "[失败] 光盘扫描函数入口指纹不匹配；未安装免CD补丁。");
-        return CASTLE_ERROR_EXPECTED_BYTES;
-    }
-    const BYTE driveLetter = DetectExeDriveLetter();
-    StoreFallbackDriveLetter(driveLetter);
-    LogSuccess(driveLetter);
-    return CASTLE_OK;
-}
-
 CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
                                   CastlePluginHandle pluginHandle) {
     static const BYTE driveOriginal[] = {0x00u};
@@ -267,7 +251,7 @@ static CastleResult CASTLE_RUNTIME_CALL NoCD_Integrated(
 
 static CastleResult CASTLE_RUNTIME_CALL NoCD_Standalone(void* userContext) {
     (void)userContext;
-    return InitializeStandalone();
+    return CASTLE_ERROR_RUNTIME_REQUIRED;
 }
 
 static void CASTLE_RUNTIME_CALL NoCD_RuntimeFault(CastleResult failure,

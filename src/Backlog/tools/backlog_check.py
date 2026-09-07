@@ -206,7 +206,7 @@ def check_asi(path: Path) -> list[CheckResult]:
     }
     # O2 可能把固定 INI 文件名拆成若干立即数写入，不保证磁盘里仍有连续 ASCII；
     # INI 的存在与内容由源码包检查负责。ASI 本体这里只要求版本标识和动态 SDL 名仍可诊断。
-    required_strings = [b"Castle Backlog v0.3.4", b"CastlePad_GetApi"]
+    required_strings = [b"Castle Backlog v0.3.4", b"Runtime Input v1"]
 
     return [
         check(pe.machine == 0x14C, "ASI 为 x86", f"machine=0x{pe.machine:04X}"),
@@ -224,7 +224,7 @@ def has_cjk(text: str) -> bool:
 
 
 def check_source(source_root: Path) -> list[CheckResult]:
-    """检查当前 v0.3.4 稳定版源码、自适应三/四框、原版组合框、Public API、INI 和构建文件。"""
+    """检查当前 v0.4.0 RuntimeSDK 源码、TOML、自适应布局和公共服务接入。"""
 
     required = {
         "platform.h",
@@ -235,12 +235,10 @@ def check_source(source_root: Path) -> list[CheckResult]:
         "mouse_input.c",
         "pad_bridge.h",
         "pad_bridge.c",
-        "Castle_PadSupport_API.h",
         "backlog.h",
         "backlog.c",
         "plugin.c",
-        "Castle_Backlog.ini",
-        "build.bat",
+        "Backlog.def",
     }
     existing = {path.name for path in source_root.iterdir() if path.is_file()}
     code_files = sorted(source_root.glob("*.c")) + sorted(source_root.glob("*.h"))
@@ -250,19 +248,20 @@ def check_source(source_root: Path) -> list[CheckResult]:
         for path in code_files
     )
 
-    ini_path = source_root / "Castle_Backlog.ini"
-    ini_text = ini_path.read_text(encoding="utf-8-sig") if ini_path.exists() else ""
+    toml_path = source_root.parent / "templete" / "Castle_Backlog.toml"
+    toml_text = toml_path.read_text(encoding="utf-8-sig") if toml_path.exists() else ""
     backlog_text = (source_root / "backlog.c").read_text(encoding="utf-8-sig") if (source_root / "backlog.c").exists() else ""
     bridge_text = (source_root / "pad_bridge.c").read_text(encoding="utf-8-sig") if (source_root / "pad_bridge.c").exists() else ""
-    build_text = (source_root / "build.bat").read_text(encoding="utf-8-sig") if (source_root / "build.bat").exists() else ""
+    build_path = source_root.parent / "build.bat"
+    build_text = build_path.read_text(encoding="utf-8-sig") if build_path.exists() else ""
 
-    ini_needles = [
+    toml_needles = [
         "[Backlog]",
         "[Keyboard]",
-        "Open=B",
-        "Exit=B",
-        "PanelStrideY=135",
-        "PageSize=4",
+        'Open = "B"',
+        'Exit = "ESC"',
+        "PanelStrideY = 160",
+        "PageSize = 4",
     ]
     modern_needles = [
         # 活动态只登记 draw，不运行完整 SceneWorld update。
@@ -283,12 +282,12 @@ def check_source(source_root: Path) -> list[CheckResult]:
         "if (name_y < 0) name_y = 0;",
         "CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW",
         "CALL_DIALOGUE_NAME_TEXT_DRAW",
-        "g_previous_name_text_draw(font",
+        "previous(font, origin_x, origin_y, surface",
     ]
     api_needles = [
-        'GetProcAddress(g_pad_module, "CastlePad_GetApi")',
-        "CASTLE_PAD_API_VERSION_1",
-        "AllowsExternalUiInput",
+        "CASTLE_INPUT_INTERFACE_ID",
+        "CASTLE_INPUT_API_VERSION_1",
+        "GetSnapshot",
     ]
     # 历史注释允许提到 PadInputState/ControlModeState；真正禁止的是仍存在运行时代码扫描。
     no_internal_pad_scan = all(
@@ -301,76 +300,47 @@ def check_source(source_root: Path) -> list[CheckResult]:
         for token in ["NamePanelPool_", "name_panel_pool.c", "FN_SF2_OBJECT_LOAD"]
     )
     no_old_draw_starvation = "if (g_active && g_opened_over_live_dialogue) return;" not in backlog_text
-    release_docs = '..\\release\\文档' in build_text and 'backlog_check.py' in build_text
+    runtime_required = "CASTLE_CLIENT_FLAG_REQUIRE_RUNTIME" in (source_root / "plugin.c").read_text(encoding="utf-8-sig")
+    toml_packaged = "Castle_Backlog.toml" in build_text
 
     return [
         check(required.issubset(existing), "源码包必需文件", f"{len(required & existing)}/{len(required)}"),
         check(english_names, "代码文件名为英文/ASCII", ", ".join(path.name for path in code_files)),
         check(comment_ok, "每个 C/H 文件含中文块注释", f"{len(code_files)} 个文件"),
-        check(all(needle in ini_text for needle in ini_needles), "INI Virtual-Key/间距默认值", f"{len(ini_needles)} 项"),
+        check(toml_path.is_file() and all(needle in toml_text for needle in toml_needles),
+              "TOML Virtual-Key/间距默认值", f"{len(toml_needles)} 项"),
         check(all(needle in backlog_text for needle in modern_needles), "原版有名字+对白组合框不变量", f"{len(modern_needles)} 项"),
-        check(all(needle in bridge_text for needle in api_needles), "PadSupport Public API v1 协作", f"{len(api_needles)} 项"),
+        check(all(needle in bridge_text for needle in api_needles), "Runtime Input v1 协作", f"{len(api_needles)} 项"),
         check(no_internal_pad_scan, "不再扫描 PadSupport 内部布局", "无内部状态/VirtualQuery 扫描"),
         check(no_sdl_source, "Backlog 不自带 SDL 输入后端", "sdl_input.c/h 不存在"),
         check(no_private_sf2_pool, "不再私建 F-Name/SF2", "无 NamePanelPool/0x4070D0 调用"),
         check(no_old_draw_starvation, "活动态不再饿死绘制队列", "只调用 0x434500 登记 draw"),
-        check(release_docs, "构建包携带中文文档和最新检查器", "release/文档 + backlog_check.py"),
+        check(runtime_required, "官方插件强制 Runtime", "REQUIRE_RUNTIME"),
+        check(toml_packaged, "Windows 构建同步同名 TOML", "Castle_Backlog.toml"),
     ]
 
 def check_document_packages(repository: Path) -> list[CheckResult]:
-    """遍历全部 BACKLOG 文档；源码镜像必须一致，release 若存在也必须一致。"""
+    """遍历当前主仓权威文档；新版不再维持旧独立包的三份镜像。"""
 
-    canonical_root = repository / "docs" / "BACKLOG"
-    source_mirror = repository / "src" / "backlog" / "文档"
-    release_root = repository / "src" / "backlog" / "release"
-    release_mirror = release_root / "文档"
+    canonical_root = repository / "docs" / "Backlog"
 
     canonical = sorted(canonical_root.glob("*.md"), key=lambda path: path.name)
     canonical_names = {path.name for path in canonical}
-    source_names = {path.name for path in source_mirror.glob("*.md")}
 
     chinese_names = all(
         not any(character.isascii() and character.isalpha() for character in path.stem)
         for path in canonical
     )
 
-    source_matches = canonical_names == source_names
-    if source_matches:
-        for document in canonical:
-            source_copy = source_mirror / document.name
-            if hashlib.sha256(source_copy.read_bytes()).digest() != hashlib.sha256(document.read_bytes()).digest():
-                source_matches = False
-                break
-
-    release_exists = release_mirror.exists()
-    release_matches = True
-    if release_exists:
-        release_names = {path.name for path in release_mirror.glob("*.md")}
-        release_matches = release_names == canonical_names
-        if release_matches:
-            for document in canonical:
-                release_copy = release_mirror / document.name
-                if hashlib.sha256(release_copy.read_bytes()).digest() != hashlib.sha256(document.read_bytes()).digest():
-                    release_matches = False
-                    break
-
     handoff_ok = (canonical_root / "完整接档说明.md").exists()
     tool_doc_ok = (canonical_root / "工具详细说明.md").exists()
-    tool_side_doc = repository / "src" / "backlog" / "工具" / "工具详细说明.md"
-    tool_side_doc_matches = tool_doc_ok and tool_side_doc.exists()
-    if tool_side_doc_matches:
-        tool_side_doc_matches = (
-            hashlib.sha256(tool_side_doc.read_bytes()).digest() ==
-            hashlib.sha256((canonical_root / "工具详细说明.md").read_bytes()).digest()
-        )
+    tool_side_doc = repository / "src" / "Backlog" / "tools" / "工具详细说明.md"
 
     return [
         check(len(canonical) >= 10, "权威中文 Markdown 数量", f"{len(canonical)} 份"),
         check(chinese_names, "文档主文件名不含英文字母", ", ".join(path.name for path in canonical)),
-        check(source_matches, "docs/BACKLOG 与源码包文档镜像一致", f"{len(canonical_names)} 份"),
-        check(not release_exists or release_matches, "release 文档镜像（若已构建）一致", "未构建或逐文件一致"),
-        check(handoff_ok and tool_doc_ok, "独立接档核心文档存在", "完整接档说明 + 工具详细说明"),
-        check(tool_side_doc_matches, "检查器旁中文工具说明为最新版", "工具/工具详细说明.md"),
+        check(handoff_ok and tool_doc_ok, "主仓接档核心文档存在", "完整接档说明 + 工具详细说明"),
+        check(tool_side_doc.is_file(), "检查器旁中文工具说明存在", "src/Backlog/tools/工具详细说明.md"),
     ]
 
 def result_dict(result: CheckResult) -> dict[str, object]:
@@ -393,12 +363,17 @@ def print_results(results: Iterable[CheckResult]) -> bool:
 def main() -> int:
     """解析命令行、运行三组检查，并用退出码 0/1 告诉构建系统结果。"""
 
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="strict")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8", errors="strict")
+
     script = Path(__file__).resolve()
     repository = script.parents[3]
     parser = argparse.ArgumentParser(description="Castle Backlog 静态兼容与封包检查")
     parser.add_argument("--game", type=Path, default=repository / "参考资料" / "Castle" / "exe" / "RPG.exe")
-    parser.add_argument("--asi", type=Path, default=repository / "src" / "backlog" / "release" / "Castle_Backlog.asi")
-    parser.add_argument("--source-root", type=Path, default=repository / "src" / "backlog" / "源码")
+    parser.add_argument("--asi", type=Path, default=repository / "build" / "mods" / "asi" / "Castle_Backlog.asi")
+    parser.add_argument("--source-root", type=Path, default=repository / "src" / "Backlog" / "source")
     parser.add_argument("--json", type=Path, help="可选：把本次结果另存为 UTF-8 JSON")
     args = parser.parse_args()
 

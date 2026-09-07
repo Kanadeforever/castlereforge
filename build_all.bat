@@ -18,6 +18,11 @@ for %%F in (Castle_Runtime.dll Castle_Backlog.asi Castle_Backlog.toml Castle_Pad
     if exist "%ROOT%build\%%F" del /q "%ROOT%build\%%F" >nul 2>nul
     if exist "%ROOT%build\mods\asi\%%F" del /q "%ROOT%build\mods\asi\%%F" >nul 2>nul
 )
+rem FPSUnlock 尚未完成且不属于 build_all；清除单独构建留下的候选，禁止它混入正式发行树。  
+for %%F in (Castle_FPSUnlock.asi Castle_FPSUnlock.toml) do (
+    if exist "%ROOT%build\%%F" del /q "%ROOT%build\%%F" >nul 2>nul
+    if exist "%ROOT%build\mods\asi\%%F" del /q "%ROOT%build\mods\asi\%%F" >nul 2>nul
+)
 if exist "%ROOT%build\Castle_Quest" rmdir /s /q "%ROOT%build\Castle_Quest"
 if exist "%ROOT%build\mods\asi\Castle_Quest" rmdir /s /q "%ROOT%build\mods\asi\Castle_Quest"
 
@@ -54,10 +59,10 @@ cls
 echo [移动] 移动 Runtime、ASI 与同名 TOML 到 mods\asi...  
 @echo off
 if not exist "%ROOT%build\mods\asi" mkdir "%ROOT%build\mods\asi"
-for %%F in ("%ROOT%build\*.asi") do (
-    move /y "%%F" "%ROOT%build\mods\asi\" >nul || goto :fail
-    if exist "%%~dpnF.ini" move /y "%%~dpnF.ini" "%ROOT%build\mods\asi\" >nul || goto :fail
-    if exist "%%~dpnF.toml" move /y "%%~dpnF.toml" "%ROOT%build\mods\asi\" >nul || goto :fail
+for %%F in (Castle_Backlog Castle_PadSupport Castle_Widescreen Castle_SaveEnhance BUGFix NoCD MaxGrowthAndDrop Castle_Quest) do (
+    if not exist "%ROOT%build\%%F.asi" goto :fail
+    move /y "%ROOT%build\%%F.asi" "%ROOT%build\mods\asi\%%F.asi" >nul || goto :fail
+    if exist "%ROOT%build\%%F.toml" move /y "%ROOT%build\%%F.toml" "%ROOT%build\mods\asi\%%F.toml" >nul || goto :fail
 )
 if not exist "%ROOT%build\Castle_Runtime.dll" goto :fail
 move /y "%ROOT%build\Castle_Runtime.dll" "%ROOT%build\mods\asi\Castle_Runtime.dll" >nul || goto :fail
@@ -75,7 +80,7 @@ for %%F in (Castle_Backlog Castle_PadSupport Castle_SaveEnhance Castle_Widescree
 rem SaveEnhance 的外置 WAV 固定从 ASI 同目录下 Castle_SaveEnhance 子目录读取。  
 set "SAVE_SOUND_DIR=%ROOT%build\mods\asi\Castle_SaveEnhance"
 if not exist "%SAVE_SOUND_DIR%" mkdir "%SAVE_SOUND_DIR%" || goto :fail
-copy /y "%ROOT%docs\SaveEnhance\安装与INI配置说明.md" "%SAVE_SOUND_DIR%\音效放置与INI配置说明.md" >nul || goto :fail
+copy /y "%ROOT%docs\SaveEnhance\安装与TOML配置说明.md" "%SAVE_SOUND_DIR%\音效放置与TOML配置说明.md" >nul || goto :fail
 copy /y "%ROOT%docs\SaveEnhance\实机测试清单.md" "%SAVE_SOUND_DIR%\SaveEnhance实机测试清单.md" >nul || goto :fail
 
 rem build 是发行目录；任何链接导入库、对象、调试数据库都必须在打包前清除。  

@@ -37,7 +37,6 @@ static int g_sdk_batch_building;
  */
 static u32 g_map_space_event_target = FN_MAP_SPACE_EVENT;
 static HMODULE g_self_module;
-static HANDLE g_log = INVALID_HANDLE_VALUE_;
 static const CastleLogApiV1* g_runtime_log_api;
 static CastlePluginHandle g_runtime_log_plugin;
 static const CastleModuleApiV1* g_runtime_module_api;
@@ -133,10 +132,6 @@ void Runtime_BindEarlyApi(void) {
      */
     g_api.get_module_handle_a = *(PFN_GetModuleHandleA*)IAT_GETMODULEHANDLEA;
     g_api.get_proc_address = *(PFN_GetProcAddress*)IAT_GETPROCADDRESS;
-    g_api.load_library_a = *(PFN_LoadLibraryA*)IAT_LOADLIBRARYA;
-    g_api.create_file_a = *(PFN_CreateFileA*)IAT_CREATEFILEA;
-    g_api.write_file = *(PFN_WriteFile*)IAT_WRITEFILE;
-    g_api.close_handle = *(PFN_CloseHandle*)IAT_CLOSEHANDLE;
     g_api.get_cursor_pos = *(PFN_GetCursorPos*)IAT_GETCURSORPOS;
 
     if (g_api.get_module_handle_a && g_api.get_proc_address) {
@@ -145,10 +140,7 @@ void Runtime_BindEarlyApi(void) {
             g_api.virtual_protect = (PFN_VirtualProtect)g_api.get_proc_address(k32, "VirtualProtect");
             g_api.get_module_file_name_a = (PFN_GetModuleFileNameA)g_api.get_proc_address(k32, "GetModuleFileNameA");
             g_api.get_module_handle_ex_a = (PFN_GetModuleHandleExA)g_api.get_proc_address(k32, "GetModuleHandleExA");
-            g_api.create_thread = (PFN_CreateThread)g_api.get_proc_address(k32, "CreateThread");
-            g_api.sleep = (PFN_Sleep)g_api.get_proc_address(k32, "Sleep");
             g_api.get_current_process_id = (PFN_GetCurrentProcessId)g_api.get_proc_address(k32, "GetCurrentProcessId");
-            g_api.get_private_profile_int_a = (PFN_GetPrivateProfileIntA)g_api.get_proc_address(k32, "GetPrivateProfileIntA");
         }
 
         {
@@ -283,14 +275,6 @@ static void rt_load_config(void) {
 
 /* ------------------------- 日志 ------------------------- */
 
-/* 日志固定创建在 ASI 同目录，并允许用户在游戏运行时以只读方式打开查看。 */
-static void rt_open_log(void) {
-    char path[MAX_PATH_];
-    if (g_runtime_log_api || !g_api.create_file_a || g_log != INVALID_HANDLE_VALUE_) return;
-    if (!Runtime_BuildSiblingPath("Castle_PadSupport.log", path, MAX_PATH_)) return;
-    g_log = g_api.create_file_a(path, GENERIC_WRITE_, FILE_SHARE_READ_, NULL, CREATE_ALWAYS_, FILE_ATTRIBUTE_NORMAL_, NULL);
-}
-
 /*
  * 对 UTF-8 文本做一个很小的 FNV-1a 32 位指纹。
  * 这里只用于日志去重，不用于安全判断；即使理论上发生哈希碰撞，最多也只是少写一条诊断文本。
@@ -369,9 +353,7 @@ static int rt_log_should_suppress(const char* text, SIZE_T length) {
  * 写文件前先经过全局“完全相同词条”抑制，所以交替出现的重复日志也不会继续堆满文件。
  */
 void Runtime_Log(const char* utf8_line) {
-    DWORD written;
     SIZE_T n;
-    static const char crlf[2] = {'\r','\n'};
 
     if (!utf8_line) return;
     n = rt_strlen(utf8_line);
@@ -385,12 +367,7 @@ void Runtime_Log(const char* utf8_line) {
         record.message.data = utf8_line;
         record.message.length = (CastleU32)n;
         (void)g_runtime_log_api->WritePluginLine(g_runtime_log_plugin, &record);
-        return;
     }
-    if (!g_api.write_file || g_log == INVALID_HANDLE_VALUE_) return;
-
-    if (n) g_api.write_file(g_log, utf8_line, (DWORD)n, &written, NULL);
-    g_api.write_file(g_log, crlf, 2u, &written, NULL);
 }
 
 void Runtime_LogHexPair(const char* prefix, u32 a, const char* middle, u32 b) {
@@ -1822,14 +1799,13 @@ int Runtime_Initialize(HMODULE self_module) {
     g_self_module = self_module;
     Runtime_BindEarlyApi();
     rt_load_config();
-    rt_open_log();
 
     Runtime_Log("[启动] 幽城幻剑录手柄支持：v0.3-refactor44（SaveAction原生disabled导航 + R43稳定基线）");
     Runtime_Log("[启动] By Luminou with ChatGPT");
     Runtime_LogModule("ASI 插件", g_self_module, NULL);
 
     if (!g_api.virtual_protect || !g_api.get_cursor_pos || !g_api.set_cursor_pos ||
-        !g_api.mouse_event || !g_api.get_private_profile_int_a) {
+        !g_api.mouse_event) {
         Runtime_Log("[致命] 必需的 Win32 API 解析失败，拒绝安装 Hook。");
         return 0;
     }
@@ -1859,9 +1835,6 @@ void Runtime_Shutdown(void) {
     }
     g_runtime_toml_document = 0u;
     g_runtime_toml_api = NULL;
-    if (g_log != INVALID_HANDLE_VALUE_ && g_api.close_handle) {
-        Runtime_Log("[退出] ASI 正在卸载，关闭日志。");
-        g_api.close_handle(g_log);
-        g_log = INVALID_HANDLE_VALUE_;
-    }
+    g_runtime_log_api = NULL;
+    g_runtime_log_plugin = 0u;
 }

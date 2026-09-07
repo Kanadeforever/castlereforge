@@ -6,6 +6,7 @@
 #include "CastleSave_API.h"
 #include "CastleModule_API.h"
 #include "CastleToml_API.h"
+#include "CastleFile_API.h"
 
 // ============================================================================
 // Castle_SaveEnhance.cpp  v0.1.0-test7
@@ -31,7 +32,7 @@
 //               所以原版鼠标/键盘和 Castle_PadSupport 当前 SaveAction Event 都拒绝它；
 //               另外 SaveSlot 调用层再做一次二次保险，避免未知输入路径绕过 UI。
 //
-//   声音       = 只支持可选外置 WAV。INI 填文件名才尝试播放；空、非法、文件不存在或
+//   声音       = 只支持可选外置 WAV。TOML 填文件名才尝试播放；空、非法、文件不存在或
 //               winmm 播放失败都只是“没有声音”，绝不能让保存/读档本身失败；
 //               [Sound] Volume=0~100 只缩放 SaveEnhance 自己的 WAV，不动游戏/Windows 总音量。
 //
@@ -247,7 +248,6 @@ HMODULE gSelfModule = nullptr;
 // 这个标记只防止调试环境/其它兼容加载器重复调用正式初始化，避免同一批 Hook 被打两遍。
 // Mod Loader 的 ASI 加载是按配置顺序单线程执行，所以这里不需要额外的线程同步原语。
 bool gInitializationAttempted = false;
-bool gStandaloneMode = false;
 OriginalSaveGateFunction gOriginalSaveGate = nullptr;
 OriginalMapTickFunction gOriginalMapTick = nullptr;
 OriginalSaveWriterFunction gOriginalSaveWriter = nullptr;
@@ -261,7 +261,7 @@ GameFileOpenFunction gGameFileOpen = nullptr;
 
 // 91~99 全部已存在后，NextAutoSlot 指示“下一次应该覆盖哪一个物理槽”。
 // 这个值只写入真实存档目录 ..\multimedia\save\.NEXTAUTOSLOT，不再污染玩家可能复制、
-// 重装或替换的 INI。
+// 重装或替换的 TOML 配置。
 // 文件只保存 091~099 三个 ASCII 字节，不含任何游戏进度；丢失或损坏时安全回到 91。
 // 如果用户删掉任一自动档，游戏文件层扫描仍优先填空槽，游标不会强行覆盖其它档。
 DWORD gNextAutoSlot = kAutoSlotFirst;
@@ -281,6 +281,8 @@ GetWindowThreadProcessIdFunction gGetWindowThreadProcessId = nullptr;
 HMODULE gWinmmModule = nullptr;
 PlaySoundWFunction gPlaySoundW = nullptr;
 const CastleModuleApiV1* gRuntimeModuleApi = nullptr;
+const CastlePathApiV1* gRuntimePathApi = nullptr;
+const CastleFileApiV1* gRuntimeFileApi = nullptr;
 CastlePluginHandle gRuntimePluginHandle = 0u;
 
 CastleAddress ResolveRuntimeProcedure(CastleModule module, const char* name) {
@@ -338,7 +340,7 @@ bool GameIsForegroundForKeyboard() {
 }
 
 // ============================================================================
-// 六、字符串、路径、INI 配置
+// 六、字符串、路径、TOML 配置
 // ============================================================================
 SIZE_T WLen(const wchar_t* text) {
     SIZE_T n = 0u;
@@ -799,9 +801,31 @@ bool CopyWString(wchar_t* out, SIZE_T capacity, const wchar_t* text) {
 }
 
 bool BuildExternalWavPath(const wchar_t* filename, wchar_t* out, SIZE_T capacity) {
-    return IsValidWavFilename(filename) && GetSelfDirectory(out, capacity) &&
-           AppendW(out, capacity, L"Castle_SaveEnhance\\") &&
-           AppendW(out, capacity, filename);
+    wchar_t relative[256] = L"Castle_SaveEnhance\\";
+    CastleWideStringView view{};
+    CastleU32 length = 0u;
+    if (!IsValidWavFilename(filename) || out == nullptr || capacity > 0xFFFFFFFFu ||
+        !AppendW(relative, 256u, filename) || gRuntimePathApi == nullptr ||
+        gRuntimePluginHandle == 0u) return false;
+    view.data = reinterpret_cast<const CastleU16*>(relative);
+    view.length = static_cast<CastleU32>(WLen(relative));
+    return gRuntimePathApi->BuildPluginRelativePathWide(
+        gRuntimePluginHandle, view, reinterpret_cast<CastleU16*>(out),
+        static_cast<CastleU32>(capacity), &length) == CASTLE_OK;
+}
+
+bool BuildExternalWavRelativeUtf8(const wchar_t* filename, char* out,
+                                  DWORD capacity, DWORD* outLength) {
+    wchar_t relative[256] = L"Castle_SaveEnhance\\";
+    int converted;
+    if (outLength != nullptr) *outLength = 0u;
+    if (!IsValidWavFilename(filename) || out == nullptr || capacity == 0u ||
+        outLength == nullptr || !AppendW(relative, 256u, filename)) return false;
+    converted = WideCharToMultiByte(CP_UTF8, 0u, relative, -1, out,
+                                    static_cast<int>(capacity), nullptr, nullptr);
+    if (converted <= 1) return false;
+    *outLength = static_cast<DWORD>(converted - 1);
+    return true;
 }
 
 bool FourCCEquals(const BYTE* p, char a, char b, char c, char d) {
@@ -963,41 +987,37 @@ SoundCacheEntry* LoadScaledSound(const wchar_t* filename) {
     SoundCacheEntry* entry = AllocateSoundCacheEntry(filename);
     if (entry == nullptr) return nullptr;
 
-    wchar_t path[520];
-    if (!BuildExternalWavPath(filename, path, 520u)) return entry;
-
-    HANDLE file = CreateFileW(
-        path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (file == INVALID_HANDLE_VALUE) return entry;
-
-    DWORD high = 0u;
-    const DWORD fileBytes = GetFileSize(file, &high);
-    if (high != 0u || fileBytes == INVALID_FILE_SIZE || fileBytes < 44u ||
-        fileBytes > kMaxExternalWavBytes) {
-        CloseHandle(file);
-        return entry;
-    }
+    char relativePath[512];
+    DWORD relativeLength = 0u;
+    CastleFileBufferV1 buffer{};
+    CastleStringView pathView{};
+    if (gRuntimeFileApi == nullptr ||
+        !BuildExternalWavRelativeUtf8(filename, relativePath,
+                                      static_cast<DWORD>(sizeof(relativePath)),
+                                      &relativeLength)) return entry;
+    pathView.data = relativePath;
+    pathView.length = relativeLength;
+    buffer.magic = CASTLE_FILE_BUFFER_MAGIC;
+    buffer.struct_size = CASTLE_SIZEOF_FILE_BUFFER_V1;
+    buffer.version = CASTLE_FILE_STRUCTURE_VERSION_1;
+    if (gRuntimeFileApi->ReadPluginFile(gRuntimePluginHandle, pathView, &buffer) !=
+            CASTLE_ERROR_BUFFER_TOO_SMALL || buffer.required_capacity < 44u ||
+        buffer.required_capacity > kMaxExternalWavBytes) return entry;
+    const DWORD fileBytes = buffer.required_capacity;
 
     HANDLE heap = GetProcessHeap();
-    if (heap == nullptr) {
-        CloseHandle(file);
-        return entry;
-    }
+    if (heap == nullptr) return entry;
     BYTE* image = reinterpret_cast<BYTE*>(HeapAlloc(heap, 0u, fileBytes));
-    if (image == nullptr) {
-        CloseHandle(file);
-        return entry;
-    }
-
-    DWORD readBytes = 0u;
-    const BOOL readOk = ReadFile(file, image, fileBytes, &readBytes, nullptr);
-    CloseHandle(file);
-    if (readOk == FALSE || readBytes != fileBytes ||
+    if (image == nullptr) return entry;
+    buffer.data = image;
+    buffer.capacity = fileBytes;
+    if (gRuntimeFileApi->ReadPluginFile(gRuntimePluginHandle, pathView, &buffer) != CASTLE_OK ||
+        buffer.bytes_written != fileBytes ||
         !ScaleWaveImageInPlace(image, fileBytes, gConfig.soundVolume)) {
         HeapFree(heap, 0u, image);
         ycrlog::Text("[声音] WAV 无法按当前 Volume 安全缩放，已静默禁用：");
         // 日志工具只有 UTF-8 窄字符串接口；文件名本身通常是 ASCII/拉丁。这里不冒险做编码转换，
-        // 只给固定诊断，详细文件名仍可从 INI 对照。
+        // 只给固定诊断，详细文件名仍可从 TOML 对照。
         ycrlog::Line("请检查对应 [Sound] 文件是否为 PCM WAV；或把 Volume=100 交给 Windows 原样播放。");
         return entry;
     }
@@ -2374,7 +2394,7 @@ extern "C" __declspec(naked) void NextPageBaseLoopHelper() {
 // 这里是 test3 最关键的修正。
 //
 // test1/test2 的错误：
-// - 在 DllMain(DLL_PROCESS_ATTACH) 里面直接读取 INI、GetModuleHandle、VirtualQuery、VirtualProtect、
+// - 在 DllMain(DLL_PROCESS_ATTACH) 里面直接读取 TOML、GetModuleHandle、VirtualQuery、VirtualProtect、
 //   写 RPG.exe 机器码并安装 Hook；
 // - 但 Windows 正在执行 DLL 装载器的 Loader Lock 生命周期，Castle Mod Loader 自己也还没来得及
 //   给这个 ASI 补 Locale/Overrides IAT；
@@ -2390,7 +2410,7 @@ extern "C" __declspec(naked) void NextPageBaseLoopHelper() {
 //
 // 因此 SaveEnhance 从 test3 开始严格遵守这个接口：
 // - DllMain 只保存自身 HMODULE，并关闭无用的线程 attach/detach 通知；
-// - 所有文件 I/O、INI、兼容模块查询、内存检查、VirtualProtect 和 Hook 写入都放进 InitializeASI；
+// - 所有文件 I/O、TOML、兼容模块查询、内存检查、VirtualProtect 和 Hook 写入都放进 InitializeASI；
 // - 这样也保证 SaveEnhance 看见的是 Loader 已经准备好的最终 Locale/Overrides 环境。
 static const void* QueryRuntimeInterface(const CastleRuntimeApiV1* runtimeApi,
                                          const char* interfaceId,
@@ -2421,6 +2441,8 @@ static bool BindRuntimeInputAndSave(const CastleRuntimeApiV1* runtimeApi,
     static const char saveId[] = CASTLE_SAVE_INTERFACE_ID;
     static const char moduleId[] = CASTLE_MODULE_INTERFACE_ID;
     static const char tomlId[] = CASTLE_TOML_INTERFACE_ID;
+    static const char pathId[] = CASTLE_PATH_INTERFACE_ID;
+    static const char fileId[] = CASTLE_FILE_INTERFACE_ID;
     static const char quickLabel[] = "SaveEnhance quick slot";
     static const char autoLabel[] = "SaveEnhance rolling auto slots";
     CastleManualSavePolicyV1 policy{};
@@ -2439,9 +2461,17 @@ static bool BindRuntimeInputAndSave(const CastleRuntimeApiV1* runtimeApi,
     gRuntimeTomlApi = static_cast<const CastleTomlApiV1*>(QueryRuntimeInterface(
         runtimeApi, tomlId, static_cast<CastleU32>(sizeof(tomlId) - 1u),
         CASTLE_TOML_API_VERSION_1, CASTLE_SIZEOF_TOML_API_V1, 0u));
+    gRuntimePathApi = static_cast<const CastlePathApiV1*>(QueryRuntimeInterface(
+        runtimeApi, pathId, static_cast<CastleU32>(sizeof(pathId) - 1u),
+        CASTLE_PATH_API_VERSION_1, CASTLE_SIZEOF_PATH_API_V1, 0u));
+    gRuntimeFileApi = static_cast<const CastleFileApiV1*>(QueryRuntimeInterface(
+        runtimeApi, fileId, static_cast<CastleU32>(sizeof(fileId) - 1u),
+        CASTLE_FILE_API_VERSION_1, CASTLE_SIZEOF_FILE_API_V1,
+        CASTLE_FILE_CAP_READ));
     gRuntimePluginHandle = pluginHandle;
     if (gRuntimeInputApi == nullptr || gRuntimeSaveApi == nullptr ||
-        gRuntimeModuleApi == nullptr || gRuntimeTomlApi == nullptr) return false;
+        gRuntimeModuleApi == nullptr || gRuntimeTomlApi == nullptr ||
+        gRuntimePathApi == nullptr || gRuntimeFileApi == nullptr) return false;
     {
         CastleStringView configPath{"Castle_SaveEnhance.toml", 23u};
         (void)gRuntimeTomlApi->OpenPluginDocument(pluginHandle, configPath,
@@ -2475,22 +2505,17 @@ static bool BindRuntimeInputAndSave(const CastleRuntimeApiV1* runtimeApi,
 }
 
 static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
-                                          CastlePluginHandle pluginHandle,
-                                          bool integrated) {
-    if (integrated) {
-        const auto* logApi = static_cast<const CastleLogApiV1*>(QueryRuntimeInterface(
-            runtimeApi, CASTLE_LOG_INTERFACE_ID,
-            static_cast<CastleU32>(sizeof(CASTLE_LOG_INTERFACE_ID) - 1u),
-            CASTLE_LOG_API_VERSION_1, CASTLE_SIZEOF_LOG_API_V1, 0u));
-        if (logApi == nullptr) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
-        ycrlog::BindRuntime(logApi, pluginHandle);
-    }
+                                          CastlePluginHandle pluginHandle) {
+    const auto* logApi = static_cast<const CastleLogApiV1*>(QueryRuntimeInterface(
+        runtimeApi, CASTLE_LOG_INTERFACE_ID,
+        static_cast<CastleU32>(sizeof(CASTLE_LOG_INTERFACE_ID) - 1u),
+        CASTLE_LOG_API_VERSION_1, CASTLE_SIZEOF_LOG_API_V1, 0u));
+    if (logApi == nullptr) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
+    ycrlog::BindRuntime(logApi, pluginHandle);
     ycrlog::Open(gSelfModule, L"Castle_SaveEnhance.log");
     ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.2.0 RuntimeSDK 启动。");
     ycrlog::Line("By Luminous with ChatGPT");
-    ycrlog::Line(integrated
-        ? "[装载] Integrated：Runtime Path + Hook 事务。"
-        : "[装载] Standalone：插件本地 Path + fail-closed 补丁器。");
+    ycrlog::Line("[装载] RuntimeHost：Path/File/Module/TOML/Hook 统一协调。");
     ycrlog::Line("[槽位] 0=Quick，1~90=Manual，91~99=Rolling Auto；普通菜单保留槽只读。");
     ycrlog::Line("[快捷] F5=Quick Save；F9 连按确认=Quick Load；Controller API 可选联动。");
     ycrlog::Line("[声音] 只使用可选外置 WAV；空/非法/缺失文件静默，不影响存档结果。");
@@ -2498,13 +2523,12 @@ static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
     // 到这个时刻 LoadLibraryExW 已经返回，所以 GetModuleHandle/VirtualQuery/VirtualProtect 等正式
     // 初始化工作不再发生在 DllMain Loader Lock 中。
     gExeBase = ycr::GetExeBase();
-    const bool pathReady = integrated;
-    if (gExeBase == nullptr || !pathReady) {
-        ycrlog::Line("[启动失败] 无法取得 RPG.exe 基址或 Castle_SaveEnhance.ini 路径。");
+    if (gExeBase == nullptr) {
+        ycrlog::Line("[启动失败] 无法取得 RPG.exe 基址。");
         ycrlog::Line("[状态] SaveEnhance 未完整安装；本轮不修改任何存档逻辑。");
         return CASTLE_ERROR_RUNTIME_FAULT;
     }
-    if (integrated && !BindRuntimeInputAndSave(runtimeApi, pluginHandle)) {
+    if (!BindRuntimeInputAndSave(runtimeApi, pluginHandle)) {
         ycrlog::Line("[启动失败] Runtime Input/Save 服务不完整；不退回旧ASI直连或SaveAction私有Hook。");
         return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     }
@@ -2527,15 +2551,13 @@ static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
     // 增加两个阶段日志。即使以后某台机器仍在安装阶段异常停止，也能一眼知道停在“进入预检查”
     // 之前还是“已经开始机器码安装”之后，不再只剩一行配置日志。
     ycrlog::Line("[启动] 开始目标机器码预检查与兼容性检查。");
-    const bool installed = integrated ?
-        InstallAllHooksIntegrated(runtimeApi, pluginHandle) : InstallAllHooks();
+    const bool installed = InstallAllHooksIntegrated(runtimeApi, pluginHandle);
     if (!installed) {
         ycrlog::Line("[状态] SaveEnhance 未完整安装；为保护存档，本轮不提供增强功能。");
         return CASTLE_ERROR_EXPECTED_BYTES;
     }
 
     ycrlog::Line("[状态] SaveEnhance 已完整安装，可以开始实机功能测试。");
-    gStandaloneMode = !integrated;
     return CASTLE_OK;
 }
 
@@ -2543,12 +2565,12 @@ static CastleResult CASTLE_RUNTIME_CALL SaveEnhance_Integrated(
     const CastleRuntimeApiV1* runtimeApi, CastlePluginHandle pluginHandle,
     void* userContext) {
     (void)userContext;
-    return InitializeSaveEnhance(runtimeApi, pluginHandle, true);
+    return InitializeSaveEnhance(runtimeApi, pluginHandle);
 }
 
 static CastleResult CASTLE_RUNTIME_CALL SaveEnhance_Standalone(void* userContext) {
     (void)userContext;
-    return InitializeSaveEnhance(nullptr, 0u, false);
+    return CASTLE_ERROR_RUNTIME_REQUIRED;
 }
 
 static void CASTLE_RUNTIME_CALL SaveEnhance_RuntimeFault(CastleResult failure,
@@ -2615,7 +2637,7 @@ extern "C" void __cdecl InitializeASI() {
 extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) {
 
     if (reason == DLL_PROCESS_ATTACH) {
-        // DllMain 必须尽可能短。这里只记住自己的模块句柄，供稍后的 InitializeASI 构造日志/INI 路径。
+        // DllMain 必须尽可能短。这里只记住模块句柄；TOML、日志和所有业务均在 RuntimeHost 初始化。
         gSelfModule = module;
         DisableThreadLibraryCalls(module);
         CastleRuntimeClient_OnProcessAttach(

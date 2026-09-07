@@ -1860,7 +1860,7 @@ static void FASTCALL Hook_DisplayPresent(void* self, void* unused_edx) {
 
     if (!g_logged_first_present) {
         g_logged_first_present = 1;
-        Runtime_Log("[显示] v0.11 首次动态宽屏 staging Present 完成；所有消息统一侧面板推入/退出，比例、样式与过渡时间均来自 Castle_Widescreen.ini。");
+        Runtime_Log("[显示] v0.11 首次动态宽屏 staging Present 完成；所有消息统一侧面板推入/退出，比例、样式与过渡时间均来自 Castle_Widescreen.toml。");
     }
 }
 

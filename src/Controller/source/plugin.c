@@ -48,7 +48,6 @@
 static HMODULE g_plugin_module;
 static volatile int g_worker_running;
 static int g_controller_initialized;
-static int g_runtime_schedule_mode;
 static const CastleScheduleApiV1* g_schedule_api;
 static CastleTaskHandle g_schedule_task;
 static int g_schedule_first_tick_logged;
@@ -207,19 +206,18 @@ static const CastleScheduleApiV1* plugin_query_schedule(
 }
 
 static int plugin_initialize_controller(const CastleRuntimeApiV1* runtime_api,
-                                        CastlePluginHandle plugin_handle,
-                                        int integrated) {
+                                        CastlePluginHandle plugin_handle) {
     if (!Runtime_Initialize(g_plugin_module)) return 0;
-    if (integrated && !Runtime_BeginSdkHookBatch(runtime_api, plugin_handle)) {
+    if (!Runtime_BeginSdkHookBatch(runtime_api, plugin_handle)) {
         Runtime_Log("[致命] 无法建立 RuntimeSDK Hook 批次。");
         return 0;
     }
     if (!plugin_install_all_hooks()) {
-        if (integrated) Runtime_AbortSdkHookBatch();
+        Runtime_AbortSdkHookBatch();
         Runtime_Log("[致命] Hook 声明过程中出现失败，不进入输入循环。");
         return 0;
     }
-    if (integrated && !Runtime_CommitSdkHookBatch()) {
+    if (!Runtime_CommitSdkHookBatch()) {
         Runtime_Log("[致命] RuntimeSDK Hook 批次预检/提交失败。");
         return 0;
     }
@@ -229,18 +227,15 @@ static int plugin_initialize_controller(const CastleRuntimeApiV1* runtime_api,
     }
     ControlModes_Initialize();
     CastlePad_PublicApiReset();
-    if (integrated && !CastlePad_RegisterRuntimeInputProvider(runtime_api,
-                                                               plugin_handle)) {
+    if (!CastlePad_RegisterRuntimeInputProvider(runtime_api, plugin_handle)) {
         Runtime_Log("[致命] 无法注册 Runtime Input Provider；官方输入联动不会退回 ASI 直连。");
         return 0;
     }
     Runtime_Log("[公共API] CastlePad_GetApi v1 已启用；外部只读取版本化快照。");
-    if (integrated) Runtime_Log("[RuntimeSDK] Controller 权威 Input Provider 已就绪。");
+    Runtime_Log("[RuntimeSDK] Controller 权威 Input Provider 已就绪。");
     g_worker_running = 1;
     g_controller_initialized = 1;
-    Runtime_Log(integrated
-        ? "[启动] Controller RuntimeHost 已就绪。"
-        : "[启动] Controller StandaloneHost 已就绪。");
+    Runtime_Log("[启动] Controller RuntimeHost 已就绪。");
     return 1;
 }
 
@@ -258,16 +253,12 @@ static int plugin_initialize_controller(const CastleRuntimeApiV1* runtime_api,
  * 这个顺序避免“一次 A 同时被战斗和标题吃到”这类跨 Context 污染。
  */
 static DWORD WINAPI PluginWorker(void* unused) {
-    const RuntimeApi* api;
     CursorTakeoverEvent takeover;
     CursorTakeoverEvent cursor_takeover;
     int save_point_active;
     (void)unused;
 
-    if (!g_controller_initialized &&
-        !plugin_initialize_controller(NULL, 0u, 0)) return 0;
-    api = Runtime_Api();
-
+    if (!g_controller_initialized) return 0;
     while (g_worker_running) {
         PadInput_Poll();
         /* 每个 tick 先清空叠加层消费标记；只有真实活动的 overlay 才会在本帧写入。 */
@@ -375,17 +366,8 @@ static DWORD WINAPI PluginWorker(void* unused) {
         }
 
         Runtime_AdvanceTick();
-        /* Runtime Schedule 每次只要求执行一个业务 tick，休眠由统一调度器负责。 */
-        if (g_runtime_schedule_mode) return 0u;
-        if (api->sleep) api->sleep(WORKER_SLEEP_MS);
-        else {
-            /*
-             * 理论上 KERNEL32.Sleep 必定存在；这里仍保留极端兜底。
-             * volatile 防止编译器把这个空循环整个优化掉。
-             */
-            volatile u32 spin;
-            for (spin = 0; spin < 500000u; ++spin) { }
-        }
+        /* Runtime Schedule 每次只要求执行一个业务 tick；休眠由统一调度器负责。 */
+        return 0u;
     }
 
     /*
@@ -436,8 +418,7 @@ static CastleResult CASTLE_RUNTIME_CALL Controller_Integrated(
     if (!Runtime_BindSdkLog(runtime_api, plugin_handle)) {
         return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     }
-    g_runtime_schedule_mode = 1;
-    if (!plugin_initialize_controller(runtime_api, plugin_handle, 1)) {
+    if (!plugin_initialize_controller(runtime_api, plugin_handle)) {
         return CASTLE_ERROR_EXPECTED_BYTES;
     }
     g_schedule_api = plugin_query_schedule(runtime_api);
@@ -459,19 +440,8 @@ static CastleResult CASTLE_RUNTIME_CALL Controller_Integrated(
 }
 
 static CastleResult CASTLE_RUNTIME_CALL Controller_Standalone(void* user_context) {
-    HANDLE thread;
-    const RuntimeApi* api;
     (void)user_context;
-    g_runtime_schedule_mode = 0;
-    if (!plugin_initialize_controller(NULL, 0u, 0)) {
-        return CASTLE_ERROR_EXPECTED_BYTES;
-    }
-    api = Runtime_Api();
-    if (!api->create_thread) return CASTLE_ERROR_RUNTIME_FAULT;
-    thread = api->create_thread(NULL, 0u, PluginWorker, NULL, 0u, NULL);
-    if (!thread) return CASTLE_ERROR_RUNTIME_FAULT;
-    if (api->close_handle) api->close_handle(thread);
-    return CASTLE_OK;
+    return CASTLE_ERROR_RUNTIME_REQUIRED;
 }
 
 static void CASTLE_RUNTIME_CALL Controller_RuntimeFault(CastleResult failure,

@@ -14,7 +14,7 @@ set "SDK=%ROOT%..\RuntimeSDK"
 set "OUT=%ROOT%..\..\build"
 set "OBJ=%ROOT%_build"
 set "TOOLS_CACHE=%ROOT%tools\__pycache__"
-set "TEMPLATE_INI=%ROOT%templete\Castle_SaveEnhance.toml"
+set "TEMPLATE_TOML=%ROOT%templete\Castle_SaveEnhance.toml"
 
 set "POWERSHELL_EXE=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
 
@@ -79,7 +79,7 @@ if not exist "%POWERSHELL_EXE%" (
     goto :fail
 )
 
-if not exist "%TEMPLATE_INI%" (
+if not exist "%TEMPLATE_TOML%" (
     echo [错误] 找不到：  
     echo        templete\Castle_SaveEnhance.toml 
     goto :fail
@@ -215,9 +215,9 @@ rem ============================================================
 
 echo [4/4] 复制 Castle_SaveEnhance.toml...  
 
-copy /y "%TEMPLATE_INI%" "%OUT%\Castle_SaveEnhance.toml" >nul
+copy /y "%TEMPLATE_TOML%" "%OUT%\Castle_SaveEnhance.toml" >nul
 if errorlevel 1 (
-    echo [错误] 复制 INI 失败。  
+    echo [错误] 复制 TOML 失败。  
     goto :fail
 )
 

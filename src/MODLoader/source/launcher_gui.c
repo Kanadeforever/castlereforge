@@ -35,11 +35,11 @@
  *   5. Launcher 继续使用用户提供的 RPG.ico 作为 EXE 资源和窗口类图标。
  *
  * dev6 在上述已验收 GUI 上追加两项：
- *   1. 有“同名 .ini”的 ASI 行显示“编辑”按钮，打开内置 RichEdit 编辑器；注释、节名、变量名、等号和值分别着色；
+ *   1. 有“同名 .toml”的 ASI 行显示“编辑”按钮，打开内置 RichEdit 编辑器；注释、表名、键名、等号和值分别着色；
  *   2. 保存前执行通用 INI 语法检查，错误会报告具体行号并选中问题行；保存采用同目录临时文件 + 原子替换，并尽量保持原编码。
  *
  *
- * dev7 根据 Windows 实机截图修正 INI 编辑器的分色坐标，并把 Loader 内部两个 DLL 的发布位置恢复到 mods\：
+ * dev7 根据 Windows 实机截图修正配置编辑器的分色坐标，并把 Loader 内部两个 DLL 的发布位置恢复到 mods\：
  *   1. RichEdit 分色不再用 WM_GETTEXT 缓冲区下标直接充当选择坐标，改用 EM_LINEINDEX / EM_LINELENGTH / EM_GETTEXTRANGE；
  *   2. 因此 CR/LF 表示差异不会再让颜色每换一行就累计错位，整行注释始终保持统一绿色；
  *   3. Loader 内部 DLL 的目录调整属于 launcher/build 侧，本 GUI 仍不改变 ddraw 或游戏 Hook 边界。
@@ -54,7 +54,7 @@
  *   7. about5 取消 About 错误的 WS_EX_TOOLWINDOW 扩展风格，让 Windows 使用与“设置”一致的普通标题栏/关闭按钮；
  *      About 仍由主窗口拥有、仍走同一模态消息循环，因此这只是非客户区外观修正，不改变窗口生命周期。
  *
- * 依赖策略保持不变：GUI 运行时动态加载 USER32/GDI32，INI 编辑器需要时再动态加载系统 Msftedit/Riched20。CastleModLoader.exe 的静态导入仍只需要 KERNEL32，
+ * 依赖策略保持不变：GUI 运行时动态加载 USER32/GDI32，TOML 编辑器需要时再动态加载系统 Msftedit/Riched20。CastleModLoader.exe 的静态导入仍只需要 KERNEL32，
  * 因而本轮视觉修改不会反向改变已经验证过的 Pre-Loader 最早期依赖边界。
  */
 
@@ -159,7 +159,7 @@ typedef struct TEXTRANGEW_ {
 /*
  * FINDTEXTEXW 是 RichEdit 自己的“按内部字符坐标搜索文字”结构。
  * about3 用它寻找真正的 '\r' 段落分隔符，从而得到“INI 逻辑行”的精确 cp 范围。
- * 这点非常重要：开启自动换行后，EM_GETLINECOUNT/EM_LINEINDEX 会把一条很长的 INI 行
+ * 这点非常重要：开启自动换行后，EM_GETLINECOUNT/EM_LINEINDEX 会把一条很长的 TOML 行
  * 拆成多条“视觉行”，如果继续拿视觉行做语法分色，颜色和错误定位都会错。
  */
 typedef struct FINDTEXTEXW_ {
@@ -653,7 +653,7 @@ static HFONT_ g_about_link_font;
 static int g_about_done;
 
 /*
- * INI 编辑器一次只允许打开一个。它是主窗口的模态子窗口，所以状态可以用一组固定全局变量保存，
+ * TOML 编辑器一次只允许打开一个。它是主窗口的模态子窗口，所以状态可以用一组固定全局变量保存，
  * 不需要为每个窗口动态分配复杂对象。路径最长沿用项目 2048 WCHAR 上限，避免 MAX_PATH 对便携长路径产生额外限制。
  */
 static HWND g_ini_editor_window;
@@ -900,7 +900,7 @@ static int wappend_(WCHAR* dst, UINT cap, const WCHAR* src) {
 
 static int path_join_(WCHAR* out, UINT cap, const WCHAR* left, const WCHAR* right) {
     /*
-     * GUI 只在构造“mods\asi\插件.ini”和临时保存路径时需要拼路径。
+     * GUI 只在构造“mods\asi\插件.toml”和临时保存路径时需要拼路径。
      * 这里和 Core/配置层使用同一条规则：左边末尾没有斜杠才补一个反斜杠，然后再追加右边。
      * 每一步都检查容量，任何溢出风险都直接返回 0，而不是截断成一个看似存在、实际指错位置的路径。
      */
@@ -1056,7 +1056,7 @@ static int calculate_mod_row_layout_(HWND hwnd, const RECT_* row, LauncherModKin
     out->has_remove = 0;
 
     /*
-     * 右侧动作从最右边往左排。危险动作“移除”永远最靠右；正常 ASI 如果存在同名 .ini，
+     * 右侧动作从最右边往左排。危险动作“移除”永远最靠右；正常 ASI 如果存在同名 .toml，
      * “编辑”放在它左边（没有移除时自然就是最右按钮）。这样用户的视线和点击习惯稳定，不会因为状态变化乱跳。
      */
     right_edge = row->right - scale_(hwnd, 12);
@@ -1070,7 +1070,7 @@ static int calculate_mod_row_layout_(HWND hwnd, const RECT_* row, LauncherModKin
     }
 
     /* 只给“当前主 ASI 文件存在 + 磁盘上确有同名 INI”的代码 Mod 显示编辑按钮。Overrides 不猜配置文件。 */
-    if (kind == LAUNCHER_MOD_ASI && item->present && item->has_ini) {
+    if (kind == LAUNCHER_MOD_ASI && item->present && item->has_toml) {
         out->has_edit = 1;
         out->edit_button.right = right_edge;
         out->edit_button.left = out->edit_button.right - scale_(hwnd, 48);
@@ -1326,7 +1326,7 @@ static LRESULT_ CALLBACK list_proc_(HWND hwnd, UINT msg, WPARAM_ w, LPARAM_ l) {
     /*
      * 两个列表共用同一套鼠标规则：
      *   - 点复选框：切换启用状态并立即保存；
-     *   - 点“编辑”：只有 ASI 存在同名 .ini 时打开带语法高亮和保存校验的内置编辑器；
+     *   - 点“编辑”：只有 ASI 存在同名 .toml 时打开带语法高亮和保存校验的内置编辑器；
      *   - 点“移除”：只清理磁盘已经缺失的 mods.ini 条目；
      *   - 按住把手或名称区域再纵向移动：进入拖动排序；
      *   - 单击其它区域但不移动：只改变当前选中行。
@@ -1356,7 +1356,7 @@ static LRESULT_ CALLBACK list_proc_(HWND hwnd, UINT msg, WPARAM_ w, LPARAM_ l) {
 
             if (layout.has_edit && point_in_rect_(&layout.edit_button, x, y)) {
                 /*
-                 * 编辑动作只读取/保存该 ASI 身边的同名 INI，不改 mods.ini，也不影响插件启停和排序。
+                 * 编辑动作只读取/保存该 ASI 身边的同名 TOML，不改 mods.ini，也不影响插件启停和排序。
                  * show_ini_editor_ 自己还会重新构造并验证路径，UI 的 has_edit 只是“是否显示按钮”，不是安全边界。
                  */
                 show_ini_editor_((UINT)index);
@@ -1702,7 +1702,7 @@ static void paint_main_(HWND hwnd) {
     g_ui.SetTextColor(dc, RGB_(116, 125, 136));
     text.top = scale_(hwnd, 38);
     text.bottom = scale_(hwnd, 64);
-    g_ui.DrawTextW(dc, (const WCHAR*)L"ASI 从上到下加载；Overrides 越靠下优先级越高；有同名 .ini 的 ASI 可直接编辑，缺失旧条目可移除。", -1, &text,
+    g_ui.DrawTextW(dc, (const WCHAR*)L"ASI 从上到下加载；Overrides 越靠下优先级越高；有同名 .toml 的 ASI 可直接编辑，缺失旧条目可移除。", -1, &text,
                    DT_LEFT_ | DT_VCENTER_ | DT_SINGLELINE_ | DT_END_ELLIPSIS_ | DT_NOPREFIX_);
 
     /*
@@ -2444,7 +2444,7 @@ static void show_about_dialog_(void) {
     g_ui.SetFocus(g_main);
 }
 
-/* ---------- ASI 同名 INI 编辑器 ---------- */
+/* ---------- ASI 同名 TOML 编辑器 ---------- */
 
 #define INI_ENCODING_ANSI_       1
 #define INI_ENCODING_UTF8_       2
@@ -2459,20 +2459,91 @@ static void show_about_dialog_(void) {
 #define MOVEFILE_WRITE_THROUGH_      0x00000008u
 
 static int is_space_tab_(WCHAR c) {
-    /* INI 的“左右空白”只处理空格和 Tab；换行在逐行扫描时已经被分离。 */
+    /* TOML 的行内左右空白只处理空格和 Tab；换行在逐行扫描时已经被分离。 */
     return c == (WCHAR)' ' || c == (WCHAR)'\t';
 }
 
 static int is_full_line_comment_(const WCHAR* text, UINT start, UINT end) {
     /*
-     * 标准 INI 最常见的是 ';' 和 '#' 注释；不少 ASI 插件也把 '//' 当整行说明。
-     * 这里只在“去掉行首空白以后”判断，因此值里的 http://、分号等不会被误当成注释。
+     * 标准 TOML 只使用 # 注释。旧 INI 的分号和 // 在这里不能继续放行，否则编辑器会
+     * 声称保存成功，而 Runtime 的 TOML 解析器会在下一次启动时拒绝整份配置。
      */
     UINT i = start;
     while (i < end && is_space_tab_(text[i])) ++i;
-    if (i >= end) return 0;
-    if (text[i] == (WCHAR)';' || text[i] == (WCHAR)'#') return 1;
-    return text[i] == (WCHAR)'/' && i + 1u < end && text[i + 1u] == (WCHAR)'/';
+    return i < end && text[i] == (WCHAR)'#';
+}
+
+static int is_toml_bare_name_char_(WCHAR c) {
+    /* Runtime TOML v1 的表名和键名允许 ASCII 字母、数字、下划线、短横线和点号。 */
+    return (c >= (WCHAR)'A' && c <= (WCHAR)'Z') ||
+           (c >= (WCHAR)'a' && c <= (WCHAR)'z') ||
+           (c >= (WCHAR)'0' && c <= (WCHAR)'9') ||
+           c == (WCHAR)'_' || c == (WCHAR)'-' || c == (WCHAR)'.';
+}
+
+static UINT toml_content_end_(const WCHAR* text, UINT start, UINT end) {
+    /* # 只有在双引号字符串外才开始注释，字符串里的 \# 必须继续保留为普通内容。 */
+    UINT i;
+    int in_string = 0;
+    int escaped = 0;
+    for (i = start; i < end; ++i) {
+        WCHAR c = text[i];
+        if (in_string) {
+            if (escaped) escaped = 0;
+            else if (c == (WCHAR)'\\') escaped = 1;
+            else if (c == (WCHAR)'"') in_string = 0;
+        } else if (c == (WCHAR)'"') {
+            in_string = 1;
+        } else if (c == (WCHAR)'#') {
+            return i;
+        }
+    }
+    return end;
+}
+
+static int validate_toml_value_(const WCHAR* text, UINT start, UINT end) {
+    UINT i;
+    while (start < end && is_space_tab_(text[start])) ++start;
+    while (end > start && is_space_tab_(text[end - 1u])) --end;
+    if (start >= end) return 0;
+
+    /* Runtime v1 支持标准基本字符串及 \n、\r、\t、\\、\" 五种安全转义。 */
+    if (text[start] == (WCHAR)'"') {
+        if (end - start < 2u || text[end - 1u] != (WCHAR)'"') return 0;
+        for (i = start + 1u; i + 1u < end; ++i) {
+            if (text[i] == (WCHAR)'"') return 0;
+            if (text[i] == (WCHAR)'\\') {
+                WCHAR escaped;
+                if (++i + 1u >= end) return 0;
+                escaped = text[i];
+                if (escaped != (WCHAR)'n' && escaped != (WCHAR)'r' &&
+                    escaped != (WCHAR)'t' && escaped != (WCHAR)'\\' &&
+                    escaped != (WCHAR)'"') return 0;
+            }
+        }
+        return 1;
+    }
+
+    /* 布尔值必须使用 TOML 的小写 true/false，不能继续接受旧 INI 的任意文字。 */
+    if (end - start == 4u && text[start] == (WCHAR)'t' && text[start + 1u] == (WCHAR)'r' &&
+        text[start + 2u] == (WCHAR)'u' && text[start + 3u] == (WCHAR)'e') return 1;
+    if (end - start == 5u && text[start] == (WCHAR)'f' && text[start + 1u] == (WCHAR)'a' &&
+        text[start + 2u] == (WCHAR)'l' && text[start + 3u] == (WCHAR)'s' &&
+        text[start + 4u] == (WCHAR)'e') return 1;
+
+    /* 整数允许一个前导正负号；下划线只能夹在两个数字之间。 */
+    i = start;
+    if (text[i] == (WCHAR)'+' || text[i] == (WCHAR)'-') {
+        if (++i >= end) return 0;
+    }
+    for (; i < end; ++i) {
+        if (text[i] >= (WCHAR)'0' && text[i] <= (WCHAR)'9') continue;
+        if (text[i] == (WCHAR)'_' && i > start && i + 1u < end &&
+            text[i - 1u] >= (WCHAR)'0' && text[i - 1u] <= (WCHAR)'9' &&
+            text[i + 1u] >= (WCHAR)'0' && text[i + 1u] <= (WCHAR)'9') continue;
+        return 0;
+    }
+    return 1;
 }
 
 static void set_ini_error_(WCHAR* out, UINT cap, UINT line_no, const WCHAR* reason, const WCHAR* text, UINT start, UINT end) {
@@ -2486,7 +2557,7 @@ static void set_ini_error_(WCHAR* out, UINT cap, UINT line_no, const WCHAR* reas
     wcopy_(out, cap, (const WCHAR*)L"第 ");
     wappend_(out, cap, num);
     wappend_(out, cap, (const WCHAR*)L" 行：");
-    wappend_(out, cap, reason ? reason : (const WCHAR*)L"INI 语法不合法。");
+    wappend_(out, cap, reason ? reason : (const WCHAR*)L"TOML 语法不合法。");
 
     /*
      * 再附上最多 100 个字符的原行预览。这样弹窗不仅告诉用户“第几行”，还直接展示出问题内容；
@@ -2506,13 +2577,9 @@ static void set_ini_error_(WCHAR* out, UINT cap, UINT line_no, const WCHAR* reas
 static int validate_ini_text_(const WCHAR* text, UINT chars, WCHAR* error, UINT error_cap,
                               LONG* error_start, LONG* error_end, UINT* error_line) {
     /*
-     * 这是“通用 INI 结构检查”，不是某个插件的业务配置检查。编辑器不知道每个 ASI 允许哪些键和值，
-     * 因此只验证所有正常 INI 都应该满足的语法边界：
-     *   - 空行和整行注释允许；
-     *   - section 必须是 [名称]，名称不能为空，']' 后只能是空白或注释；
-     *   - 普通设置必须包含 '='，并且等号左边的键名去掉空白后不能为空；
-     *   - 文本里不能混入除 Tab 之外的不可见控制字符。
-     * 值内容保持开放：数字、布尔、路径、中文、再次出现 '=' 都由具体插件自己解释。
+     * 这是 Runtime TOML v1 的通用结构检查，不猜每个 ASI 的业务范围，但会严格验证当前
+     * 公共服务真正支持的表、裸键、整数、布尔和双引号字符串。这样 GUI 的“保存成功”与
+     * 游戏下次启动能否打开文档使用同一条语法边界。
      */
     UINT line_start = 0u;
     UINT line_no = 1u;
@@ -2525,7 +2592,7 @@ static int validate_ini_text_(const WCHAR* text, UINT chars, WCHAR* error, UINT 
 
     while (line_start <= chars) {
         UINT line_end = line_start;
-        UINT left, right, i;
+        UINT left, right, content_right, i;
 
         while (line_end < chars && text[line_end] != (WCHAR)'\r' && text[line_end] != (WCHAR)'\n') ++line_end;
         left = line_start;
@@ -2544,13 +2611,22 @@ static int validate_ini_text_(const WCHAR* text, UINT chars, WCHAR* error, UINT 
         }
 
         if (left < right && !is_full_line_comment_(text, line_start, line_end)) {
+            content_right = toml_content_end_(text, left, right);
+            while (content_right > left && is_space_tab_(text[content_right - 1u])) --content_right;
             if (text[left] == (WCHAR)'[') {
                 UINT close = left + 1u;
                 UINT name_left = left + 1u;
                 UINT name_right;
-                while (close < right && text[close] != (WCHAR)']') ++close;
-                if (close >= right) {
-                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"节名以 '[' 开始，但这一行缺少右方括号 ']'.", text, line_start, line_end);
+                if (left + 1u < content_right && text[left + 1u] == (WCHAR)'[') {
+                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"插件配置只支持普通 [表]，不支持 [[数组表]]。", text, line_start, line_end);
+                    if (error_start) *error_start = (LONG)line_start;
+                    if (error_end) *error_end = (LONG)line_end;
+                    if (error_line) *error_line = line_no;
+                    return 0;
+                }
+                while (close < content_right && text[close] != (WCHAR)']') ++close;
+                if (close >= content_right) {
+                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"表名以 '[' 开始，但这一行缺少右方括号 ']'。", text, line_start, line_end);
                     if (error_start) *error_start = (LONG)line_start;
                     if (error_end) *error_end = (LONG)line_end;
                     if (error_line) *error_line = line_no;
@@ -2560,19 +2636,25 @@ static int validate_ini_text_(const WCHAR* text, UINT chars, WCHAR* error, UINT 
                 while (name_left < name_right && is_space_tab_(text[name_left])) ++name_left;
                 while (name_right > name_left && is_space_tab_(text[name_right - 1u])) --name_right;
                 if (name_left >= name_right) {
-                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"节名不能为空；请在 [ 和 ] 之间填写名称。", text, line_start, line_end);
+                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"表名不能为空；请在 [ 和 ] 之间填写名称。", text, line_start, line_end);
                     if (error_start) *error_start = (LONG)line_start;
                     if (error_end) *error_end = (LONG)line_end;
                     if (error_line) *error_line = line_no;
                     return 0;
                 }
-
-                /* ']' 之后只允许空白，或者再跟一个整行尾注释标记。 */
+                for (i = name_left; i < name_right; ++i) {
+                    if (!is_toml_bare_name_char_(text[i])) {
+                        set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"表名含有 Runtime TOML v1 不支持的字符。", text, line_start, line_end);
+                        if (error_start) *error_start = (LONG)line_start;
+                        if (error_end) *error_end = (LONG)line_end;
+                        if (error_line) *error_line = line_no;
+                        return 0;
+                    }
+                }
                 i = close + 1u;
-                while (i < right && is_space_tab_(text[i])) ++i;
-                if (i < right && !(text[i] == (WCHAR)';' || text[i] == (WCHAR)'#' ||
-                                   (text[i] == (WCHAR)'/' && i + 1u < right && text[i + 1u] == (WCHAR)'/'))) {
-                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"节名右方括号 ']' 后出现了无法识别的内容。", text, line_start, line_end);
+                while (i < content_right && is_space_tab_(text[i])) ++i;
+                if (i < content_right) {
+                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"表名右方括号 ']' 后出现了无法识别的内容。", text, line_start, line_end);
                     if (error_start) *error_start = (LONG)line_start;
                     if (error_end) *error_end = (LONG)line_end;
                     if (error_line) *error_line = line_no;
@@ -2581,9 +2663,9 @@ static int validate_ini_text_(const WCHAR* text, UINT chars, WCHAR* error, UINT 
             } else {
                 UINT eq = left;
                 UINT key_right;
-                while (eq < right && text[eq] != (WCHAR)'=') ++eq;
-                if (eq >= right) {
-                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"普通设置必须写成“变量名=值”；这一行缺少等号 '='。", text, line_start, line_end);
+                while (eq < content_right && text[eq] != (WCHAR)'=') ++eq;
+                if (eq >= content_right) {
+                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"普通设置必须写成“键名 = 值”；这一行缺少等号 '='。", text, line_start, line_end);
                     if (error_start) *error_start = (LONG)line_start;
                     if (error_end) *error_end = (LONG)line_end;
                     if (error_line) *error_line = line_no;
@@ -2592,7 +2674,23 @@ static int validate_ini_text_(const WCHAR* text, UINT chars, WCHAR* error, UINT 
                 key_right = eq;
                 while (key_right > left && is_space_tab_(text[key_right - 1u])) --key_right;
                 if (key_right <= left) {
-                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"等号左边的变量名不能为空。", text, line_start, line_end);
+                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"等号左边的键名不能为空。", text, line_start, line_end);
+                    if (error_start) *error_start = (LONG)line_start;
+                    if (error_end) *error_end = (LONG)line_end;
+                    if (error_line) *error_line = line_no;
+                    return 0;
+                }
+                for (i = left; i < key_right; ++i) {
+                    if (!is_toml_bare_name_char_(text[i])) {
+                        set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"键名含有 Runtime TOML v1 不支持的字符。", text, line_start, line_end);
+                        if (error_start) *error_start = (LONG)line_start;
+                        if (error_end) *error_end = (LONG)line_end;
+                        if (error_line) *error_line = line_no;
+                        return 0;
+                    }
+                }
+                if (!validate_toml_value_(text, eq + 1u, content_right)) {
+                    set_ini_error_(error, error_cap, line_no, (const WCHAR*)L"值必须是整数、小写 true/false 或英文双引号字符串。", text, line_start, line_end);
                     if (error_start) *error_start = (LONG)line_start;
                     if (error_end) *error_end = (LONG)line_end;
                     if (error_line) *error_line = line_no;
@@ -2614,7 +2712,7 @@ typedef BOOL (WINAPI *PFN_VirtualFree_)(LPVOID, SIZE_T, DWORD);
 
 static PFN_VirtualAlloc_ get_virtual_alloc_(void) {
     /*
-     * Launcher 一直坚持“最终 PE 静态只导入 KERNEL32 中既有的最小函数集合”。INI 编辑器需要较大的临时缓冲区，
+     * Launcher 一直坚持“最终 PE 静态只导入 KERNEL32 中既有的最小函数集合”。TOML 编辑器需要较大的临时缓冲区，
      * 但没有必要为了两个内存函数重新扩大我们手工维护的 x86 导入表。因此这里和 USER32/GDI32 一样，
      * 从已经加载的 KERNEL32 运行时取 VirtualAlloc 地址。GetModuleHandleW / GetProcAddress 本来就是 Launcher 的稳定依赖。
      *
@@ -2663,108 +2761,75 @@ static int load_ini_text_(const WCHAR* path, WCHAR** out_text, UINT* out_chars, 
     UINT offset = 0u;
     UINT payload;
     int chars = 0;
-    UINT i;
-    int has_high_byte = 0;
 
     if (out_text) *out_text = NULL_PTR;
     if (out_chars) *out_chars = 0u;
-    if (out_encoding) *out_encoding = INI_ENCODING_ANSI_;
+    if (out_encoding) *out_encoding = INI_ENCODING_UTF8_;
     if (error && error_cap) error[0] = 0;
     if (!path || !out_text || !out_chars || !out_encoding) return 0;
 
     file = CreateFileW(path, GENERIC_READ_, FILE_SHARE_READ_ | FILE_SHARE_WRITE_, NULL_PTR,
                        OPEN_EXISTING_, FILE_ATTRIBUTE_NORMAL_, NULL_PTR);
     if (file == INVALID_HANDLE_VALUE_) {
-        if (error) wcopy_(error, error_cap, (const WCHAR*)L"无法打开这个 INI；文件可能已被移动、删除或没有读取权限。");
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"无法打开这个 TOML；文件可能已被移动、删除或没有读取权限。");
         return 0;
     }
     size = GetFileSize(file, &high);
     if (high != 0u || size > INI_EDITOR_MAX_BYTES_) {
         CloseHandle(file);
-        if (error) wcopy_(error, error_cap, (const WCHAR*)L"INI 文件过大。内置编辑器为避免一次占用过多内存，单文件上限为 8 MiB。");
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"TOML 文件过大。内置编辑器为避免一次占用过多内存，单文件上限为 8 MiB。");
         return 0;
     }
 
     bytes = alloc_bytes_(size + 1u);
     if (!bytes) {
         CloseHandle(file);
-        if (error) wcopy_(error, error_cap, (const WCHAR*)L"没有足够内存读取 INI。");
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"没有足够内存读取 TOML。");
         return 0;
     }
     if (size && (!ReadFile(file, bytes, size, &read, NULL_PTR) || read != size)) {
         CloseHandle(file);
         free_alloc_(bytes);
-        if (error) wcopy_(error, error_cap, (const WCHAR*)L"读取 INI 时发生错误；文件内容没有进入编辑器。");
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"读取 TOML 时发生错误；文件内容没有进入编辑器。");
         return 0;
     }
     CloseHandle(file);
 
-    /* 先看 BOM，因为 BOM 是最可靠的编码声明。 */
+    /*
+     * TOML 标准只允许 UTF-8。Runtime 兼容“UTF-8 无 BOM”和“UTF-8 BOM”两种常见文件，
+     * 但明确拒绝旧 INI 时代的 ANSI/UTF-16，避免 GUI 保存成功而游戏端无法读取。
+     */
     if (size >= 2u && bytes[0] == 0xFFu && bytes[1] == 0xFEu) {
-        payload = size - 2u;
-        if (payload & 1u) {
-            free_alloc_(bytes);
-            if (error) wcopy_(error, error_cap, (const WCHAR*)L"UTF-16LE INI 的字节数不是偶数，文件可能已经损坏。");
-            return 0;
-        }
-        text = alloc_wchars_(payload / 2u);
-        if (!text) { free_alloc_(bytes); if (error) wcopy_(error, error_cap, (const WCHAR*)L"没有足够内存解码 INI。"); return 0; }
-        for (i = 0u; i < payload / 2u; ++i) text[i] = (WCHAR)((UINT)bytes[2u + i * 2u] | ((UINT)bytes[3u + i * 2u] << 8));
-        chars = (int)(payload / 2u);
-        *out_encoding = INI_ENCODING_UTF16LE_;
+        free_alloc_(bytes);
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"TOML 必须使用 UTF-8；当前文件是 UTF-16LE，请先转换编码。");
+        return 0;
     } else if (size >= 2u && bytes[0] == 0xFEu && bytes[1] == 0xFFu) {
-        payload = size - 2u;
-        if (payload & 1u) {
-            free_alloc_(bytes);
-            if (error) wcopy_(error, error_cap, (const WCHAR*)L"UTF-16BE INI 的字节数不是偶数，文件可能已经损坏。");
-            return 0;
-        }
-        text = alloc_wchars_(payload / 2u);
-        if (!text) { free_alloc_(bytes); if (error) wcopy_(error, error_cap, (const WCHAR*)L"没有足够内存解码 INI。"); return 0; }
-        for (i = 0u; i < payload / 2u; ++i) text[i] = (WCHAR)(((UINT)bytes[2u + i * 2u] << 8) | (UINT)bytes[3u + i * 2u]);
-        chars = (int)(payload / 2u);
-        *out_encoding = INI_ENCODING_UTF16BE_;
+        free_alloc_(bytes);
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"TOML 必须使用 UTF-8；当前文件是 UTF-16BE，请先转换编码。");
+        return 0;
     } else {
         if (size >= 3u && bytes[0] == 0xEFu && bytes[1] == 0xBBu && bytes[2] == 0xBFu) {
             offset = 3u;
             *out_encoding = INI_ENCODING_UTF8_BOM_;
         } else {
-            for (i = 0u; i < size; ++i) if (bytes[i] >= 0x80u) { has_high_byte = 1; break; }
-            /*
-             * 无 BOM 且全 ASCII 的老插件 INI 更可能是 ANSI；ASCII 在 ANSI/UTF-8 中字节本来相同，
-             * 选择 ANSI 可以在用户随后输入本地文字时尽量保持旧插件的传统编码习惯。
-             */
-            *out_encoding = has_high_byte ? INI_ENCODING_UTF8_ : INI_ENCODING_ANSI_;
+            *out_encoding = INI_ENCODING_UTF8_;
         }
         payload = size - offset;
-
-        if (*out_encoding == INI_ENCODING_UTF8_ || *out_encoding == INI_ENCODING_UTF8_BOM_) {
-            if (payload) chars = MultiByteToWideChar(CP_UTF8_, MB_ERR_INVALID_CHARS_, (LPCSTR)(bytes + offset), (int)payload, NULL_PTR, 0);
-            if (payload && chars <= 0 && *out_encoding == INI_ENCODING_UTF8_) {
-                /* 无 BOM 的高位字节不是合法 UTF-8，就按当前 Windows ANSI 代码页解释并按同编码保存。 */
-                *out_encoding = INI_ENCODING_ANSI_;
-                chars = MultiByteToWideChar(CP_ACP_, 0u, (LPCSTR)bytes, (int)size, NULL_PTR, 0);
-                offset = 0u;
-                payload = size;
-            }
-        } else if (payload) {
-            chars = MultiByteToWideChar(CP_ACP_, 0u, (LPCSTR)bytes, (int)payload, NULL_PTR, 0);
-        }
-
+        if (payload) chars = MultiByteToWideChar(CP_UTF8_, MB_ERR_INVALID_CHARS_,
+            (LPCSTR)(bytes + offset), (int)payload, NULL_PTR, 0);
         if (payload && chars <= 0) {
             free_alloc_(bytes);
-            if (error) wcopy_(error, error_cap, (const WCHAR*)L"无法识别 INI 的文字编码；原文件没有被修改。");
+            if (error) wcopy_(error, error_cap, (const WCHAR*)L"TOML 不是合法 UTF-8；原文件没有被修改。");
             return 0;
         }
         text = alloc_wchars_((UINT)chars);
-        if (!text) { free_alloc_(bytes); if (error) wcopy_(error, error_cap, (const WCHAR*)L"没有足够内存解码 INI。"); return 0; }
+        if (!text) { free_alloc_(bytes); if (error) wcopy_(error, error_cap, (const WCHAR*)L"没有足够内存解码 TOML。"); return 0; }
         if (payload) {
-            UINT cp = (*out_encoding == INI_ENCODING_ANSI_) ? CP_ACP_ : CP_UTF8_;
-            DWORD flags = cp == CP_UTF8_ ? MB_ERR_INVALID_CHARS_ : 0u;
-            if (MultiByteToWideChar(cp, flags, (LPCSTR)(bytes + offset), (int)payload, text, chars) != chars) {
+            if (MultiByteToWideChar(CP_UTF8_, MB_ERR_INVALID_CHARS_,
+                    (LPCSTR)(bytes + offset), (int)payload, text, chars) != chars) {
                 free_alloc_(text);
                 free_alloc_(bytes);
-                if (error) wcopy_(error, error_cap, (const WCHAR*)L"解码 INI 时发生错误；原文件没有被修改。");
+                if (error) wcopy_(error, error_cap, (const WCHAR*)L"解码 TOML 时发生错误；原文件没有被修改。");
                 return 0;
             }
         }
@@ -2834,7 +2899,7 @@ static int find_next_ini_line_break_(LONG start, LONG doc_end, LONG* break_start
 
     /*
      * RichEdit 通常把段落分隔符规范化成 '\r'，但旧版本/特殊粘贴来源也可能暴露 '\n'。
-     * 两个都搜索并取更靠前的那个，保证“逻辑 INI 行”不依赖某一个 RichEdit 版本的换行表示。
+     * 两个都搜索并取更靠前的那个，保证“逻辑 TOML 行”不依赖某一个 RichEdit 版本的换行表示。
      */
     cr.chrg.cpMin = start;
     cr.chrg.cpMax = doc_end;
@@ -2924,7 +2989,7 @@ static void colorize_ini_editor_(void) {
      *
      * 这里改为真正的“逻辑行”流程：
      *   1. 用 EM_FINDTEXTEXW 在 RichEdit 自己的 cp 坐标里寻找 '\r'/'\n'；
-     *   2. 两个换行符之间才是一条真实 INI 行；
+     *   2. 两个换行符之间才是一条真实 TOML 行；
      *   3. 再用 EM_GETTEXTRANGE 读取同一 cp 区间；
      *   4. 所有颜色仍用同一 cp 区间写回。
      *
@@ -2982,8 +3047,7 @@ static void colorize_ini_editor_(void) {
                             UINT tail = close + 1u;
                             set_rich_color_(cp_start + (LONG)left, cp_start + (LONG)(close + 1u), RGB_(116, 82, 164));
                             while (tail < right && is_space_tab_(line[tail])) ++tail;
-                            if (tail < right && (line[tail] == (WCHAR)';' || line[tail] == (WCHAR)'#' ||
-                                (line[tail] == (WCHAR)'/' && tail + 1u < right && line[tail + 1u] == (WCHAR)'/'))) {
+                            if (tail < right && line[tail] == (WCHAR)'#') {
                                 set_rich_color_(cp_start + (LONG)tail, cp_start + line_len, RGB_(86, 124, 78));
                             } else if (tail < right) {
                                 set_rich_color_(cp_start + (LONG)tail, cp_start + (LONG)right, RGB_(220, 38, 38));
@@ -2997,17 +3061,21 @@ static void colorize_ini_editor_(void) {
                         while (eq < right && line[eq] != (WCHAR)'=') ++eq;
                         if (eq < right) {
                             UINT value_left = eq + 1u;
+                            UINT comment_start;
                             key_right = eq;
                             while (key_right > left && is_space_tab_(line[key_right - 1u])) --key_right;
                             while (value_left < right && is_space_tab_(line[value_left])) ++value_left;
+                            comment_start = toml_content_end_(line, value_left, right);
 
                             if (key_right > left)
                                 set_rich_color_(cp_start + (LONG)left, cp_start + (LONG)key_right, RGB_(38, 98, 162));
                             else
                                 set_rich_color_(cp_start + (LONG)left, cp_start + (LONG)(eq + 1u), RGB_(220, 38, 38));
                             set_rich_color_(cp_start + (LONG)eq, cp_start + (LONG)(eq + 1u), RGB_(122, 130, 140));
-                            if (value_left < right)
-                                set_rich_color_(cp_start + (LONG)value_left, cp_start + (LONG)right, RGB_(173, 91, 38));
+                            if (value_left < comment_start)
+                                set_rich_color_(cp_start + (LONG)value_left, cp_start + (LONG)comment_start, RGB_(173, 91, 38));
+                            if (comment_start < right)
+                                set_rich_color_(cp_start + (LONG)comment_start, cp_start + (LONG)right, RGB_(86, 124, 78));
                         } else {
                             set_rich_color_(cp_start + (LONG)left, cp_start + (LONG)right, RGB_(220, 38, 38));
                         }
@@ -3021,7 +3089,7 @@ static void colorize_ini_editor_(void) {
 
         /*
          * 跳过刚找到的换行；如果 RichEdit 把 CRLF 暴露成两个相邻字符，再顺手跨过第二个，
-         * 这样下一轮一定从下一条真正的 INI 逻辑行开始。
+     * 这样下一轮一定从下一条真正的 TOML 逻辑行开始。
          */
         cp_start = break_end;
         if (cp_start < doc_end) {
@@ -3069,11 +3137,9 @@ static int save_ini_editor_file_(WCHAR* error, UINT error_cap, LONG* bad_start, 
     UINT byte_count = 0u;
     UINT prefix = 0u;
     int needed = 0;
-    BOOL used_default = FALSE_;
     WCHAR temp_path[CASTLE_PATH_CAP];
     HANDLE file;
     DWORD wrote = 0u;
-    UINT i;
 
     if (error && error_cap) error[0] = 0;
     if (bad_start) *bad_start = -1;
@@ -3085,74 +3151,49 @@ static int save_ini_editor_file_(WCHAR* error, UINT error_cap, LONG* bad_start, 
         return 0;
     }
 
-    /* 第一道门：先验证结构。任何非法行都在写临时文件之前停止，因此原 INI 绝不会被半写坏。 */
+    /* 第一道门：先验证结构。任何非法行都在写临时文件之前停止，因此原 TOML 绝不会被半写坏。 */
     if (!validate_ini_text_(text, chars, error, error_cap, bad_start, bad_end, bad_line)) {
         free_alloc_(text);
         return 0;
     }
 
-    if (g_ini_editor_encoding == INI_ENCODING_UTF16LE_ || g_ini_editor_encoding == INI_ENCODING_UTF16BE_) {
-        prefix = 2u;
-        byte_count = prefix + chars * 2u;
-        encoded = alloc_bytes_(byte_count);
-        if (!encoded) { free_alloc_(text); if (error) wcopy_(error, error_cap, (const WCHAR*)L"没有足够内存编码 INI；本次没有保存。"); return 0; }
-        encoded[0] = g_ini_editor_encoding == INI_ENCODING_UTF16LE_ ? 0xFFu : 0xFEu;
-        encoded[1] = g_ini_editor_encoding == INI_ENCODING_UTF16LE_ ? 0xFEu : 0xFFu;
-        for (i = 0u; i < chars; ++i) {
-            WCHAR c = text[i];
-            if (g_ini_editor_encoding == INI_ENCODING_UTF16LE_) {
-                encoded[prefix + i * 2u] = (BYTE)(c & 0xFFu);
-                encoded[prefix + i * 2u + 1u] = (BYTE)((c >> 8) & 0xFFu);
-            } else {
-                encoded[prefix + i * 2u] = (BYTE)((c >> 8) & 0xFFu);
-                encoded[prefix + i * 2u + 1u] = (BYTE)(c & 0xFFu);
-            }
-        }
-    } else {
-        UINT cp = g_ini_editor_encoding == INI_ENCODING_ANSI_ ? CP_ACP_ : CP_UTF8_;
-        DWORD convert_flags = cp == CP_ACP_ ? WC_NO_BEST_FIT_CHARS_ : 0u;
-        prefix = g_ini_editor_encoding == INI_ENCODING_UTF8_BOM_ ? 3u : 0u;
-        /*
-         * ANSI 保存时明确禁止 Windows 的“近似字符替换”(best fit)。例如某个 Unicode 字符如果不能真正写回当前 ANSI 代码页，
-         * 我们宁可拒绝保存并告诉用户，也不能偷偷换成一个看起来相似但字节已经不同的字符。UTF-8 不允许传这个标志，所以仍用 0。
-         */
-        if (chars) needed = WideCharToMultiByte(cp, convert_flags, text, (int)chars, NULL_PTR, 0, NULL_PTR,
-                                                cp == CP_ACP_ ? &used_default : NULL_PTR);
-        if (chars && needed <= 0) {
-            free_alloc_(text);
-            if (error) wcopy_(error, error_cap, (const WCHAR*)L"无法按原文件编码重新编码文字；本次没有保存。");
-            return 0;
-        }
-        if (cp == CP_ACP_ && used_default) {
-            free_alloc_(text);
-            if (error) wcopy_(error, error_cap, (const WCHAR*)L"原 INI 是 ANSI 编码，但当前输入包含本机 ANSI 代码页无法表示的字符。为避免静默变成问号，本次拒绝保存。请改用该插件支持的字符，或先在外部工具明确转换编码。");
-            return 0;
-        }
-        byte_count = prefix + (UINT)needed;
-        encoded = alloc_bytes_(byte_count);
-        if (!encoded) { free_alloc_(text); if (error) wcopy_(error, error_cap, (const WCHAR*)L"没有足够内存编码 INI；本次没有保存。"); return 0; }
-        if (prefix == 3u) { encoded[0] = 0xEFu; encoded[1] = 0xBBu; encoded[2] = 0xBFu; }
-        used_default = FALSE_;
-        if (chars && WideCharToMultiByte(cp, convert_flags, text, (int)chars, (LPSTR)(encoded + prefix), needed, NULL_PTR,
-                                         cp == CP_ACP_ ? &used_default : NULL_PTR) != needed) {
-            free_alloc_(encoded);
-            free_alloc_(text);
-            if (error) wcopy_(error, error_cap, (const WCHAR*)L"编码 INI 时发生错误；本次没有保存。");
-            return 0;
-        }
-        if (cp == CP_ACP_ && used_default) {
-            free_alloc_(encoded);
-            free_alloc_(text);
-            if (error) wcopy_(error, error_cap, (const WCHAR*)L"ANSI 编码转换会丢失字符；为避免损坏，本次没有保存。");
-            return 0;
-        }
+    /*
+     * 第二道门：只编码成 UTF-8。原文件有 UTF-8 BOM 时继续保留，没有时也不擅自新增，
+     * 因而编辑器既遵守 TOML 标准，又不会制造无意义的整文件字节变化。
+     */
+    prefix = g_ini_editor_encoding == INI_ENCODING_UTF8_BOM_ ? 3u : 0u;
+    if (chars) needed = WideCharToMultiByte(CP_UTF8_, 0u, text, (int)chars,
+                                             NULL_PTR, 0, NULL_PTR, NULL_PTR);
+    if (chars && needed <= 0) {
+        free_alloc_(text);
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"无法把文字编码为 UTF-8 TOML；本次没有保存。");
+        return 0;
+    }
+    byte_count = prefix + (UINT)needed;
+    encoded = alloc_bytes_(byte_count);
+    if (!encoded) {
+        free_alloc_(text);
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"没有足够内存编码 TOML；本次没有保存。");
+        return 0;
+    }
+    if (prefix == 3u) {
+        encoded[0] = 0xEFu;
+        encoded[1] = 0xBBu;
+        encoded[2] = 0xBFu;
+    }
+    if (chars && WideCharToMultiByte(CP_UTF8_, 0u, text, (int)chars,
+            (LPSTR)(encoded + prefix), needed, NULL_PTR, NULL_PTR) != needed) {
+        free_alloc_(encoded);
+        free_alloc_(text);
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"编码 TOML 时发生错误；本次没有保存。");
+        return 0;
     }
     free_alloc_(text);
 
     if (!wcopy_(temp_path, CASTLE_PATH_CAP, g_ini_editor_path) ||
         !wappend_(temp_path, CASTLE_PATH_CAP, (const WCHAR*)L".castle.tmp")) {
         free_alloc_(encoded);
-        if (error) wcopy_(error, error_cap, (const WCHAR*)L"INI 路径过长，无法构造安全临时文件名；本次没有保存。");
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"TOML 路径过长，无法构造安全临时文件名；本次没有保存。");
         return 0;
     }
 
@@ -3160,21 +3201,21 @@ static int save_ini_editor_file_(WCHAR* error, UINT error_cap, LONG* bad_start, 
                        CREATE_ALWAYS_, FILE_ATTRIBUTE_NORMAL_, NULL_PTR);
     if (file == INVALID_HANDLE_VALUE_) {
         free_alloc_(encoded);
-        if (error) wcopy_(error, error_cap, (const WCHAR*)L"无法创建同目录临时文件；请检查 INI 所在目录是否只读或被安全软件阻止。");
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"无法创建同目录临时文件；请检查 TOML 所在目录是否只读或被安全软件阻止。");
         return 0;
     }
     if (byte_count && (!WriteFile(file, encoded, byte_count, &wrote, NULL_PTR) || wrote != byte_count)) {
         CloseHandle(file);
         delete_ini_temp_(temp_path);
         free_alloc_(encoded);
-        if (error) wcopy_(error, error_cap, (const WCHAR*)L"写入临时 INI 失败；原 INI 保持不变。");
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"写入临时 TOML 失败；原 TOML 保持不变。");
         return 0;
     }
     if (!FlushFileBuffers(file)) {
         CloseHandle(file);
         delete_ini_temp_(temp_path);
         free_alloc_(encoded);
-        if (error) wcopy_(error, error_cap, (const WCHAR*)L"临时 INI 无法完整刷新到磁盘；原 INI 保持不变。");
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"临时 TOML 无法完整刷新到磁盘；原 TOML 保持不变。");
         return 0;
     }
     CloseHandle(file);
@@ -3182,7 +3223,7 @@ static int save_ini_editor_file_(WCHAR* error, UINT error_cap, LONG* bad_start, 
 
     if (!replace_ini_temp_(temp_path, g_ini_editor_path)) {
         delete_ini_temp_(temp_path);
-        if (error) wcopy_(error, error_cap, (const WCHAR*)L"临时文件已写完，但无法原子替换原 INI。请检查原文件是否只读、被占用或没有写入权限；原 INI 保持不变。");
+        if (error) wcopy_(error, error_cap, (const WCHAR*)L"临时文件已写完，但无法原子替换原 TOML。请检查原文件是否只读、被占用或没有写入权限；原 TOML 保持不变。");
         return 0;
     }
     return 1;
@@ -3196,7 +3237,7 @@ static void select_ini_error_line_(UINT line_no) {
     if (!g_ini_editor_text || line_no == 0u) return;
 
     /*
-     * 自动换行后，EM_LINEINDEX(line_no-1) 指向的是“视觉行”，不再等于 INI 的真实第 N 行。
+     * 自动换行后，EM_LINEINDEX(line_no-1) 指向的是“视觉行”，不再等于 TOML 的真实第 N 行。
      * about3 与分色共用同一个逻辑行定位器：按 RichEdit 内部的真实 CR/LF 分隔符找到第 N 条配置行。
      */
     if (!get_ini_logical_line_range_(line_no, &cp_start, &cp_end)) return;
@@ -3230,17 +3271,17 @@ static int save_ini_editor_(HWND owner) {
             wappend_(g_ini_editor_status, 256u, (const WCHAR*)L" 行；");
         }
         if (error[0]) wappend_(g_ini_editor_status, 256u, error);
-        else wappend_(g_ini_editor_status, 256u, (const WCHAR*)L"INI 未通过检查，原文件没有被修改。");
+        else wappend_(g_ini_editor_status, 256u, (const WCHAR*)L"TOML 未通过检查，原文件没有被修改。");
         g_ui.InvalidateRect(owner, NULL_PTR, TRUE_);
 
         g_ui.MessageBoxW(owner,
-                         error[0] ? error : (const WCHAR*)L"INI 保存失败；原文件没有被修改。",
-                         (const WCHAR*)L"INI 检查未通过", MB_ICONERROR_ | MB_OK_);
+                         error[0] ? error : (const WCHAR*)L"TOML 保存失败；原文件没有被修改。",
+                         (const WCHAR*)L"TOML 检查未通过", MB_ICONERROR_ | MB_OK_);
         return 0;
     }
     g_ini_editor_dirty = 0;
     g_ini_editor_status_error = 0;
-    wcopy_(g_ini_editor_status, 256u, (const WCHAR*)L"已检查语法并安全保存。原文件编码保持不变。");
+    wcopy_(g_ini_editor_status, 256u, (const WCHAR*)L"已按 Runtime TOML v1 检查并原子保存；UTF-8 BOM 策略保持不变。");
     g_ui.InvalidateRect(owner, NULL_PTR, TRUE_);
     return 1;
 }
@@ -3254,8 +3295,8 @@ static int request_close_ini_editor_(HWND hwnd) {
     }
 
     answer = g_ui.MessageBoxW(hwnd,
-                              (const WCHAR*)L"这个 INI 还有未保存的修改。\n\n是：先检查语法并保存，再关闭\n否：放弃修改并关闭\n取消：继续编辑",
-                              (const WCHAR*)L"关闭 INI 编辑器", MB_YESNOCANCEL_ | MB_ICONQUESTION_);
+                              (const WCHAR*)L"这个 TOML 还有未保存的修改。\n\n是：先检查语法并保存，再关闭\n否：放弃修改并关闭\n取消：继续编辑",
+                              (const WCHAR*)L"关闭 TOML 编辑器", MB_YESNOCANCEL_ | MB_ICONQUESTION_);
     if (answer == IDYES_) {
         if (!save_ini_editor_(hwnd)) return 0;
         g_ini_editor_done = 1;
@@ -3282,7 +3323,7 @@ static void refresh_ini_word_wrap_(void) {
      *   2. 再让 RichEdit 用当前客户区宽度重新排版；
      *   3. 每次 WM_SIZE 都会重新执行，因此拖动编辑器大小时换行也会立即跟着变化。
      *
-     * 这只是显示排版，不会向正文插入 CR/LF，所以保存出来的 INI 文件仍保持原始逻辑行。
+     * 这只是显示排版，不会向正文插入 CR/LF，所以保存出来的 TOML 文件仍保持原始逻辑行。
      */
     g_ui.SendMessageW(g_ini_editor_text, EM_SETTARGETDEVICE_, 0, 1);
     g_ui.SendMessageW(g_ini_editor_text, EM_SETTARGETDEVICE_, 0, 0);
@@ -3291,7 +3332,7 @@ static void refresh_ini_word_wrap_(void) {
 static void recreate_ini_font_(HWND hwnd) {
     int height = -scale_(hwnd, 16);
     if (g_ini_editor_font) g_ui.DeleteObject((HGDIOBJ_)g_ini_editor_font);
-    /* Consolas 是 Windows 自带等宽字体；INI 的 '='、缩进和路径在等宽字体下更容易逐列核对。 */
+    /* Consolas 是 Windows 自带等宽字体；TOML 的 '='、缩进和路径在等宽字体下更容易逐列核对。 */
     g_ini_editor_font = g_ui.CreateFontW(height,0,0,0,FW_NORMAL_,FALSE_,FALSE_,FALSE_,DEFAULT_CHARSET_,
                                          OUT_DEFAULT_PRECIS_,CLIP_DEFAULT_PRECIS_,CLEARTYPE_QUALITY_,DEFAULT_PITCH_,
                                          (const WCHAR*)L"Consolas");
@@ -3347,15 +3388,15 @@ static void paint_ini_editor_(HWND hwnd) {
     r.left = scale_(hwnd, 18);
     r.right = r.left + scale_(hwnd, 84);
     g_ui.SetTextColor(dc, RGB_(86, 124, 78));
-    g_ui.DrawTextW(dc, (const WCHAR*)L"; 注释", -1, &r, DT_LEFT_ | DT_VCENTER_ | DT_SINGLELINE_ | DT_NOPREFIX_);
+    g_ui.DrawTextW(dc, (const WCHAR*)L"# 注释", -1, &r, DT_LEFT_ | DT_VCENTER_ | DT_SINGLELINE_ | DT_NOPREFIX_);
     r.left = r.right;
     r.right = r.left + scale_(hwnd, 72);
     g_ui.SetTextColor(dc, RGB_(116, 82, 164));
-    g_ui.DrawTextW(dc, (const WCHAR*)L"[节]", -1, &r, DT_LEFT_ | DT_VCENTER_ | DT_SINGLELINE_ | DT_NOPREFIX_);
+    g_ui.DrawTextW(dc, (const WCHAR*)L"[表]", -1, &r, DT_LEFT_ | DT_VCENTER_ | DT_SINGLELINE_ | DT_NOPREFIX_);
     r.left = r.right;
     r.right = r.left + scale_(hwnd, 88);
     g_ui.SetTextColor(dc, RGB_(38, 98, 162));
-    g_ui.DrawTextW(dc, (const WCHAR*)L"变量名", -1, &r, DT_LEFT_ | DT_VCENTER_ | DT_SINGLELINE_ | DT_NOPREFIX_);
+    g_ui.DrawTextW(dc, (const WCHAR*)L"键名", -1, &r, DT_LEFT_ | DT_VCENTER_ | DT_SINGLELINE_ | DT_NOPREFIX_);
     r.left = r.right;
     r.right = r.left + scale_(hwnd, 30);
     g_ui.SetTextColor(dc, RGB_(122, 130, 140));
@@ -3385,7 +3426,7 @@ static void paint_ini_editor_(HWND hwnd) {
     /* 未保存和保存错误都必须一眼能看到：统一使用高对比度亮红，而不是旧版不明显的棕色。 */
     g_ui.SetTextColor(dc, (g_ini_editor_dirty || g_ini_editor_status_error) ? RGB_(220, 38, 38) : RGB_(112, 121, 132));
     g_ui.DrawTextW(dc,
-                   g_ini_editor_status[0] ? g_ini_editor_status : (g_ini_editor_dirty ? (const WCHAR*)L"● 未保存修改；保存时会先检查 INI 结构。" : (const WCHAR*)L"保存前会检查 INI 结构，并保持原文件编码。"),
+                   g_ini_editor_status[0] ? g_ini_editor_status : (g_ini_editor_dirty ? (const WCHAR*)L"● 未保存修改；保存时会先检查 TOML 结构。" : (const WCHAR*)L"保存前会检查 Runtime TOML v1 结构，并保持 UTF-8 BOM 策略。"),
                    -1, &r, DT_LEFT_ | DT_VCENTER_ | DT_SINGLELINE_ | DT_END_ELLIPSIS_ | DT_NOPREFIX_);
 
     g_ui.SelectObject(dc, old);
@@ -3424,7 +3465,7 @@ static LRESULT_ CALLBACK ini_editor_proc_(HWND hwnd, UINT msg, WPARAM_ w, LPARAM
             if (!g_ini_editor_coloring) {
                 g_ini_editor_dirty = 1;
                 g_ini_editor_status_error = 0;
-                wcopy_(g_ini_editor_status, 256u, (const WCHAR*)L"● 未保存修改；保存时会先检查 INI 结构。");
+                wcopy_(g_ini_editor_status, 256u, (const WCHAR*)L"● 未保存修改；保存时会先检查 TOML 结构。");
                 colorize_ini_editor_();
                 g_ui.InvalidateRect(hwnd, NULL_PTR, TRUE_);
             }
@@ -3460,14 +3501,14 @@ static LRESULT_ CALLBACK ini_editor_proc_(HWND hwnd, UINT msg, WPARAM_ w, LPARAM
     return g_ui.DefWindowProcW(hwnd, msg, w, l);
 }
 
-static int build_asi_ini_path_(UINT index, WCHAR* out, UINT cap) {
+static int build_asi_toml_path_(UINT index, WCHAR* out, UINT cap) {
     const LauncherModItem_* item = LauncherModConfig_GetItem(LAUNCHER_MOD_ASI, index);
     WCHAR asi_root[CASTLE_PATH_CAP];
     WCHAR file_name[MAX_PATH_];
 
-    if (!item || !item->present || !item->has_ini || !out || cap == 0u) return 0;
+    if (!item || !item->present || !item->has_toml || !out || cap == 0u) return 0;
     if (!path_join_(asi_root, CASTLE_PATH_CAP, LauncherApp_GetModsRoot(), (const WCHAR*)L"asi")) return 0;
-    if (!wcopy_(file_name, MAX_PATH_, item->name) || !wappend_(file_name, MAX_PATH_, (const WCHAR*)L".ini")) return 0;
+    if (!wcopy_(file_name, MAX_PATH_, item->name) || !wappend_(file_name, MAX_PATH_, (const WCHAR*)L".toml")) return 0;
     return path_join_(out, cap, asi_root, file_name);
 }
 
@@ -3482,15 +3523,15 @@ static void show_ini_editor_(UINT asi_index) {
 
     if (g_ini_editor_window) return;
     item = LauncherModConfig_GetItem(LAUNCHER_MOD_ASI, asi_index);
-    if (!item || !build_asi_ini_path_(asi_index, g_ini_editor_path, CASTLE_PATH_CAP)) {
-        g_ui.MessageBoxW(g_main, (const WCHAR*)L"没有找到这个插件对应的同名 INI。请重新扫描后再试。",
-                         (const WCHAR*)L"INI 编辑器", MB_ICONERROR_ | MB_OK_);
+    if (!item || !build_asi_toml_path_(asi_index, g_ini_editor_path, CASTLE_PATH_CAP)) {
+        g_ui.MessageBoxW(g_main, (const WCHAR*)L"没有找到这个插件对应的同名 TOML。请重新扫描后再试。",
+                         (const WCHAR*)L"TOML 编辑器", MB_ICONERROR_ | MB_OK_);
         return;
     }
 
     if (!load_ini_text_(g_ini_editor_path, &initial_text, &initial_chars, &g_ini_editor_encoding, error, 1024u)) {
-        g_ui.MessageBoxW(g_main, error[0] ? error : (const WCHAR*)L"无法读取这个 INI。",
-                         (const WCHAR*)L"INI 编辑器", MB_ICONERROR_ | MB_OK_);
+        g_ui.MessageBoxW(g_main, error[0] ? error : (const WCHAR*)L"无法读取这个 TOML。",
+                         (const WCHAR*)L"TOML 编辑器", MB_ICONERROR_ | MB_OK_);
         return;
     }
 
@@ -3504,13 +3545,13 @@ static void show_ini_editor_(UINT asi_index) {
     if (!g_ini_richedit_module) {
         free_alloc_(initial_text);
         g_ui.MessageBoxW(g_main, (const WCHAR*)L"系统 RichEdit 组件无法载入，因此不能提供带语法颜色的内置编辑器。",
-                         (const WCHAR*)L"INI 编辑器", MB_ICONERROR_ | MB_OK_);
+                         (const WCHAR*)L"TOML 编辑器", MB_ICONERROR_ | MB_OK_);
         return;
     }
 
     g_ini_editor_title[0] = 0;
     wcopy_(g_ini_editor_title, CASTLE_PATH_CAP, item->name);
-    wappend_(g_ini_editor_title, CASTLE_PATH_CAP, (const WCHAR*)L".ini - INI 编辑器");
+    wappend_(g_ini_editor_title, CASTLE_PATH_CAP, (const WCHAR*)L".toml - TOML 编辑器");
     g_ini_editor_status[0] = 0;
     g_ini_editor_status_error = 0;
     g_ini_editor_dirty = 0;
@@ -3738,7 +3779,7 @@ static LRESULT_ CALLBACK main_proc_(HWND hwnd, UINT msg, WPARAM_ w, LPARAM_ l) {
 
 static int register_classes_(void) {
     /*
-     * Win32 创建自定义顶层窗口前必须先注册窗口类。主窗口、设置窗口、About、INI 编辑器分别注册，
+     * Win32 创建自定义顶层窗口前必须先注册窗口类。主窗口、设置窗口、About、TOML 编辑器分别注册，
      * 因为它们的 WndProc、缩放能力和生命周期不同；背景刷都使用同一工作区画刷，系统擦背景时不会先闪出经典白底。
      */
     WNDCLASSEXW_ wc;
@@ -3772,7 +3813,7 @@ static int register_classes_(void) {
     wc.lpszClassName = kAboutClass_;
     if (!g_ui.RegisterClassExW(&wc)) return 0;
 
-    /* INI 编辑器是第四个独立顶层窗口类：它可缩放、带 RichEdit 文本区，生命周期与紧凑设置窗不同。 */
+    /* TOML 编辑器是第四个独立顶层窗口类：它可缩放、带 RichEdit 文本区，生命周期与紧凑设置窗不同。 */
     wc.lpfnWndProc = ini_editor_proc_;
     wc.lpszClassName = kIniEditorClass_;
     if (!g_ui.RegisterClassExW(&wc)) return 0;

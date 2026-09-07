@@ -6,10 +6,10 @@
 // 所以你会看到很多看起来“啰嗦”的中文注释。它们不是装饰，而是这个项目的长期接档资料的一部分。
 //
 // dev6zd 当前安全边界：
-// 0. dev6zd 接入主项目 RuntimeSDK Client：DllMain 只登记 Client，正式业务初始化由 SDK 选择 Integrated 或 Standalone。
+// 0. dev6zd 接入主项目 RuntimeSDK Client：DllMain 只登记 Client，正式业务只允许 RuntimeHost 初始化。
 // 1. 任务系统只读取原版剧情状态，不修改 GameVar、不替原版触发 EVE，也不改变存档。
 // 2. 任务系统仍只需要两个 6 字节入口 Hook：Present 用来画 Overlay；0x409580 用来只读捕获探索管理器 this。
-//    Integrated 模式下这两处游戏代码写入必须交给 Runtime Hook 事务；Standalone 才允许沿用本地 VirtualProtect 路径。
+//    Present 与探索更新入口全部交给 Runtime 公共服务；Quest 不再保留本地 VirtualProtect 旁路。
 // 3. 两个 Hook 前都会核对原版函数开头字节。如果不是我们确认过的版本，就拒绝 Hook，而不是猜地址硬写。
 // 4. dev4 已加入河州镇第一批“多源攻略定位 + 原版程序状态约束”的真实试验任务；
 //    仍然禁止把攻略中的次数/时限措辞直接当成最终程序事实。未闭合的条件会明确标注为候选，并通过运行日志继续取证。
@@ -268,17 +268,8 @@ namespace Sf2SectionHeaderOffset {
 
 static HMODULE g_module = nullptr;
 
-// dev6zd 起，ASI 的“到底由谁负责写游戏代码段”不再靠隐含约定，而是明确记录。
-// None：业务还没完成初始化，任何代码都不能写 RPG.exe。
-// Standalone：同目录没有 Castle_Runtime.dll，允许沿用本插件自己验证过的 VirtualProtect Hook。
-// Integrated：存在可用 Castle_Runtime.dll，两个入口补丁全部由 Runtime Hook 事务拥有。
-// 这个枚举只记录所有权，绝不允许 Integrated 失败以后偷偷改成 Standalone。
-enum class HookOwnerMode {
-    None,
-    Standalone,
-    Integrated
-};
-static HookOwnerMode g_hookOwnerMode = HookOwnerMode::None;
+// 官方 Quest 必须接入 Runtime；Present、探索更新与显示几何的所有权均由公共服务持有。
+// 本插件只保存服务句柄，不再保留任何“缺少 Runtime 就直接改 RPG.exe”的旁路状态。
 static const CastleDisplayApiV1* g_runtimeDisplayApi = nullptr;
 static const CastleOverlayApiV1* g_runtimeOverlayApi = nullptr;
 static const CastleScheduleApiV1* g_runtimeScheduleApi = nullptr;
@@ -293,7 +284,6 @@ static const CastleTomlApiV1* g_runtimeTomlApi = nullptr;
 // 公共初始化辅助函数被本文件内部重复调用，不承担跨线程 Bootstrap 仲裁职责。
 static bool g_businessInitialized = false;
 static std::wstring g_moduleDir;
-static HANDLE g_log = INVALID_HANDLE_VALUE;
 static bool g_enabled = true;
 static bool g_diagnosticHud = true;
 static bool g_worldMarkers = true;
@@ -394,10 +384,6 @@ static bool g_loggedFirstOverlaySuccess = false;
 static std::string g_lastEntityDumpKey;
 
 // Hook 安装时保存被覆盖的 6 字节，便于插件被显式卸载时恢复。
-static BYTE g_presentOriginalBytes[6] = {};
-static bool g_presentHookInstalled = false;
-static void* g_presentTrampoline = nullptr;
-
 // dev4 新增：捕获探索场景管理器 this。
 // 这个指针不是 Quest 自己分配的，它属于原版游戏；Hook 只把地址抄进来，绝不改管理器字段。
 // Present 线程读取前会用 VirtualQuery/范围检查，所以场景切换时短暂的旧指针只会被判无效，不会硬解引用。
@@ -419,16 +405,6 @@ static std::string g_snapshotSceneId;
 static uint32_t g_snapshotSceneGeneration = 0;
 static LONG g_sceneChangeCaptureSerial = 0;
 static PVOID g_managerRejectedAtSceneChange = nullptr;
-
-static BYTE g_explorationUpdateOriginalBytes[6] = {};
-static bool g_explorationUpdateHookInstalled = false;
-static void* g_explorationUpdateTrampoline = nullptr;
-
-// __thiscall 的原函数：this 放在 ECX，没有普通参数，返回 void。
-using PresentFn = void(__thiscall*)(void* self);
-static PresentFn g_originalPresent = nullptr;
-using ExplorationUpdateFn = void(__thiscall*)(void* self);
-static ExplorationUpdateFn g_originalExplorationUpdate = nullptr;
 
 // ============================================================================
 // 3. 很基础的字符串/日志辅助函数
@@ -492,33 +468,15 @@ static bool IEqualsAscii(const std::string& a, const std::string& b) {
 }
 
 static void LogRaw(const std::string& line) {
-    if (g_runtimeLogApi && g_runtimeLogPlugin && !line.empty()) {
-        CastleLogRecordV1 record = {};
-        record.magic = CASTLE_LOG_RECORD_MAGIC;
-        record.struct_size = CASTLE_SIZEOF_LOG_RECORD_V1;
-        record.version = CASTLE_LOG_STRUCTURE_VERSION_1;
-        record.level = CASTLE_LOG_INFO;
-        record.message.data = line.data();
-        record.message.length = static_cast<CastleU32>(line.size());
-        g_runtimeLogApi->WritePluginLine(g_runtimeLogPlugin, &record);
-        return;
-    }
-    // dev4 不再使用 fopen/_wfopen，因为 C Runtime 默认的共享模式可能让外部编辑器在游戏运行时打不开日志。
-    // 这里直接使用 Win32 文件句柄，并在 OpenLog() 中显式声明 FILE_SHARE_READ | FILE_SHARE_WRITE |
-    // FILE_SHARE_DELETE。这样 ASI 保持日志句柄打开时，记事本、Notepad++ 等仍可以同时读取该文件。
-    if (g_log == INVALID_HANDLE_VALUE) return;
-
-    DWORD written = 0;
-    if (!line.empty()) {
-        WriteFile(g_log, line.data(), static_cast<DWORD>(line.size()), &written, nullptr);
-    }
-    static const char newline[] = "\r\n";
-    WriteFile(g_log, newline, 2, &written, nullptr);
-
-    // 诊断期优先保证“马上打开日志就能看到最新内容”。
-    // FlushFileBuffers 会比只刷 C Runtime 缓冲更明确地把当前写入推到文件系统。
-    // 任务插件日志频率很低，不在 Present 每帧写，因此这点开销可以接受。
-    FlushFileBuffers(g_log);
+    if (!g_runtimeLogApi || !g_runtimeLogPlugin || line.empty()) return;
+    CastleLogRecordV1 record = {};
+    record.magic = CASTLE_LOG_RECORD_MAGIC;
+    record.struct_size = CASTLE_SIZEOF_LOG_RECORD_V1;
+    record.version = CASTLE_LOG_STRUCTURE_VERSION_1;
+    record.level = CASTLE_LOG_INFO;
+    record.message.data = line.data();
+    record.message.length = static_cast<CastleU32>(line.size());
+    g_runtimeLogApi->WritePluginLine(g_runtimeLogPlugin, &record);
 }
 
 static void Log(const char* format, ...) {
@@ -531,35 +489,10 @@ static void Log(const char* format, ...) {
 }
 
 static void OpenLog() {
-    if (g_runtimeLogApi && g_runtimeLogPlugin) {
-        LogRaw("《幽城幻剑录》Castle_Quest v0.1-dev6zd 启动。");
-        LogRaw("[边界] Quest通过Runtime GamePhase/Overlay/Display/GameState运行，不再拥有Present与探索入口Hook。");
-        LogRaw("[构建] RuntimeSDK Client 与版本化服务已接入；任务业务仍保持独立。");
-        return;
-    }
-    std::wstring path = JoinPath(g_moduleDir, L"Castle_Quest.log");
-
-    // CREATE_ALWAYS 与旧版行为一致：每次启动清空上一轮日志。
-    // 三个 FILE_SHARE_* 是 dev4 延续的关键修复：插件写日志时不再独占文件。
-    g_log = CreateFileW(path.c_str(), GENERIC_WRITE,
-                        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                        nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (g_log == INVALID_HANDLE_VALUE) return;
-
-    // UTF-8 BOM 让 Windows 记事本也能稳定识别中文日志。
-    const unsigned char bom[] = {0xEF, 0xBB, 0xBF};
-    DWORD written = 0;
-    WriteFile(g_log, bom, static_cast<DWORD>(sizeof(bom)), &written, nullptr);
-    FlushFileBuffers(g_log);
-
     LogRaw("《幽城幻剑录》Castle_Quest v0.1-dev6zd 启动。");
-    LogRaw("[边界] 剧情/GameVar/原版存档只读；Present 与探索管理器入口 Hook 在整合模式由 RuntimeSDK 事务拥有，独立模式才使用本地 Hook。");
-    LogRaw("[构建] dev6zd 已迁入主项目 src/Quest 结构，并把 RuntimeSDK Client 源码编入 ASI；Quest C++ 仍保持 /Od 稳定构建策略。");
-    LogRaw("[任务数据] dev6zd：每条任务固定为 Qxxx.toml 原版 Base + 同名 Qxxx_addon.toml；Base v7 只允许原版 canonical Stage。");
-    LogRaw("[任务数据] dev6zd 已删除旧 Warning 与 Guidance 运行体系；人工体验步骤只允许由 Addon [[insert]] 提供。");
-    LogRaw("[日志] 共享模式已启用：游戏运行中允许外部程序读取/刷新 Castle_Quest.log。");
-    LogRaw("[渲染] dev1e/dev2 的 DirectDraw GetDC/GDI 后端已废止；dev6zd 继续不对游戏 Surface 取得 HDC。");
-    LogRaw("[调试] dev6zd 继承 dev6y Ctrl+F11 修复：MouseWorld 首选原版 0x89F7C0/0x89F7C4；Win32 自算坐标仅作显式 Fallback。");
+    LogRaw("[边界] Quest通过Runtime GamePhase/Overlay/Display/GameState运行，不再拥有Present与探索入口Hook。");
+    LogRaw("[构建] RuntimeSDK Client 与版本化服务已接入；任务业务仍保持独立。");
+    LogRaw("[日志] Runtime为Quest维护mods/logs/Castle_Quest.log；插件不再直接打开文件。");
 }
 
 // ============================================================================
@@ -1419,7 +1352,7 @@ static GameSnapshot CaptureSnapshot() {
 // 6. UTF-8 INI 读取器
 // ============================================================================
 
-// Windows 自带 GetPrivateProfileString 对现代 UTF-8 中文配置不够直观，所以这里写一个很小的只读 INI 解析器。
+// 配置标量统一从 Runtime TOML v1 读取；这个轻量包装只保留 Quest 原有的 Get 调用形状。
 // 它只支持我们需要的： [Section] 与 key=value。没有“神秘兼容行为”，出错更容易诊断。
 class IniFile {
 public:
@@ -6145,102 +6078,6 @@ static void ProcessHotkeys() {
     }
 }
 
-// ============================================================================
-// 13. Present Hook
-// ============================================================================
-
-// 这两组 6 字节既是本插件建立 trampoline 的原始指令，也是 RuntimeSDK ExclusivePatch 的 expected_bytes。
-// 把它们放成唯一常量可以避免“本地护栏是一套字节、SDK 声明又手抄成另一套字节”的维护风险。
-static const BYTE kPresentEntryBytes[6] = {0x83, 0xEC, 0x14, 0x56, 0x8B, 0xF1};
-static const BYTE kExplorationEntryBytes[6] = {0x83, 0xEC, 0x08, 0x56, 0x8B, 0xF1};
-
-// x86 的 E9 指令由 1 字节操作码 + 4 字节相对位移组成。
-// 这里用 32 位无符号减法计算位移，正好对应 32 位地址空间的回绕语义；最后的 4 个字节
-// 只是机器码，不需要把它当 C++ 有符号整数继续做算术，因此也避开了有符号溢出的未定义行为。
-static void BuildRelativeJump5(uintptr_t from, uintptr_t to, BYTE out[5]) {
-    const uint32_t from32 = static_cast<uint32_t>(from);
-    const uint32_t to32 = static_cast<uint32_t>(to);
-    const uint32_t displacement = to32 - (from32 + 5u);
-    out[0] = 0xE9;
-    std::memcpy(out + 1, &displacement, sizeof(displacement));
-}
-
-// Quest 两个原版入口都覆盖 6 字节，而 E9 只需要 5 字节，所以第 6 字节统一填 NOP。
-// Standalone 与 Integrated 都调用同一个编码函数，保证两种模式最终写入 RPG.exe 的补丁完全相同。
-static void BuildRelativeJump6(uintptr_t from, uintptr_t to, BYTE out[6]) {
-    BuildRelativeJump5(from, to, out);
-    out[5] = 0x90;
-}
-
-// Standalone 模式才允许直接改游戏代码页。Integrated 模式绝不能调用这个函数；
-// 那种情况下相同的 6 字节 replacement 会作为 ExclusivePatch 声明交给 Castle_Runtime.dll。
-static bool WriteRelativeJumpStandalone(void* from, void* to, size_t overwriteSize) {
-    if (overwriteSize < 5) return false;
-    DWORD oldProtect = 0;
-    if (!VirtualProtect(from, overwriteSize, PAGE_EXECUTE_READWRITE, &oldProtect)) return false;
-
-    BYTE patch[6] = {};
-    BuildRelativeJump6(reinterpret_cast<uintptr_t>(from), reinterpret_cast<uintptr_t>(to), patch);
-    std::memcpy(from, patch, overwriteSize >= sizeof(patch) ? sizeof(patch) : overwriteSize);
-    if (overwriteSize > sizeof(patch)) {
-        std::memset(static_cast<BYTE*>(from) + sizeof(patch), 0x90, overwriteSize - sizeof(patch));
-    }
-
-    FlushInstructionCache(GetCurrentProcess(), from, overwriteSize);
-    DWORD ignored = 0;
-    VirtualProtect(from, overwriteSize, oldProtect, &ignored);
-    return true;
-}
-
-// trampoline 的作用可以理解为“被我们占掉函数门口以后，给原函数留一条侧门”。
-// 前 6 字节先执行被覆盖的原版指令，第 7 字节开始再用 E9 跳回原函数 +6。
-// Integrated 模式虽然不亲自写原函数门口，Hook 函数仍然需要这条 trampoline 去调用原函数。
-static void* CreateEntryTrampoline(uintptr_t targetAddress, const BYTE originalBytes[6]) {
-    BYTE* trampoline = static_cast<BYTE*>(VirtualAlloc(
-        nullptr, 32, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
-    if (!trampoline) return nullptr;
-
-    std::memcpy(trampoline, originalBytes, 6);
-    BYTE jumpBack[5] = {};
-    BuildRelativeJump5(reinterpret_cast<uintptr_t>(trampoline + 6), targetAddress + 6u, jumpBack);
-    std::memcpy(trampoline + 6, jumpBack, sizeof(jumpBack));
-    FlushInstructionCache(GetCurrentProcess(), trampoline, 11);
-    return trampoline;
-}
-
-static bool InstallPresentHookStandalone();
-static bool InstallExplorationUpdateHookStandalone();
-
-// 0x409580 是原版探索管理器的一帧更新入口。
-// Hook 内只发布 this 指针和序号，不枚举对象，不改任何原版字段。
-static void __fastcall ExplorationUpdateHook(void* self, void*) {
-    InterlockedExchangePointer(&g_explorationManager, self);
-    InterlockedIncrement(&g_explorationCaptureSerial);
-    if (g_originalExplorationUpdate) g_originalExplorationUpdate(self);
-}
-
-// 0x4064E0 是每帧 Present 入口。Overlay 先画到 renderer+8 的本帧 backbuffer，随后始终调用原版 Present。
-// 任何任务插件绘制失败都不能阻断游戏自己的画面提交。
-static void __fastcall PresentHook(void* self, void*) {
-    ProcessHotkeys();
-    DrawOverlayToBackSurface(self);
-    if (g_originalPresent) g_originalPresent(self);
-}
-
-static bool ValidateOriginalBinarySurface() {
-    // 两个入口字节与 SDK expected_bytes 共用同一组常量；另外两个只读函数继续做版本护栏。
-    const BYTE getVarBytes[11] = {0x8B, 0x4C, 0x24, 0x04, 0x85, 0xC9, 0x75, 0x03, 0x33, 0xC0, 0xC3};
-    const BYTE controlledBytes[5] = {0xA1, 0xF0, 0x8B, 0x46, 0x00};
-    const bool presentOk = BytesEqual(Address::kPresent, kPresentEntryBytes, sizeof(kPresentEntryBytes));
-    const bool explorationOk = BytesEqual(Address::kExplorationUpdate, kExplorationEntryBytes, sizeof(kExplorationEntryBytes));
-    const bool getVarOk = BytesEqual(Address::kGetGameVar, getVarBytes, sizeof(getVarBytes));
-    const bool controlledOk = BytesEqual(Address::kGetControlledEntity, controlledBytes, sizeof(controlledBytes));
-    Log("[版本护栏] Present=%s ExplorationUpdate=%s GET_VAR=%s ControlledEntity=%s",
-        presentOk ? "PASS" : "FAIL", explorationOk ? "PASS" : "FAIL",
-        getVarOk ? "PASS" : "FAIL", controlledOk ? "PASS" : "FAIL");
-    return presentOk && explorationOk && getVarOk && controlledOk;
-}
-
 // Integrated 模式下，Present 与 ExplorationUpdate 的入口已经由 Runtime 中央桥接，
 // 因而这里不能再要求它们保持原版字节。Quest 自己只保留两条只读协议护栏。
 static bool ValidateIntegratedReadProtocol() {
@@ -6251,94 +6088,6 @@ static bool ValidateIntegratedReadProtocol() {
     Log("[版本护栏] Runtime已拥有Present/Exploration入口；Quest只读GET_VAR=%s ControlledEntity=%s。",
         getVarOk ? "PASS" : "FAIL", controlledOk ? "PASS" : "FAIL");
     return getVarOk && controlledOk;
-}
-
-// Standalone 探索入口安装。这里只有在 SDK Client 明确判定“同目录没有 Castle_Runtime.dll”后才会被调用。
-static bool InstallExplorationUpdateHookStandalone() {
-    if (g_explorationUpdateHookInstalled) return true;
-    BYTE* target = reinterpret_cast<BYTE*>(Address::kExplorationUpdate);
-    std::memcpy(g_explorationUpdateOriginalBytes, target, sizeof(g_explorationUpdateOriginalBytes));
-
-    void* trampoline = CreateEntryTrampoline(Address::kExplorationUpdate, g_explorationUpdateOriginalBytes);
-    if (!trampoline) {
-        Log("[失败] Standalone ExplorationUpdate trampoline VirtualAlloc 失败。");
-        return false;
-    }
-    if (!WriteRelativeJumpStandalone(target, reinterpret_cast<void*>(&ExplorationUpdateHook), 6)) {
-        VirtualFree(trampoline, 0, MEM_RELEASE);
-        Log("[失败] Standalone ExplorationUpdate detour 写入失败。");
-        return false;
-    }
-
-    g_explorationUpdateTrampoline = trampoline;
-    g_originalExplorationUpdate = reinterpret_cast<ExplorationUpdateFn>(trampoline);
-    g_explorationUpdateHookInstalled = true;
-    Log("[Standalone] ExplorationUpdate Hook 已安装：0x00409580。");
-    return true;
-}
-
-// Standalone Present 入口安装。写法与探索入口完全一致，避免两个 Hook 形成两套微妙不同的实现。
-static bool InstallPresentHookStandalone() {
-    if (g_presentHookInstalled) return true;
-    BYTE* target = reinterpret_cast<BYTE*>(Address::kPresent);
-    std::memcpy(g_presentOriginalBytes, target, sizeof(g_presentOriginalBytes));
-
-    void* trampoline = CreateEntryTrampoline(Address::kPresent, g_presentOriginalBytes);
-    if (!trampoline) {
-        Log("[失败] Standalone Present trampoline VirtualAlloc 失败。");
-        return false;
-    }
-    if (!WriteRelativeJumpStandalone(target, reinterpret_cast<void*>(&PresentHook), 6)) {
-        VirtualFree(trampoline, 0, MEM_RELEASE);
-        Log("[失败] Standalone Present detour 写入失败。");
-        return false;
-    }
-
-    g_presentTrampoline = trampoline;
-    g_originalPresent = reinterpret_cast<PresentFn>(trampoline);
-    g_presentHookInstalled = true;
-    Log("[Standalone] Present Hook 已安装：0x004064E0。");
-    return true;
-}
-
-// 下面两个恢复函数也只属于 Standalone。Integrated 的游戏代码由 Runtime 事务所有，
-// Quest 绝不能在卸载路径再 VirtualProtect 抢回这两段地址，否则会破坏 Runtime 的所有权账本。
-static void RemoveExplorationUpdateHookStandalone() {
-    if (!g_explorationUpdateHookInstalled) return;
-    void* target = reinterpret_cast<void*>(Address::kExplorationUpdate);
-    DWORD oldProtect = 0;
-    if (VirtualProtect(target, sizeof(g_explorationUpdateOriginalBytes), PAGE_EXECUTE_READWRITE, &oldProtect)) {
-        std::memcpy(target, g_explorationUpdateOriginalBytes, sizeof(g_explorationUpdateOriginalBytes));
-        FlushInstructionCache(GetCurrentProcess(), target, sizeof(g_explorationUpdateOriginalBytes));
-        DWORD ignored = 0;
-        VirtualProtect(target, sizeof(g_explorationUpdateOriginalBytes), oldProtect, &ignored);
-    }
-    if (g_explorationUpdateTrampoline) VirtualFree(g_explorationUpdateTrampoline, 0, MEM_RELEASE);
-    g_explorationUpdateTrampoline = nullptr;
-    g_originalExplorationUpdate = nullptr;
-    g_explorationUpdateHookInstalled = false;
-    InterlockedExchangePointer(&g_explorationManager, nullptr);
-    InterlockedExchange(&g_explorationCaptureSerial, 0);
-    g_snapshotSceneId.clear();
-    g_snapshotSceneGeneration = 0;
-    g_sceneChangeCaptureSerial = 0;
-    g_managerRejectedAtSceneChange = nullptr;
-}
-
-static void RemovePresentHookStandalone() {
-    if (!g_presentHookInstalled) return;
-    void* target = reinterpret_cast<void*>(Address::kPresent);
-    DWORD oldProtect = 0;
-    if (VirtualProtect(target, sizeof(g_presentOriginalBytes), PAGE_EXECUTE_READWRITE, &oldProtect)) {
-        std::memcpy(target, g_presentOriginalBytes, sizeof(g_presentOriginalBytes));
-        FlushInstructionCache(GetCurrentProcess(), target, sizeof(g_presentOriginalBytes));
-        DWORD ignored = 0;
-        VirtualProtect(target, sizeof(g_presentOriginalBytes), oldProtect, &ignored);
-    }
-    if (g_presentTrampoline) VirtualFree(g_presentTrampoline, 0, MEM_RELEASE);
-    g_presentTrampoline = nullptr;
-    g_originalPresent = nullptr;
-    g_presentHookInstalled = false;
 }
 
 // SDK 的字符串不是零结尾字符串指针，而是 data+length 的 UTF-8 视图。
@@ -6477,17 +6226,15 @@ static CastleResult InstallIntegratedServices(const CastleRuntimeApiV1* runtimeA
         g_runtimeOverlayClient = 0u;
         return result;
     }
-    g_hookOwnerMode = HookOwnerMode::Integrated;
     Log("[RuntimeSDK] Quest 已接入 GamePhase/Overlay/Display/GameState；不再拥有两个入口 Hook。");
     return CASTLE_OK;
 }
 
 // ============================================================================
-// 14. RuntimeSDK 生命周期与独立模式
+// 14. RuntimeSDK 强制生命周期
 // ============================================================================
 
-// 文件/任务数据库这部分业务在 Integrated 与 Standalone 完全共用。
-// 模式差别只应该体现在“游戏代码写入由谁拥有”，不能复制出两套 Quest 业务逻辑。
+// 文件和任务数据库仍属于 Quest 业务，但启动顺序、公共状态与绘制时序全部由 Runtime 驱动。
 static bool InitializeBusinessCore() {
     if (g_businessInitialized) return true;
     g_moduleDir = GetModuleDirectory(g_module);
@@ -6507,21 +6254,7 @@ static bool InitializeBusinessCore() {
 }
 
 static CastleResult CASTLE_RUNTIME_CALL QuestStandaloneInitialize(void*) {
-    if (!InitializeBusinessCore()) return CASTLE_ERROR_RUNTIME_FAULT;
-    Log("[模式] Standalone：同目录没有 Castle_Runtime.dll；允许使用 Quest 自己的两处已验证入口 Hook。");
-    if (!ValidateOriginalBinarySurface()) {
-        Log("[失败] Standalone 关键机器码不匹配；两个本地 Hook 均不安装。");
-        return CASTLE_ERROR_EXPECTED_BYTES;
-    }
-
-    if (!InstallExplorationUpdateHookStandalone()) return CASTLE_ERROR_EXPECTED_BYTES;
-    if (!InstallPresentHookStandalone()) {
-        // 第二个 Hook 失败时必须立即恢复第一个，不能留下“半安装”状态。
-        RemoveExplorationUpdateHookStandalone();
-        return CASTLE_ERROR_EXPECTED_BYTES;
-    }
-    g_hookOwnerMode = HookOwnerMode::Standalone;
-    return CASTLE_OK;
+    return CASTLE_ERROR_RUNTIME_REQUIRED;
 }
 
 static CastleResult CASTLE_RUNTIME_CALL QuestIntegratedInitialize(
@@ -6557,24 +6290,13 @@ static void CloseBusinessResources() {
     }
     if (g_runtimeLogApi && g_runtimeLogPlugin) {
         LogRaw("[结束] Castle_Quest 进入进程退出/卸载收尾。");
-    } else if (g_log != INVALID_HANDLE_VALUE) {
-        LogRaw("[结束] Castle_Quest 进入进程退出/卸载收尾。");
-        CloseHandle(g_log);
-        g_log = INVALID_HANDLE_VALUE;
     }
     g_runtimeLogApi = nullptr;
     g_runtimeLogPlugin = 0u;
 }
 
 static void CASTLE_RUNTIME_CALL QuestProcessExit(void*) {
-    // SDK Client 的 process_exit 回调不区分“整个进程退出”和“显式卸载”。
-    // Standalone 的代码补丁归 Quest 自己所有，所以必须恢复，避免显式 FreeLibrary 后 RPG.exe 仍跳进已卸载模块。
-    if (g_hookOwnerMode == HookOwnerMode::Standalone) {
-        RemovePresentHookStandalone();
-        RemoveExplorationUpdateHookStandalone();
-    }
-    // Integrated 的补丁属于 Runtime 事务；这里绝不 VirtualProtect 回写，也不释放仍可能被入口引用的 trampoline。
-    // 主 Runtime 采用固定驻留模型，进程结束时由 Windows 一次回收模块和执行页。
+    // Quest 不再拥有任何游戏入口补丁；Runtime 固定驻留并在进程结束时统一回收公共桥接。
     CloseBusinessResources();
 }
 
@@ -6629,7 +6351,7 @@ extern "C" const CastlePluginExportV1* CASTLE_RUNTIME_CALL CastlePlugin_Query(Ca
 }
 
 // 旧 Castle Mod Loader 与 RuntimeSDK 两阶段 Loader 都会调用 InitializeASI。
-// 正式初始化是否 Integrated/Standalone/Fault 全由 Client 状态机决定，这里不能自己再安装任何 Hook。
+// 正式初始化是否成功由 Client 状态机决定；官方版缺少 Runtime 时直接停用，绝不自行安装 Hook。
 extern "C" void __cdecl InitializeASI(void) {
     CastleRuntimeClient_RunNow();
 }

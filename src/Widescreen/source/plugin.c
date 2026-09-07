@@ -6,12 +6,6 @@
 /* DllMain 只安装 Entry Gate；显示资源创建前的正式初始化仍发生在 RPG 原入口。 */
 static HMODULE g_plugin_module;
 
-static CastleResult initialize_standalone(void) {
-    if (!Runtime_Initialize(g_plugin_module)) return CASTLE_ERROR_RUNTIME_FAULT;
-    if (!Runtime_ExactBuildProtocolOk()) return CASTLE_ERROR_UNKNOWN_GAME_BUILD;
-    return Widescreen_Install() ? CASTLE_OK : CASTLE_ERROR_EXPECTED_BYTES;
-}
-
 static CastleResult initialize_integrated(const CastleRuntimeApiV1* runtime_api,
                                           CastlePluginHandle plugin_handle) {
     if (!Runtime_BindSdkLog(runtime_api, plugin_handle)) {
@@ -43,7 +37,7 @@ static CastleResult CASTLE_RUNTIME_CALL Widescreen_Integrated(
 
 static CastleResult CASTLE_RUNTIME_CALL Widescreen_Standalone(void* user_context) {
     (void)user_context;
-    return initialize_standalone();
+    return CASTLE_ERROR_RUNTIME_REQUIRED;
 }
 
 static void CASTLE_RUNTIME_CALL Widescreen_RuntimeFault(CastleResult failure,

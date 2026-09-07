@@ -7,26 +7,15 @@
 // ============================================================================
 // PluginLog.h
 // ----------------------------------------------------------------------------
-// 这是 Castle_SaveEnhance 自己携带的“最小日志工具”。
-//
-// 为什么不用 printf / std::ofstream：
-// 老游戏 ASI 会被直接塞进 RPG.exe 进程里。为了尽量减少运行库冲突，本项目选择无 CRT
-// 构建，所以这里不依赖 std::string、iostream、stdio，而是直接调用 Windows WriteFile。
-//
-// 对刚学编程的人，可以把整个流程想成：
-// 1. Open() 先找到“这个 ASI 文件自己住在哪个文件夹”；
-// 2. 在同一个文件夹创建 Castle_SaveEnhance.log；
-// 3. Text()/Line()/Unsigned()/Hex() 把要看的内容变成字节，再交给 WriteFile；
-// 4. 游戏退出时 Close() 把 Windows 文件句柄关掉。
-//
-// 中文日志字符串已经由 /utf-8 编译成 UTF-8 字节，所以不需要自己再写复杂编码转换器。
+// 这是 Castle_SaveEnhance 的极小业务日志适配器。官方 ASI 现在必须依赖 Runtime，
+// 所以本文件只把 UTF-8 文字交给 Runtime Log 服务；路径、文件句柄、BOM、并发锁和
+// 磁盘刷新全部由 Runtime 统一负责，不再在 mods\asi 创建旁路日志。
 // ============================================================================
 
 namespace ycrlog {
 
 // Windows 打开文件以后会返回一个 HANDLE，可以理解为“这个已经打开文件的编号/把手”。
 // INVALID_HANDLE_VALUE 表示目前没有可用日志文件。
-static HANDLE gLogFile = INVALID_HANDLE_VALUE;
 static const CastleLogApiV1* gRuntimeLogApi = nullptr;
 static CastlePluginHandle gRuntimeLogPlugin = 0u;
 
@@ -67,20 +56,12 @@ inline void WriteRaw(const char* text, SIZE_T size) {
     if (text == nullptr || size == 0u) {
         return;
     }
-    if (gRuntimeLogApi != nullptr && gRuntimeLogPlugin != 0u &&
-        gRuntimeLogApi->WritePluginText != nullptr) {
-        CastleStringView view{};
-        view.data = text;
-        view.length = static_cast<CastleU32>(size);
-        gRuntimeLogApi->WritePluginText(gRuntimeLogPlugin, view);
-        return;
-    }
-    if (gLogFile == INVALID_HANDLE_VALUE) return;
-
-    // WriteFile 需要一个 DWORD 接收“Windows 实际写了多少字节”。
-    // 当前日志很短，SIZE_T 转 DWORD 不会溢出；即使写失败，也只损失诊断信息，不影响功能。
-    DWORD written = 0u;
-    WriteFile(gLogFile, text, static_cast<DWORD>(size), &written, nullptr);
+    if (gRuntimeLogApi == nullptr || gRuntimeLogPlugin == 0u ||
+        gRuntimeLogApi->WritePluginText == nullptr) return;
+    CastleStringView view{};
+    view.data = text;
+    view.length = static_cast<CastleU32>(size);
+    gRuntimeLogApi->WritePluginText(gRuntimeLogPlugin, view);
 }
 
 inline void Text(const char* text) {
@@ -202,32 +183,13 @@ inline bool BuildModuleFilePath(
 }
 
 inline bool Open(HMODULE module, const wchar_t* filename) {
-    if (gRuntimeLogApi != nullptr && gRuntimeLogPlugin != 0u) return true;
-    // 日志继续使用上面的共用路径构造器，只是它的目标固定为 ASI 同目录的日志文件。
-    wchar_t path[520];
-    if (!BuildModuleFilePath(module, filename, path, 520u)) {
-        return false;
-    }
-
-    // CREATE_ALWAYS 表示每次启动都重新创建日志，旧日志不会和本轮结果混在一起。
-    // FILE_SHARE_READ 允许用户在游戏运行中直接打开日志查看，而不会阻止插件继续写。
-    gLogFile = CreateFileW(
-        path,
-        GENERIC_WRITE,
-        FILE_SHARE_READ,
-        nullptr,
-        CREATE_ALWAYS,
-        FILE_ATTRIBUTE_NORMAL,
-        nullptr);
-    return gLogFile != INVALID_HANDLE_VALUE;
+    (void)module;
+    (void)filename;
+    return gRuntimeLogApi != nullptr && gRuntimeLogPlugin != 0u;
 }
 
 inline void Close() {
-    // 只关闭真正打开成功的句柄。关闭以后立刻恢复 INVALID_HANDLE_VALUE，防止以后误写旧句柄。
-    if (gLogFile != INVALID_HANDLE_VALUE) {
-        CloseHandle(gLogFile);
-        gLogFile = INVALID_HANDLE_VALUE;
-    }
+    // Runtime 固定驻留并持有真实日志句柄；插件退出只清除自身保存的接口指针。
     gRuntimeLogApi = nullptr;
     gRuntimeLogPlugin = 0u;
 }

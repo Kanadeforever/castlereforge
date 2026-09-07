@@ -58,7 +58,6 @@ extern "C" __declspec(noinline) void* __cdecl memcpy(void* destination, const vo
 namespace {
 
 HMODULE gPluginModule = nullptr;
-bool gStandaloneCrashFixActive = false;
 
 // ============================================================================
 // 第一部分：两个历史固定字节 BUG 修复
@@ -719,22 +718,6 @@ CastleResult InstallCrashRuntime(const CastleHookApiV1* hookApi,
     return CASTLE_OK;
 }
 
-CastleResult InitializeStandalone() {
-    OpenStartupLog("Standalone：使用原插件本地补丁与双路径回滚器。");
-    const bool historicalApplied = ycr::SetPatchSetState(kHistoricalBugFixPatches,
-        sizeof(kHistoricalBugFixPatches) / sizeof(kHistoricalBugFixPatches[0]), true);
-    gStandaloneCrashFixActive = InstallMergedCrashFix();
-    ycrlog::Line(historicalApplied ? "[修复] 历史 7 点固定修复已生效。" :
-        "[失败] 历史 7 点存在未知机器码；该组未盲写。");
-    ycrlog::Line(gStandaloneCrashFixActive ? "[修复] Crash 双路径修复已生效。" :
-        "[失败] Crash 双路径修复未安装。");
-    if (!historicalApplied && !gStandaloneCrashFixActive) {
-        return CASTLE_ERROR_EXPECTED_BYTES;
-    }
-    return historicalApplied && gStandaloneCrashFixActive ? CASTLE_OK :
-        CASTLE_STATUS_OPTIONAL_UNAVAILABLE;
-}
-
 CastleResult InitializeIntegrated(const CastleRuntimeApiV1* runtimeApi,
                                   CastlePluginHandle pluginHandle) {
     CastleRuntimeInfoV1 runtimeInfo{};
@@ -776,7 +759,7 @@ static CastleResult CASTLE_RUNTIME_CALL BUGFix_Integrated(
 }
 static CastleResult CASTLE_RUNTIME_CALL BUGFix_Standalone(void* userContext) {
     (void)userContext;
-    return InitializeStandalone();
+    return CASTLE_ERROR_RUNTIME_REQUIRED;
 }
 static void CASTLE_RUNTIME_CALL BUGFix_RuntimeFault(CastleResult failure,
                                                     void* userContext) {
@@ -830,10 +813,6 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) 
         CastleRuntimeClient_OnProcessAttach(
             static_cast<CastleModule>(reinterpret_cast<SIZE_T>(module)), &gPluginExport);
     } else if (reason == DLL_PROCESS_DETACH) {
-        if (reserved == nullptr && gStandaloneCrashFixActive) {
-            UninstallMergedCrashFix();
-            gStandaloneCrashFixActive = false;
-        }
         CastleRuntimeClient_OnProcessDetach(reserved);
     }
     return TRUE;

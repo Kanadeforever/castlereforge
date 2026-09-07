@@ -81,6 +81,7 @@ typedef DWORD* LPDWORD;
 #define ERROR_PATH_NOT_FOUND 3u
 #define ERROR_ALREADY_EXISTS 183u
 #define INVALID_FILE_SIZE 0xFFFFFFFFu
+#define CP_UTF8 65001u
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG)-1)
 
 // 键盘虚拟键。用户已经固定 F5=快速存档、F9=快速读档，所以不需要整张 VK 表。
@@ -118,6 +119,9 @@ HMODULE WINAPI LoadLibraryW(LPCWSTR filename);
 BOOL WINAPI FreeLibrary(HMODULE module);
 int WINAPI MultiByteToWideChar(UINT codePage, DWORD flags, LPCSTR source,
                                int sourceLength, LPWSTR output, int outputLength);
+int WINAPI WideCharToMultiByte(UINT codePage, DWORD flags, LPCWSTR source,
+                               int sourceLength, char* output, int outputLength,
+                               LPCSTR defaultCharacter, BOOL* usedDefaultCharacter);
 
 // ---- INI --------------------------------------------------------------------
 UINT WINAPI GetPrivateProfileIntW(LPCWSTR section, LPCWSTR key, int defaultValue, LPCWSTR filename);

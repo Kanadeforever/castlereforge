@@ -5,15 +5,15 @@
 #include "CastleRuntime_API.h"
 
 /*
- * RuntimeConfig 是从 Castle_Backlog.ini 读取后的最终配置快照。
- * 业务代码只读这个结构，不在运行中反复打开 INI 文件。
+ * RuntimeConfig 是从 Castle_Backlog.toml 读取并完成范围夹取后的最终配置快照。
+ * 业务代码只读这个结构，不在运行中反复打开 TOML 文件。
  */
 typedef struct RuntimeConfig {
     int enabled;
     u32 max_entries;
     u32 page_size;
 
-    /* 相邻历史对话框的纵向距离，直接来自 INI 的 PanelStrideY。 */
+    /* 相邻历史对话框的纵向距离，直接来自 TOML 的 PanelStrideY。 */
     u32 panel_stride_y;
 
     u32 repeat_delay_ticks;
@@ -28,19 +28,13 @@ typedef struct RuntimeConfig {
 
 } RuntimeConfig;
 
-/* 绑定模块路径、读取 INI、打开日志并执行精确游戏协议预检。 */
-int Runtime_Initialize(HMODULE plugin_module);
-
-/* 整合模式从 Runtime Path 取得插件路径，并把共享 Hook 点交给 Hook 事务预检。 */
+/* 从 Runtime 取得 Log/TOML，并把共享 Hook 点交给 Hook 事务预检。 */
 int Runtime_InitializeIntegrated(HMODULE plugin_module,
                                  const CastleRuntimeApiV1* runtime_api,
                                  CastlePluginHandle plugin_handle);
 
 /* 只读取得已经裁剪到安全范围的配置。 */
 const RuntimeConfig* Runtime_Config(void);
-
-/* 返回插件自身完整路径的同目录文件，用于寻找 INI、日志和协作插件配置。 */
-int Runtime_BuildSiblingPath(const char* file_name, char* output, u32 output_size);
 
 /* 日志函数只接收已经写好的 ASCII/UTF-8 文本，不依赖 printf 或 C 运行库。 */
 void Runtime_Log(const char* text);
@@ -49,7 +43,7 @@ void Runtime_Log(const char* text);
 void Runtime_ReadIniText(const char* section, const char* key, const char* fallback,
                          char* output, u32 output_size);
 
-/* ASCII 工具：用于解析 INI 数字和 Virtual-Key 名称。 */
+/* ASCII 工具：用于解析兼容数字和 Virtual-Key 名称。 */
 int Runtime_ParseU32(const char* text, u32* output);
 int Runtime_TextEqualsLoose(const char* left, const char* right);
 

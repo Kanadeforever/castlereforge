@@ -1,18 +1,16 @@
 #include "runtime.h"
 #include "game_addresses.h"
-#include "CastlePath_API.h"
 #include "CastleLog_API.h"
 #include "CastleToml_API.h"
 
 /*
  * runtime.c
  *
- * 这里集中处理五件基础工作：
- * 1. 找到插件自身目录；
- * 2. 读取并校验 INI；
- * 3. 写中文运行日志；
- * 4. 判断游戏是否在前台；
- * 5. 在任何地址写入发生前，确认当前 RPG.exe 仍符合已知机器协议。
+ * 这里集中处理四件基础工作：
+ * 1. 通过 Runtime TOML 读取并校验配置；
+ * 2. 通过 Runtime Log 写中文运行日志；
+ * 3. 判断游戏是否在前台；
+ * 4. 在任何地址写入发生前，确认当前 RPG.exe 仍符合已知机器协议。
  *
  * 业务层不重复实现这些工作。这样以后修改配置格式或增加一个版本门时，
  * 不会误碰历史记录环形队列、原版对话框切换、鼠标窗口过程或手柄协作桥。
@@ -20,8 +18,6 @@
 
 static HMODULE g_plugin_module;
 static RuntimeConfig g_config;
-static char g_plugin_path[MAX_PATH];
-static HANDLE g_log_file = INVALID_HANDLE_VALUE;
 static const CastleLogApiV1* g_runtime_log_api;
 static CastlePluginHandle g_runtime_log_plugin;
 static const CastleTomlApiV1* g_runtime_toml_api;
@@ -37,7 +33,7 @@ static u32 runtime_text_length(const char* text) {
 
 /*
  * 把 source 复制到固定大小 output。
- * 最后永远补 NUL，所以即使 INI 中有人写了过长文本，也不会让后续代码越界读取。
+ * 最后永远补 NUL，所以即使 TOML 中有人写了过长文本，也不会让后续代码越界读取。
  */
 static void runtime_copy_text(char* output, u32 output_size, const char* source) {
     u32 index = 0u;
@@ -51,7 +47,7 @@ static void runtime_copy_text(char* output, u32 output_size, const char* source)
     output[index] = '\0';
 }
 
-/* 小写化只处理 INI 键名会出现的 ASCII 字母，不碰中文或 CP950 正文。 */
+/* 小写化只处理配置键名会出现的 ASCII 字母，不碰中文或 CP950 正文。 */
 static char runtime_ascii_lower(char value) {
     if (value >= 'A' && value <= 'Z') return (char)(value + ('a' - 'A'));
     return value;
@@ -129,43 +125,16 @@ u32 Runtime_MsToTicks(u32 milliseconds) {
 }
 
 /*
- * 生成与 ASI 同目录的文件路径。
- * 先复制完整 ASI 路径，再从尾部找到最后一个斜杠，把文件名替换掉。
- */
-int Runtime_BuildSiblingPath(const char* file_name, char* output, u32 output_size) {
-    u32 path_length;
-    u32 cut;
-    u32 name_index = 0u;
-
-    if (!file_name || !output || output_size == 0u || g_plugin_path[0] == '\0') return 0;
-    runtime_copy_text(output, output_size, g_plugin_path);
-    path_length = runtime_text_length(output);
-    cut = path_length;
-
-    while (cut > 0u && output[cut - 1u] != '\\' && output[cut - 1u] != '/') --cut;
-    if (cut == 0u) return 0;
-
-    while (file_name[name_index] != '\0') {
-        if (cut + name_index + 1u >= output_size) return 0;
-        output[cut + name_index] = file_name[name_index];
-        ++name_index;
-    }
-    output[cut + name_index] = '\0';
-    return 1;
-}
-
-/*
- * 每条日志使用一次 WriteFile 写正文、一次写 CRLF。
- * 不使用 printf，所以日志文字里没有格式字符串风险，也不会引入 CRT。
+ * 每条业务日志都交给 Runtime Log 服务。Runtime 根据本插件句柄选择独立日志文件，
+ * 并统一负责 mods\logs 路径、UTF-8 BOM、并发锁和磁盘刷新。
  */
 void Runtime_Log(const char* text) {
-    DWORD written = 0u;
-    static const char newline[] = "\r\n";
     u32 length;
 
     if (!text) return;
     length = runtime_text_length(text);
-    if (g_runtime_log_api && g_runtime_log_plugin && length != 0u) {
+    if (!g_runtime_log_api || !g_runtime_log_plugin || length == 0u) return;
+    {
         CastleLogRecordV1 record = {0};
         record.magic = CASTLE_LOG_RECORD_MAGIC;
         record.struct_size = CASTLE_SIZEOF_LOG_RECORD_V1;
@@ -174,17 +143,12 @@ void Runtime_Log(const char* text) {
         record.message.data = text;
         record.message.length = length;
         (void)g_runtime_log_api->WritePluginLine(g_runtime_log_plugin, &record);
-        return;
     }
-    if (g_log_file == INVALID_HANDLE_VALUE) return;
-    if (length != 0u) WriteFile(g_log_file, text, (DWORD)length, &written, NULL);
-    WriteFile(g_log_file, newline, 2u, &written, NULL);
-    FlushFileBuffers(g_log_file);
 }
 
 /*
- * GetPrivateProfileStringA 在键不存在时会直接写 fallback。
- * 我们仍然再补一次末尾 NUL，防止极端长值正好填满整个缓冲区。
+ * Runtime TOML v1 在键缺失时返回调用者给出的 fallback；本函数仍保证输出末尾 NUL，
+ * 防止异常长字符串占满固定缓冲区后被后续按无界字符串读取。
  */
 void Runtime_ReadIniText(const char* section, const char* key, const char* fallback,
                          char* output, u32 output_size) {
@@ -634,12 +598,6 @@ static int runtime_exact_game_protocol_ok(int managed_hook_sites) {
 }
 
 static int runtime_finish_initialize(int managed_hook_sites) {
-    char log_path[MAX_PATH];
-
-    if (!g_runtime_log_api && Runtime_BuildSiblingPath("Castle_Backlog.log", log_path, MAX_PATH)) {
-        g_log_file = CreateFileA(log_path, GENERIC_WRITE, FILE_SHARE_READ, NULL,
-                                 CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    }
     Runtime_Log("[启动] Castle Backlog v0.3.4 正在初始化。");
     Runtime_Log("[启动] By Luminous with ChatGPT");
 
@@ -658,51 +616,24 @@ static int runtime_finish_initialize(int managed_hook_sites) {
     return 1;
 }
 
-int Runtime_Initialize(HMODULE plugin_module) {
-    DWORD path_length;
-    g_plugin_module = plugin_module;
-    g_plugin_path[0] = '\0';
-    path_length = GetModuleFileNameA(g_plugin_module, g_plugin_path, MAX_PATH);
-    if (path_length == 0u || path_length >= MAX_PATH) return 0;
-    g_plugin_path[MAX_PATH - 1] = '\0';
-    return runtime_finish_initialize(0);
-}
-
 int Runtime_InitializeIntegrated(HMODULE plugin_module,
                                  const CastleRuntimeApiV1* runtime_api,
                                  CastlePluginHandle plugin_handle) {
-    static const char interface_id[] = CASTLE_PATH_INTERFACE_ID;
     static const char log_interface_id[] = CASTLE_LOG_INTERFACE_ID;
     CastleInterfaceQueryV1 query = {0};
     CastleInterfaceResultV1 result = {0};
-    const CastlePathApiV1* path_api;
-    CastleU32 path_length = 0u;
     g_plugin_module = plugin_module;
-    g_plugin_path[0] = '\0';
     query.magic = CASTLE_QUERY_MAGIC;
     query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
     query.request_version = CASTLE_QUERY_VERSION_1;
-    query.interface_id.data = interface_id;
-    query.interface_id.length = (CastleU32)(sizeof(interface_id) - 1u);
-    query.requested_version = CASTLE_PATH_API_VERSION_1;
-    query.minimum_struct_size = CASTLE_SIZEOF_PATH_API_V1;
-    result.magic = CASTLE_INTERFACE_API_MAGIC;
-    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
-    result.result_version = CASTLE_QUERY_VERSION_1;
-    if (!runtime_api || runtime_api->QueryInterface(&query, &result) != CASTLE_OK) {
-        return 0;
-    }
-    path_api = (const CastlePathApiV1*)result.api_pointer;
-    if (!path_api || path_api->GetPluginModulePathUtf8(plugin_handle,
-            g_plugin_path, MAX_PATH, &path_length) != CASTLE_OK ||
-        path_length == 0u) return 0;
-    g_plugin_path[MAX_PATH - 1] = '\0';
     query.interface_id.data = log_interface_id;
     query.interface_id.length = (CastleU32)(sizeof(log_interface_id) - 1u);
     query.requested_version = CASTLE_LOG_API_VERSION_1;
     query.minimum_struct_size = CASTLE_SIZEOF_LOG_API_V1;
-    result.api_pointer = NULL;
-    if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    if (!runtime_api || runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
         !result.api_pointer) return 0;
     g_runtime_log_api = (const CastleLogApiV1*)result.api_pointer;
     g_runtime_log_plugin = plugin_handle;

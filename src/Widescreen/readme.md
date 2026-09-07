@@ -8,7 +8,8 @@
 
 ```text
 Castle_Widescreen.asi
-Castle_Widescreen.ini
+Castle_Widescreen.toml
+Castle_Runtime.dll
 ```
 
 两者放在 ASI Loader 实际加载目录。
@@ -50,7 +51,10 @@ lld-link /machine:x86
 
 ## 4. 配置说明
 
-配置文件为 `Castle_Widescreen.ini`，必须与 `Castle_Widescreen.asi` 放在同一目录。
+配置文件为 `Castle_Widescreen.toml`，必须与 `Castle_Widescreen.asi`、`Castle_Runtime.dll` 放在同一目录。
+
+当前官方版强制依赖 Runtime。显示 Hook、RenderQueue/Present 所有权、TOML 和日志都由 Runtime
+协调；日志固定写入 `mods/logs/Castle_Widescreen.log`。
 
 ### 4.1 默认配置
 

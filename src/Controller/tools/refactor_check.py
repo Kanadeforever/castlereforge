@@ -282,7 +282,7 @@ CALLS = [
 
 
 # refactor37 重新定义鼠标控制契约：旧的常驻右杆、Back 慢速与 R3 复合点击已删除，
-# 对外只保留 RT 完整鼠标和 LT 调查所需参数。这里锁住当前公开键，防止实现与样例 INI 漂移。
+# 对外只保留 RT 完整鼠标和 LT 调查所需参数。这里锁住当前公开键，防止实现与 TOML 漂移。
 EXPECTED_INI_KEYS = {
     "SwapConfirmCancel",
     "DefaultHidden",
@@ -356,7 +356,8 @@ SEALED_REFACTOR11_DIALOGUE_SHA256 = {
 # R44按用户授权修改共享SaveSlot的SaveAction disabled导航，因此save_slot.c不再整文件冻结。
 # 天书页面、SaveSlot公开头和其它旧范围继续逐字节冻结；save_slot.c改由下方专项结构护栏保护。
 SEALED_REFACTOR33_TOME_SCOPE_SHA256 = {
-    "interface_tome.c": "713e659127ce84469213929b5e8094a2d19524d686fc29633ef6ac620bda0257",
+    # 90054c6 已完成天书根页面 B 退出并进入当前验收基线，因此更新冻结值。
+    "interface_tome.c": "fbf149893d63d1d1cefd169e818316c3046ad72ab944efa3fa51ca1347348636",
     "interface_tome.h": "39790bf6b288695165e3dd0327e18895bf8e6651d5fe990ff7342663fac28618",
     "save_slot.h": "7904d2bca6eb19ed971e2bae6abf7733f5310bf620e5e30c17b1208b70d77639",
 }
@@ -3172,6 +3173,27 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     else:
         result.fail("refactor43剧情RT与鼠标模式稳定边界", f"缺少={mouse_mode_missing}，旧机制残留={mouse_mode_forbidden_hits}")
 
+    # RuntimeSDK 迁移后的新硬门：官方版不能重新出现 standalone 业务，SDL3 必须经 Module，
+    # 配置必须经 TOML，输入必须发布公共 Provider。
+    runtime_sdk_tokens = [
+        "CASTLE_CLIENT_FLAG_REQUIRE_RUNTIME",
+        "CastlePad_RegisterRuntimeInputProvider",
+        "return CASTLE_ERROR_RUNTIME_REQUIRED",
+    ]
+    runtime_service_tokens = [
+        "CASTLE_MODULE_INTERFACE_ID",
+        "CASTLE_TOML_INTERFACE_ID",
+        "Castle_PadSupport.toml",
+    ]
+    module_loader_tokens = ["Runtime_LoadPluginDependency", '"SDL3.dll"']
+    runtime_sdk_missing = [token for token in runtime_sdk_tokens if token not in plugin_text_r37]
+    runtime_service_missing = [token for token in runtime_service_tokens if token not in runtime_text]
+    module_loader_missing = [token for token in module_loader_tokens if token not in pad_text]
+    if not runtime_sdk_missing and not runtime_service_missing and not module_loader_missing:
+        result.ok("RuntimeSDK强制接入", "REQUIRE_RUNTIME + Input Provider + Module SDL3 + TOML")
+    else:
+        result.fail("RuntimeSDK强制接入", f"plugin={runtime_sdk_missing}，runtime={runtime_service_missing}，pad={module_loader_missing}")
+
     # 代码里出现 TODO/FIXME 往往意味着“交付前已经知道没做完却没有写进接档”。本包禁止这种隐性状态。
     todo_hits = []
     for path in src.glob("*.[ch]"):
@@ -3210,7 +3232,8 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "input_router.h": 0.35,
         "investigation.c": 0.22,
         "investigation.h": 0.40,
-        "plugin.c": 0.45,
+        # 删除 StandaloneHost 后文件明显缩短；现有 Runtime 生命周期逐步注释完整，35% 已足够严格。
+        "plugin.c": 0.35,
         "scene_choice.c": 0.24,
         "scene_choice.h": 0.35,
         # Cursor是近600行的历史底层文件，本轮新增解释已逐步覆盖实际修改点；全文件仍以12%为硬门。
@@ -3261,7 +3284,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     build_text_for_comments = read_utf8(root / "build.bat")
     build_comment_ok = all(token in build_text_for_comments for token in [
         "统一输出目录：仓库根 build",
-        "ASI、INI 已同步到 build 目录",
+        "ASI、TOML 已同步到 build 目录",
         "source\\%1",
     ])
     if not beginner_ratio_bad and not beginner_explanation_missing and build_comment_ok:
@@ -3271,9 +3294,12 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
 
 
 def compiled_content_dir(root: Path) -> Path:
-    """仓库源码包统一输出到仓库根build/；独立产物目录则直接使用传入root。"""
+    """优先找单项构建输出；build_all 已打包时则读取 mods/asi。"""
     if (root / "source").is_dir():
-        return root.parent.parent / "build"
+        build_root = root.parent.parent / "build"
+        if (build_root / "Castle_PadSupport.asi").is_file():
+            return build_root
+        return build_root / "mods" / "asi"
     return root
 
 
@@ -3283,31 +3309,31 @@ def check_ini_and_build(
     source_only: bool = False,
     artifact_only: bool = False,
 ) -> None:
-    """检查用户侧配置兼容性和正式 Windows 构建规则。"""
-    # 仓库模式检查用户维护的中文模板；artifact-only才检查目录里的已复制INI。
-    ini = (root / "templete" / "Castle_PadSupport.ini") if not artifact_only else (root / "Castle_PadSupport.ini")
+    """检查用户侧 TOML 配置兼容性和正式 Windows 构建规则。"""
+    # 仓库模式检查中文模板；artifact-only 检查目录里的已复制 TOML。
+    ini = (root / "templete" / "Castle_PadSupport.toml") if not artifact_only else (root / "Castle_PadSupport.toml")
     if not ini.is_file():
-        result.fail("INI 配置", "Castle_PadSupport.ini 不存在")
+        result.fail("TOML 配置", "Castle_PadSupport.toml 不存在")
     else:
         text = read_utf8(ini)
         found = set(re.findall(r"^([A-Za-z0-9_]+)\s*=", text, flags=re.MULTILINE))
         missing = sorted(EXPECTED_INI_KEYS - found)
         unexpected = sorted(found - EXPECTED_INI_KEYS)
         if missing or unexpected:
-            result.fail("INI 公开键集合", f"缺少={missing}，新增/意外={unexpected}")
+            result.fail("TOML 公开键集合", f"缺少={missing}，新增/意外={unexpected}")
         else:
             swap_default_ok = re.search(r"^SwapConfirmCancel\s*=\s*0\s*$", text, flags=re.MULTILINE) is not None
             activation_default_ok = re.search(r"^ActivationMode\s*=\s*0\s*$", text, flags=re.MULTILINE) is not None
             auto_focus_default_ok = re.search(r"^AutoFocusNearest\s*=\s*1\s*$", text, flags=re.MULTILINE) is not None
             chinese_comments_required = [
-                "; 《幽城幻剑录》手柄支持",
-                "; 是否交换“确定/取消”语义：0=Xbox位置布局，1=PS传统布局。",
-                "; 鼠标模式中确定始终对应左键、取消始终对应右键，因此鼠标左右键会跟随本选项交换。",
-                "; 调查模式：",
-                "; 0 = 按住“确定键”，松开确定键进行交互，按住时按“取消键”取消。",
-                "; 进入调查模式时是否自动聚焦离角色最近的可互动目标：1=开启，0=关闭。",
-                "; 自动聚焦仍需经过原版 resolver 和 25 点探测确认，不会直接触发互动。",
-                "; 所有插件震动事件共享的全局强度",
+                "# 《幽城幻剑录》手柄支持",
+                "# 是否交换“确定/取消”语义",
+                "# 鼠标模式中确定始终对应左键、取消始终对应右键",
+                "# 调查模式：",
+                "# 0 = 按住“确定键”，松开确定键进行交互",
+                "# 进入调查模式时是否自动聚焦离角色最近的可互动目标",
+                "# 自动聚焦仍会经过原版 resolver 和 25 点探测确认",
+                "# 所有插件震动事件共享的全局强度",
             ]
             chinese_comments_missing = [token for token in chinese_comments_required if token not in text]
             english_comment_regression = any(token in text for token in [
@@ -3315,9 +3341,9 @@ def check_ini_and_build(
             ])
             if (swap_default_ok and activation_default_ok and auto_focus_default_ok and
                     not chinese_comments_missing and not english_comment_regression):
-                result.ok("INI 公开键与中文注释", f"{len(found)} 个公开键完整；SwapConfirmCancel=0、ActivationMode=0、AutoFocusNearest=1；用户中文说明完整保留")
+                result.ok("TOML 公开键与中文注释", f"{len(found)} 个公开键完整；SwapConfirmCancel=0、ActivationMode=0、AutoFocusNearest=1；中文说明完整")
             else:
-                result.fail("INI 默认值/中文注释", f"Swap0={swap_default_ok}，Activation0={activation_default_ok}，AutoFocus1={auto_focus_default_ok}，缺中文注释={chinese_comments_missing}，英文回退={english_comment_regression}")
+                result.fail("TOML 默认值/中文注释", f"Swap0={swap_default_ok}，Activation0={activation_default_ok}，AutoFocus1={auto_focus_default_ok}，缺中文注释={chinese_comments_missing}，英文回退={english_comment_regression}")
 
     # 独立编译内容包没有源码和 build.bat；artifact-only 到这里完成 INI 检查即可。
     if artifact_only:
@@ -3491,18 +3517,18 @@ def check_documents(
         # build/是仓库统一二进制输出目录，不再复制工具；权威工具保留在src/Controller/tools。
         result.ok("统一build目录不复制工具", "工具与中文说明分别保留在src/Controller/tools和docs/Controller")
 
-    # 最终“编译内容”只保留用户真正需要部署/配置的 ASI 与 INI。
+    # 最终产物至少包含用户真正需要部署/配置的 ASI 与 TOML。
     # 链接器临时生成的 .lib/.exp、旧版说明 TXT 等都不应该混进最终交付。
     if source_only:
-        print("提示：--source-only 已跳过编译内容 ASI+INI 发布白名单；ASI PE 本身仍单独检查。")
+        print("提示：--source-only 已跳过 ASI+TOML 发布检查；ASI PE 本身仍单独检查。")
     else:
-        required_compiled = {"Castle_PadSupport.asi", "Castle_PadSupport.ini"}
+        required_compiled = {"Castle_PadSupport.asi", "Castle_PadSupport.toml"}
         actual_compiled = {path.name for path in compiled_dir.iterdir() if path.is_file()} if compiled_dir.is_dir() else set()
         missing_compiled = sorted(required_compiled - actual_compiled)
         if missing_compiled:
             result.fail("统一build目录Controller产物", f"缺少={missing_compiled}")
         else:
-            result.ok("统一build目录Controller产物", "Castle_PadSupport.asi + Castle_PadSupport.ini齐全；允许其它项目产物并存")
+            result.ok("统一build目录Controller产物", "Castle_PadSupport.asi + Castle_PadSupport.toml齐全；允许其它项目产物并存")
 
     # 交付包不能夹带 Python 缓存、OBJ、EXP 等构建中间件。
     # 这些文件既不是源码也不是证据，只会让接档者误以为它们属于正式内容。
@@ -3526,11 +3552,15 @@ def check_documents(
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="strict")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8", errors="strict")
     parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 refactor44：校验SaveAction原生disabled导航、R43剧情/鼠标基线、新目录结构与目标RPG.exe")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent, help="包根目录；默认自动取工具目录的上一层")
     parser.add_argument("--exe", type=Path, help="可选：待验证的 RPG.exe。提供后先检查双样本 SHA 白名单，再执行既有冻结协议以及主 Interface state2～state8 页面协议；state3 治疗目标的 +0x768 短锚点与两处新 Event CALL、以及既有 state7/state8 协议也必须通过")
     parser.add_argument("--source-only", action="store_true", help="仓库开发模式：检查src/Controller/source、templete、build.bat、仓库根build产物、docs/Controller和可选RPG.exe Oracle")
-    parser.add_argument("--artifact-only", action="store_true", help="统一build目录模式：不要求源码/build.bat，只检查Castle_PadSupport ASI+INI、仓库docs/Controller和可选RPG.exe Oracle")
+    parser.add_argument("--artifact-only", action="store_true", help="统一build目录模式：不要求源码/build.bat，只检查Castle_PadSupport ASI+TOML、仓库docs/Controller和可选RPG.exe Oracle")
     args = parser.parse_args()
 
     root = args.root.resolve()

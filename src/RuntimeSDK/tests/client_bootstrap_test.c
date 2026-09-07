@@ -1,8 +1,8 @@
 /*
  * client_bootstrap_test.c
  *
- * 同一测试插件分别放进 integrated/standalone/fault 三个目录运行，只改变同目录
- * Castle_Runtime.dll 的状态，证明 Client 的三路选择不会互相偷换。
+ * 同一测试插件分别放进 integrated/standalone/fault/required 四个目录运行，只改变
+ * Castle_Runtime.dll 与 REQUIRE_RUNTIME 开关，证明 Client 不会在四种结果之间偷换。
  */
 
 #include "../client/client_internal.h"
@@ -61,7 +61,7 @@ static const CastlePluginDescriptorV1 g_descriptor = {
     {g_build_id, (CastleU32)(sizeof(g_build_id) - 1u)}
 };
 
-static const CastleRuntimeClientConfigV1 g_client_config = {
+static CastleRuntimeClientConfigV1 g_client_config = {
     CASTLE_CLIENT_CONFIG_MAGIC,
     CASTLE_SIZEOF_CLIENT_CONFIG_V1,
     CASTLE_CLIENT_CONFIG_VERSION_1,
@@ -115,10 +115,12 @@ __declspec(noreturn) void __stdcall ClientBootstrapTestEntry(void) {
     static const WCHAR integrated_marker[] = L"client_integrated";
     static const WCHAR standalone_marker[] = L"client_standalone";
     static const WCHAR fault_marker[] = L"client_fault";
+    static const WCHAR required_marker[] = L"client_required";
     WCHAR module_path[1024];
     BYTE* entry;
     CastleU32 index;
     CastleU32 expected_mode;
+    int runtime_required = 0;
     CastleResult result;
     DWORD original_error_mode;
     DWORD observed_error_mode;
@@ -138,11 +140,15 @@ __declspec(noreturn) void __stdcall ClientBootstrapTestEntry(void) {
         expected_mode = CASTLE_CLIENT_BOOTSTRAP_STANDALONE;
     } else if (client_wide_contains_(module_path, fault_marker)) {
         expected_mode = CASTLE_CLIENT_BOOTSTRAP_FAULT;
+    } else if (client_wide_contains_(module_path, required_marker)) {
+        expected_mode = CASTLE_CLIENT_BOOTSTRAP_FAULT;
+        runtime_required = 1;
     } else {
         ExitProcess(2u);
     }
 
     client_test_zero_(&g_test_context, (CastleU32)sizeof(g_test_context));
+    g_client_config.flags = runtime_required ? CASTLE_CLIENT_FLAG_REQUIRE_RUNTIME : 0u;
     entry = (BYTE*)VirtualAlloc(NULL, 4096u, MEM_RESERVE | MEM_COMMIT,
                                 PAGE_EXECUTE_READWRITE);
     if (!entry) ExitProcess(3u);
@@ -188,6 +194,8 @@ __declspec(noreturn) void __stdcall ClientBootstrapTestEntry(void) {
         if (result >= 0 || g_test_context.integrated_count != 0 ||
             g_test_context.standalone_count != 0 || g_test_context.fault_count != 1 ||
             g_test_context.last_fault >= 0 ||
+            (runtime_required &&
+             g_test_context.last_fault != CASTLE_ERROR_RUNTIME_REQUIRED) ||
             CastleRuntimeClient_GetState() != CASTLE_CLIENT_RUNTIME_FAULT ||
             GetModuleHandleW(L"Castle_Runtime.dll")) ExitProcess(7u);
     }

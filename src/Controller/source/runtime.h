@@ -98,17 +98,11 @@ typedef struct RuntimeConfig {
 typedef struct RuntimeApi {
     PFN_GetModuleHandleA get_module_handle_a;
     PFN_GetProcAddress get_proc_address;
-    PFN_LoadLibraryA load_library_a;
     PFN_GetModuleFileNameA get_module_file_name_a;
     PFN_GetModuleHandleExA get_module_handle_ex_a;
     PFN_VirtualProtect virtual_protect;
 
     PFN_GetCursorPos get_cursor_pos;
-    PFN_CreateFileA create_file_a;
-    PFN_WriteFile write_file;
-    PFN_CloseHandle close_handle;
-    PFN_CreateThread create_thread;
-    PFN_Sleep sleep;
 
     PFN_GetForegroundWindow get_foreground_window;
     PFN_GetClientRect get_client_rect;
@@ -116,7 +110,6 @@ typedef struct RuntimeApi {
     PFN_SetCursorPos set_cursor_pos;
     PFN_GetWindowThreadProcessId get_window_thread_process_id;
     PFN_GetCurrentProcessId get_current_process_id;
-    PFN_GetPrivateProfileIntA get_private_profile_int_a;
     PFN_mouse_event mouse_event;
     PFN_PostMessageA post_message_a;
 } RuntimeApi;

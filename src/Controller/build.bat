@@ -105,7 +105,7 @@ rmdir /s /q "%ROOT%_build"
 
 echo.
 echo done
-echo [打包] ASI、INI 已同步到 build 目录。  
+echo [打包] ASI、TOML 已同步到 build 目录。  
 pause
 exit /b 0
 

@@ -64,7 +64,8 @@ MaxGrowthAndDrop.asi
 - PE 带 DLL 标志；
 - `AddressOfEntryPoint` 不为 0。
 
-`MaxGrowthAndDrop.ini` 的既有生成与部署方式没有在本次目录整理中改变。
+`MaxGrowthAndDrop.toml` 由 Runtime TOML 服务读取，插件不再自行生成或改写配置。NoCD、BUGFix、
+MaxGrowthAndDrop 三个官方 ASI 均需要同目录 `Castle_Runtime.dll`，日志统一进入 `mods/logs`。
 
 ## 4. 已确认方案与历史结论
 

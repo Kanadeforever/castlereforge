@@ -9,7 +9,7 @@ Castle_Widescreen v0.11-poc11 侧区样式切换静态协议检查器
 2. 已证伪的 982×576 renderer/backing 路线重新混回代码；
 3. v0.7 已实机通过的“左右 world 重放时屏蔽消息 UI”被误删；
 4. v0.9 已经统一成“所有消息使用同一侧区规则”，v0.11 不能让来源分支复活；
-5. Castle_Widescreen.ini 没有和 ASI 同名、缺少 Ultrawide、BlurredSides 或进入/退出毫秒键；
+5. Castle_Widescreen.toml 缺失、少键或丢失逐项中文注释；
 6. v0.11 宣称支持模糊/纯黑切换，但实际上改了触发/动画，或纯黑模式仍无条件做模糊计算；
 7. Battle、当前宽屏安全 Camera、毫秒过渡、事务式 Hook 回滚等既有稳定结构被误删。
 
@@ -23,19 +23,19 @@ import hashlib
 import struct
 from pathlib import Path
 
-TARGET_SHA256 = "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf"
+TARGET_SHA256 = "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f"
 IMAGE_BASE = 0x00400000
 
-# v0.9 当前真正改写的 E8 CALL 只有四处。
+# 当前 Widescreen 自己只改写两处 DirectDraw 重建 CALL；主帧 Render/Present 已归 Runtime。
 PATCH_CALLS = [
     (0x004059E1, 0x00405BD0, "初次 DirectDraw 重建"),
     (0x00406307, 0x00405BD0, "Surface lost 重建"),
-    (0x0044A9C6, 0x00434710, "主帧绘制队列"),
-    (0x0044A9E6, 0x00405A10, "每帧 Present"),
 ]
 
 # 不改写，但当前实现依赖这些原版 CALL 关系。
 PROTOCOL_CALLS = [
+    (0x0044A9C6, 0x00434710, "Runtime接管前的原版主帧绘制队列"),
+    (0x0044A9E6, 0x00405A10, "Runtime接管前的原版每帧Present"),
     (0x0040B087, 0x00403E30, "world manager -> 消息更新/状态路径"),
     (0x0040B08C, 0x00404800, "world manager -> 消息主体/UI绘制路径"),
 ]
@@ -110,6 +110,11 @@ def sha256(path: Path) -> str:
 
 
 def main() -> int:
+    import sys
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="strict")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8", errors="strict")
     parser = argparse.ArgumentParser(description="检查 Castle_Widescreen v0.11-poc11 16:9 / 21:9 + 模糊/纯黑侧区切换静态协议")
     parser.add_argument("--root", type=Path, required=True, help="交付包根目录")
     parser.add_argument("--exe", type=Path, required=True, help="目标 RPG.exe")
@@ -153,15 +158,26 @@ def main() -> int:
     except Exception as exc:
         result(False, "RPG.exe PE 协议解析", str(exc))
 
-    src = args.root / "源码"
-    compiled = args.root / "编译内容"
+    # 同时兼容当前主仓与旧独立归档；当前主仓是正式检查路径。
+    if (args.root / "src" / "Widescreen" / "source").is_dir():
+        src = args.root / "src" / "Widescreen" / "source"
+        template = args.root / "src" / "Widescreen" / "templete"
+        compiled = args.root / "build" / "mods" / "asi"
+        if not (compiled / "Castle_Widescreen.asi").is_file():
+            compiled = args.root / "build"
+        build_path = args.root / "src" / "Widescreen" / "build.bat"
+    else:
+        src = args.root / "源码"
+        template = src
+        compiled = args.root / "编译内容"
+        build_path = src / "build.bat"
 
     wide = (src / "widescreen.c").read_text(encoding="utf-8-sig")
     runtime = (src / "runtime.c").read_text(encoding="utf-8-sig")
     platform = (src / "platform.h").read_text(encoding="utf-8-sig")
-    build = (src / "build.bat").read_text(encoding="utf-8-sig")
-    ini_source = src / "Castle_Widescreen.ini"
-    ini_release = compiled / "Castle_Widescreen.ini"
+    build = build_path.read_text(encoding="utf-8-sig")
+    ini_source = template / "Castle_Widescreen.toml"
+    ini_release = compiled / "Castle_Widescreen.toml"
     asi = compiled / "Castle_Widescreen.asi"
 
     # 原版768 renderer + 两套最终输出模式必须同时成立。
@@ -326,18 +342,18 @@ def main() -> int:
         "两种侧区样式共享同一推入/退出与边缘柔化路径",
     )
 
-    # INI 与真实毫秒计时。
-    result(ini_source.exists(), "源码目录存在 Castle_Widescreen.ini")
-    result(ini_release.exists(), "编译内容存在 Castle_Widescreen.ini")
+    # TOML 与真实毫秒计时。
+    result(ini_source.exists(), "模板目录存在 Castle_Widescreen.toml")
+    result(ini_release.exists(), "发行目录存在 Castle_Widescreen.toml")
     if ini_release.exists():
-        ini_text = ini_release.read_text(encoding="ascii")
-        result("[Display]" in ini_text, "INI 包含 [Display]")
-        result("Ultrawide=0" in ini_text, "INI 默认关闭21:9，保持16:9")
-        result("[Cinematic]" in ini_text, "INI 包含 [Cinematic]")
-        result("BlurredSides=1" in ini_text, "INI 默认保持电影式模糊侧区")
-        result("[Transition]" in ini_text, "INI 包含 [Transition]")
-        result("EnterDurationMs=250" in ini_text, "INI 默认进入时间 250ms")
-        result("ExitDurationMs=250" in ini_text, "INI 默认退出时间 250ms")
+        ini_text = ini_release.read_text(encoding="utf-8-sig")
+        result("[Display]" in ini_text, "TOML 包含 [Display]")
+        result("Ultrawide = 0" in ini_text, "TOML 默认关闭21:9，保持16:9")
+        result("[Cinematic]" in ini_text, "TOML 包含 [Cinematic]")
+        result("BlurredSides = 1" in ini_text, "TOML 默认保持电影式模糊侧区")
+        result("[Transition]" in ini_text, "TOML 包含 [Transition]")
+        result("EnterDurationMs = 250" in ini_text, "TOML 默认进入时间 250ms")
+        result("ExitDurationMs = 250" in ini_text, "TOML 默认退出时间 250ms")
 
     result(
         "Runtime_ReadPluginIniU32" in wide
@@ -345,12 +361,12 @@ def main() -> int:
         and '"Cinematic", "BlurredSides"' in wide
         and '"Transition", "EnterDurationMs"' in wide
         and '"Transition", "ExitDurationMs"' in wide,
-        "源码读取同名 INI 的显示模式、侧区样式与进入/退出时间",
+        "源码读取同名 TOML 的显示模式、侧区样式与进入/退出时间",
     )
     result(
-        "PFN_GetPrivateProfileIntA" in platform
-        and "GetPrivateProfileIntA" in runtime,
-        "INI 使用 Win32 Profile API，无自制脆弱解析器",
+        "CASTLE_TOML_INTERFACE_ID" in runtime
+        and '"Castle_Widescreen.toml"' in runtime,
+        "配置使用 Runtime TOML v1",
     )
     result(
         "PFN_GetTickCount" in platform
@@ -365,11 +381,11 @@ def main() -> int:
     result(
         "TRANSITION_DEFAULT_MS      250u" in wide
         and "TRANSITION_MAX_MS        10000u" in wide,
-        "INI 默认值与范围常量存在",
+        "TOML 默认值与范围常量存在",
     )
     result(
-        'copy /y "%ROOT%Castle_Widescreen.ini"' in build,
-        "Windows 一键构建同步同名 INI",
+        'templete\\Castle_Widescreen.toml' in build,
+        "Windows 一键构建同步同名 TOML",
     )
 
 
@@ -377,7 +393,7 @@ def main() -> int:
         "static u32 g_output_width = OUTPUT_WIDTH_16_9;" in wide
         and "static u32 g_side_width = SIDE_WIDTH_16_9;" in wide
         and "static u32 g_present_staging_w = STAGING_WIDTH_16_9;" in wide,
-        "即使INI读取前，静态默认几何也是16:9",
+        "即使TOML读取前，静态默认几何也是16:9",
     )
 
     # 旧失败路线不能复活。
@@ -412,8 +428,8 @@ def main() -> int:
             asi_pe = PE(asi.read_bytes())
             result(asi_pe.machine == 0x014C, "ASI 为 i386 PE32", hex(asi_pe.machine))
             result((asi_pe.characteristics & 0x2000) != 0, "ASI 具有 DLL 标志")
-            result(asi_pe.import_rva == 0 and asi_pe.import_size == 0,
-                   "ASI 没有静态 Import Directory")
+            result(asi_pe.import_rva != 0 and asi_pe.import_size != 0,
+                   "ASI 包含 Runtime Client 所需的静态 Import Directory")
         except Exception as exc:
             result(False, "ASI PE 格式解析", str(exc))
     else:

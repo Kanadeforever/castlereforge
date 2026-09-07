@@ -19,6 +19,15 @@
 #include "CastleDisplay_API.h"
 #include "CastleWindow_API.h"
 #include "CastleRender_API.h"
+#include "CastleLog_API.h"
+#include "CastleClock_API.h"
+#include "CastleInput_API.h"
+#include "CastleGameState_API.h"
+#include "CastleSave_API.h"
+#include "CastleOverlay_API.h"
+#include "CastleFile_API.h"
+#include "CastleModule_API.h"
+#include "CastleToml_API.h"
 
 typedef int (__cdecl *TestFunction)(int value);
 typedef CastleU32 (CASTLE_RUNTIME_CALL *RuntimeTestGetU32Fn)(void);
@@ -296,6 +305,58 @@ static void byte_copy_(void* destination, const void* source, CastleU32 size) {
     for (index = 0u; index < size; ++index) output[index] = input[index];
 }
 
+static int byte_equal_(const void* left, const void* right, CastleU32 size) {
+    const CastleU8* a = (const CastleU8*)left;
+    const CastleU8* b = (const CastleU8*)right;
+    CastleU32 index;
+    if (!a || !b) return 0;
+    for (index = 0u; index < size; ++index) if (a[index] != b[index]) return 0;
+    return 1;
+}
+
+static const void* query_service_(const CastleRuntimeApiV1* api,
+                                  const char* interface_id,
+                                  CastleU32 interface_length,
+                                  CastleU32 version,
+                                  CastleU32 minimum_size,
+                                  CastleU32 capabilities) {
+    CastleInterfaceQueryV1 query;
+    CastleInterfaceResultV1 result;
+    if (!api || !api->QueryInterface) return NULL;
+    byte_zero_(&query, (CastleU32)sizeof(query));
+    byte_zero_(&result, (CastleU32)sizeof(result));
+    query.magic = CASTLE_QUERY_MAGIC;
+    query.struct_size = CASTLE_SIZEOF_INTERFACE_QUERY_V1;
+    query.request_version = CASTLE_QUERY_VERSION_1;
+    query.interface_id = view_(interface_id, interface_length);
+    query.requested_version = version;
+    query.minimum_struct_size = minimum_size;
+    query.required_capabilities_low = capabilities;
+    result.magic = CASTLE_INTERFACE_API_MAGIC;
+    result.struct_size = CASTLE_SIZEOF_INTERFACE_RESULT_V1;
+    result.result_version = CASTLE_QUERY_VERSION_1;
+    return api->QueryInterface(&query, &result) == CASTLE_OK ?
+        result.api_pointer : NULL;
+}
+
+static CastleResult CASTLE_RUNTIME_CALL test_input_snapshot_(
+    CastleInputSnapshotV1* out_snapshot) {
+    if (!out_snapshot) return CASTLE_ERROR_INVALID_ARGUMENT;
+    byte_zero_(out_snapshot, (CastleU32)sizeof(*out_snapshot));
+    out_snapshot->magic = CASTLE_INPUT_SNAPSHOT_MAGIC;
+    out_snapshot->struct_size = CASTLE_SIZEOF_INPUT_SNAPSHOT_V1;
+    out_snapshot->version = CASTLE_INPUT_STRUCTURE_VERSION_1;
+    out_snapshot->generation = 7u;
+    out_snapshot->ready = 1u;
+    out_snapshot->connected = 1u;
+    out_snapshot->game_foreground = 1u;
+    out_snapshot->control_mode = CASTLE_INPUT_CONTROL_CONTROLLER;
+    out_snapshot->allows_external_ui_input = 1u;
+    out_snapshot->button_pressed = 1u << CASTLE_INPUT_BUTTON_SOUTH;
+    out_snapshot->action_pressed = 1u << CASTLE_INPUT_ACTION_CONFIRM;
+    return CASTLE_OK;
+}
+
 static CastleTargetAddressV1 target_from_address_(HMODULE module, void* address,
                                                   CastleU32 size) {
     CastleTargetAddressV1 target;
@@ -333,6 +394,15 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
     const CastleDisplayApiV1* display_api;
     const CastleWindowApiV1* window_api;
     const CastleRenderApiV1* render_api;
+    const CastleLogApiV1* log_api;
+    const CastleClockApiV1* clock_api;
+    const CastleInputApiV1* input_api;
+    const CastleGameStateApiV1* game_state_api;
+    const CastleSaveApiV1* save_api;
+    const CastleOverlayApiV1* overlay_api;
+    const CastleFileApiV1* file_api;
+    const CastleModuleApiV1* module_api;
+    const CastleTomlApiV1* toml_api;
     CastlePathInfoV1 path_info;
     CastleScheduledTaskV1 scheduled_task;
     CastleScheduleTaskStatsV1 schedule_stats;
@@ -365,6 +435,36 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
     CastleLeaseHandle duplicate_extra_frame_lease = 0u;
     CastleU32 extra_frame_display_generation = 0u;
     CastleU32 initial_render_provider_generation = 0u;
+    CastleClockStateV1 clock_state;
+    CastleLogRecordV1 log_record;
+    CastleLeaseHandle clock_lease = 0u;
+    CastleU32 clock_ms = 0u;
+    CastleInputSnapshotV1 input_snapshot;
+    CastleInputProviderV1 input_provider_api;
+    CastleInputFocusRequestV1 focus_request;
+    CastleInputFocusStateV1 focus_state;
+    CastleProviderHandle input_provider = 0u;
+    CastleLeaseHandle input_focus = 0u;
+    CastleLeaseHandle duplicate_input_focus = 0u;
+    CastleGameMutationRequestV1 mutation_request;
+    CastleGameMutationStateV1 mutation_state;
+    CastleLeaseHandle mutation_lease = 0u;
+    CastleLeaseHandle duplicate_mutation_lease = 0u;
+    CastleSaveUiStateV1 save_ui_state;
+    CastleOverlayStateV1 overlay_state;
+    CastleFileBufferV1 file_buffer;
+    CastleTomlDocumentHandle toml_document = 0u;
+    CastleModule loaded_system_module = 0u;
+    CastleModuleStateV1 module_state;
+    CastleAddress module_procedure = 0u;
+    CastleS32 toml_integer = 0;
+    CastleU32 toml_boolean = 0u;
+    CastleU32 toml_string_length = 0u;
+    char toml_string[32];
+    CastleU8 file_read_buffer[256];
+    char log_path[1024];
+    CastleU32 log_path_length = 0u;
+    CastleU32 save_allowed = 0u;
     CastleU32 gate_wait_attempt;
     CastleTaskHandle schedule_task = 0u;
     ScheduleTestContext periodic_context;
@@ -431,6 +531,27 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
     static const char window_interface[] = CASTLE_WINDOW_INTERFACE_ID;
     static const char render_interface[] = CASTLE_RENDER_INTERFACE_ID;
     static const char render_provider_id[] = "org.castlereforge.test.render";
+    static const char log_interface[] = CASTLE_LOG_INTERFACE_ID;
+    static const char clock_interface[] = CASTLE_CLOCK_INTERFACE_ID;
+    static const char input_interface[] = CASTLE_INPUT_INTERFACE_ID;
+    static const char game_state_interface[] = CASTLE_GAME_STATE_INTERFACE_ID;
+    static const char save_interface[] = CASTLE_SAVE_INTERFACE_ID;
+    static const char overlay_interface[] = CASTLE_OVERLAY_INTERFACE_ID;
+    static const char file_interface[] = CASTLE_FILE_INTERFACE_ID;
+    static const char module_interface[] = CASTLE_MODULE_INTERFACE_ID;
+    static const char toml_interface[] = CASTLE_TOML_INTERFACE_ID;
+    static const char input_provider_id[] = "org.castlereforge.test.input";
+    static const char focus_label[] = "host input focus";
+    static const char mutation_label[] = "host camera mutation";
+    static const char runtime_test_file[] = "runtime_service_test.toml";
+    static const char runtime_test_table[] = "Config";
+    static const char runtime_test_toml[] =
+        "# Runtime TOML service test\r\n"
+        "[Config]\r\n"
+        "Enabled = true\r\n"
+        "Count = 42\r\n"
+        "Name = \"castle\"\r\n";
+    static const char host_log_suffix[] = "runtime_host_test.log";
     static const char transaction_label[] = "host transaction";
     static const char patch_label[] = "data patch";
     static const char state_label[] = "state patch";
@@ -475,7 +596,16 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
         (api->capability_flags_low & CASTLE_RUNTIME_CAP_SERVICE_PROVIDER) == 0u ||
         (api->capability_flags_low & CASTLE_RUNTIME_CAP_DISPLAY_V1) == 0u ||
         (api->capability_flags_low & CASTLE_RUNTIME_CAP_WINDOW_V1) == 0u ||
-        (api->capability_flags_low & CASTLE_RUNTIME_CAP_RENDER_V1) == 0u) {
+        (api->capability_flags_low & CASTLE_RUNTIME_CAP_RENDER_V1) == 0u ||
+        (api->capability_flags_low & CASTLE_RUNTIME_CAP_LOG_V1) == 0u ||
+        (api->capability_flags_low & CASTLE_RUNTIME_CAP_CLOCK_V1) == 0u ||
+        (api->capability_flags_low & CASTLE_RUNTIME_CAP_INPUT_V1) == 0u ||
+        (api->capability_flags_low & CASTLE_RUNTIME_CAP_GAME_STATE_V1) == 0u ||
+        (api->capability_flags_low & CASTLE_RUNTIME_CAP_SAVE_V1) == 0u ||
+        (api->capability_flags_low & CASTLE_RUNTIME_CAP_OVERLAY_V1) == 0u ||
+        (api->capability_flags_low & CASTLE_RUNTIME_CAP_FILE_V1) == 0u ||
+        (api->capability_flags_low & CASTLE_RUNTIME_CAP_MODULE_V1) == 0u ||
+        (api->capability_flags_low & CASTLE_RUNTIME_CAP_TOML_V1) == 0u) {
         ExitProcess(15u);
     }
 
@@ -586,6 +716,50 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
     if (render_api->magic != CASTLE_RENDER_API_MAGIC ||
         !render_api->RenderCurrentQueue || !render_api->BeginExtraWorldFrame ||
         !render_api->RegisterRenderProvider) ExitProcess(115u);
+
+    /* 新增公共服务都必须能由稳定 ID 查询；这里只检查 ABI 门面，业务行为在登记插件后继续验证。 */
+    log_api = (const CastleLogApiV1*)query_service_(api, log_interface,
+        (CastleU32)(sizeof(log_interface) - 1u), CASTLE_LOG_API_VERSION_1,
+        CASTLE_SIZEOF_LOG_API_V1, CASTLE_LOG_CAP_SEPARATE_PLUGIN_FILES);
+    clock_api = (const CastleClockApiV1*)query_service_(api, clock_interface,
+        (CastleU32)(sizeof(clock_interface) - 1u), CASTLE_CLOCK_API_VERSION_1,
+        CASTLE_SIZEOF_CLOCK_API_V1, CASTLE_CLOCK_CAP_MONOTONIC_MS);
+    input_api = (const CastleInputApiV1*)query_service_(api, input_interface,
+        (CastleU32)(sizeof(input_interface) - 1u), CASTLE_INPUT_API_VERSION_1,
+        CASTLE_SIZEOF_INPUT_API_V1, CASTLE_INPUT_CAP_FOCUS_LEASE);
+    game_state_api = (const CastleGameStateApiV1*)query_service_(api,
+        game_state_interface, (CastleU32)(sizeof(game_state_interface) - 1u),
+        CASTLE_GAME_STATE_API_VERSION_1, CASTLE_SIZEOF_GAME_STATE_API_V1,
+        CASTLE_GAME_STATE_CAP_MUTATION_LEASE);
+    save_api = (const CastleSaveApiV1*)query_service_(api, save_interface,
+        (CastleU32)(sizeof(save_interface) - 1u), CASTLE_SAVE_API_VERSION_1,
+        CASTLE_SIZEOF_SAVE_API_V1, CASTLE_SAVE_CAP_MANUAL_SLOT_POLICY);
+    overlay_api = (const CastleOverlayApiV1*)query_service_(api, overlay_interface,
+        (CastleU32)(sizeof(overlay_interface) - 1u), CASTLE_OVERLAY_API_VERSION_1,
+        CASTLE_SIZEOF_OVERLAY_API_V1,
+        CASTLE_OVERLAY_CAP_BEFORE_RENDERER_PRESENT);
+    file_api = (const CastleFileApiV1*)query_service_(api, file_interface,
+        (CastleU32)(sizeof(file_interface) - 1u), CASTLE_FILE_API_VERSION_1,
+        CASTLE_SIZEOF_FILE_API_V1,
+        CASTLE_FILE_CAP_READ | CASTLE_FILE_CAP_ATOMIC_WRITE);
+    module_api = (const CastleModuleApiV1*)query_service_(api, module_interface,
+        (CastleU32)(sizeof(module_interface) - 1u), CASTLE_MODULE_API_VERSION_1,
+        CASTLE_SIZEOF_MODULE_API_V1, CASTLE_MODULE_CAP_SYSTEM_ALLOWLIST);
+    toml_api = (const CastleTomlApiV1*)query_service_(api, toml_interface,
+        (CastleU32)(sizeof(toml_interface) - 1u), CASTLE_TOML_API_VERSION_1,
+        CASTLE_SIZEOF_TOML_API_V1,
+        CASTLE_TOML_CAP_BOOL | CASTLE_TOML_CAP_S32 | CASTLE_TOML_CAP_STRING);
+    if (!log_api || log_api->magic != CASTLE_LOG_API_MAGIC || !log_api->WritePluginLine ||
+        !clock_api || clock_api->magic != CASTLE_CLOCK_API_MAGIC || !clock_api->GetMonotonicMilliseconds ||
+        !input_api || input_api->magic != CASTLE_INPUT_API_MAGIC || !input_api->RegisterInputProvider ||
+        !game_state_api || game_state_api->magic != CASTLE_GAME_STATE_API_MAGIC || !game_state_api->AcquireMutation ||
+        !save_api || save_api->magic != CASTLE_SAVE_API_MAGIC || !save_api->IsManualSaveAllowed ||
+        !overlay_api || overlay_api->magic != CASTLE_OVERLAY_API_MAGIC || !overlay_api->GetOverlayState ||
+        !file_api || file_api->magic != CASTLE_FILE_API_MAGIC || !file_api->WritePluginFileAtomic ||
+        !module_api || module_api->magic != CASTLE_MODULE_API_MAGIC || !module_api->LoadSystemModule ||
+        !toml_api || toml_api->magic != CASTLE_TOML_API_MAGIC || !toml_api->OpenPluginDocument) {
+        ExitProcess(140u);
+    }
 
     self_module = GetModuleHandleW(NULL);
     if (!self_module) ExitProcess(28u);
@@ -716,6 +890,168 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
                 (CastleU32)(sizeof(escape_wide_path) / sizeof(escape_wide_path[0]) - 1u)),
             built_wide, (CastleU32)(sizeof(built_wide) / sizeof(built_wide[0])),
             &path_length) != CASTLE_ERROR_INVALID_ARGUMENT) ExitProcess(72u);
+
+    /* Log 必须为测试插件生成独立文件，并把路径固定到 Runtime 管理的 logs 目录。 */
+    byte_zero_(&log_record, (CastleU32)sizeof(log_record));
+    log_record.magic = CASTLE_LOG_RECORD_MAGIC;
+    log_record.struct_size = CASTLE_SIZEOF_LOG_RECORD_V1;
+    log_record.version = CASTLE_LOG_STRUCTURE_VERSION_1;
+    log_record.level = CASTLE_LOG_INFO;
+    log_record.message = view_("Runtime host log service test", 29u);
+    if (log_api->WritePluginLine(handle, &log_record) != CASTLE_OK ||
+        log_api->GetPluginLogPathUtf8(handle, log_path,
+            (CastleU32)sizeof(log_path), &log_path_length) != CASTLE_OK ||
+        !text_ends_with_(log_path, log_path_length, "runtime_host_test.log", 21u)) {
+        ExitProcess(141u);
+    }
+
+    /* File 原子写入的结果必须可完整读回；同一 API 随后负责删除测试文件。 */
+    if (file_api->WritePluginFileAtomic(handle,
+            view_(runtime_test_file, (CastleU32)(sizeof(runtime_test_file) - 1u)),
+            (const CastleU8*)runtime_test_toml,
+            (CastleU32)(sizeof(runtime_test_toml) - 1u)) != CASTLE_OK) ExitProcess(142u);
+    byte_zero_(&file_buffer, (CastleU32)sizeof(file_buffer));
+    file_buffer.magic = CASTLE_FILE_BUFFER_MAGIC;
+    file_buffer.struct_size = CASTLE_SIZEOF_FILE_BUFFER_V1;
+    file_buffer.version = CASTLE_FILE_STRUCTURE_VERSION_1;
+    file_buffer.data = file_read_buffer;
+    file_buffer.capacity = (CastleU32)sizeof(file_read_buffer);
+    if (file_api->ReadPluginFile(handle,
+            view_(runtime_test_file, (CastleU32)(sizeof(runtime_test_file) - 1u)),
+            &file_buffer) != CASTLE_OK ||
+        file_buffer.bytes_written != (CastleU32)(sizeof(runtime_test_toml) - 1u) ||
+        !byte_equal_(file_read_buffer, runtime_test_toml,
+                     (CastleU32)(sizeof(runtime_test_toml) - 1u))) ExitProcess(143u);
+
+    /* TOML 服务必须从同一 File 后端打开文档，并按严格类型返回三个标量。 */
+    if (toml_api->OpenPluginDocument(handle,
+            view_(runtime_test_file, (CastleU32)(sizeof(runtime_test_file) - 1u)),
+            &toml_document) != CASTLE_OK || !toml_document ||
+        toml_api->GetBool(toml_document,
+            view_(runtime_test_table, (CastleU32)(sizeof(runtime_test_table) - 1u)),
+            view_("Enabled", 7u), 0u, &toml_boolean) != CASTLE_OK || toml_boolean != 1u ||
+        toml_api->GetS32(toml_document,
+            view_(runtime_test_table, (CastleU32)(sizeof(runtime_test_table) - 1u)),
+            view_("Count", 5u), 0, -100, 100, &toml_integer) != CASTLE_OK ||
+        toml_integer != 42 ||
+        toml_api->GetString(toml_document,
+            view_(runtime_test_table, (CastleU32)(sizeof(runtime_test_table) - 1u)),
+            view_("Name", 4u), view_("fallback", 8u), toml_string,
+            (CastleU32)sizeof(toml_string), &toml_string_length) != CASTLE_OK ||
+        toml_string_length != 6u || !byte_equal_(toml_string, "castle", 6u) ||
+        toml_api->CloseDocument(toml_document) != CASTLE_OK ||
+        file_api->DeletePluginFile(handle,
+            view_(runtime_test_file, (CastleU32)(sizeof(runtime_test_file) - 1u))) != CASTLE_OK) {
+        ExitProcess(144u);
+    }
+
+    /* Module 只允许白名单系统 DLL；已登记模块的导出与状态必须可查询。 */
+    if (module_api->LoadSystemModule(handle, view_("kernel32.dll", 12u), 0u,
+            &loaded_system_module) != CASTLE_OK || !loaded_system_module ||
+        module_api->GetProcedure(loaded_system_module, view_("GetTickCount", 12u),
+            &module_procedure) != CASTLE_OK || !module_procedure) ExitProcess(145u);
+    byte_zero_(&module_state, (CastleU32)sizeof(module_state));
+    module_state.magic = CASTLE_MODULE_STATE_MAGIC;
+    module_state.struct_size = CASTLE_SIZEOF_MODULE_STATE_V1;
+    module_state.version = CASTLE_MODULE_STRUCTURE_VERSION_1;
+    if (module_api->GetModuleState(loaded_system_module, &module_state) != CASTLE_OK ||
+        module_state.first_owner != handle || module_state.module != loaded_system_module ||
+        module_api->LoadSystemModule(handle, view_("evil.dll", 8u), 0u,
+            &loaded_system_module) != CASTLE_ERROR_INVALID_ARGUMENT) ExitProcess(146u);
+
+    /* Clock 的 1ms 请求必须形成成对租约；第二次释放同一租约必须被拒绝。 */
+    if (clock_api->GetMonotonicMilliseconds(&clock_ms) != CASTLE_OK ||
+        clock_api->AcquireTimerResolution(handle, 1u, &clock_lease) != CASTLE_OK ||
+        !clock_lease) ExitProcess(147u);
+    byte_zero_(&clock_state, (CastleU32)sizeof(clock_state));
+    clock_state.magic = CASTLE_CLOCK_STATE_MAGIC;
+    clock_state.struct_size = CASTLE_SIZEOF_CLOCK_STATE_V1;
+    clock_state.version = CASTLE_CLOCK_STRUCTURE_VERSION_1;
+    if (clock_api->GetTimerResolutionState(&clock_state) != CASTLE_OK ||
+        clock_state.active_lease_count != 1u ||
+        clock_api->ReleaseTimerResolution(clock_lease) != CASTLE_OK ||
+        clock_api->ReleaseTimerResolution(clock_lease) != CASTLE_ERROR_INVALID_ARGUMENT) {
+        ExitProcess(148u);
+    }
+
+    /* Input 在没有 Provider 时明确未就绪；登记后必须返回同一份版本化快照。 */
+    byte_zero_(&input_snapshot, (CastleU32)sizeof(input_snapshot));
+    input_snapshot.magic = CASTLE_INPUT_SNAPSHOT_MAGIC;
+    input_snapshot.struct_size = CASTLE_SIZEOF_INPUT_SNAPSHOT_V1;
+    input_snapshot.version = CASTLE_INPUT_STRUCTURE_VERSION_1;
+    if (input_api->GetSnapshot(&input_snapshot) != CASTLE_ERROR_NOT_READY) ExitProcess(149u);
+    byte_zero_(&input_provider_api, (CastleU32)sizeof(input_provider_api));
+    input_provider_api.magic = CASTLE_INPUT_PROVIDER_MAGIC;
+    input_provider_api.struct_size = CASTLE_SIZEOF_INPUT_PROVIDER_V1;
+    input_provider_api.api_version = CASTLE_INPUT_API_VERSION_1;
+    input_provider_api.capability_flags = CASTLE_INPUT_CAP_PHYSICAL_SNAPSHOT |
+                                          CASTLE_INPUT_CAP_SEMANTIC_SNAPSHOT;
+    input_provider_api.CopySnapshot = test_input_snapshot_;
+    if (input_api->RegisterInputProvider(handle,
+            view_(input_provider_id, (CastleU32)(sizeof(input_provider_id) - 1u)),
+            &input_provider_api, &input_provider) != CASTLE_OK || !input_provider ||
+        input_api->SetInputProviderReady(input_provider, 1u) != CASTLE_OK ||
+        input_api->GetSnapshot(&input_snapshot) != CASTLE_OK ||
+        input_snapshot.generation != 7u || input_snapshot.connected != 1u ||
+        input_snapshot.action_pressed != (1u << CASTLE_INPUT_ACTION_CONFIRM)) {
+        ExitProcess(150u);
+    }
+
+    /* 焦点和游戏可变资源都是进程级单所有者租约，冲突方必须被确定拒绝。 */
+    byte_zero_(&focus_request, (CastleU32)sizeof(focus_request));
+    focus_request.magic = CASTLE_INPUT_FOCUS_MAGIC;
+    focus_request.struct_size = CASTLE_SIZEOF_INPUT_FOCUS_REQUEST_V1;
+    focus_request.version = CASTLE_INPUT_STRUCTURE_VERSION_1;
+    focus_request.focus_kind = CASTLE_INPUT_FOCUS_OVERLAY;
+    focus_request.priority = CASTLE_INPUT_PRIORITY_DEFAULT;
+    focus_request.label = view_(focus_label, (CastleU32)(sizeof(focus_label) - 1u));
+    if (input_api->AcquireFocus(handle, &focus_request, &input_focus) != CASTLE_OK ||
+        !input_focus ||
+        input_api->AcquireFocus(second_handle, &focus_request,
+            &duplicate_input_focus) != CASTLE_ERROR_RESOURCE_CONFLICT) ExitProcess(151u);
+    byte_zero_(&focus_state, (CastleU32)sizeof(focus_state));
+    focus_state.magic = CASTLE_INPUT_FOCUS_MAGIC;
+    focus_state.struct_size = CASTLE_SIZEOF_INPUT_FOCUS_STATE_V1;
+    focus_state.version = CASTLE_INPUT_STRUCTURE_VERSION_1;
+    if (input_api->GetFocusState(&focus_state) != CASTLE_OK ||
+        focus_state.owner_plugin != handle || focus_state.focus_lease != input_focus ||
+        input_api->ReleaseFocus(input_focus) != CASTLE_OK) ExitProcess(152u);
+
+    byte_zero_(&mutation_request, (CastleU32)sizeof(mutation_request));
+    mutation_request.magic = CASTLE_GAME_MUTATION_MAGIC;
+    mutation_request.struct_size = CASTLE_SIZEOF_GAME_MUTATION_REQUEST_V1;
+    mutation_request.version = CASTLE_GAME_STATE_STRUCTURE_VERSION_1;
+    mutation_request.resource_mask = CASTLE_GAME_RESOURCE_CAMERA;
+    mutation_request.label = view_(mutation_label,
+        (CastleU32)(sizeof(mutation_label) - 1u));
+    if (game_state_api->AcquireMutation(handle, &mutation_request,
+            &mutation_lease) != CASTLE_OK || !mutation_lease ||
+        game_state_api->AcquireMutation(second_handle, &mutation_request,
+            &duplicate_mutation_lease) != CASTLE_ERROR_RESOURCE_CONFLICT) ExitProcess(153u);
+    byte_zero_(&mutation_state, (CastleU32)sizeof(mutation_state));
+    mutation_state.magic = CASTLE_GAME_MUTATION_STATE_MAGIC;
+    mutation_state.struct_size = CASTLE_SIZEOF_GAME_MUTATION_STATE_V1;
+    mutation_state.version = CASTLE_GAME_STATE_STRUCTURE_VERSION_1;
+    if (game_state_api->GetMutationState(CASTLE_GAME_RESOURCE_CAMERA,
+            &mutation_state) != CASTLE_OK || mutation_state.owner_plugin != handle ||
+        mutation_state.lease != mutation_lease ||
+        game_state_api->ReleaseMutation(mutation_lease) != CASTLE_OK) ExitProcess(154u);
+
+    /* 非 RPG 测试宿主无法安装 Save/Overlay 游戏 Hook，但门面必须明确返回 NotReady 而不是崩溃。 */
+    if (save_api->IsManualSaveAllowed(0u, &save_allowed) != CASTLE_OK ||
+        save_allowed != 1u) ExitProcess(155u);
+    byte_zero_(&save_ui_state, (CastleU32)sizeof(save_ui_state));
+    save_ui_state.magic = CASTLE_SAVE_UI_STATE_MAGIC;
+    save_ui_state.struct_size = CASTLE_SIZEOF_SAVE_UI_STATE_V1;
+    save_ui_state.version = CASTLE_SAVE_STRUCTURE_VERSION_1;
+    if (save_api->GetSaveUiState(&save_ui_state) != CASTLE_ERROR_NOT_READY ||
+        save_ui_state.active != 0u) ExitProcess(156u);
+    byte_zero_(&overlay_state, (CastleU32)sizeof(overlay_state));
+    overlay_state.magic = CASTLE_OVERLAY_STATE_MAGIC;
+    overlay_state.struct_size = CASTLE_SIZEOF_OVERLAY_STATE_V1;
+    overlay_state.version = CASTLE_OVERLAY_STRUCTURE_VERSION_1;
+    if (overlay_api->GetOverlayState(&overlay_state) != CASTLE_ERROR_NOT_READY ||
+        overlay_state.ready != 0u) ExitProcess(157u);
 
     /* 周期任务和一次性任务必须共用同一个 Runtime 后台线程。 */
     byte_zero_(&periodic_context, (CastleU32)sizeof(periodic_context));

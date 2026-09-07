@@ -18,7 +18,7 @@ void Runtime_LogHex(const char* prefix, u32 value);
 void Runtime_LogU32(const char* prefix, u32 value);
 
 /*
- * 读取和 ASI 同目录、固定名为 Castle_Widescreen.ini 的一个整数。
+ * 从 Runtime 已打开的 Castle_Widescreen.toml 读取一个受范围保护的整数。
  * - 缺少文件、节或键：返回 default_value；
  * - 数值超出 [min_value, max_value]：也回退 default_value；
  * - 这样用户把 INI 写坏时只会失去自定义设置，不会影响 Hook 安全。

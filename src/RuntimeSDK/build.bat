@@ -157,11 +157,14 @@ if errorlevel 1 goto :fail
 mkdir "%OUT%\client_integrated" || goto :fail
 mkdir "%OUT%\client_standalone" || goto :fail
 mkdir "%OUT%\client_fault" || goto :fail
+mkdir "%OUT%\client_required" || goto :fail
 copy /y "%OUT%\client_bootstrap_test.exe" "%OUT%\client_integrated\client_bootstrap_test.exe" >nul
 if errorlevel 1 goto :fail
 copy /y "%OUT%\client_bootstrap_test.exe" "%OUT%\client_standalone\client_bootstrap_test.exe" >nul
 if errorlevel 1 goto :fail
 copy /y "%OUT%\client_bootstrap_test.exe" "%OUT%\client_fault\client_bootstrap_test.exe" >nul
+if errorlevel 1 goto :fail
+copy /y "%OUT%\client_bootstrap_test.exe" "%OUT%\client_required\client_bootstrap_test.exe" >nul
 if errorlevel 1 goto :fail
 copy /y "%OUT%\Castle_Runtime.dll" "%OUT%\client_integrated\Castle_Runtime.dll" >nul
 if errorlevel 1 goto :fail
@@ -183,6 +186,8 @@ if errorlevel 1 goto :client_integrated_fail
 if errorlevel 1 goto :client_standalone_fail
 "%OUT%\client_fault\client_bootstrap_test.exe"
 if errorlevel 1 goto :client_fault_fail
+"%OUT%\client_required\client_bootstrap_test.exe"
+if errorlevel 1 goto :client_required_fail
 
 echo [9/10] RuntimeSDK文本与PE合同检查...  
 "%PYTHON_EXE%" %PYTHON_ARGS% "%ROOT%tools\runtime_sdk_check.py" --require-dll
@@ -236,6 +241,11 @@ exit /b 1
 
 :client_fault_fail
 echo [失败] Client损坏Runtime故障安全测试退出码=%errorlevel%。  
+if exist "%OUT%" rmdir /s /q "%OUT%"
+exit /b 1
+
+:client_required_fail
+echo [失败] Client强制Runtime缺失测试退出码=%errorlevel%。  
 if exist "%OUT%" rmdir /s /q "%OUT%"
 exit /b 1
 

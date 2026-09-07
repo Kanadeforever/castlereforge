@@ -17,18 +17,12 @@
  */
 
 static PFN_GetModuleHandleA      g_GetModuleHandleA;
-static PFN_GetModuleFileNameA    g_GetModuleFileNameA;
 static PFN_GetProcAddress        g_GetProcAddress;
-static PFN_CreateFileA           g_CreateFileA;
-static PFN_WriteFile             g_WriteFile;
-static PFN_CloseHandle           g_CloseHandle;
 static PFN_VirtualProtect        g_VirtualProtect;
 static PFN_VirtualAlloc          g_VirtualAlloc;
 static PFN_GetCurrentProcess     g_GetCurrentProcess;
 static PFN_FlushInstructionCache g_FlushInstructionCache;
 static PFN_GetTickCount            g_GetTickCount;
-static PFN_GetPrivateProfileIntA   g_GetPrivateProfileIntA;
-static HANDLE g_log = INVALID_HANDLE_VALUE_;
 static HMODULE g_self_module;
 static const CastleRuntimeApiV1* g_sdk_runtime_api;
 static const CastleHookApiV1* g_sdk_hook_api;
@@ -123,47 +117,7 @@ static void append_u32_decimal(char* out, SIZE_T cap, SIZE_T* pos, u32 value) {
     }
 }
 
-/*
- * 生成“和 ASI 位于同一目录”的兄弟文件路径。
- *
- * 例如 ASI 在：
- *     C:\\Game\\asi\\Castle_Widescreen.asi
- *
- * 传入 "Castle_Widescreen.ini" 后得到：
- *     C:\\Game\\asi\\Castle_Widescreen.ini
- *
- * 日志和 INI 都复用这一条路径规则，避免一个跟着工作目录走、另一个跟着插件目录走。
- */
-static int build_sibling_path(const char* file_name, char* out, SIZE_T cap) {
-    char module_path[MAX_PATH_];
-    DWORD n;
-    i32 last_slash = -1;
-    DWORD i;
-    SIZE_T p = 0;
-
-    if (!g_GetModuleFileNameA || !g_self_module || !file_name || !out || cap == 0) return 0;
-    n = g_GetModuleFileNameA(g_self_module, module_path, MAX_PATH_);
-    if (n == 0 || n >= MAX_PATH_) return 0;
-
-    /* 找到 ASI 自己路径中的最后一个目录分隔符，只保留所在目录。 */
-    for (i = 0; i < n; ++i) {
-        if (module_path[i] == '\\' || module_path[i] == '/') last_slash = (i32)i;
-    }
-    if (last_slash < 0) return 0;
-
-    for (i = 0; i <= (DWORD)last_slash && (p + 1u) < cap; ++i) out[p++] = module_path[i];
-    out[p] = '\0';
-    append_text(out, cap, &p, file_name);
-    return out[0] != '\0';
-}
-
-static int build_log_path(char* out, SIZE_T cap) {
-    return build_sibling_path("Castle_Widescreen.log", out, cap);
-}
-
 void Runtime_Log(const char* text) {
-    static const char crlf[2] = {'\r','\n'};
-    DWORD written = 0;
     if (!text) return;
     if (g_runtime_log_api && g_runtime_log_plugin) {
         CastleLogRecordV1 record = {0};
@@ -176,11 +130,7 @@ void Runtime_Log(const char* text) {
         if (record.message.length != 0u) {
             (void)g_runtime_log_api->WritePluginLine(g_runtime_log_plugin, &record);
         }
-        return;
     }
-    if (!g_WriteFile || g_log == INVALID_HANDLE_VALUE_) return;
-    g_WriteFile(g_log, text, (DWORD)text_len(text), &written, NULL);
-    g_WriteFile(g_log, crlf, 2u, &written, NULL);
 }
 
 void Runtime_LogHex(const char* prefix, u32 value) {
@@ -679,9 +629,6 @@ int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
 
 int Runtime_Initialize(HMODULE self_module) {
     HMODULE kernel32;
-    char log_path[MAX_PATH_];
-    DWORD written = 0;
-    static const u8 utf8_bom[3] = {0xEF,0xBB,0xBF};
 
     g_self_module = self_module;
 
@@ -690,15 +637,11 @@ int Runtime_Initialize(HMODULE self_module) {
      * 因此 ASI 不需要链接 Kernel32.lib，就能先拿到最基本的函数。
      */
     g_GetModuleHandleA   = *(PFN_GetModuleHandleA*)IAT_GETMODULEHANDLEA;
-    g_GetModuleFileNameA = *(PFN_GetModuleFileNameA*)IAT_GETMODULEFILENAMEA;
     g_GetProcAddress     = *(PFN_GetProcAddress*)IAT_GETPROCADDRESS;
-    g_CreateFileA        = *(PFN_CreateFileA*)IAT_CREATEFILEA;
-    g_WriteFile          = *(PFN_WriteFile*)IAT_WRITEFILE;
-    g_CloseHandle        = *(PFN_CloseHandle*)IAT_CLOSEHANDLE;
     g_VirtualAlloc       = *(PFN_VirtualAlloc*)IAT_VIRTUALALLOC;
     g_GetCurrentProcess  = *(PFN_GetCurrentProcess*)IAT_GETCURRENTPROCESS;
 
-    if (!g_GetModuleHandleA || !g_GetProcAddress || !g_CreateFileA || !g_WriteFile || !g_CloseHandle) return 0;
+    if (!g_GetModuleHandleA || !g_GetProcAddress) return 0;
 
     /* VirtualProtect/FlushInstructionCache 没有出现在这份 RPG.exe 的 IAT，因此按名字从 Kernel32 取得。 */
     kernel32 = g_GetModuleHandleA("kernel32.dll");
@@ -706,31 +649,17 @@ int Runtime_Initialize(HMODULE self_module) {
     g_VirtualProtect = (PFN_VirtualProtect)g_GetProcAddress(kernel32, "VirtualProtect");
     g_FlushInstructionCache = (PFN_FlushInstructionCache)g_GetProcAddress(kernel32, "FlushInstructionCache");
     g_GetTickCount = (PFN_GetTickCount)g_GetProcAddress(kernel32, "GetTickCount");
-    g_GetPrivateProfileIntA = (PFN_GetPrivateProfileIntA)g_GetProcAddress(kernel32, "GetPrivateProfileIntA");
-    if (!g_VirtualProtect || !g_GetTickCount || !g_GetPrivateProfileIntA) return 0;
-
-    if (!g_runtime_log_api && build_log_path(log_path, sizeof(log_path))) {
-        g_log = g_CreateFileA(log_path, GENERIC_WRITE_, FILE_SHARE_READ_, NULL,
-                              CREATE_ALWAYS_, FILE_ATTRIBUTE_NORMAL_, NULL);
-        if (g_log != INVALID_HANDLE_VALUE_) {
-            g_WriteFile(g_log, utf8_bom, 3u, &written, NULL);
-        }
-    }
+    if (!g_VirtualProtect || !g_GetTickCount) return 0;
 
     Runtime_Log("[启动] Castle_Widescreen v0.11-poc11：电影式模糊 / 纯黑侧区切换版。");
     Runtime_Log("[启动] by Luminous with ChatGPT。");
     Runtime_Log("[规格] 所有对话框/提示/选择消息统一保持中央640；左右面板按 BlurredSides 选择强模糊或纯黑，触发与动画规则完全一致。");
-    Runtime_Log("[规格] Battle继续使用同一侧区样式；普通探索无消息时由 INI 选择 854×480 或 1120×480。");
+    Runtime_Log("[规格] Battle继续使用同一侧区样式；普通探索无消息时由 TOML 选择 854×480 或 1120×480。");
     return 1;
 }
 
 void Runtime_Shutdown(void) {
     if (g_runtime_log_api) Runtime_Log("[结束] Castle_Widescreen 卸载。");
-    if (g_CloseHandle && g_log != INVALID_HANDLE_VALUE_) {
-        Runtime_Log("[结束] Castle_Widescreen 卸载。");
-        g_CloseHandle(g_log);
-        g_log = INVALID_HANDLE_VALUE_;
-    }
     g_runtime_log_api = NULL;
     g_runtime_log_plugin = 0u;
     if (g_runtime_toml_api && g_runtime_toml_document) {

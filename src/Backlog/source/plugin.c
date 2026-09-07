@@ -10,13 +10,12 @@
  * plugin.c
  *
  * DllMain 只安装 SDK Entry Gate。真正初始化由 Client 在 RPG 入口、Loader Lock 外完成：
- * - StandaloneHost 使用原本的本地 Hook/WndProc/8ms worker；
- * - RuntimeHost 使用 Hook/Window/Schedule 三个公共服务；
- * - 两种 Host 最终调用完全相同的 Backlog_PollInput 业务核心。
+ * - 官方版只允许 RuntimeHost，使用 Hook/Window/Schedule 三个公共服务；
+ * - Client 仍保留 ABI 要求的 standalone 回调槽，但该槽只返回“必须安装 Runtime”；
+ * - Backlog_PollInput 业务核心不再拥有任何旁路线程或独立 Hook 所有权。
  */
 
 static HMODULE g_plugin_module;
-static volatile LONG g_worker_running;
 static const CastleScheduleApiV1* g_schedule_api;
 static CastleTaskHandle g_schedule_task;
 static volatile LONG g_schedule_first_tick_logged;
@@ -71,39 +70,6 @@ static CastleResult CASTLE_RUNTIME_CALL Backlog_ScheduledPoll(
     return CASTLE_OK;
 }
 
-static DWORD WINAPI StandaloneWorker(void* unused) {
-    (void)unused;
-    while (InterlockedCompareExchange(&g_worker_running, 1, 1) != 0) {
-        poll_business_once_();
-        Sleep(BACKLOG_WORKER_SLEEP_MS);
-    }
-    MouseInput_Shutdown();
-    PadBridge_Shutdown();
-    Backlog_Shutdown();
-    Runtime_Log("[退出] Backlog Standalone worker 已停止。");
-    return 0u;
-}
-
-static CastleResult initialize_standalone_(void) {
-    HANDLE thread;
-    const RuntimeConfig* config;
-    if (!Runtime_Initialize(g_plugin_module)) return CASTLE_ERROR_UNKNOWN_GAME_BUILD;
-    config = Runtime_Config();
-    if (!config->enabled) return CASTLE_OK;
-    if (!Backlog_Install()) return CASTLE_ERROR_EXPECTED_BYTES;
-    MouseInput_Initialize();
-    PadBridge_Initialize(NULL);
-    InterlockedExchange(&g_worker_running, 1);
-    thread = CreateThread(NULL, 0u, StandaloneWorker, NULL, 0u, NULL);
-    if (!thread) {
-        InterlockedExchange(&g_worker_running, 0);
-        return CASTLE_ERROR_RUNTIME_FAULT;
-    }
-    CloseHandle(thread);
-    Runtime_Log("[启动] Backlog StandaloneHost 已就绪。");
-    return CASTLE_OK;
-}
-
 static CastleResult initialize_integrated_(const CastleRuntimeApiV1* runtime_api,
                                            CastlePluginHandle plugin_handle) {
     static const char task_label[] = "Backlog 8ms input poll";
@@ -151,7 +117,7 @@ static CastleResult CASTLE_RUNTIME_CALL Backlog_Integrated(
 
 static CastleResult CASTLE_RUNTIME_CALL Backlog_Standalone(void* user_context) {
     (void)user_context;
-    return initialize_standalone_();
+    return CASTLE_ERROR_RUNTIME_REQUIRED;
 }
 
 static void CASTLE_RUNTIME_CALL Backlog_RuntimeFault(CastleResult failure,
@@ -163,7 +129,6 @@ static void CASTLE_RUNTIME_CALL Backlog_RuntimeFault(CastleResult failure,
 
 static void CASTLE_RUNTIME_CALL Backlog_ProcessExit(void* user_context) {
     (void)user_context;
-    InterlockedExchange(&g_worker_running, 0);
 }
 
 static const char g_plugin_id[] = "org.castlereforge.backlog";

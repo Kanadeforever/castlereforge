@@ -1,5 +1,10 @@
 # 构建与验证说明
 
+> **2026-09-07 当前基线：** 构建脚本已在本机 MSVC x86 完整通过。Loader 日志写入
+> `build/mods/logs` 对应运行目录；ASI 同名配置编辑器处理 `.toml` 并强制 UTF-8；GameAudit
+> 状态 Hook 在 ASI 初始化后安装；RuntimeSDK Loader-ready 通知已接入。下文 about5 的二进制
+> 哈希与“无完整 Windows SDK”说明属于历史归档，不代表当前构建状态。
+
 ## 1. Windows 正式构建
 
 在 Visual Studio 的 x86 Native Tools / Developer Command Prompt 运行 `build.bat`。需要 `cl.exe`、`link.exe`、`rc.exe` 和 Windows SDK。
@@ -11,6 +16,7 @@ build\CastleModLoader.exe
 build\mods\CastleLocaleBootstrap.dll
 build\mods\CastleModCore.dll
 build\mods\CastleModLoader.ini
+build\mods\logs\
 build\mods\asi\
 build\mods\overrides\...
 ```
