@@ -387,10 +387,10 @@ static DWORD WINAPI PluginWorker(void* unused) {
  * reason==1 表示“进程正在加载这个 DLL”，reason==0 表示“进程正在卸载”。
  *
  * Loader Lock 是 Windows 在加载 DLL 时持有的一把全局锁。
- * 在这把锁里面做 LoadLibrary、文件 I/O、SDL 初始化都可能死锁，所以 DllMain 只做三件非常小的事：
+ * 在这把锁里面做 LoadLibrary、文件 I/O、SDL 初始化都可能死锁，所以 DllMain 只做很少的事：
  * 1. 记住自己的模块句柄；
  * 2. 从 RPG.exe 已有 IAT 读取最早期 API 地址；
- * 3. 创建独立 worker，真正初始化工作在线程里完成。
+ * 3. 登记 RuntimeSDK Client；正式初始化和周期 tick 都在 Runtime 的安全阶段执行。
  */
 static CastleResult CASTLE_RUNTIME_CALL Controller_ScheduledTick(
     CastleTaskHandle task, void* user_context) {

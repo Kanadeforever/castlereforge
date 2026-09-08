@@ -54,7 +54,9 @@ def check_source(source: Path) -> None:
     if not build_path.is_file():
         fail("Controller 包根缺少 build.bat。")
     build = build_path.read_text(encoding="utf-8-sig")
-    definition = (source / "Castle_PadSupport.def").read_text(encoding="ascii")
+    # DEF 里的导出符号仍然全部是 ASCII，但文件本身按项目规范带有详细中文注释。
+    # 因此必须按 UTF-8-SIG 读取；强行使用 ASCII 会在真正检查导出表前就误报解码失败。
+    definition = (source / "Castle_PadSupport.def").read_text(encoding="utf-8-sig")
 
     needles = [
         "CASTLE_PAD_API_MAGIC",

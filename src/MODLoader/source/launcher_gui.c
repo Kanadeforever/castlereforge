@@ -3130,6 +3130,42 @@ static int replace_ini_temp_(const WCHAR* temp_path, const WCHAR* final_path) {
     return fn && fn(temp_path, final_path, MOVEFILE_REPLACE_EXISTING_ | MOVEFILE_WRITE_THROUGH_);
 }
 
+/*
+ * RichEdit 返回 UTF-16。高代理项必须紧跟低代理项，低代理项也不能单独出现。
+ * 若不先检查，宽松转换可能把损坏文字替换成 U+FFFD，造成保存内容与编辑框内容不一致。
+ * 本函数返回第一个错误代码单元及其逻辑行，供界面精确选中并解释问题。
+ */
+static int toml_utf16_is_valid_(const WCHAR* text, UINT chars,
+                                UINT* bad_index, UINT* bad_line) {
+    UINT index = 0u;
+    UINT line = 1u;
+    if (bad_index) *bad_index = 0u;
+    if (bad_line) *bad_line = 0u;
+    if (!text) return 0;
+
+    while (index < chars) {
+        const UINT value = (UINT)text[index];
+        if (value >= 0xD800u && value <= 0xDBFFu) {
+            if (index + 1u >= chars || (UINT)text[index + 1u] < 0xDC00u ||
+                (UINT)text[index + 1u] > 0xDFFFu) {
+                if (bad_index) *bad_index = index;
+                if (bad_line) *bad_line = line;
+                return 0;
+            }
+            index += 2u;
+            continue;
+        }
+        if (value >= 0xDC00u && value <= 0xDFFFu) {
+            if (bad_index) *bad_index = index;
+            if (bad_line) *bad_line = line;
+            return 0;
+        }
+        if (value == (UINT)'\n') ++line;
+        ++index;
+    }
+    return 1;
+}
+
 static int save_ini_editor_file_(WCHAR* error, UINT error_cap, LONG* bad_start, LONG* bad_end, UINT* bad_line) {
     WCHAR* text;
     UINT chars;

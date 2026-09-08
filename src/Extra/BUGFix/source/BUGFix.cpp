@@ -146,30 +146,28 @@ const BYTE kRouteBExpected[kRouteBPatchBytes] = {
     0xE8,0x09,0xD2,0xFF,0xFF   // call 004067A0
 };
 
-// 每条路径都保存自己的补丁状态。original[] 用于正常 FreeLibrary 卸载时恢复原代码，
-// 避免 DLL 被卸载后 RPG.exe 还继续跳向已经失效的 BUGFix helper。
+// 每条路径保存 Runtime 事务需要的地址、stub 与诊断计数。实际游戏补丁由 Runtime 固定驻留，
+// 所以插件不再保存本地卸载恢复副本。
 struct CrashRoute {
     const char* logName;
     DWORD patchRva;
     DWORD resumeRva;
     SIZE_T patchBytes;
     const BYTE* expected;
-    BYTE original[16];
     BYTE* target;
     BYTE* stub;
-    bool installed;
     DWORD observedCount;
     DWORD hitCount;
 };
 
 CrashRoute gRouteA = {
     "Route A / 0x00409548", kRouteAPatchRva, kRouteAResumeRva,
-    kRouteAPatchBytes, kRouteAExpected, {0}, nullptr, nullptr, false, 0u, 0u
+    kRouteAPatchBytes, kRouteAExpected, nullptr, nullptr, 0u, 0u
 };
 
 CrashRoute gRouteB = {
     "Route B / 0x00409592", kRouteBPatchRva, kRouteBResumeRva,
-    kRouteBPatchBytes, kRouteBExpected, {0}, nullptr, nullptr, false, 0u, 0u
+    kRouteBPatchBytes, kRouteBExpected, nullptr, nullptr, 0u, 0u
 };
 
 // 判断 VirtualQuery 返回的页面权限是否允许读取。
@@ -405,50 +403,6 @@ void FreeRouteStub(CrashRoute& route) {
     }
 }
 
-// 把原始 route 整块改成：E9 <stub>，剩余字节填 NOP。
-// expected 已经在安装总流程里检查过，这里再次检查，防止“检查后到写入前”被其它插件改变。
-bool InstallRouteJump(CrashRoute& route) {
-    BYTE* exeBase = ycr::GetExeBase();
-    if (exeBase == nullptr || route.stub == nullptr || route.patchBytes < 5u) {
-        return false;
-    }
-
-    route.target = exeBase + route.patchRva;
-    if (!ycr::BytesEqual(route.target, route.expected, route.patchBytes)) {
-        return false;
-    }
-
-    for (SIZE_T i = 0u; i < route.patchBytes; ++i) {
-        route.original[i] = route.target[i];
-    }
-
-    // 先在栈上构造完整目标字节：前 5 字节是 E9 rel32，后面全部 NOP。
-    BYTE replacement[16]{};
-    for (SIZE_T i = 0u; i < route.patchBytes; ++i) {
-        replacement[i] = 0x90u;
-    }
-
-    // 注意：rel32 必须以“真正会执行这条 E9 的地址 route.target”为基准计算。
-    // 如果错误地拿临时数组 replacement 自己的栈地址计算，复制到 RPG.exe 后跳转目标会完全错误。
-    replacement[0] = 0xE9u;
-    const DWORD nextInstruction =
-        static_cast<DWORD>(reinterpret_cast<SIZE_T>(route.target + 5));
-    const DWORD destination =
-        static_cast<DWORD>(reinterpret_cast<SIZE_T>(route.stub));
-    const DWORD relative = destination - nextInstruction;
-    replacement[1] = static_cast<BYTE>((relative >> 0) & 0xFFu);
-    replacement[2] = static_cast<BYTE>((relative >> 8) & 0xFFu);
-    replacement[3] = static_cast<BYTE>((relative >> 16) & 0xFFu);
-    replacement[4] = static_cast<BYTE>((relative >> 24) & 0xFFu);
-
-    if (!ycr::WriteBytes(route.target, replacement, route.patchBytes)) {
-        return false;
-    }
-
-    route.installed = true;
-    return true;
-}
-
 // Runtime 整合模式只在插件内构造目标字节，真正写入交给 Hook 事务统一完成。
 bool BuildRouteReplacement(CrashRoute& route, BYTE replacement[16]) {
     BYTE* exeBase = ycr::GetExeBase();
@@ -459,7 +413,6 @@ bool BuildRouteReplacement(CrashRoute& route, BYTE replacement[16]) {
     route.target = exeBase + route.patchRva;
     for (SIZE_T index = 0u; index < route.patchBytes; ++index) {
         replacement[index] = 0x90u;
-        route.original[index] = route.expected[index];
     }
     replacement[0] = 0xE9u;
     const DWORD nextInstruction =
@@ -472,98 +425,6 @@ bool BuildRouteReplacement(CrashRoute& route, BYTE replacement[16]) {
     replacement[3] = static_cast<BYTE>((relative >> 16u) & 0xFFu);
     replacement[4] = static_cast<BYTE>((relative >> 24u) & 0xFFu);
     return true;
-}
-
-// 正常 FreeLibrary 时恢复 CrashFix 的 E9 Hook。
-// 只有当前位置仍然是“指向我们自己 stub 的 E9”才恢复，避免覆盖后加载 MOD 的修改。
-void RestoreRoute(CrashRoute& route) {
-    if (!route.installed || route.target == nullptr || route.stub == nullptr) {
-        return;
-    }
-
-    if (route.target[0] != 0xE9u) {
-        return;
-    }
-
-    const DWORD relative =
-        static_cast<DWORD>(route.target[1]) |
-        (static_cast<DWORD>(route.target[2]) << 8) |
-        (static_cast<DWORD>(route.target[3]) << 16) |
-        (static_cast<DWORD>(route.target[4]) << 24);
-    BYTE* installedDestination = route.target + 5 + static_cast<long>(relative);
-    if (installedDestination != route.stub) {
-        return;
-    }
-
-    if (ycr::WriteBytes(route.target, route.original, route.patchBytes)) {
-        route.installed = false;
-    }
-}
-
-// 安装已实机稳定的 CrashFix test2。
-// 三处签名必须全部匹配后才开始申请/写入；Route B 写失败时还会立即回滚 Route A。
-bool InstallMergedCrashFix() {
-    BYTE* exeBase = ycr::GetExeBase();
-    if (exeBase == nullptr) {
-        return false;
-    }
-
-    BYTE* updater = exeBase + kBackgroundUpdaterRva;
-    BYTE* routeA = exeBase + kRouteAPatchRva;
-    BYTE* routeB = exeBase + kRouteBPatchRva;
-
-    if (!ycr::BytesEqual(updater, kUpdaterExpected, sizeof(kUpdaterExpected))) {
-        ycrlog::Line("[Crash修复拒绝] 0x004067A0 updater 入口机器码不匹配；不安装双路径 Hook。 ");
-        return false;
-    }
-    if (!ycr::BytesEqual(routeA, kRouteAExpected, kRouteAPatchBytes)) {
-        ycrlog::Line("[Crash修复拒绝] Route A / 0x00409541 机器码不匹配；不安装双路径 Hook。 ");
-        return false;
-    }
-    if (!ycr::BytesEqual(routeB, kRouteBExpected, kRouteBPatchBytes)) {
-        ycrlog::Line("[Crash修复拒绝] Route B / 0x00409587 机器码不匹配；不安装双路径 Hook。 ");
-        return false;
-    }
-
-    if (!BuildRouteStub(gRouteA, reinterpret_cast<const BYTE*>(&ValidateRouteA)) ||
-        !BuildRouteStub(gRouteB, reinterpret_cast<const BYTE*>(&ValidateRouteB))) {
-        ycrlog::Text("[Crash修复失败] 无法分配双路径 x86 stub，Win32错误码=");
-        ycrlog::Unsigned(GetLastError());
-        ycrlog::Text("\r\n");
-        FreeRouteStub(gRouteA);
-        FreeRouteStub(gRouteB);
-        return false;
-    }
-
-    if (!InstallRouteJump(gRouteA)) {
-        ycrlog::Text("[Crash修复失败] 无法写入 Route A / 0x00409541，Win32错误码=");
-        ycrlog::Unsigned(GetLastError());
-        ycrlog::Text("\r\n");
-        FreeRouteStub(gRouteA);
-        FreeRouteStub(gRouteB);
-        return false;
-    }
-
-    if (!InstallRouteJump(gRouteB)) {
-        ycrlog::Text("[Crash修复失败] 无法写入 Route B / 0x00409587；已回滚 Route A。Win32错误码=");
-        ycrlog::Unsigned(GetLastError());
-        ycrlog::Text("\r\n");
-        RestoreRoute(gRouteA);
-        FreeRouteStub(gRouteA);
-        FreeRouteStub(gRouteB);
-        return false;
-    }
-
-    ycrlog::Line("[Crash修复] 已同时接管 Route A(0x00409548) 与 Route B(0x00409592)；有效 controller 仍完全走原版 0x004067A0。 ");
-    return true;
-}
-
-void UninstallMergedCrashFix() {
-    // 先恢复 B 再恢复 A，顺序与安装相反，属于最普通的资源栈式清理。
-    RestoreRoute(gRouteB);
-    RestoreRoute(gRouteA);
-    FreeRouteStub(gRouteB);
-    FreeRouteStub(gRouteA);
 }
 
 CastleStringView View(const char* text, CastleU32 length) {
@@ -713,8 +574,6 @@ CastleResult InstallCrashRuntime(const CastleHookApiV1* hookApi,
         FreeRouteStub(gRouteB);
         return result;
     }
-    gRouteA.installed = true;
-    gRouteB.installed = true;
     return CASTLE_OK;
 }
 

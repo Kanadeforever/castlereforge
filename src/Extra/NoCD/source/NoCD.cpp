@@ -110,15 +110,6 @@ BYTE DetectExeDriveLetter() {
     return static_cast<BYTE>('C');
 }
 
-// 把备用盘符写进 RPG.exe 的 .data 区。
-// .data 本来就可写，所以这里不需要 VirtualProtect。
-void StoreFallbackDriveLetter(BYTE driveLetter) {
-    BYTE* base = ycr::GetExeBase();
-    if (base != nullptr) {
-        base[kCdDriveLetterRva] = driveLetter;
-    }
-}
-
 void OpenStartupLog(const char* mode) {
     ycrlog::Open(gPluginModule, L"NoCD.log");
     ycrlog::Line("《幽城幻剑录》免 CD 插件 v0.4.0 RuntimeSDK 启动。");

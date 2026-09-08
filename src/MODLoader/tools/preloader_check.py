@@ -178,29 +178,29 @@ ck('RedrawWindow' in gui and 'RDW_ALLCHILDREN_' in gui and 'RDW_ERASE_' in gui a
 ck('move_to_rect_without_repaint_' in gui and 'MoveWindow(hwnd, r->left, r->top, r->right - r->left, r->bottom - r->top, FALSE_)' in gui, '主窗口缩放时先批量移动子控件而不逐个重画，避免中间几何状态产生条纹残影')
 ck('MonitorFromPoint' in gui and 'GetMonitorInfoW' in gui and 'center_window_on_cursor_monitor_' in gui, '主窗口按鼠标所在显示器工作区居中，多显示器不会固定跑到主屏')
 ck('勾选复选框启用或禁用 Mod' in gui and 'ASI 从上到下加载；Overrides 越靠下优先级越高' in gui, 'dev5 继续保留两行直接操作说明，并明确两类 Mod 的顺序语义')
-# v0.3.0-dev9 追加：ASI 同名 INI 内置编辑器。
-# 这里既检查“按钮是否真的由磁盘 has_ini 状态驱动”，也检查编辑器是否满足颜色、校验、编码与安全写回边界。
-ck('int has_ini;' in txt('launcher_mod_config.h') and 'g_asi[i].has_ini = file_exists_(path);' in guicfg, r'GUI 配置层只根据 mods\asi 中同名 .ini 的真实存在状态标记 ASI 可编辑')
-ck('kind == LAUNCHER_MOD_ASI && item->present && item->has_ini' in gui and 'L"编辑"' in gui and 'show_ini_editor_((UINT)index);' in gui, '只有主文件存在且有同名 INI 的 ASI 行显示/响应“编辑”；Overrides 不误显示编辑按钮')
-ck(all(x in gui for x in ['RICHEDIT50W','RichEdit20W','Msftedit.dll','Riched20.dll']), 'INI 编辑器运行时优先动态载入 RichEdit 4.1，并为旧系统保留 RichEdit 2.0 回退')
-ck('validate_ini_text_' in gui and '变量名=值' in gui and '节名不能为空' in gui and '含有不允许的控制字符' in gui, '保存前执行通用 INI 结构校验，并能指出缺等号、空节名、控制字符等具体原因')
-ck(all(x in gui for x in ['; 注释','[节]','变量名','RGB_(86, 124, 78)','RGB_(116, 82, 164)','RGB_(38, 98, 162)','RGB_(173, 91, 38)']), 'INI 编辑器对注释、节名、变量名和值使用不同语义颜色并显示颜色图例')
-ck('CHARFORMATW_' in gui and 'EM_SETCHARFORMAT_' in gui and 'SCF_SELECTION_' in gui and 'colorize_ini_editor_' in gui, 'INI 语法分色通过 RichEdit 字符格式实现，不是伪造静态图例')
-ck(all(x in gui for x in ['EM_GETTEXTRANGE_','EM_FINDTEXTEXW_','TEXTRANGEW_','FINDTEXTEXW_']), 'about3 分色直接在 RichEdit cp 坐标中搜索真实 CR/LF，不把视觉自动折行误当成 INI 逻辑行')
+# 当前官方插件配置已经统一为 Runtime TOML v1；Loader 编辑器必须只认 ASI 同名 .toml。
+# 内部若仍沿用 g_ini_editor 等历史变量名不影响行为，但所有磁盘发现、校验、编码和界面文字都必须是 TOML 语义。
+ck('int has_toml;' in txt('launcher_mod_config.h') and 'g_asi[i].has_toml = file_exists_(path);' in guicfg and 'L".toml"' in guicfg, r'GUI 配置层只根据 mods\asi 中同名 .toml 的真实存在状态标记 ASI 可编辑')
+ck('kind == LAUNCHER_MOD_ASI && item->present && item->has_toml' in gui and 'L"编辑"' in gui and 'show_ini_editor_((UINT)index);' in gui, '只有主文件存在且有同名 TOML 的 ASI 行显示/响应“编辑”；Overrides 不误显示编辑按钮')
+ck(all(x in gui for x in ['RICHEDIT50W','RichEdit20W','Msftedit.dll','Riched20.dll']), 'TOML 编辑器运行时优先动态载入 RichEdit 4.1，并为旧系统保留 RichEdit 2.0 回退')
+ck('validate_ini_text_' in gui and '键名 = 值' in gui and '表名不能为空' in gui and '含有不允许的控制字符' in gui and 'validate_toml_value_' in gui, '保存前按 Runtime TOML v1 校验表、键、等号、值与控制字符')
+ck(all(x in gui for x in ['# 注释','[表]','键名','RGB_(86, 124, 78)','RGB_(116, 82, 164)','RGB_(38, 98, 162)','RGB_(173, 91, 38)']), 'TOML 编辑器对注释、表名、键名和值使用不同语义颜色并显示颜色图例')
+ck('CHARFORMATW_' in gui and 'EM_SETCHARFORMAT_' in gui and 'SCF_SELECTION_' in gui and 'colorize_ini_editor_' in gui, 'TOML 语法分色通过 RichEdit 字符格式实现，不是伪造静态图例')
+ck(all(x in gui for x in ['EM_GETTEXTRANGE_','EM_FINDTEXTEXW_','TEXTRANGEW_','FINDTEXTEXW_']), '分色直接在 RichEdit cp 坐标中搜索真实 CR/LF，不把视觉自动折行误当成 TOML 逻辑行')
 color_seg=gui[gui.find('static void colorize_ini_editor_'):gui.find('static void delete_ini_temp_')]
-ck('get_ini_editor_text_' not in color_seg and 'find_next_ini_line_break_' in color_seg and 'EM_GETTEXTRANGE_' in color_seg and 'EM_GETLINECOUNT_' not in color_seg and 'EM_LINEINDEX_' not in color_seg, '自动换行开启后，分色函数不使用会受视觉折行影响的 RichEdit 行号 API')
+ck('get_ini_editor_text_' not in color_seg and 'find_next_ini_line_break_' in color_seg and 'EM_GETTEXTRANGE_' in color_seg and 'EM_GETLINECOUNT_' not in color_seg and 'EM_LINEINDEX_' not in color_seg, '自动换行开启后，TOML 分色函数不使用会受视觉折行影响的 RichEdit 行号 API')
 ck('set_rich_color_(cp_start, cp_start + line_len, RGB_(86, 124, 78))' in color_seg, '整条逻辑注释行包含缩进在内统一着为绿色，即使视觉上折成多行也不会被切色')
 sel_start = gui.rfind('static void select_ini_error_line_(')
 sel_end = gui.find('static int save_ini_editor_(', sel_start) if sel_start >= 0 else -1
 sel_seg = gui[sel_start:sel_end] if sel_start >= 0 and sel_end > sel_start else ''
 ck('get_ini_logical_line_range_' in sel_seg and 'EM_EXSETSEL_' in sel_seg, '保存校验失败按真实 CR/LF 逻辑行重新查询 RichEdit cp 范围，视觉折行不会把错误定位到错误位置')
-ck('refresh_ini_word_wrap_' in gui and 'EM_SETTARGETDEVICE_' in gui and 'EM_SETTARGETDEVICE_, 0, 1' in gui and 'EM_SETTARGETDEVICE_, 0, 0' in gui, 'INI 编辑器每次布局后强制刷新 RichEdit 自动换行目标宽度，修复 about2 无横向滚动但实际不折行的问题')
-ck('WS_HSCROLL_' not in gui[gui.find('g_ini_editor_text ='):gui.find('g_ini_editor_save =')] and 'ES_AUTOHSCROLL_' not in gui[gui.find('g_ini_editor_text ='):gui.find('g_ini_editor_save =')], 'INI RichEdit 本体不启用横向滚动/自动横向滚动样式')
+ck('refresh_ini_word_wrap_' in gui and 'EM_SETTARGETDEVICE_' in gui and 'EM_SETTARGETDEVICE_, 0, 1' in gui and 'EM_SETTARGETDEVICE_, 0, 0' in gui, 'TOML 编辑器每次布局后强制刷新 RichEdit 自动换行目标宽度')
+ck('WS_HSCROLL_' not in gui[gui.find('g_ini_editor_text ='):gui.find('g_ini_editor_save =')] and 'ES_AUTOHSCROLL_' not in gui[gui.find('g_ini_editor_text ='):gui.find('g_ini_editor_save =')], 'TOML RichEdit 本体不启用横向滚动/自动横向滚动样式')
 ck('RGB_(220, 38, 38)' in gui and '● 未保存修改' in gui and '● 保存失败：' in gui, '未保存状态和保存错误统一使用醒目亮红字并带实心圆标记')
-ck('INI_ENCODING_UTF8_BOM_' in gui and 'INI_ENCODING_UTF16LE_' in gui and 'INI_ENCODING_UTF16BE_' in gui and 'INI_ENCODING_ANSI_' in gui, 'INI 编辑器能识别并记住 ANSI/UTF-8(BOM或无BOM)/UTF-16LE/BE 编码')
-ck('.castle.tmp' in gui and 'FlushFileBuffers' in gui and 'MOVEFILE_REPLACE_EXISTING_' in gui and 'MOVEFILE_WRITE_THROUGH_' in gui, 'INI 保存使用同目录临时文件 + Flush + REPLACE_EXISTING|WRITE_THROUGH 原子替换')
-ck('为避免静默变成问号，本次拒绝保存' in gui and 'WC_NO_BEST_FIT_CHARS_' in gui, 'ANSI INI 遇到不能无损表示的新字符时拒绝保存，避免静默变成问号/近似字符')
-ck('MB_YESNOCANCEL_' in gui and '这个 INI 还有未保存的修改' in gui, '关闭有未保存修改的 INI 编辑器时提供保存/放弃/取消三路选择')
+ck('INI_ENCODING_UTF8_BOM_' in gui and 'INI_ENCODING_UTF8_' in gui and 'TOML 必须使用 UTF-8' in gui and 'MB_ERR_INVALID_CHARS_' in gui, 'TOML 编辑器接受 UTF-8（带或不带 BOM），并明确拒绝 ANSI/UTF-16')
+ck('.castle.tmp' in gui and 'FlushFileBuffers' in gui and 'MOVEFILE_REPLACE_EXISTING_' in gui and 'MOVEFILE_WRITE_THROUGH_' in gui, 'TOML 保存使用同目录临时文件 + Flush + REPLACE_EXISTING|WRITE_THROUGH 原子替换')
+ck('CP_UTF8_' in gui and 'WC_ERR_INVALID_CHARS_' in gui, 'TOML 保存严格编码为 UTF-8，不允许产生不可逆替代字符')
+ck('MB_YESNOCANCEL_' in gui and '这个 TOML 还有未保存的修改' in gui, '关闭有未保存修改的 TOML 编辑器时提供保存/放弃/取消三路选择')
 ck('layout.asi_card.top - scale_(hwnd, 10)' in gui and 'g_ui.FillRect(dc, &line, g_brush_border);' in gui, '顶部说明与 Mod 工作区之间存在独立细分隔线')
 ck('g_ui.DrawTextW(dc, (const WCHAR*)L"《幽城幻剑录》Mod Loader"' not in gui, '客户区不再重复绘制程序大标题，程序名称只保留在 Windows 标题栏')
 resource_header=SRC/'resource.h'
@@ -322,7 +322,7 @@ ck('g_real_CreateFileA(ansi_path' in loc and 'CreateFileW(unicode_path' in loc, 
 ck('g_real_GetFinalPathNameByHandleW' in loc and '实际打开的 NTFS Unicode 路径' in loc, '文件名自检继续反查成功句柄的最终 NTFS Unicode 路径')
 ck(core.find('LocaleLayer_RunFileNameSelfTest()') < core.find('GameAudit_Initialize()') < core.find('OverrideLoader_EnableGameAudit()') < core.find('ModLoader_LoadAsi()'), 'EntryPoint 前顺序为文件名硬自检 → game.log 初始化 → 游戏审计 Hook → ASI')
 ck('game_audit.obj' in build and 'game_audit.c' in build, 'Windows 正式构建已包含独立 game_audit 审计模块')
-ck('mods\\game.log' in audit and 'CREATE_ALWAYS_' in audit, 'game.log 每次启动独立清空，形成单次游戏运行时间线')
+ck('mods\\\\logs\\\\game.log' in audit and 'CREATE_ALWAYS_' in audit, 'mods/logs/game.log 每次启动独立清空，形成单次游戏运行时间线')
 ck('《幽城幻剑录》原版游戏运行审计 v0.3.0-dev9' in audit, 'game.log 明确标识 v0.3.0-dev9 且职责仅为原版 I/O、状态与异常')
 ck('register_module_(g_game_module' in audit and 'find_caller_module_' in audit, '游戏审计以调用返回地址过滤 ASI/Mod，只接受已注册原版模块')
 ck('register_module_(GetModuleHandleW((const WCHAR*)L"BASS.dll")' in audit and 'register_module_(GetModuleHandleW((const WCHAR*)L"binkw32.dll")' in audit and 'register_module_(GetModuleHandleW((const WCHAR*)L"ijl10.dll")' in audit, 'game.log 注册 RPG.exe 与原版 BASS/bink/ijl10 中间件调用来源')
@@ -349,7 +349,7 @@ ck('[EXCEPTION] 严重异常 code=' in audit and all(x in audit for x in [' EIP=
 ck(audit.count('FlushFileBuffers(g_log)') >= 2 and 'code != EXCEPTION_STACK_OVERFLOW_' in audit, '状态断点和异常现场主动刷盘；栈溢出异常不再递归调用大状态快照')
 ck('[转区/游戏实测]' not in ov and 'MAX_ANSI_PATH_PROBES_' not in ov and 'OverrideLoader_EnableAnsiPathProbe' not in ov, 'v0.2.8 的 32 条非 ASCII CreateFileA 临时观察器已移除，不再污染 modloader.log')
 ck('OverrideLoader_EnableGameAudit' in ov and 'GameAudit_PatchOriginalIoModules' in core and 'install_state_hooks_()' in audit, 'v0.3.0-dev9 保持独立 game.log 审计入口，不把游戏状态细节写回 ModLoader 日志')
-ck(r'已启用独立 mods\\game.log' in core and '[转区/游戏实测]' not in core, 'modloader.log 只保留 game.log 基础设施状态，不承载旧版原始游戏路径流水')
+ck(r'已启用独立 mods\\logs\\game.log' in core and '[转区/游戏实测]' not in core, 'modloader.log 只保留 game.log 基础设施状态，不承载旧版原始游戏路径流水')
 
 ck('《幽城幻剑录》Mod Core v0.3.0-dev9 已进入 RPG.exe。' in mod, 'Mod Core 当前日志版本已同步到 v0.3.0-dev9')
 
@@ -420,7 +420,7 @@ exe=OUT/'CastleModLoader.exe'; bootdll=OUT/'mods'/'CastleLocaleBootstrap.dll'; c
 # 这里不把编译后二进制 SHA 当成永久规则，因为不同链接器版本即使源码相同也可能生成不同字节。
 # 更稳妥的做法是把所有影响 RPG.exe 运行时的源码按固定顺序拼接后计算一个聚合 SHA-256；
 # 只要这些源码没有再动，就能确认后续工作没有把本次配置排版修复扩展到 Hook、Locale 或审计逻辑。
-CURRENT_RUNTIME_SOURCE_SHA256='b2cfd5ed088272e969f5a88153087d569754d11cacede3d407400f42b03e8da4'
+CURRENT_RUNTIME_SOURCE_SHA256='8f5ac5f82a2f0d6699ded599bca2bb5059a051f2404b7f8fd1ce70e9fb3f659e'
 _runtime_source_names=['core.c','entry_gate.c','mod_loader.c','override_loader.c','game_audit.c','locale_layer.c','native_locale.c','user32_locale.c','gdi_locale.c','locale_bootstrap.c','platform.h','runtime_support.c']
 _runtime_hash=hashlib.sha256()
 for _name in _runtime_source_names:

@@ -19,9 +19,7 @@ typedef struct RuntimeSdkBindingRequest {
     void** original_out;
 } RuntimeSdkBindingRequest;
 
-static const CastleRuntimeApiV1* g_sdk_runtime_api;
 static const CastleHookApiV1* g_sdk_hook_api;
-static CastlePluginHandle g_sdk_plugin_handle;
 static CastleModule g_sdk_game_module;
 static CastleTransactionHandle g_sdk_transaction;
 static RuntimeSdkBindingRequest g_sdk_bindings[64];
@@ -137,7 +135,6 @@ void Runtime_BindEarlyApi(void) {
     if (g_api.get_module_handle_a && g_api.get_proc_address) {
         HMODULE k32 = g_api.get_module_handle_a("KERNEL32.dll");
         if (k32) {
-            g_api.virtual_protect = (PFN_VirtualProtect)g_api.get_proc_address(k32, "VirtualProtect");
             g_api.get_module_file_name_a = (PFN_GetModuleFileNameA)g_api.get_proc_address(k32, "GetModuleFileNameA");
             g_api.get_module_handle_ex_a = (PFN_GetModuleHandleExA)g_api.get_proc_address(k32, "GetModuleHandleExA");
             g_api.get_current_process_id = (PFN_GetCurrentProcessId)g_api.get_proc_address(k32, "GetCurrentProcessId");
@@ -1416,9 +1413,9 @@ int Runtime_ConfirmDialogProtocolOk(void) {
 /*
  * RuntimeHost 补丁批次
  *
- * Controller 上层仍按原来顺序调用 Runtime_PatchCall/Pointer/Jmp6。区别只在这里：
- * StandaloneHost 立即使用 VirtualProtect 写入；RuntimeHost 先把每一项登记到同一事务，
- * 等全部业务模块声明完毕后统一预检和提交。任一点冲突都不会留下“前半套已写”状态。
+ * Controller 上层仍按原来顺序调用 Runtime_PatchCall/Pointer/Jmp6，但官方版只走 RuntimeHost：
+ * 每一项先登记到同一事务，全部业务模块声明完毕后统一预检和提交。任一点冲突都不会留下
+ * “前半套已写”状态。函数内保留的本地分支只属于历史实现，当前 Client 不可达。
  */
 static CastleStringView sdk_view_(const char* text, CastleU32 length) {
     CastleStringView view;
@@ -1454,9 +1451,7 @@ int Runtime_BeginSdkHookBatch(const CastleRuntimeApiV1* runtime_api,
     static const char hook_id[] = CASTLE_HOOK_INTERFACE_ID;
     static const char transaction_label[] = "Controller complete hook batch";
     CastleRuntimeInfoV1 info = {0};
-    /* 保存的是 Runtime 稳定根门面和本插件句柄，不保存其它插件模块地址。 */
-    g_sdk_runtime_api = runtime_api;
-    g_sdk_plugin_handle = plugin_handle;
+    /* 只保存本插件句柄和具体 Hook 门面，不保存其它插件模块地址。 */
     g_sdk_hook_api = (const CastleHookApiV1*)sdk_query_interface_(runtime_api,
         hook_id, (CastleU32)(sizeof(hook_id) - 1u),
         CASTLE_HOOK_API_VERSION_1, CASTLE_SIZEOF_HOOK_API_V1);
@@ -1536,9 +1531,8 @@ static CastleStringView sdk_call_signature_(u32 expected_target) {
 
 int Runtime_PatchIatPointer(u32 slot, void* replacement, void** original_out) {
     void** p = (void**)slot;
-    DWORD old_protect = 0, ignored = 0;
     void* original;
-    if (g_sdk_runtime_api) {
+    {
         static const char pointer_signature[] =
             "org.castlereforge.signature.controller-pointer.v1";
         static const char label[] = "Controller IAT/vtable pointer";
@@ -1573,24 +1567,11 @@ int Runtime_PatchIatPointer(u32 slot, void* replacement, void** original_out) {
         ++g_sdk_binding_count;
         return 1;
     }
-    if (!g_api.virtual_protect || !replacement) return 0;
-    original = *p;
-    if (!Runtime_PtrOk(original)) return 0;
-    if (!g_api.virtual_protect(p, 4u, PAGE_READWRITE_, &old_protect)) return 0;
-    /* 先把 original 交给 Hook，再让 replacement 对游戏线程可见，避免半安装竞态。 */
-    if (original_out) *original_out = original;
-    *p = replacement;
-    g_api.virtual_protect(p, 4u, old_protect, &ignored);
-    return 1;
 }
 
 /* CALL patch 在写入前再次核对“原 CALL 目标==预期原函数”，即使启动预检之后内存被改也会 fail-closed。 */
 int Runtime_PatchCall(u32 call_address, void* replacement, u32 expected_target) {
-    u8* p = (u8*)call_address;
-    i32 old_rel, new_rel;
-    u32 old_target;
-    DWORD old_protect = 0, ignored = 0;
-    if (g_sdk_runtime_api) {
+    {
         static const char label[] = "Controller rel32 CALL";
         CastleChainHookClaimV1 claim = {0};
         CastleClaimHandle claim_handle = 0u;
@@ -1612,23 +1593,11 @@ int Runtime_PatchCall(u32 call_address, void* replacement, u32 expected_target) 
         return g_sdk_hook_api->AddRelativeCallHook(g_sdk_transaction, &claim,
             &claim_handle) >= 0;
     }
-    if (!g_api.virtual_protect || !replacement || p[0] != 0xE8u) return 0;
-    old_rel = *(i32*)(p + 1);
-    old_target = call_address + 5u + (u32)old_rel;
-    if (old_target != expected_target) return 0;
-    new_rel = (i32)((u32)replacement - (call_address + 5u));
-    if (!g_api.virtual_protect(p, 5u, PAGE_READWRITE_, &old_protect)) return 0;
-    *(i32*)(p + 1) = new_rel;
-    g_api.virtual_protect(p, 5u, old_protect, &ignored);
-    return 1;
 }
 
 /* 6 字节入口改成 E9 rel32 + NOP；只有原始 6 字节完全一致才允许写。 */
 int Runtime_PatchJmp6(u32 address, void* replacement, const u8 expected[6]) {
-    u8* p = (u8*)address;
-    i32 rel;
-    DWORD old_protect = 0, ignored = 0;
-    if (g_sdk_runtime_api) {
+    {
         static const char label[] = "Controller JMP6";
         CastleExclusivePatchClaimV1 claim = {0};
         CastleClaimHandle claim_handle = 0u;
@@ -1657,15 +1626,6 @@ int Runtime_PatchJmp6(u32 address, void* replacement, const u8 expected[6]) {
         return g_sdk_hook_api->AddExclusivePatch(g_sdk_transaction, &claim,
             &claim_handle) >= 0;
     }
-    if (!g_api.virtual_protect || !replacement || !expected) return 0;
-    if (!Runtime_MemEq(p, expected, 6u)) return 0;
-    rel = (i32)((u32)replacement - (address + 5u));
-    if (!g_api.virtual_protect(p, 6u, PAGE_READWRITE_, &old_protect)) return 0;
-    p[0] = 0xE9u;
-    *(i32*)(p + 1) = rel;
-    p[5] = 0x90u;
-    g_api.virtual_protect(p, 6u, old_protect, &ignored);
-    return 1;
 }
 
 /*
@@ -1674,13 +1634,10 @@ int Runtime_PatchJmp6(u32 address, void* replacement, const u8 expected[6]) {
  * 为什么专门做一个函数而不是让业务模块自己 VirtualProtect：
  * - 所有机器码修改都必须集中在 Runtime；
  * - 写之前必须逐字节核对 expected，防止错误 EXE 或其它补丁已经改过该位置；
- * - VirtualProtect 的恢复也只写一份，减少忘记恢复页面权限的风险。
+ * - 实际页面权限和指令缓存处理只由 Runtime Hook 实现一份。
  */
 int Runtime_PatchMovEsiFunction(u32 address, void* replacement, const u8 expected[6]) {
-    u8* p = (u8*)address;
-    DWORD old_protect = 0, ignored = 0;
-
-    if (g_sdk_runtime_api) {
+    {
         static const char label[] = "Controller MOV ESI function";
         CastleExclusivePatchClaimV1 claim = {0};
         CastleClaimHandle claim_handle = 0u;
@@ -1708,17 +1665,6 @@ int Runtime_PatchMovEsiFunction(u32 address, void* replacement, const u8 expecte
         return g_sdk_hook_api->AddExclusivePatch(g_sdk_transaction, &claim,
             &claim_handle) >= 0;
     }
-    if (!g_api.virtual_protect || !replacement || !expected) return 0;
-    if (!Runtime_MemEq(p, expected, 6u)) return 0;
-    if (!g_api.virtual_protect(p, 6u, PAGE_READWRITE_, &old_protect)) return 0;
-
-    /* BE imm32 = mov esi,imm32；第 6 字节补 NOP，保持后续原指令地址完全不移动。 */
-    p[0] = 0xBEu;
-    *(u32*)(p + 1) = (u32)replacement;
-    p[5] = 0x90u;
-
-    g_api.virtual_protect(p, 6u, old_protect, &ignored);
-    return 1;
 }
 
 /* ------------------------- 生命周期 ------------------------- */
@@ -1804,7 +1750,7 @@ int Runtime_Initialize(HMODULE self_module) {
     Runtime_Log("[启动] By Luminou with ChatGPT");
     Runtime_LogModule("ASI 插件", g_self_module, NULL);
 
-    if (!g_api.virtual_protect || !g_api.get_cursor_pos || !g_api.set_cursor_pos ||
+    if (!g_api.get_cursor_pos || !g_api.set_cursor_pos ||
         !g_api.mouse_event) {
         Runtime_Log("[致命] 必需的 Win32 API 解析失败，拒绝安装 Hook。");
         return 0;

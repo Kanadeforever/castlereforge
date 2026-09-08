@@ -100,7 +100,6 @@ typedef struct RuntimeApi {
     PFN_GetProcAddress get_proc_address;
     PFN_GetModuleFileNameA get_module_file_name_a;
     PFN_GetModuleHandleExA get_module_handle_ex_a;
-    PFN_VirtualProtect virtual_protect;
 
     PFN_GetCursorPos get_cursor_pos;
 

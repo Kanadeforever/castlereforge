@@ -232,9 +232,9 @@ static int create_default_loader_ini_(void) {
         !write_utf8_config_line_(file, (const WCHAR*)L"; 1=启用，0=禁用。修改后重新启动游戏生效。") ||
         !write_utf8_config_line_(file, (const WCHAR*)L"") ||
         !write_utf8_config_line_(file, (const WCHAR*)L"[Logging]") ||
-        !write_utf8_config_line_(file, (const WCHAR*)L"; Mod Loader / Mod 初始化日志：mods\\modloader.log") ||
+        !write_utf8_config_line_(file, (const WCHAR*)L"; Mod Loader / Mod 初始化日志：mods\\logs\\modloader.log") ||
         !write_utf8_config_line_(file, (const WCHAR*)L"ModLoaderLog=1") ||
-        !write_utf8_config_line_(file, (const WCHAR*)L"; 原版游戏 I/O / 生命周期 / 异常审计日志：mods\\game.log") ||
+        !write_utf8_config_line_(file, (const WCHAR*)L"; 原版游戏 I/O / 生命周期 / 异常审计日志：mods\\logs\\game.log") ||
         !write_utf8_config_line_(file, (const WCHAR*)L"GameLog=1")) {
         CloseHandle(file);
         return 0;
@@ -645,9 +645,9 @@ int LauncherApp_SaveLoggingSettings(int modloader_log_enabled, int game_log_enab
         !write_utf8_config_line_(file, (const WCHAR*)L"; GUI 中“设置”窗口保存后会把本文件整理成这份标准格式。") ||
         !write_utf8_config_line_(file, (const WCHAR*)L"") ||
         !write_utf8_config_line_(file, (const WCHAR*)L"[Logging]") ||
-        !write_utf8_config_line_(file, (const WCHAR*)L"; Mod Loader / Mod 初始化日志：mods\\modloader.log") ||
+        !write_utf8_config_line_(file, (const WCHAR*)L"; Mod Loader / Mod 初始化日志：mods\\logs\\modloader.log") ||
         !write_utf8_config_line_(file, modloader_log_enabled ? (const WCHAR*)L"ModLoaderLog=1" : (const WCHAR*)L"ModLoaderLog=0") ||
-        !write_utf8_config_line_(file, (const WCHAR*)L"; 原版游戏 I/O / 生命周期 / 异常审计日志：mods\\game.log") ||
+        !write_utf8_config_line_(file, (const WCHAR*)L"; 原版游戏 I/O / 生命周期 / 异常审计日志：mods\\logs\\game.log") ||
         !write_utf8_config_line_(file, game_log_enabled ? (const WCHAR*)L"GameLog=1" : (const WCHAR*)L"GameLog=0") ||
         !FlushFileBuffers(file)) {
         CloseHandle(file);
@@ -776,7 +776,7 @@ int LauncherApp_StartGame(void) {
     int ok = 0;
 
     if (!open_log_for_launch_()) {
-        show_error_((const WCHAR*)L"无法创建 mods\\modloader.log。请检查目录权限，或在“设置”中关闭该日志后重试。");
+        show_error_((const WCHAR*)L"无法创建 mods\\logs\\modloader.log。请检查目录权限，或在“设置”中关闭该日志后重试。");
         return 0;
     }
 

@@ -11,17 +11,14 @@
  * 它只做三件事：
  * 1. 从 RPG.exe 已解析好的 IAT 取得 Kernel32 API；
  * 2. 建立 UTF-8 中文日志；
- * 3. 对每一个要修改的 CALL 做 fail-closed 校验，然后用 VirtualProtect 安全写入 5 字节。
+ * 3. 对每一个要修改的 CALL 做 fail-closed 校验，再把声明加入 Runtime 的原子 Hook 事务。
  *
  * 把这些危险操作集中在一个文件里，可以保证 widescreen.c 只讨论显示协议，不需要到处重复写内存代码。
  */
 
 static PFN_GetModuleHandleA      g_GetModuleHandleA;
 static PFN_GetProcAddress        g_GetProcAddress;
-static PFN_VirtualProtect        g_VirtualProtect;
 static PFN_VirtualAlloc          g_VirtualAlloc;
-static PFN_GetCurrentProcess     g_GetCurrentProcess;
-static PFN_FlushInstructionCache g_FlushInstructionCache;
 static PFN_GetTickCount            g_GetTickCount;
 static HMODULE g_self_module;
 static const CastleRuntimeApiV1* g_sdk_runtime_api;
@@ -416,12 +413,6 @@ void Runtime_AbortSdkHookTransaction(void) {
 }
 
 int Runtime_PatchCall(u32 call_address, u32 expected_target, const void* replacement, const char* label) {
-    u8 patch[5];
-    i32 rel;
-    DWORD old_protect = 0;
-    DWORD ignored = 0;
-    HANDLE process;
-
     if (g_sdk_runtime_api) {
         static const char rebuild_signature[] =
             "org.castlereforge.signature.display-rebuild.v1";
@@ -457,74 +448,28 @@ int Runtime_PatchCall(u32 call_address, u32 expected_target, const void* replace
         return g_sdk_hook_api->AddRelativeCallHook(g_sdk_transaction, &claim,
             &claim_handle) >= 0;
     }
-    if (!g_VirtualProtect || !replacement) return 0;
-    if (!call_target_is(call_address, expected_target)) {
-        Runtime_Log("[Hook] 安装前 CALL 已发生变化，拒绝覆盖。 ");
-        Runtime_LogHex("[Hook] 失败地址=", call_address);
-        return 0;
-    }
 
-    patch[0] = 0xE8u;
-    rel = (i32)((u32)replacement - (call_address + 5u));
-    *(i32*)(patch + 1u) = rel;
-
-    if (!g_VirtualProtect((void*)call_address, 5u, PAGE_EXECUTE_READWRITE_, &old_protect)) return 0;
-    Runtime_MemCopy((void*)call_address, patch, 5u);
-    g_VirtualProtect((void*)call_address, 5u, old_protect, &ignored);
-
-    if (g_FlushInstructionCache && g_GetCurrentProcess) {
-        process = g_GetCurrentProcess();
-        if (process) g_FlushInstructionCache(process, (const void*)call_address, 5u);
-    }
-
-    if (label) {
-        char line[256]; SIZE_T p = 0;
-        line[0] = '\0';
-        append_text(line, sizeof(line), &p, "[Hook] 已安装：");
-        append_text(line, sizeof(line), &p, label);
-        Runtime_Log(line);
-    }
-    return 1;
+    // 官方 Widescreen 必须由 Castle Runtime 引导；没有事务时绝不保留第二套本地写码路径。
+    // 返回失败会使上层中止初始化，而不会让插件在未受协调的状态下继续运行。
+    return 0;
 }
 
 
 /*
- * Runtime_RestoreCall 与 Runtime_PatchCall 使用同一套 E8 rel32 计算规则，但参数全部是整数地址。
- * 这个函数只用于“安装到一半失败”的回滚：例如前四个 CALL 已经改好，最后 Bink IAT 包装失败，
- * 此时必须把前面的 CALL 全部恢复，不能让游戏运行在半安装状态。
+ * 上层仍按旧安装流程调用这个恢复入口，以便安装代码保持清晰。
+ * 现在所有 CALL 都先进入 Runtime 事务，提交前游戏内存没有变化，因此恢复动作只需确认 Runtime 已接管；
+ * 真正失败时，统一的 AbortTransaction 会丢弃整批声明。
  */
 int Runtime_RestoreCall(u32 call_address, u32 expected_current_target, u32 restore_target) {
-    u8 patch[5];
-    i32 rel;
-    DWORD old_protect = 0;
-    DWORD ignored = 0;
-    HANDLE process;
-
-    if (g_sdk_runtime_api) return 1;
-    if (!g_VirtualProtect) return 0;
-    if (!call_target_is(call_address, expected_current_target)) return 0;
-
-    patch[0] = 0xE8u;
-    rel = (i32)(restore_target - (call_address + 5u));
-    *(i32*)(patch + 1u) = rel;
-
-    if (!g_VirtualProtect((void*)call_address, 5u, PAGE_EXECUTE_READWRITE_, &old_protect)) return 0;
-    Runtime_MemCopy((void*)call_address, patch, 5u);
-    g_VirtualProtect((void*)call_address, 5u, old_protect, &ignored);
-
-    if (g_FlushInstructionCache && g_GetCurrentProcess) {
-        process = g_GetCurrentProcess();
-        if (process) g_FlushInstructionCache(process, (const void*)call_address, 5u);
-    }
-    return 1;
+    // 这三个参数属于旧版“逐点写入后手工恢复”的调用约定。
+    // 新版安装阶段只登记声明，尚未改动游戏代码；失败时由 AbortTransaction 丢弃整批声明即可。
+    (void)call_address;
+    (void)expected_current_target;
+    (void)restore_target;
+    return g_sdk_runtime_api ? 1 : 0;
 }
 
 int Runtime_PatchPointer(u32 slot_address, const void* replacement, void** old_value, const char* label) {
-    DWORD old_protect = 0;
-    DWORD ignored = 0;
-    void* current;
-    HANDLE process;
-
     if (g_sdk_runtime_api) {
         static const char signature[] =
             "org.castlereforge.signature.bink-copy-to-buffer.v1";
@@ -554,36 +499,9 @@ int Runtime_PatchPointer(u32 slot_address, const void* replacement, void** old_v
         g_sdk_pointer_output = old_value;
         return 1;
     }
-    if (!g_VirtualProtect || !replacement || !old_value) return 0;
-    current = *(void**)slot_address;
-    if (!current) {
-        Runtime_Log("[Hook] 函数指针槽为空，拒绝安装。");
-        Runtime_LogHex("[Hook] 失败槽地址=", slot_address);
-        return 0;
-    }
 
-    /*
-     * 一定先保存旧值，再修改 IAT。Bink 可能由真实 binkw32.dll 或 ASI Loader 的代理 DLL 提供，
-     * 所以不能把“旧函数必须在某个固定地址”作为条件；只要槽非空，我们就包装当前实际链路。
-     */
-    *old_value = current;
-    if (!g_VirtualProtect((void*)slot_address, 4u, PAGE_EXECUTE_READWRITE_, &old_protect)) return 0;
-    *(void**)slot_address = (void*)replacement;
-    g_VirtualProtect((void*)slot_address, 4u, old_protect, &ignored);
-
-    if (g_FlushInstructionCache && g_GetCurrentProcess) {
-        process = g_GetCurrentProcess();
-        if (process) g_FlushInstructionCache(process, (const void*)slot_address, 4u);
-    }
-
-    if (label) {
-        char line[256]; SIZE_T p = 0;
-        line[0] = '\0';
-        append_text(line, sizeof(line), &p, "[Hook] 已安装：");
-        append_text(line, sizeof(line), &p, label);
-        Runtime_Log(line);
-    }
-    return 1;
+    // 指针 Hook 与 CALL Hook 使用同一强制 Runtime 原则；缺少事务时直接拒绝。
+    return 0;
 }
 
 void* Runtime_Alloc(SIZE_T size) {
@@ -639,17 +557,14 @@ int Runtime_Initialize(HMODULE self_module) {
     g_GetModuleHandleA   = *(PFN_GetModuleHandleA*)IAT_GETMODULEHANDLEA;
     g_GetProcAddress     = *(PFN_GetProcAddress*)IAT_GETPROCADDRESS;
     g_VirtualAlloc       = *(PFN_VirtualAlloc*)IAT_VIRTUALALLOC;
-    g_GetCurrentProcess  = *(PFN_GetCurrentProcess*)IAT_GETCURRENTPROCESS;
 
     if (!g_GetModuleHandleA || !g_GetProcAddress) return 0;
 
-    /* VirtualProtect/FlushInstructionCache 没有出现在这份 RPG.exe 的 IAT，因此按名字从 Kernel32 取得。 */
+    /* GetTickCount 没有放在本文件使用的固定 IAT 表中，因此按名字从 Kernel32 取得。 */
     kernel32 = g_GetModuleHandleA("kernel32.dll");
     if (!kernel32) return 0;
-    g_VirtualProtect = (PFN_VirtualProtect)g_GetProcAddress(kernel32, "VirtualProtect");
-    g_FlushInstructionCache = (PFN_FlushInstructionCache)g_GetProcAddress(kernel32, "FlushInstructionCache");
     g_GetTickCount = (PFN_GetTickCount)g_GetProcAddress(kernel32, "GetTickCount");
-    if (!g_VirtualProtect || !g_GetTickCount) return 0;
+    if (!g_GetTickCount) return 0;
 
     Runtime_Log("[启动] Castle_Widescreen v0.11-poc11：电影式模糊 / 纯黑侧区切换版。");
     Runtime_Log("[启动] by Luminous with ChatGPT。");

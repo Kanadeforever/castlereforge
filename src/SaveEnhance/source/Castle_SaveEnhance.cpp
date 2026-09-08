@@ -1790,12 +1790,15 @@ bool IsReservedSlot(DWORD slot) {
 // ============================================================================
 // 十六、兼容旧“无条件存档”补丁并验证目标
 // ============================================================================
-bool EnsureOriginalSaveGateFunction() {
+bool IsKnownSaveGateFunctionState() {
     BYTE* start = gExeBase + kOriginalSaveGateFunctionRva;
     if (ycr::BytesEqual(start, kOriginalSaveGateFunctionBytes, 9u)) return true;
     if (ycr::BytesEqual(start, kOldUnsafeSaveGateFunctionBytes, 9u)) {
-        ycrlog::Line("[启动] 检测到历史无条件随时存档机器码；先恢复原版 save gate。");
-        return ycr::WriteBytes(start, kOriginalSaveGateFunctionBytes, 9u);
+        // 这里只识别状态，绝不能在预检查阶段直接改写游戏内存。
+        // 真正的恢复动作会作为下方 Runtime Hook 事务中的第一项双态补丁提交；
+        // 这样后续任一 Hook 失败时，Runtime 能把已经动过的地址一起回滚。
+        ycrlog::Line("[启动] 检测到历史无条件随时存档机器码；将由 Runtime 原子事务恢复原版 save gate。");
+        return true;
     }
     // save gate 本体若是第三种未知状态，也要像其它预检查点一样把字节完整打印出来。
     // 这样用户只贴一份日志就能判断是不是另一个旧随时存档插件先改了函数本体。
@@ -1956,104 +1959,6 @@ extern "C" BOOL __fastcall ProtectedManualSaveHook(void* runtimeManager, void* u
 extern "C" void PrevPageBaseLoopHelper();
 extern "C" void NextPageBaseLoopHelper();
 
-// 启动中途失败时用的“本轮是否已写过”标记。只有本插件刚刚改过的内容才恢复。
-bool gFixedPatchesInstalled = false;
-bool gPrevPageHookInstalled = false;
-bool gNextPageHookInstalled = false;
-bool gCoreHooksInstalled[3] = {};
-bool gManualHooksInstalled[2] = {};
-
-void RestoreCallIfInstalled(bool installed, DWORD rva, const BYTE* original, SIZE_T size) {
-    if (installed) ycr::WriteBytes(gExeBase + rva, original, size);
-}
-
-void RollbackStartupInstall() {
-    RestoreCallIfInstalled(gManualHooksInstalled[1], kCommandSaveCallRva, kCommandSaveCallBytes, 5u);
-    RestoreCallIfInstalled(gManualHooksInstalled[0], kMenuSaveCallRva, kMenuSaveCallBytes, 5u);
-    RestoreCallIfInstalled(gCoreHooksInstalled[2], kSaveWriterCallRva, kSaveWriterCallBytes, 5u);
-    RestoreCallIfInstalled(gCoreHooksInstalled[1], kMapTickCallRva, kMapTickCallBytes, 5u);
-    RestoreCallIfInstalled(gCoreHooksInstalled[0], kNormalMenuSaveGateCallRva, kNormalMenuSaveGateCallBytes, 5u);
-    RestoreCallIfInstalled(gNextPageHookInstalled, kNextPageBaseReadRva, kNextPageBaseReadBytes, 6u);
-    RestoreCallIfInstalled(gPrevPageHookInstalled, kPrevPageBaseReadRva, kPrevPageBaseReadBytes, 6u);
-    if (gFixedPatchesInstalled) {
-        ycr::RestorePatchSetToOriginal(gExeBase, kFixedMenuPatches, kFixedMenuPatchCount);
-        gFixedPatchesInstalled = false;
-    }
-}
-
-bool InstallCall5FailClosed(DWORD rva, const BYTE expected[5], const void* target) {
-    if (ycr::InstallRelativeCall(gExeBase, rva, expected, target)) return true;
-    // InstallRelativeCall 可能“字节已写、但 FlushInstructionCache/恢复页保护失败”后返回 false。
-    // 当前条目因此也要尝试恢复，不能只靠外层已成功标记。
-    ycr::WriteBytes(gExeBase + rva, expected, 5u);
-    return false;
-}
-
-bool InstallCall6FailClosed(DWORD rva, const BYTE expected[6], const void* target) {
-    if (ycr::InstallRelativeCall6(gExeBase, rva, expected, target)) return true;
-    ycr::WriteBytes(gExeBase + rva, expected, 6u);
-    return false;
-}
-
-bool InstallAllHooks() {
-    if (GetModuleHandleA("AnytimeSave.asi") != nullptr) {
-        ycrlog::Line("[启动失败] 检测到旧 AnytimeSave.asi；SaveEnhance 已包含它，禁止同时加载两个存档插件。");
-        return false;
-    }
-    if (!EnsureOriginalSaveGateFunction() || !PrecheckAllHookSites()) {
-        ycrlog::Line("[启动失败] SaveEnhance 必需写入点预检查失败；未开始安装；请看上方逐地址冲突详情。");
-        return false;
-    }
-
-    // 把所有原版函数地址一次性固定下来，后面的 wrapper 只调用这些原版入口。
-    gOriginalSaveGate = reinterpret_cast<OriginalSaveGateFunction>(gExeBase + kOriginalSaveGateFunctionRva);
-    gOriginalMapTick = reinterpret_cast<OriginalMapTickFunction>(gExeBase + kOriginalMapTickFunctionRva);
-    gOriginalSaveWriter = reinterpret_cast<OriginalSaveWriterFunction>(gExeBase + kOriginalSaveWriterFunctionRva);
-    gOriginalSaveSlot = reinterpret_cast<OriginalSaveSlotFunction>(gExeBase + kOriginalSaveSlotFunctionRva);
-    gOriginalLoadSlot = reinterpret_cast<OriginalLoadSlotFunction>(gExeBase + kOriginalLoadSlotFunctionRva);
-    gOriginalSavePrepare = reinterpret_cast<OriginalNoArgFunction>(gExeBase + kOriginalSavePrepareFunctionRva);
-    gOriginalPostLoad = reinterpret_cast<OriginalNoArgFunction>(gExeBase + kOriginalPostLoadFunctionRva);
-    gGameFileCtor = reinterpret_cast<GameFileCtorFunction>(gExeBase + kGameFileCtorFunctionRva);
-    gGameFileDtor = reinterpret_cast<GameFileDtorFunction>(gExeBase + kGameFileDtorFunctionRva);
-    gGameFileOpen = reinterpret_cast<GameFileOpenFunction>(gExeBase + kGameFileOpenFunctionRva);
-
-    if (!ycr::ApplyPatchSet(gExeBase, kFixedMenuPatches, kFixedMenuPatchCount)) goto fail;
-    gFixedPatchesInstalled = true;
-
-    if (!InstallCall6FailClosed(kPrevPageBaseReadRva, kPrevPageBaseReadBytes,
-                                   reinterpret_cast<const void*>(&PrevPageBaseLoopHelper))) goto fail;
-    gPrevPageHookInstalled = true;
-    if (!InstallCall6FailClosed(kNextPageBaseReadRva, kNextPageBaseReadBytes,
-                                   reinterpret_cast<const void*>(&NextPageBaseLoopHelper))) goto fail;
-    gNextPageHookInstalled = true;
-
-    if (!InstallCall5FailClosed(kNormalMenuSaveGateCallRva, kNormalMenuSaveGateCallBytes,
-                                  reinterpret_cast<const void*>(&SafeSaveGateHook))) goto fail;
-    gCoreHooksInstalled[0] = true;
-    if (!InstallCall5FailClosed(kMapTickCallRva, kMapTickCallBytes,
-                                  reinterpret_cast<const void*>(&SafeMapTickHook))) goto fail;
-    gCoreHooksInstalled[1] = true;
-    if (!InstallCall5FailClosed(kSaveWriterCallRva, kSaveWriterCallBytes,
-                                  reinterpret_cast<const void*>(&SafeSaveWriterHook))) goto fail;
-    gCoreHooksInstalled[2] = true;
-
-    if (!InstallCall5FailClosed(kMenuSaveCallRva, kMenuSaveCallBytes,
-                                  reinterpret_cast<const void*>(&ProtectedManualSaveHook))) goto fail;
-    gManualHooksInstalled[0] = true;
-    if (!InstallCall5FailClosed(kCommandSaveCallRva, kCommandSaveCallBytes,
-                                  reinterpret_cast<const void*>(&ProtectedManualSaveHook))) goto fail;
-    gManualHooksInstalled[1] = true;
-
-
-    ycrlog::Line("[启动] SaveEnhance 完整 Hook 安装成功：100槽、循环分页、安全存档、Quick、Auto、保留槽禁写。");
-    return true;
-
-fail:
-    ycrlog::Line("[启动失败] 安装中途出现写入失败；正在撤回本轮已经写入的 SaveEnhance 修改。");
-    RollbackStartupInstall();
-    return false;
-}
-
 /*
  * RuntimeHost 安装层
  *
@@ -2171,7 +2076,7 @@ bool InstallAllHooksIntegrated(const CastleRuntimeApiV1* runtimeApi,
         ycrlog::Line("[启动失败] 检测到旧 AnytimeSave.asi；禁止两个存档插件并存。");
         return false;
     }
-    if (!hookApi || !runtimeApi || !EnsureOriginalSaveGateFunction() ||
+    if (!hookApi || !runtimeApi || !IsKnownSaveGateFunctionState() ||
         !PrecheckAllHookSites()) return false;
     info.magic = CASTLE_RUNTIME_INFO_MAGIC;
     info.struct_size = CASTLE_SIZEOF_RUNTIME_INFO_V1;
@@ -2194,6 +2099,27 @@ bool InstallAllHooksIntegrated(const CastleRuntimeApiV1* runtimeApi,
             static_cast<CastleU32>(sizeof(transactionLabel) - 1u)),
         0u, &transaction);
     if (result < 0) return false;
+
+    {
+        // 旧版 AnytimeSave 曾把 save gate 函数本体改成“永远允许存档”。
+        // 这项双态声明允许目标当前处于原版或该已知旧补丁状态，但最终一律写回原版。
+        // 它和本插件的其余补丁属于同一个事务，因此不存在“先修复函数、后续安装失败却留下半成品”的窗口。
+        CastleStatePatchClaimV1 saveGateClaim{};
+        saveGateClaim.magic = CASTLE_STATE_PATCH_MAGIC;
+        saveGateClaim.struct_size = CASTLE_SIZEOF_STATE_PATCH_V1;
+        saveGateClaim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+        saveGateClaim.flags = CASTLE_PATCH_FLAG_CODE | CASTLE_PATCH_FLAG_KEEP_ON_PROCESS_EXIT;
+        saveGateClaim.target = {info.game_module, kOriginalSaveGateFunctionRva, 9u};
+        saveGateClaim.original_bytes = kOriginalSaveGateFunctionBytes;
+        saveGateClaim.original_size = 9u;
+        saveGateClaim.enabled_bytes = kOldUnsafeSaveGateFunctionBytes;
+        saveGateClaim.enabled_size = 9u;
+        saveGateClaim.desired_state = CASTLE_PATCH_STATE_ORIGINAL;
+        saveGateClaim.label = SdkView(transactionLabel,
+            static_cast<CastleU32>(sizeof(transactionLabel) - 1u));
+        result = hookApi->AddStatePatch(transaction, &saveGateClaim, &temporaryClaim);
+        if (result < 0) goto fail_runtime_install;
+    }
 
     /* 每个固定点都允许“原版/已启用”两种已知状态，拒绝第三种陌生机器码。 */
     for (SIZE_T index = 0u; index < kFixedMenuPatchCount; ++index) {
@@ -2258,11 +2184,6 @@ bool InstallAllHooksIntegrated(const CastleRuntimeApiV1* runtimeApi,
     result = hookApi->PreflightTransaction(transaction);
     if (result >= 0) result = hookApi->CommitTransaction(transaction);
     if (result < 0) return false;
-    gFixedPatchesInstalled = true;
-    gPrevPageHookInstalled = true;
-    gNextPageHookInstalled = true;
-    gCoreHooksInstalled[0] = gCoreHooksInstalled[1] = gCoreHooksInstalled[2] = true;
-    gManualHooksInstalled[0] = gManualHooksInstalled[1] = true;
     ycrlog::Line("[RuntimeSDK] SaveEnhance 存档事务已提交；SaveAction 策略由 Runtime Save v1 统一执行。");
     return true;
 

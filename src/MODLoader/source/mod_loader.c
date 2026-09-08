@@ -12,7 +12,8 @@
  *   <RPG.exe目录>\mods\CastleLocaleBootstrap.dll
  *   <RPG.exe目录>\mods\CastleModCore.dll
  *   <RPG.exe目录>\mods\CastleModLoader.ini
- *   <RPG.exe目录>\mods\modloader.log / game.log / mods.ini
+ *   <RPG.exe目录>\mods\logs\modloader.log / game.log
+ *   <RPG.exe目录>\mods\mods.ini
  *   <RPG.exe目录>\mods\asi\*.asi
  *   <RPG.exe目录>\mods\asi\<ASI依赖DLL>
  *   <RPG.exe目录>\mods\overrides\<文件型Mod>\...
@@ -1323,7 +1324,7 @@ int ModLoader_Begin(HMODULE self_module) {
      *
      * 注意这里仍要确保 mods 目录存在：正常发布包已经在这里放 Bootstrap/Core，
      * 但源码调试或手工整理时目录也可能尚未建立。
-     * 如果目录还没建立就直接 CreateFileW("mods\\modloader.log")，Windows 会因为父目录不存在而失败。
+     * 如果 logs 子目录还没建立就直接创建日志，Windows 会因为父目录不存在而失败。
      * 这里仍然不创建 asi/overrides 子目录，那些完整目录结构由后面的 ensure_mod_directories_() 统一维护。
      */
     if (!directory_exists_(g_mods_root)) {

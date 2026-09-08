@@ -28,7 +28,7 @@ UINT OverrideLoader_Install(void);
 /*
  * v0.2.9 独立游戏运行审计入口。
  * Locale 实体自检通过后调用；让 CreateFileA/W 与 GetFileAttributesA/W 在保持 Overrides 语义的同时，
- * 把原版游戏真实 I/O 送到 mods\game.log。返回本次新增/确认的 IAT 槽位数量。
+ * 把原版游戏真实 I/O 送到 mods\logs\game.log。返回本次新增/确认的 IAT 槽位数量。
  */
 UINT OverrideLoader_EnableGameAudit(void);
 

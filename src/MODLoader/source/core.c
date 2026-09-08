@@ -244,7 +244,7 @@ BOOL WINAPI DllMain(HMODULE module, DWORD reason, LPVOID reserved) {
         if (!EntryGate_Install()) return FALSE_;
 
         /*
-         * Launcher 已经第一时间清空 mods\\modloader.log；Core 在这里以追加方式接管同一份日志。
+         * Launcher 已经第一时间清空 mods\\logs\\modloader.log；Core 在这里以追加方式接管同一份日志。
          * 下面的顺序就是项目最高优先级：Overrides 比 Locale、ASI 和游戏业务都更早。
          */
         if (!ModLoader_Begin(g_self)) return FALSE_;
