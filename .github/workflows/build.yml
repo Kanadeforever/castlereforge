@@ -75,7 +75,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $expected = @(
             'build\CastleModLoader.exe',
-            'build\mods\CastleModLoader.toml',
+            'build\mods\CastleModLoader.ini',
             'build\mods\CastleLocaleBootstrap.dll',
             'build\mods\CastleModCore.dll',
             'build\mods\asi\Castle_Backlog.asi',
