@@ -9,12 +9,13 @@ CastleReforge 是一个面向 Windows 版《天地劫序传·幽城幻剑录》�
 目前项目主要包括：
 
 * 模组加载器与非繁体中文环境下的台湾繁中 / CP950 运行环境；
+* 为本项目内的 ASI 提供公共基础设施的 RuntimeSDK；
 * 基于 SDL3 的手柄操控支持；
 * 真正扩展游戏世界视野的 16:9 / 21:9 宽屏插件；
-* 基于并改进自久经考验的三合一、五合一补丁的BUG修复、免CD、最大成长与掉宝的独立 ASI；
-* 全新制作的安全扩展存档（防止随时存档死档）；
+* 对话历史、任务追踪与世界任务标记；
+* 快速存读档、滚动自动存档和安全扩展存档；
+* 基于久经验证的三合一、五合一补丁并继续改进的 BUG 修复、免 CD、最大成长与最大掉宝插件；
 * 与上述功能配套的逆向分析、地址记录、测试工具和实机验收文档。
-* 已实现的 RuntimeSDK：在保留每个 ASI 独立运行能力的同时，统一协调 Hook、路径、调度、窗口、显示和渲染；
 
 > **本项目不会提供《幽城幻剑录》游戏本体、`RPG.exe` 或受版权保护的原版游戏资源。**
 
@@ -24,9 +25,31 @@ CastleReforge 是一个面向 Windows 版《天地劫序传·幽城幻剑录》�
 
 当前所有内容均为开发版，并且尚未经过通关测试，使用前请确保已知晓目前可能出现的问题；
 
-当前版本：0.3-dev
+`main` 分支每次更新后会自动构建并覆盖发布 `dev-auto` 开发版。
 
 <h1><a href="https://github.com/Kanadeforever/castlereforge/releases">虽然点击页面右边/最下面的release按钮就能看到，但看起来好像都不是那么想点，那就点这个吧</a></h1>
+
+### 当前总体状态
+
+* RuntimeSDK、8 个官方 ASI、6 份同名 TOML、Quest 数据和 Loader 已纳入十步全量构建；
+* 全量构建、专项静态检查和发行目录检查已经通过；
+* Backlog、手柄、宽屏和旧安全回退存档等功能各自拥有历史实机验证基线；
+* RuntimeSDK、统一 TOML、统一日志、Quest 和最新 SaveEnhance 组合仍需使用最终发行目录完成全插件实机回归；
+* FPSUnlock 尚未完成，不进入 `build_all.bat`，也不随 `dev-auto` 发行。
+
+> **静态检查通过不等于实机验收通过。** 每个模块的准确状态以对应“完整接档”和实机清单为准。
+
+| 模块 | 当前交付状态 |
+|---|---|
+| Castle Mod Loader | dev9 的区域环境、加载与 Overrides 业务基线已封存；Runtime/TOML/日志增量待最终组合回归 |
+| RuntimeSDK | 全量构建和宿主测试通过；最新发行组合待实机回归 |
+| Controller | 既有业务功能拥有实机基线；RuntimeSDK/TOML 发行组合待最终回归 |
+| Backlog | v0.3.4 业务实机封版；RuntimeSDK 发行组合待最终回归 |
+| Widescreen | 16:9 等既有业务拥有实机基线；21:9 和最新 RuntimeSDK 候选仍需按清单复核 |
+| SaveEnhance | 旧安全回退拥有关键实机正向证据；当前快速存读档、自动档和保留槽版本待完整实机验收 |
+| Quest | Windows x86 构建与 51 文件数据合同通过；游戏内完整实机回归待执行 |
+| BUGFix / NoCD / MaxGrowthAndDrop | 既有功能有历史验证；当前 RuntimeSDK 发行组合待最终回归 |
+| FPSUnlock | 未完成；不进入总构建和发行包 |
 
 ---
 
@@ -45,6 +68,8 @@ CastleReforge 是一个面向 Windows 版《天地劫序传·幽城幻剑录》�
 6. 下载 [cnc-ddraw.zip](https://github.com/FunkyFr3sh/cnc-ddraw/releases/latest) ，并解压`Shaders`文件夹、`cnc-ddraw config.exe`、`ddraw.dll`、`ddraw.ini`到游戏的exe目录内，也就是和 `RPG.exe` 在同一个目录。
 7. 准备完毕！
 
+补丁解包、已知乱码文件名修复和游戏目录校验的使用方法见[项目工具箱详细说明](docs/工具箱/工具详细说明.md)。这些工具不会提供任何原版游戏文件；运行会写入或重命名文件的工具前必须先制作目录副本。
+
 ### 1. Castle Mod Loader
 
 CastleReforge 自带为《幽城幻剑录》设计的专用 Mod Loader。
@@ -60,12 +85,12 @@ CastleReforge 自带为《幽城幻剑录》设计的专用 Mod Loader。
 * 支持拖动排序；
 * 支持 `mods\overrides` 文件覆写；
 * 文件型 Mod 不需要直接覆盖原版游戏文件；
-* 自动识别 ASI 的同名 INI；
-* 内置 INI 编辑器；
-* INI 语法分色；
+* 自动识别 ASI 的同名 TOML；
+* 内置 TOML 编辑器；
+* TOML 语法分色；
 * 自动换行；
 * 保存前结构检查；
-* 保持原 ANSI / UTF-8 / UTF-16 编码；
+* 接受 UTF-8 或 UTF-8 BOM，并保持原 BOM 策略；
 * 缺失 Mod 检测与移除；
 * 游戏运行审计日志；
 * 独立 Launcher GUI。
@@ -80,8 +105,13 @@ mods\
 ├─ CastleLocaleBootstrap.dll
 ├─ CastleModCore.dll
 ├─ CastleModLoader.ini
-├─ mods.ini
+├─ mods.ini                    启停与顺序配置，首次运行时可自动建立
+├─ logs\                      Loader、Runtime 与各 ASI 的统一日志目录
 ├─ asi\
+│  ├─ Castle_Runtime.dll
+│  ├─ *.asi
+│  ├─ 同名 *.toml
+│  └─ ASI 自身需要的依赖 DLL
 └─ overrides\
 ```
 
@@ -91,7 +121,9 @@ mods\
 mods\asi\
 ```
 
-用于放置 ASI Mod、对应 INI，以及 ASI 自身需要的依赖 DLL。
+用于放置 ASI Mod、对应 TOML、`Castle_Runtime.dll`，以及 ASI 自身需要的依赖 DLL。
+
+Loader 自己的 `CastleModLoader.ini` 和记录 Mod 启停/顺序的 `mods.ini` 仍使用 INI； ASI 的业务配置已经统一迁移为 TOML。
 
 ```text
 mods\overrides\
@@ -111,12 +143,35 @@ Loader 自身不会接管或实现 DirectDraw。
 * [台湾繁中区域环境层说明](docs/MODLoader/台湾繁中区域环境层说明.md)
 * [模组目录与配置说明](docs/MODLoader/模组目录与配置说明.md)
 * [文件覆写说明](docs/MODLoader/文件覆写说明.md)
-* [插件 INI 编辑器说明](docs/MODLoader/插件INI编辑器说明.md)
+* [插件 TOML 编辑器说明](docs/MODLoader/插件TOML编辑器说明.md)
 * [关于页面与第三方说明](docs/MODLoader/关于页面说明.md)
 
 ---
 
-### 2. 手柄支持
+### 2. RuntimeSDK
+
+`Castle_Runtime.dll` 是全部 CastleReforge 官方 ASI 必需的公共基础引擎。
+
+它统一提供：
+
+* Hook 所有权、链、事务与失败回滚；
+* Loader-ready 闸门和公共调度；
+* 路径、文件、TOML、日志、外部模块和高精度时钟；
+* 输入、游戏状态、存档动作、显示、渲染和 Overlay 协调；
+* 插件冲突检测、诊断与安全停用。
+
+ASI 可以脱离 Castle Mod Loader 和其它业务插件，由兼容的 ASI Loader 加载；但必须与 `Castle_Runtime.dll` 位于同一个 ASI 目录。Runtime 缺失、损坏或 ABI 不兼容时，官方插件会安全停用，不会退回各自写入游戏内存的旧路径。
+
+详细资料：
+
+* [运行时协调系统总体设计](docs/runtime/运行时协调系统总体设计.md)
+* [RuntimeSDK 完整接档](docs/runtime/截至该版本的完整接档.md)
+* [新格式 ASI 插件制作指南](docs/common/新格式ASI插件制作指南.md)
+* [RuntimeSDK 接口选择与冲突协调指南](docs/common/RuntimeSDK接口选择与冲突协调指南.md)
+
+---
+
+### 3. 手柄支持
 
 操作见 [手柄控制说明](docs/Controller/手柄控制说明.md) 。
 
@@ -177,11 +232,26 @@ Loader 自身不会接管或实现 DirectDraw。
 * [已知问题与实机验收说明](docs/Controller/已知问题与实机验收说明.md)
 * [测试与回归清单](docs/Controller/测试与回归清单.md)
 
-运行时需要兼容的 **x86 SDL3.dll**。
+运行时需要兼容的 **x86 SDL3.dll**。`dev-auto` 发行包会自动附带经过构建流程校验的 32 位 SDL3；手工构建或单独部署 Controller 时需要自行准备。
 
 ---
 
-### 3. 真宽屏插件
+### 4. 对话历史
+
+`Castle_Backlog.asi` 可以在游戏内查看最近的对话历史，并针对原版对话框、姓名框和剧情状态复用原版绘制流程。
+
+目前支持键盘、鼠标滚轮和 Runtime Input 提供的手柄输入；没有 PadSupport 时，键盘和鼠标功能仍可使用。历史业务版本 v0.3.4 已完成剧情中打开、剧情后打开、多条目滚动、自适应间距和关闭恢复的实机回归。当前官方版已经迁入 RuntimeSDK，仍需随最终全插件组合复核。
+
+详细资料：
+
+* [Backlog 使用与配置说明](docs/Backlog/使用与配置说明.md)
+* [Backlog 架构与实现说明](docs/Backlog/架构与实现说明.md)
+* [Backlog 完整接档](docs/Backlog/完整接档说明.md)
+* [Backlog 实机回归清单](docs/Backlog/实机回归清单.md)
+
+---
+
+### 5. 真宽屏插件
 
 `Castle_Widescreen.asi` 为《幽城幻剑录》增加真正的宽屏世界显示。
 
@@ -210,23 +280,23 @@ Loader 自身不会接管或实现 DirectDraw。
 
 侧区可以选择：
 
-```ini
+```toml
 [Cinematic]
-BlurredSides=1
+BlurredSides = 1
 ```
 
 使用电影式模糊侧区；
 
 或者：
 
-```ini
+```toml
 [Cinematic]
-BlurredSides=0
+BlurredSides = 0
 ```
 
 使用纯黑侧区。
 
-进入和退出动画时间同样可以通过 INI 调整。
+进入和退出动画时间同样可以通过 `Castle_Widescreen.toml` 调整。
 
 宽屏插件始终遵循一个基本原则：
 
@@ -242,72 +312,90 @@ BlurredSides=0
 
 ---
 
-### 4. 独立 QOL / BUGFix ASI
+### 6. 存档增强
 
-除上述大型模块外，项目还提供数个相互独立的小型 ASI。
+`Castle_SaveEnhance.asi` 是旧 `AnytimeSave.asi` 的完整升级替代，二者不应同时加载。
+
+当前功能包括：
+
+* 槽 0 快速存档与快速读档；
+* F5 快速存档、F9 二次或三次确认快速读档；
+* 可选的手柄快速操作；
+* 91～99 滚动自动存档；
+* 原版 8 页×4 槽扩展为 25 页×4，即 0～99；
+* 换图或定时自动保存，并在状态暂时不安全时等待安全锚点；
+* 可选的外置 WAV 提示音。
+
+安全扩展存档不会修改原版 TSF 格式，也不会把危险现场强行当成完整世界快照。原版禁止存档时，插件只有在取得可靠安全锚点后才允许写入；再次读取时可能回到当前场景入口或稍早的安全点，而不是保存瞬间的精确坐标。
+
+槽 0 和 91～99 是保留槽，普通存档菜单只允许读取，不允许覆盖。自动轮换状态保存在游戏存档目录的 `.NEXTAUTOSLOT` 三字节文件中；它不是游戏进度，也不是未来规划中的增强 `.state`。
+
+详细资料：
+
+* [SaveEnhance 安装与 TOML 配置说明](docs/SaveEnhance/安装与TOML配置说明.md)
+* [SaveEnhance 完整接档](docs/SaveEnhance/完整接档.md)
+* [SaveEnhance 实机测试清单](docs/SaveEnhance/实机测试清单.md)
+
+---
+
+### 7. 任务系统
+
+`Castle_Quest.asi` 为原版增加只读任务追踪、任务面板和世界 Marker，不修改原版 GameVar，也不改变 TSF 格式。
+
+当前任务数据库包括：
+
+* 25 个 Quest；
+* 146 个原版 Canonical Stage；
+* 556 条阶段内 Route；
+* 25 份 Base、25 份 Addon 和 1 份 manifest，共 51 个运行 TOML；
+* Ctrl+F6～F11 的界面、Marker、热重载和诊断快捷键。
+
+Base 只描述有原版证据的真实任务链；Remastered 新增的提示、Marker 和人工体验步骤放在同名 Addon 中。当前 Addon 完成记录只在本次游戏进程内保存；同一进程读取更早存档时不会自动回滚，跨存档持久化等待未来由 RuntimeSDK 统一提供的 `.state` 服务。
+
+详细资料：
+
+* [Quest 完整接档](docs/Quest/截至该版本的完整接档说明.md)
+* [Quest 实机验证清单](docs/Quest/实机验证清单.md)
+* [任务制作逐步入门教程](docs/Quest/任务制作逐步入门教程.md)
+* [任务与路由维护完整教程](docs/Quest/任务与路由维护完整教程.md)
+
+---
+
+### 8. 独立 QOL / BUG 修复 ASI
+
+这些业务插件可以按需启用，彼此不构成硬依赖，但当前官方版本都需要同目录 `Castle_Runtime.dll`。
 
 #### `BUGFix.asi`
 
-修复已确认的原版问题。
+修复已确认的原版问题，目前包括：
 
-目前包括：
-
-* 继承自“汉堂之家”坛友“武英仲”制作的三合一补丁中的“冥狱杀阵”习得问题 & 抗性显示 / 数据错位问题；
-* 经过win11验证的“读档 → 返回标题 → 新游戏”流程中的 Legacy Background Controller 双调用路径崩溃。
-
----
-
-#### `AnytimeSave.asi`
-
-安全扩展原版存档能力。
-
-本插件为完全从头开始实现，未参考现有随时存档功能。
-
-它**不是**任意地点强制保存完整世界状态。
-
-对于原版禁止存档的区域，插件只会在取得可靠的场景入口安全锚点后允许保存，并继续调用游戏自己的 TSF Writer。
-
-因此：
-
-* 不修改 TSF 文件格式；
-* 不追加私有数据；
-* 不创建额外 sidecar 存档；
-* 存档仍可以被没有安装插件的原版游戏读取。
-
-代价是：
-
-> 在原版禁止存档的位置保存后，重新读取时通常会回到当前场景入口或稍早一些的安全点，而不是保存瞬间的精确坐标。
-
-这是为了优先保证**存档安全性**。
-
----
+* 继承自“汉堂之家”坛友“武英仲”制作的三合一补丁中的“冥狱杀阵”习得问题和抗性显示/数据错位问题；
+* 已在 Windows 11 验证的“读档 → 返回标题 → 新游戏”流程中 Legacy Background Controller 双调用路径崩溃。
 
 #### `NoCD.asi`
 
 移除游戏的 CD 检查，继承自“汉堂之家”坛友“武英仲”制作的三合一补丁。
 
----
-
 #### `MaxGrowthAndDrop.asi`
 
-继承自“汉堂之家”坛友“武英仲”制作的五合一补丁中的最大成长&最大掉宝。
+继承自“汉堂之家”坛友“武英仲”制作的五合一补丁中的最大成长和最大掉宝。
 
-两个功能可以通过 `MaxGrowthAndDrop.ini` 独立开启或关闭。
+两个功能可以通过 `MaxGrowthAndDrop.toml` 独立开启或关闭。
 
 详细资料：
 
-* [其他功能使用说明](docs/Extra/文档/使用说明.md)
-* [安全回退存档设计说明](docs/Extra/文档/安全回退存档设计说明.md)
+* [Extra 当前构建与接档说明](src/Extra/readme.md)
+* [其他功能历史使用说明](docs/Extra/文档/使用说明.md)
 * [已知限制与风险](docs/Extra/文档/已知限制与风险.md)
 * [逆向分析与验证记录](docs/Extra/文档/逆向分析与验证记录.md)
 
 ---
 
-## 安装 (Windows)
+## 安装（Windows）
 
 ### 推荐方式
 
-请使用 **Releases** 中发布的构建，应将发布包中的：
+建议下载 [dev-auto 开发版](https://github.com/Kanadeforever/castlereforge/releases/tag/dev)，先备份原版存档，再将发布包中的：
 
 ```text
 CastleModLoader.exe
@@ -316,7 +404,7 @@ mods\
 
 复制到 `RPG.exe` 所在目录。
 
-目前已内置了上述asi格式插件，并且默认全部关闭，请按需加载；
+发行包已经内置 `Castle_Runtime.dll`、8 个 ASI、6 份同名 TOML、Quest 数据、SaveEnhance 说明和 x86 `SDL3.dll`。打开 `CastleModLoader.exe` 后检查各 Mod 的启用状态与顺序，再启动游戏。
 
 用户自己的覆盖文件类型的 Mod 放在：
 
@@ -324,13 +412,13 @@ mods\
 mods\overrides\
 ```
 
-该文件夹内已提前内置了模组的空文件夹结构模板，只需要复制一份以后，将复制的文件夹改成模组的名字，并打开这个文件夹将mod放在对应位置即可（如果你是强迫症也可以删掉空文件夹），然后再通过 `CastleModLoader.exe` 管理和启动游戏。
+该目录内已经提供空目录结构模板。复制模板、把副本改成 Mod 名称，再将文件按原游戏目录结构放入副本；最后通过 `CastleModLoader.exe` 管理和启动游戏。**绝对不要**直接覆盖原版文件。
 
-## 安装 (Android)
+## 安装（Android，实验性）
 
 ### 推荐方式
 
-目前在 **AYN Odin 3** 上使用[GameNative](https://github.com/utkarshdalal/GameNative/releases/latest)测试，可正常运行，但无法使用MOD加载器（该问题计划于日后修复）。
+目前在 **AYN Odin 3** 上使用[GameNative](https://github.com/utkarshdalal/GameNative/releases/latest)测试，可正常运行，MOD加载器也已经修复，可正常使用。
 
 若你的安卓设备可以运行GameNative并且顺畅使用，那么本模组则理论上没有使用障碍。
 
@@ -342,10 +430,10 @@ mods\overrides\
 
 ### GameNative设置说明
 
-> 建议在电脑上安装完游戏、处理完文件名、安装完毕MOD、调试显示效果等准备工作完成后，再打包移至移动设备中；移动设备理论上也可以安装，但台三版镜像都是mds/mdf格式，并非ISO。
+> 强烈建议先在电脑上完成游戏安装、文件名处理和显示调试，再把完整目录移至移动设备；移动设备理论上也可以安装，但注意最流行的台三版镜像都是mds/mdf格式，并非ISO。
 
-1. Android上现阶段GameNative内置的cnc-ddraw并不是那么好用，依然需要cnc-ddraw；
-2. 在GameNavite内添加好游戏后，点击游戏页面右侧的齿轮，打开选项菜单的 `编辑容器` ，进入容器编辑界面；
+1. Android上现阶段GameNative内置的cnc-ddraw并不是那么好用，依然需要自备cnc-ddraw；
+2. 在GameNative内添加游戏后，点击游戏页面右侧的齿轮，打开选项菜单的 `编辑容器` ，进入容器编辑界面；
 3. 在`通用` 页面中，将wine版本切换至带有 `X86_64`字样的内容，这很重要，arm字样无法使用；将 `可执行文件路径` 修改为 `exe/RPG.exe` 是启动游戏，修改为 `exe/cnc-ddraw config.exe` 是修改cnc-ddraw的设置；将 `语言` 改为 `Traditional Chinese`；
 4. 切换到 `控制器` 页面，关闭所有打开的开关（虽然不关好像也没事）；
 5. 切换到 `Win组件` 页面中，将所有项目的选项全部改为 `Native (Windows)` ，是的，全部选项都要改；
@@ -371,7 +459,17 @@ CastleReforge 的主要研究、开发与实机验收基线为：
 
 ## 模组系统要求
 
-CastleReforge 目前只对win11做维护支持，理论上win10也正常运行，Linux下，wine/proton7以上的版本应该可以正常运行；安卓已实测GameNative+proton的x86_64下可以运行；
+| 环境 | 当前支持级别 |
+|---|---|
+| Windows 11 | 主要开发、维护和实机测试平台 |
+| Windows 10 | 预期兼容，但不是当前主要维护基线 |
+| Windows XP / 7 / 8 / 8.1 | 不支持；需要自行修改和构建 |
+| Wine / Proton | 实验性兼容，没有统一发行验收结论 |
+| Android / GameNative | 只有特定设备的实验记录 |
+
+综上，CastleReforge 目前只对win11做维护支持，理论上win10也正常运行。
+
+Linux下，wine/proton7以上的版本应该可以正常运行；安卓已实测GameNative+proton的x86_64下可以运行；
 
 因为编译工具、模组加载等原因，不支持win10以下的系统，xp/win7/8/8.1请自行fork代码修改。
 
@@ -413,9 +511,11 @@ docs/
 ├─ Extra/
 ├─ FPSUnlock/
 ├─ MODLoader/
+├─ Quest/
 ├─ SaveEnhance/
 ├─ runtime/
-└─ Widescreen/
+├─ Widescreen/
+└─ common/
 ```
 
 其中包含：
@@ -442,13 +542,15 @@ docs/
 
 以及架构、地址和测试文档。
 
-项目级运行时协调 SDK 的未来目标、边界、降级规则和迁移顺序见：
+项目级运行时协调 SDK 的当前架构、边界、降级规则和迁移状态见：
 
 > [`docs/runtime/运行时协调系统总体设计.md`](docs/runtime/运行时协调系统总体设计.md)
 
-RuntimeSDK v1、Entry Gate、通用服务、MODLoader 两阶段和七个首批 ASI 适配均已完成静态/构建验证。
-`Castle_Runtime.dll` 与 ASI 同目录时自动整合；完全缺失时各插件独立运行；文件损坏时安全停用写入。
-目标游戏联合实机仍待执行，因此当前属于发布候选。
+RuntimeSDK v1、Entry Gate、通用服务、MODLoader 两阶段和 8 个官方 ASI 适配均已完成静态/构建验证。
+
+官方 ASI 强制依赖同目录 `Castle_Runtime.dll`；Runtime 缺失或损坏时安全停用，不回退到旧本地 Hook。
+
+早期 RuntimeSDK 联动曾通过完整资源环境联合验收，但最新 TOML、Clock、Quest 和冲突收口后的最终发行目录仍待全插件实机回归，因此当前属于开发候选。
 
 ---
 
@@ -462,6 +564,7 @@ castlereforge/
 │  ├─ Extra/
 │  ├─ FPSUnlock/
 │  ├─ MODLoader/
+│  ├─ Quest/
 │  ├─ RuntimeSDK/
 │  ├─ SaveEnhance/
 │  ├─ Widescreen/
@@ -473,9 +576,11 @@ castlereforge/
 │  ├─ Extra/
 │  ├─ FPSUnlock/
 │  ├─ MODLoader/
+│  ├─ Quest/
 │  ├─ SaveEnhance/
 │  ├─ runtime/
-│  └─ Widescreen/
+│  ├─ Widescreen/
+│  └─ common/
 │
 ├─ build/          构建输出（git 忽略）
 ├─ build_all.bat   一键编译全部子项目
@@ -504,11 +609,11 @@ castlereforge/
 
 正式 Windows 构建主要使用：
 
-* Visual Studio C/C++ x86 工具链；
-* Windows SDK；
-* `cl.exe`；
-* `link.exe`；
-* 部分模块（模组加载器）使用 `rc.exe`。
+* Visual Studio C/C++ x86 工具链与 Windows SDK；
+* `cl.exe`、`link.exe`、`dumpbin.exe`；
+* LLVM 的 `clang-cl` 与 `lld-link`；
+* Python 3；
+* 模组加载器还需要 `rc.exe`。
 
 进入对应源码目录后执行：
 
@@ -518,8 +623,11 @@ build.bat
 
 即可按照该模块规定的参数构建。
 
-也可以在仓库根运行 `build_all.bat` 一键编译全部子项目。Runtime、ASI、同名 INI 和插件资源位于
-`build\mods\asi`；`build` 会拒绝保留 obj/lib/exp/ilk/pdb 等编译垃圾。
+也可以在仓库根运行 `build_all.bat`，依次构建 Runtime、Backlog、Controller、Widescreen、SaveEnhance、BUGFix、NoCD、MaxGrowthAndDrop、Quest 和 Mod Loader。
+
+Runtime、8 个官方 ASI、6 份同名 TOML 和插件资源位于 `build\mods\asi`；Loader 位于 `build\`；统一日志目录为 `build\mods\logs`。
+
+构建会拒绝保留 obj/lib/exp/ilk/pdb 等编译垃圾，并主动排除尚未完成的 FPSUnlock。
 
 项目中的游戏内插件普遍采用较严格的最小依赖策略，很多模块：
 
@@ -529,7 +637,7 @@ build.bat
 * 对生成 PE 再做结构检查；
 * 对关键游戏地址在运行时做机器码预检。
 
-部分模块还会使用 GCC、clang-cl / lld-link 做第二套交叉验证。
+部分模块还会使用 GCC 做历史或补充交叉验证，但当前 Windows 全量构建要求 LLVM 的 `clang-cl` / `lld-link`。
 
 具体要求以各源码目录下的 `readme.md` 为准。
 
@@ -664,10 +772,12 @@ SDL 本身按照其自己的许可证发布。
 * 使用的《幽城幻剑录》版本；
 * `RPG.exe` 来源或 SHA-256；
 * CastleReforge 模块版本；
+* 使用的 `dev-auto` 提交号或下载日期；
 * 使用的 ASI 列表；
 * 是否使用 cnc-ddraw；
 * 复现步骤；
-* 对应 `.log`；
+* `mods/logs/` 中对应日志；
+* 与问题模块同名的 TOML 配置；
 * 如果是操作问题，说明所在地图 / 菜单 / Battle / 剧情状态。
 
 对于手柄问题，最好同时说明：
@@ -719,11 +829,13 @@ CastleReforge 自有源码采用 **MIT License**。
 
 ---
 
-## 关于AI
+## 关于 AI
 
-本项目使用ChatGPT完成，如果你抗拒AI的成果，那么请不要使用本项目；
+本项目全部代码、文档内容使用ChatGPT完成，AI 生成或整理的内容不会因此自动视为正确；项目仍以可审查源码、机器检查、原版证据和明确标记的实机结果作为判断依据。
 
-如果你是致谢中的某个项目的**作者**/**主要**贡献者并且你很讨厌自己的项目被ai借鉴，那么请在issues发帖，届时将会视情况处理掉借鉴部分。
+如果你**抗拒**使用 AI 完成的成果，那么**请不要使用本项目**；
+
+如果你是致谢中的某个项目的**作者**/**主要**贡献者并且你很讨厌自己的项目被ai借鉴，亦或是对本项目的参考方式、署名或许可证处理有疑问，请在issues发帖并指出具体文件与问题，届时维护者将会按证据核对和处理借鉴的部分。
 
 ---
 
@@ -744,5 +856,6 @@ CastleReforge 的目标不是把《幽城幻剑录》重新做成另一个游戏
     能够最终不需要切出游戏翻攻略就能体验真结局以及八成以上的游戏内容
     目前做的所有的一切都是为了这个目标前进
     至少无论是怀旧也好还是初次体验也罢
-    不要被时代的门槛拦住才是我追求的
+    不要被时代的门槛拦住
+    这，才是我追求的
 ```
