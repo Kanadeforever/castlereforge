@@ -68,7 +68,7 @@ CastleReforge 是一个面向 Windows 版《天地劫序传·幽城幻剑录》�
 6. 下载 [cnc-ddraw.zip](https://github.com/FunkyFr3sh/cnc-ddraw/releases/latest) ，并解压`Shaders`文件夹、`cnc-ddraw config.exe`、`ddraw.dll`、`ddraw.ini`到游戏的exe目录内，也就是和 `RPG.exe` 在同一个目录。
 7. 准备完毕！
 
-补丁解包、已知乱码文件名修复和游戏目录校验的使用方法见[项目工具箱详细说明](docs/工具箱/工具详细说明.md)。这些工具不会提供任何原版游戏文件；运行会写入或重命名文件的工具前必须先制作目录副本。
+补丁解包、已知乱码文件名修复和游戏目录校验的使用方法见[项目工具箱详细说明](docs/_toolbox/工具详细说明.md)。这些工具不会提供任何原版游戏文件；运行会写入或重命名文件的工具前必须先制作目录副本。
 
 ### 1. Castle Mod Loader
 
@@ -515,7 +515,8 @@ docs/
 ├─ SaveEnhance/
 ├─ runtime/
 ├─ Widescreen/
-└─ common/
+├─ common/
+└─ _toolbox/
 ```
 
 其中包含：
