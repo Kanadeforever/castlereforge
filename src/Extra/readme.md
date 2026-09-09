@@ -1,93 +1,52 @@
-# Extra 三功能源码完整接档说明
+# Extra 三功能构建与接档说明
 
-## 1. 当前状态
+## 当前状态
 
-`Extra` 现只负责三个相互独立的小型功能：
+`src/Extra` 维护三个独立官方 ASI：
 
-- `BUGFix`：修复原版 BUG，并包含已稳定验证的 CrashFix test2 双调用路径修复；
-- `NoCD`：跳过原版光盘检查；
-- `MaxGrowthAndDrop`：最大成长与最大掉宝，可由同名 INI 控制。
+- `BUGFix`：原版问题修复及已验证的读档后新游戏 CrashFix；
+- `NoCD`：跳过原版光盘检查，并设置安全备用盘符；
+- `MaxGrowthAndDrop`：最大成长与最大掉宝，配置为 `MaxGrowthAndDrop.toml`。
 
-安全存档增强功能已在 2026-08-28 移到同级的 `src/SaveEnhance`，作为单独主功能维护和构建；正式产物仍名为 `AnytimeSave.asi`。本次整理只改变文件位置与构建路径，没有修改任何 C++ 实现、补丁地址、机器码、配置键或运行行为。
+三个插件都需要同目录 `Castle_Runtime.dll`，但不要求 Castle Mod Loader 或其它业务插件。
+所有 RPG.exe 补丁通过 Runtime Hook 事务，日志通过 Runtime Log 分别写入 `mods/logs`。
+MaxGrowthAndDrop 通过 Runtime TOML 读取配置；缺少 Runtime 时三者保持停用。
 
-## 2. 当前目录
+SaveEnhance 已是同级独立项目 `src/SaveEnhance`，产物为 `Castle_SaveEnhance.asi`，不属于
+Extra，也不再使用历史 `AnytimeSave.asi` 名称。
 
-```text
-src/Extra/
-  BUGFix/
-    build.bat
-    source/
-      BUGFix.cpp
-      PatchUtil.h
-      PluginLog.h
-      Win32Mini.h
-  NoCD/
-    build.bat
-    source/
-      NoCD.cpp
-      PatchUtil.h
-      PluginLog.h
-      Win32Mini.h
-  MaxGrowthAndDrop/
-    build.bat
-    source/
-      MaxGrowthAndDrop.cpp
-      PatchUtil.h
-      PluginLog.h
-      Win32Mini.h
-  完整接档说明.md
-```
+## 目录与工具边界
 
-三个功能各自保留完整 `build.bat`、源码和一套同版本公共头文件，使任一功能目录都能独立阅读、独立构建，不依赖 Extra 根脚本或已经移出的旧 `source` 汇总目录。`src/Extra` 不再提供 `build.bat`；仓库根 `build_all.bat` 会直接调用三个功能脚本。以后若修改公共头文件，必须同步核对三个目录以及 `src/SaveEnhance/source` 中的副本。
+每个功能目录包含自己的 `build.bat`、`source` 和最小头文件，可单独构建。三个
+`PatchUtil.h` 只保留补丁描述、RPG.exe 基址和只读字节比较；没有 VirtualProtect、本地 CALL
+安装或手工回滚。各自 `Win32Mini.h` 也只声明该插件当前真实使用的 Win32 能力：
 
-## 3. 构建方法
+- NoCD：模块基址、EXE 路径和 DLL 生命周期；
+- MaxGrowthAndDrop：模块基址和 DLL 生命周期；
+- BUGFix：只读内存检查、私有执行 stub 分配/释放与指令缓存刷新。
 
-单独构建某个功能时，直接运行对应脚本：
+BUGFix 的 stub 是插件自己的短汇编路径；写入 RPG.exe 的跳转仍由 Runtime 事务执行。
+
+## 构建
+
+分别运行：
 
 ```text
-BUGFix/build.bat
-NoCD/build.bat
-MaxGrowthAndDrop/build.bat
+src\Extra\BUGFix\build.bat
+src\Extra\NoCD\build.bat
+src\Extra\MaxGrowthAndDrop\build.bat
 ```
 
-每个功能脚本都能自行定位 Visual Studio x86 MSVC 工具链、管理自己的 `_build` 中间目录，并把唯一目标输出到仓库根 `build` 目录：
+脚本通过 vswhere 定位 MSVC x86，使用 C++17、UTF-8、`/W4 /WX`、无 CRT，并在各自 `_build`
+存放中间文件。单项产物先写仓库根 `build`；正式发行由根 `build_all.bat` 移到
+`build/mods/asi`。构建后检查 PE32/i386、DLL 标志和非零入口。
 
-```text
-BUGFix.asi
-NoCD.asi
-MaxGrowthAndDrop.asi
-```
+## 验收与限制
 
-构建参数和整理前保持一致：C++17、UTF-8、`/W4 /WX`、不链接 CRT、目标为 x86 DLL，并显式使用 `DllMain` 作为入口。每个产物链接完成后仍会检查：
+当前只支持已确认的台湾第三版原版 RPG.exe 或机器码等价状态。每项声明都列出原版/启用态，
+陌生字节由 Runtime fail-closed。原始光盘 EXE 的最小验收为 Runtime + NoCD；其余两个插件分别
+加入测试，然后再验证三者及所有正式 ASI 联合加载。
 
-- PE 机器类型为 `0x014C`，即 x86；
-- PE 带 DLL 标志；
-- `AddressOfEntryPoint` 不为 0。
-
-`MaxGrowthAndDrop.toml` 由 Runtime TOML 服务读取，插件不再自行生成或改写配置。NoCD、BUGFix、
-MaxGrowthAndDrop 三个官方 ASI 均需要同目录 `Castle_Runtime.dll`，日志统一进入 `mods/logs`。
-
-## 4. 已确认方案与历史结论
-
-- `BUGFix` 原有固定补丁和 Crash 双路径修复在 v0.3.2 已完成静态复核；
-- `NoCD` 与 `MaxGrowthAndDrop` 在 v0.3.2 沿用已核对实现；
-- 三个插件继续只依赖 `KERNEL32.dll`；
-- 所有内存写入仍先验证已知机器码，陌生版本会安全拒绝；
-- 更完整的地址、架构、成功方案、失败方案、实机结论和风险记录位于 `docs/Extra/文档`。
-
-## 5. 已知限制与当前阻塞
-
-- 功能仍只支持已经确认的 32 位 `RPG.exe` 基线或机器码等价状态；
-- 目录拆分不会扩大兼容范围，也不会替代实机回归；
-- 本次没有发现新的代码阻塞项。
-
-2026-08-28 已使用当前 MSVC x86 工具链实编译通过：`BUGFix.asi / NoCD.asi / MaxGrowthAndDrop.asi` 均生成成功，并分别通过 x86、DLL、非零入口检查。入口 RVA 依次为 `0x00001DE0 / 0x00001140 / 0x000011D0`。
-
-三个脚本分别独立通过后，又在 LLVM 已加入 `PATH` 的环境下运行仓库根 `build_all.bat`；八个步骤全部成功，根脚本确认会直接调用三个功能入口，不需要 `src/Extra/build.bat`。
-
-## 6. 下一步
-
-1. 每次修改任一公共头文件时，同步四套正式源码副本并做差异检查；
-2. 后续改动后先运行被修改功能自己的 `build.bat`，再运行仓库根 `build_all.bat` 做全项目回归；
-3. 功能变化仍按 `docs/Extra/文档/测试说明.md` 做实机回归；
-4. 不把安全存档增强源码重新并回 `Extra`，其独立入口为 `src/SaveEnhance/build.bat`。
+历史 v0.3.2 的地址、失败路线与实机证据保存在 `docs/Extra/文档`，其中旧 INI、ASI 同目录
+日志、本地 PatchUtil 写码和 AnytimeSave 描述只作为历史记录。当前架构以
+`docs/runtime/运行时协调系统总体设计.md` 和完整接档为准。

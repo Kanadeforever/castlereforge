@@ -46,7 +46,4 @@ int PadBridge_Down(PadBridgeButton button);
  */
 int PadBridge_BlocksBacklogInput(void);
 
-/* 清掉本地 Runtime 门面和快照；不会卸载或修改输入 Provider。 */
-void PadBridge_Shutdown(void);
-
 #endif /* CASTLE_BACKLOG_PAD_BRIDGE_H */

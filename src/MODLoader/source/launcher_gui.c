@@ -3160,7 +3160,9 @@ static int toml_utf16_is_valid_(const WCHAR* text, UINT chars,
             if (bad_line) *bad_line = line;
             return 0;
         }
-        if (value == (UINT)'\n') ++line;
+        // RichEdit 可能返回 CR、LF 或 CRLF；把 CRLF 算成一次换行，错误行才不会偏移。
+        if (value == (UINT)'\r' ||
+            (value == (UINT)'\n' && (index == 0u || text[index - 1u] != (WCHAR)'\r'))) ++line;
         ++index;
     }
     return 1;
@@ -3172,6 +3174,8 @@ static int save_ini_editor_file_(WCHAR* error, UINT error_cap, LONG* bad_start, 
     BYTE* encoded = NULL_PTR;
     UINT byte_count = 0u;
     UINT prefix = 0u;
+    UINT unicode_bad_index = 0u;
+    UINT unicode_bad_line = 0u;
     int needed = 0;
     WCHAR temp_path[CASTLE_PATH_CAP];
     HANDLE file;
@@ -3184,6 +3188,18 @@ static int save_ini_editor_file_(WCHAR* error, UINT error_cap, LONG* bad_start, 
     text = get_ini_editor_text_(&chars);
     if (!text) {
         if (error) wcopy_(error, error_cap, (const WCHAR*)L"无法从编辑框读取完整文本；本次没有保存。");
+        return 0;
+    }
+
+    // 在转换和创建临时文件前拒绝不成对的代理项；允许合法代理对（例如扩展汉字）。
+    // 预先校验也兼容不支持 WC_ERR_INVALID_CHARS 的旧 Windows 转换实现。
+    if (!toml_utf16_is_valid_(text, chars, &unicode_bad_index, &unicode_bad_line)) {
+        if (bad_start) *bad_start = (LONG)unicode_bad_index;
+        if (bad_end) *bad_end = (LONG)(unicode_bad_index + 1u);
+        if (bad_line) *bad_line = unicode_bad_line;
+        if (error) wcopy_(error, error_cap,
+            (const WCHAR*)L"文字包含不成对的 UTF-16 代理项，无法无损保存为 UTF-8；请重新输入错误行。原文件没有修改。");
+        free_alloc_(text);
         return 0;
     }
 

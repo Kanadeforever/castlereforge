@@ -14,8 +14,8 @@ r"""
 8. Loader 自身两个 DLL 必须放在 mods\ 根目录，便于“删除 EXE + mods”完整卸载；
 9. dev9 必须恢复 dev5 已实机成功的两段 SetDllDirectoryW(mods) 语义：Launcher CreateProcess 前临时设置并恢复父进程，Core 进入 RPG.exe 后长期设置；同时仍禁止 Launcher 管理 mods\ddraw.dll；
 10. ddraw.dll 必须重新进入 Core/Overrides/Locale/USER32/GDI 的 Win32 IAT 兼容桥目标，以恢复 dev5 的转区/截图调用链；
-11. GUI 只能给存在同名 INI 的 ASI 显示“编辑”，并使用系统 RichEdit 动态加载、语法分色、保存前通用 INI 结构校验与原子写回；
-12. about5 必须取消 About 的 WS_EX_TOOLWINDOW，让它使用普通 Windows 标题栏，同时保留正文自适应、链接和 INI 自动换行；
+11. GUI 只能给存在同名 TOML 的 ASI 显示“编辑”，并使用系统 RichEdit、语法分色、UTF-8 与 Runtime TOML v1 结构校验及原子写回；
+12. about5 必须取消 About 的 WS_EX_TOOLWINDOW，让它使用普通 Windows 标题栏，同时保留正文自适应、链接和编辑器自动换行；
 13. Core 与 GUI 自动补全 mods.ini 时，都必须把新条目写在节尾连续空行之前，让空行继续分隔 [ASI] 与 [Overrides]。
 14. 阶段2全部 InitializeASI 返回后，必须通过 SDK ASI 的可选 Client 桥发送一次 Loader-ready；MODLoader 仍不得加载或查询 Runtime DLL。
 """
@@ -199,7 +199,8 @@ ck('WS_HSCROLL_' not in gui[gui.find('g_ini_editor_text ='):gui.find('g_ini_edit
 ck('RGB_(220, 38, 38)' in gui and '● 未保存修改' in gui and '● 保存失败：' in gui, '未保存状态和保存错误统一使用醒目亮红字并带实心圆标记')
 ck('INI_ENCODING_UTF8_BOM_' in gui and 'INI_ENCODING_UTF8_' in gui and 'TOML 必须使用 UTF-8' in gui and 'MB_ERR_INVALID_CHARS_' in gui, 'TOML 编辑器接受 UTF-8（带或不带 BOM），并明确拒绝 ANSI/UTF-16')
 ck('.castle.tmp' in gui and 'FlushFileBuffers' in gui and 'MOVEFILE_REPLACE_EXISTING_' in gui and 'MOVEFILE_WRITE_THROUGH_' in gui, 'TOML 保存使用同目录临时文件 + Flush + REPLACE_EXISTING|WRITE_THROUGH 原子替换')
-ck('CP_UTF8_' in gui and 'WC_ERR_INVALID_CHARS_' in gui, 'TOML 保存严格编码为 UTF-8，不允许产生不可逆替代字符')
+save_editor_seg=gui[gui.find('static int save_ini_editor_file_'):gui.find('static void select_ini_error_line_(', gui.find('static int save_ini_editor_file_'))]
+ck('toml_utf16_is_valid_(text, chars,' in save_editor_seg and save_editor_seg.find('toml_utf16_is_valid_(text, chars,') < save_editor_seg.find('WideCharToMultiByte(CP_UTF8_') < save_editor_seg.find('CreateFileW(temp_path'), 'TOML 保存先校验代理对，再编码 UTF-8，最后才创建临时文件')
 ck('MB_YESNOCANCEL_' in gui and '这个 TOML 还有未保存的修改' in gui, '关闭有未保存修改的 TOML 编辑器时提供保存/放弃/取消三路选择')
 ck('layout.asi_card.top - scale_(hwnd, 10)' in gui and 'g_ui.FillRect(dc, &line, g_brush_border);' in gui, '顶部说明与 Mod 工作区之间存在独立细分隔线')
 ck('g_ui.DrawTextW(dc, (const WCHAR*)L"《幽城幻剑录》Mod Loader"' not in gui, '客户区不再重复绘制程序大标题，程序名称只保留在 Windows 标题栏')
@@ -420,12 +421,13 @@ exe=OUT/'CastleModLoader.exe'; bootdll=OUT/'mods'/'CastleLocaleBootstrap.dll'; c
 # 这里不把编译后二进制 SHA 当成永久规则，因为不同链接器版本即使源码相同也可能生成不同字节。
 # 更稳妥的做法是把所有影响 RPG.exe 运行时的源码按固定顺序拼接后计算一个聚合 SHA-256；
 # 只要这些源码没有再动，就能确认后续工作没有把本次配置排版修复扩展到 Hook、Locale 或审计逻辑。
-CURRENT_RUNTIME_SOURCE_SHA256='8f5ac5f82a2f0d6699ded599bca2bb5059a051f2404b7f8fd1ce70e9fb3f659e'
+CURRENT_RUNTIME_SOURCE_SHA256='70820f925edab9424600b0dfe70eb1d441f9c5949bad440d82be058c6309e8bb'
 _runtime_source_names=['core.c','entry_gate.c','mod_loader.c','override_loader.c','game_audit.c','locale_layer.c','native_locale.c','user32_locale.c','gdi_locale.c','locale_bootstrap.c','platform.h','runtime_support.c']
 _runtime_hash=hashlib.sha256()
 for _name in _runtime_source_names:
     _runtime_hash.update(_name.encode('utf-8')); _runtime_hash.update(b'\0')
-    _runtime_hash.update((SRC/_name).read_bytes()); _runtime_hash.update(b'\0')
+    # Git 的 Windows 检出可能把 LF 转成 CRLF；统一换行后再冻结内容，避免不同检出环境误报。
+    _runtime_hash.update((SRC/_name).read_bytes().replace(b'\r\n', b'\n')); _runtime_hash.update(b'\0')
 ck(_runtime_hash.hexdigest()==CURRENT_RUNTIME_SOURCE_SHA256, '全部游戏运行时源码与 ASI 两阶段启动后的当前聚合 SHA-256 完全一致')
 ck(exe.exists(), '存在 CastleModLoader.exe')
 ck(bootdll.exists(), r'存在 mods\CastleLocaleBootstrap.dll')

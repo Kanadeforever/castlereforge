@@ -19,7 +19,7 @@ for %%F in (Castle_Runtime.dll Castle_Backlog.asi Castle_Backlog.toml Castle_Pad
     if exist "%ROOT%build\mods\asi\%%F" del /q "%ROOT%build\mods\asi\%%F" >nul 2>nul
 )
 rem FPSUnlock 尚未完成且不属于 build_all；清除单独构建留下的候选，禁止它混入正式发行树。  
-for %%F in (Castle_FPSUnlock.asi Castle_FPSUnlock.toml) do (
+for %%F in (Castle_FPSUnlock.asi Castle_FPSUnlock.toml Castle_FPSUnlock.ini) do (
     if exist "%ROOT%build\%%F" del /q "%ROOT%build\%%F" >nul 2>nul
     if exist "%ROOT%build\mods\asi\%%F" del /q "%ROOT%build\mods\asi\%%F" >nul 2>nul
 )
@@ -80,6 +80,9 @@ for %%F in (Castle_Backlog Castle_PadSupport Castle_SaveEnhance Castle_Widescree
 rem SaveEnhance 的外置 WAV 固定从 ASI 同目录下 Castle_SaveEnhance 子目录读取。  
 set "SAVE_SOUND_DIR=%ROOT%build\mods\asi\Castle_SaveEnhance"
 if not exist "%SAVE_SOUND_DIR%" mkdir "%SAVE_SOUND_DIR%" || goto :fail
+rem 精确清除旧版随包 INI 说明；该目录可能来自上一次发行构建，不能把过期文档继续带入新包。  
+if exist "%SAVE_SOUND_DIR%\*INI*.md" del /q "%SAVE_SOUND_DIR%\*INI*.md" >nul 2>nul
+if exist "%SAVE_SOUND_DIR%\*INI*.md" goto :fail
 copy /y "%ROOT%docs\SaveEnhance\安装与TOML配置说明.md" "%SAVE_SOUND_DIR%\音效放置与TOML配置说明.md" >nul || goto :fail
 copy /y "%ROOT%docs\SaveEnhance\实机测试清单.md" "%SAVE_SOUND_DIR%\SaveEnhance实机测试清单.md" >nul || goto :fail
 

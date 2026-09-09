@@ -263,12 +263,6 @@ static PFN_SceneWorldUpdate backlog_scene_next(void) {
     return (PFN_SceneWorldUpdate)current;
 }
 
-static int g_hook_installed;
-static int g_speaker_portrait_hook_installed;
-static int g_panel_hook_installed;
-static int g_name_panel_hook_installed;
-static int g_name_text_hook_installed;
-static int g_text_hook_installed;
 static int g_oversized_page_logged;
 /*
  * 如果历史条目有姓名，但当前场景已经没有可读的 F-Name.SF2 对象，
@@ -1341,187 +1335,7 @@ static void BACKLOG_THISCALL Backlog_HookSceneUpdate(void* scene_world) {
     }
 }
 
-/* 检查一个函数地址所在内存是否有执行权限，避免链到普通数据或空指针。 */
-static int backlog_pointer_is_executable(const void* pointer) {
-    MEMORY_BASIC_INFORMATION information;
-    DWORD protection;
-    if (!Runtime_PointerLooksReadable(pointer)) return 0;
-    if (VirtualQuery(pointer, &information, sizeof(information)) != sizeof(information)) return 0;
-    if (information.State != MEM_COMMIT || (information.Protect & PAGE_GUARD) != 0u) return 0;
-    protection = information.Protect & 0xFFu;
-    return protection == PAGE_EXECUTE || protection == PAGE_EXECUTE_READ ||
-           protection == PAGE_EXECUTE_READWRITE || protection == PAGE_EXECUTE_WRITECOPY;
-}
-
-/* 从 x86 E8 rel32 CALL 计算当前实际目标；不是 E8 时返回 0。 */
-static void* backlog_call_target(u32 call_address) {
-    i32 relative;
-    if (*(volatile u8*)call_address != 0xE8u) return NULL;
-    relative = *(volatile i32*)(call_address + 1u);
-    return (void*)(call_address + 5u + (u32)relative);
-}
-
-/*
- * 只改 E8 后面的四字节相对位移，CALL opcode 自身保持不变。
- * out_previous 保存安装时的当前目标；若别的兼容插件已经包过同一 CALL，现代列表会继续链到它。
- */
-static int backlog_patch_call(u32 call_address, void* hook, void** out_previous) {
-    void* previous = backlog_call_target(call_address);
-    i32 relative;
-    DWORD old_protection;
-    DWORD ignored;
-
-    if (!hook || !out_previous || !backlog_pointer_is_executable(previous)) return 0;
-    *out_previous = previous;
-    relative = (i32)((u32)(SIZE_T)hook - (call_address + 5u));
-
-    if (!VirtualProtect((void*)call_address, 5u, PAGE_EXECUTE_READWRITE, &old_protection)) return 0;
-    *(volatile i32*)(call_address + 1u) = relative;
-    VirtualProtect((void*)call_address, 5u, old_protection, &ignored);
-    FlushInstructionCache(GetCurrentProcess(), (const void*)call_address, 5u);
-    return 1;
-}
-
-/* 只有 CALL 仍指向本插件时才恢复，避免卸载时覆盖后来安装的其它链。 */
-static void backlog_restore_call(u32 call_address, void* hook, void* previous) {
-    i32 relative;
-    DWORD old_protection;
-    DWORD ignored;
-
-    if (!previous || backlog_call_target(call_address) != hook) return;
-    relative = (i32)((u32)(SIZE_T)previous - (call_address + 5u));
-    if (!VirtualProtect((void*)call_address, 5u, PAGE_EXECUTE_READWRITE, &old_protection)) return;
-    *(volatile i32*)(call_address + 1u) = relative;
-    VirtualProtect((void*)call_address, 5u, old_protection, &ignored);
-    FlushInstructionCache(GetCurrentProcess(), (const void*)call_address, 5u);
-}
-
-/*
- * 安装只改 vtable[0] 的一个 32 位指针。
- * 不改 0x403E30、0x404800、0x40B050 的机器码，也不改手柄插件使用的任何 CALL 点。
- */
-int Backlog_Install(void) {
-    void** slot = (void**)VTABLE_SCENE_WORLD;
-    void* previous;
-    DWORD old_protection;
-    DWORD ignored;
-
-    if (!Runtime_Config()->enabled) return 1;
-    if (g_hook_installed) return 1;
-    g_scene_next_slot = NULL;
-    g_speaker_portrait_next_slot = NULL;
-    g_panel_next_slot = NULL;
-    g_name_panel_next_slot = NULL;
-    g_name_text_next_slot = NULL;
-    g_text_next_slot = NULL;
-
-    /*
-     * 安装顺序按原版 0x404800 的绘制顺序排列。
-     * 任意一步失败都会按相反顺序撤销已经装好的 CALL，避免留下“半套 Hook”。
-     *
-     * 每一次 backlog_patch_call 都先保存当前 CALL 的目标。因此如果某个兼容插件比 Backlog
-     * 更早加载，它的 wrapper 会成为 previous；Backlog 未活动时继续透明链回它。
-     */
-    if (!backlog_patch_call(CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW,
-                            (void*)Backlog_HookCurrentSpeakerPortraitDraw,
-                            (void**)&g_previous_speaker_portrait_draw)) {
-        Runtime_Log("[致命] 无法安装当前剧情人物图屏蔽 CALL；现代 Backlog 未启用。");
-        return 0;
-    }
-    g_speaker_portrait_hook_installed = 1;
-
-    if (!backlog_patch_call(CALL_DIALOGUE_PANEL_DRAW, (void*)Backlog_HookPanelDraw,
-                            (void**)&g_previous_panel_draw)) {
-        Runtime_Log("[致命] 无法安装 F-Talk 多框绘制 CALL；现代 Backlog 未启用。");
-        goto fail_calls;
-    }
-    g_panel_hook_installed = 1;
-
-    if (!backlog_patch_call(CALL_DIALOGUE_NAME_PANEL_DRAW,
-                            (void*)Backlog_HookCurrentNamePanelDraw,
-                            (void**)&g_previous_name_panel_draw)) {
-        Runtime_Log("[致命] 无法安装当前剧情 F-Name 屏蔽 CALL；现代 Backlog 未启用。");
-        goto fail_calls;
-    }
-    g_name_panel_hook_installed = 1;
-
-    if (!backlog_patch_call(CALL_DIALOGUE_NAME_TEXT_DRAW,
-                            (void*)Backlog_HookCurrentNameTextDraw,
-                            (void**)&g_previous_name_text_draw)) {
-        Runtime_Log("[致命] 无法安装当前剧情姓名文字屏蔽 CALL；现代 Backlog 未启用。");
-        goto fail_calls;
-    }
-    g_name_text_hook_installed = 1;
-
-    if (!backlog_patch_call(CALL_DIALOGUE_TEXT_DRAW, (void*)Backlog_HookTextDraw,
-                            (void**)&g_previous_text_draw)) {
-        Runtime_Log("[致命] 无法安装原字体多条正文 CALL；现代 Backlog 未启用。");
-        goto fail_calls;
-    }
-    g_text_hook_installed = 1;
-
-    previous = *slot;
-    if (previous == (void*)Backlog_HookSceneUpdate) {
-        Runtime_Log("[Hook] 场景更新包装器已经存在，不重复安装。");
-        g_hook_installed = 1;
-        return 1;
-    }
-    if (!backlog_pointer_is_executable(previous)) {
-        Runtime_Log("[致命] 场景 vtable[0] 当前值不是可执行函数，拒绝覆盖。");
-        goto fail_calls;
-    }
-
-    g_previous_scene_update = (PFN_SceneWorldUpdate)previous;
-    if (!VirtualProtect(slot, sizeof(void*), PAGE_READWRITE, &old_protection)) {
-        Runtime_Log("[致命] 无法把场景 vtable[0] 临时设为可写。");
-        goto fail_calls;
-    }
-    InterlockedExchangePointer((PVOID volatile*)slot, (PVOID)Backlog_HookSceneUpdate);
-    VirtualProtect(slot, sizeof(void*), old_protection, &ignored);
-    FlushInstructionCache(GetCurrentProcess(), slot, sizeof(void*));
-
-    g_accept_input = 1;
-    g_hook_installed = 1;
-    Runtime_Log(previous == (void*)FN_SCENE_WORLD_UPDATE
-        ? "[Hook] 已安装场景更新链；前一目标是原版 0x40B150。"
-        : "[Hook] 已安装场景更新链；前一目标来自其它兼容插件，将按 thiscall 链式调用。");
-    Runtime_Log(
-        "[Hook] 历史绘制链已安装：人物图/F-Name/姓名文字可独立屏蔽，"
-        "F-Talk/正文展开四条；剧情旁路不再修改 speaker 全局。"
-    );
-    return 1;
-
-fail_calls:
-    if (g_text_hook_installed) {
-        backlog_restore_call(CALL_DIALOGUE_TEXT_DRAW, (void*)Backlog_HookTextDraw,
-                             (void*)g_previous_text_draw);
-        g_text_hook_installed = 0;
-    }
-    if (g_name_text_hook_installed) {
-        backlog_restore_call(CALL_DIALOGUE_NAME_TEXT_DRAW,
-                             (void*)Backlog_HookCurrentNameTextDraw,
-                             (void*)g_previous_name_text_draw);
-        g_name_text_hook_installed = 0;
-    }
-    if (g_name_panel_hook_installed) {
-        backlog_restore_call(CALL_DIALOGUE_NAME_PANEL_DRAW,
-                             (void*)Backlog_HookCurrentNamePanelDraw,
-                             (void*)g_previous_name_panel_draw);
-        g_name_panel_hook_installed = 0;
-    }
-    if (g_panel_hook_installed) {
-        backlog_restore_call(CALL_DIALOGUE_PANEL_DRAW, (void*)Backlog_HookPanelDraw,
-                             (void*)g_previous_panel_draw);
-        g_panel_hook_installed = 0;
-    }
-    if (g_speaker_portrait_hook_installed) {
-        backlog_restore_call(CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW,
-                             (void*)Backlog_HookCurrentSpeakerPortraitDraw,
-                             (void*)g_previous_speaker_portrait_draw);
-        g_speaker_portrait_hook_installed = 0;
-    }
-    return 0;
-}
+/* 官方安装仅通过下方 Runtime 事务；进程固定驻留，不提供私有写码或主动卸载旁路。 */
 
 static CastleStringView backlog_sdk_view(const char* text, CastleU32 length) {
     CastleStringView view;
@@ -1708,12 +1522,6 @@ CastleResult Backlog_InstallIntegrated(const CastleRuntimeApiV1* runtime_api,
         backlog_get_next_slot(hook_api, claims[5], &g_scene_next_slot) < 0) {
         return CASTLE_ERROR_RUNTIME_FAULT;
     }
-    g_speaker_portrait_hook_installed = 1;
-    g_panel_hook_installed = 1;
-    g_name_panel_hook_installed = 1;
-    g_name_text_hook_installed = 1;
-    g_text_hook_installed = 1;
-    g_hook_installed = 1;
     g_accept_input = 1;
     Runtime_Log("[Hook] Runtime 已原子提交五个绘制 CALL 和 SceneWorld vtable 链。");
 #undef BACKLOG_ADD_CALL_
@@ -1819,12 +1627,12 @@ void Backlog_PollInput(void) {
 
     /*
      * 手柄是完全可选的协作能力：
-     * - 没有 Castle_PadSupport.asi -> pad_allowed=0；
-     * - PadSupport 正在调查/RT鼠标/Back鼠标模式 -> pad_allowed=0；
-     * - 只有普通 Controller 模式才允许 Backlog 读取 PadSupport 的按钮状态。
+     * - Runtime Input 没有就绪 Provider -> pad_allowed=0；
+     * - 当前 Provider 报告外部 UI 输入被焦点租约阻断 -> pad_allowed=0；
+     * - 只有 Provider 就绪且允许外部 UI 时，Backlog 才读取统一按钮快照。
      *
      * 另外还有一层 release barrier：
-     * PadSupport 刚加载，或者刚从调查/鼠标模式回到普通手柄模式时，必须先把 LB、取消键、
+     * Input Provider 刚就绪，或者刚从独占模式回到普通手柄模式时，必须先把 LB、取消键、
      * 十字键全部松开一次。这样“模式里一直按着的键”不会在模式结束的第一帧误触发 Backlog。
      */
     if (!PadBridge_Available()) {
@@ -1936,103 +1744,4 @@ void Backlog_PollInput(void) {
 
 int Backlog_IsActive(void) {
     return g_active != 0;
-}
-
-/*
- * 正常 ASI 会与 RPG.exe 同寿命，不会在游戏中途卸载。
- * 这里仍恢复 vtable（仅当槽位仍是我们自己），并在极端卸载时把最关键的标量/指针放回。
- * DllMain 卸载路径不调用任何 RPG.exe 内部资源函数。
- * 现行版没有私有 F-Name 池；主动卸载只需恢复 Hook 和 synthetic 标量。
- */
-void Backlog_Shutdown(void) {
-    void** slot = (void**)VTABLE_SCENE_WORLD;
-    DWORD old_protection;
-    DWORD ignored;
-
-    g_accept_input = 0;
-
-    /*
-     * 正常 ASI 与 RPG.exe 同寿命，真正关闭 Backlog 应该始终走游戏线程的
-     * backlog_close_on_game_thread()。这里是极端主动卸载兜底，不能调用 RPG.exe 的 SF2 析构。
-     *
-     * 如果此刻是剧情旁路，v0.3.3-test3 起从打开就没有写过剧情全局，因此这里也绝不写；
-     * 如果是 synthetic 模式，才恢复插件自己曾修改的那组标量/指针。
-     */
-    if (g_active) {
-        if (!g_opened_over_live_dialogue) {
-            *(volatile u8*)GLOBAL_DIALOGUE_CURRENT_STATE = 0u;
-            *(volatile u8*)GLOBAL_DIALOGUE_TARGET_STATE = 0u;
-            *(u8* volatile*)GLOBAL_DIALOGUE_DISPLAY_BUFFER = g_saved.display_buffer;
-            *(volatile u32*)GLOBAL_DIALOGUE_MODE = g_saved.dialogue_mode;
-            *(volatile u32*)GLOBAL_DIALOGUE_TOTAL_BYTES = g_saved.total_bytes;
-            *(volatile u32*)GLOBAL_DIALOGUE_VISIBLE_BYTES = g_saved.visible_bytes;
-            *(volatile u32*)GLOBAL_DIALOGUE_ID = g_saved.dialogue_id;
-            *(volatile u8*)GLOBAL_EVENT_YIELD_FLAG = g_saved.event_yield;
-            *(volatile u8*)GLOBAL_EVENT_BLOCK_FLAG = g_saved.event_block;
-            *(volatile u8*)GLOBAL_MAP_INPUT_GATE = g_saved.map_input_gate;
-            *(volatile u8*)GLOBAL_DIALOGUE_SPEAKER_ACTIVE = g_saved.speaker;
-            *(volatile u8*)GLOBAL_DIALOGUE_SPEAKER_STYLE = g_saved.speaker_style;
-            *(volatile u8*)GLOBAL_DIALOGUE_SPEAKER_VARIANT = g_saved.speaker_variant;
-            *(u8* volatile*)GLOBAL_DIALOGUE_SPEAKER_NAME = g_saved.speaker_name;
-            *(volatile u8*)GLOBAL_DIALOGUE_TARGET_STATE = g_saved.target_state;
-            *(volatile u8*)GLOBAL_DIALOGUE_CURRENT_STATE = g_saved.current_state;
-        }
-        g_close_barrier_pending = 0;
-        g_opened_over_live_dialogue = 0;
-        g_active = 0;
-    }
-    if (g_runtime_input_api && g_input_focus_lease) {
-        g_runtime_input_api->ReleaseFocus(g_input_focus_lease);
-        g_input_focus_lease = 0u;
-    }
-    if (g_runtime_game_state_api && g_dialogue_mutation_lease) {
-        g_runtime_game_state_api->ReleaseMutation(g_dialogue_mutation_lease);
-        g_dialogue_mutation_lease = 0u;
-    }
-
-    if (g_hook_installed && *slot == (void*)Backlog_HookSceneUpdate && g_previous_scene_update) {
-        if (VirtualProtect(slot, sizeof(void*), PAGE_READWRITE, &old_protection)) {
-            InterlockedExchangePointer((PVOID volatile*)slot, (PVOID)g_previous_scene_update);
-            VirtualProtect(slot, sizeof(void*), old_protection, &ignored);
-            FlushInstructionCache(GetCurrentProcess(), slot, sizeof(void*));
-        }
-    }
-
-    /* CALL 按安装的相反顺序恢复；只有 CALL 仍然指向本插件时才会写回。 */
-    if (g_text_hook_installed) {
-        backlog_restore_call(CALL_DIALOGUE_TEXT_DRAW, (void*)Backlog_HookTextDraw,
-                             (void*)g_previous_text_draw);
-    }
-    if (g_name_text_hook_installed) {
-        backlog_restore_call(CALL_DIALOGUE_NAME_TEXT_DRAW,
-                             (void*)Backlog_HookCurrentNameTextDraw,
-                             (void*)g_previous_name_text_draw);
-    }
-    if (g_name_panel_hook_installed) {
-        backlog_restore_call(CALL_DIALOGUE_NAME_PANEL_DRAW,
-                             (void*)Backlog_HookCurrentNamePanelDraw,
-                             (void*)g_previous_name_panel_draw);
-    }
-    if (g_panel_hook_installed) {
-        backlog_restore_call(CALL_DIALOGUE_PANEL_DRAW, (void*)Backlog_HookPanelDraw,
-                             (void*)g_previous_panel_draw);
-    }
-    if (g_speaker_portrait_hook_installed) {
-        backlog_restore_call(CALL_DIALOGUE_SPEAKER_PORTRAIT_DRAW,
-                             (void*)Backlog_HookCurrentSpeakerPortraitDraw,
-                             (void*)g_previous_speaker_portrait_draw);
-    }
-
-    g_hook_installed = 0;
-    g_text_hook_installed = 0;
-    g_name_text_hook_installed = 0;
-    g_name_panel_hook_installed = 0;
-    g_panel_hook_installed = 0;
-    g_speaker_portrait_hook_installed = 0;
-
-    g_previous_text_draw = NULL;
-    g_previous_name_text_draw = NULL;
-    g_previous_name_panel_draw = NULL;
-    g_previous_panel_draw = NULL;
-    g_previous_speaker_portrait_draw = NULL;
 }

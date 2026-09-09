@@ -496,8 +496,8 @@ def verify_asi(path: Path) -> List[CheckResult]:
         exports = pe.list_exports()
         results.append(
             CheckResult(
-                "ASI 导出 Castle Mod Loader 正式入口 InitializeASI",
-                "InitializeASI" in exports,
+                "ASI 导出 Runtime Client 查询、初始化及 Loader-ready 入口",
+                {"InitializeASI", "CastlePlugin_Query", "CastleRuntimeClient_NotifyLoaderReady"}.issubset(exports),
                 "导出=" + (", ".join(exports) if exports else "<无>"),
             )
         )
@@ -520,8 +520,8 @@ def verify_asi(path: Path) -> List[CheckResult]:
             if dll.lower() == "kernel32.dll":
                 kernel_names.update(names)
 
-        # 这些 API 都是当前源码直接静态使用的。user32/winmm 是运行时 LoadLibrary/GetProcAddress，
-        # 所以不应该出现在 PE 静态 Import Table 中。
+        # 环形游标与 SDK Client 仍需要这些基础 API。WAV 和 TOML 已交给 Runtime，
+        # 不再要求旧 GetFileSize/GetPrivateProfile 导入；user32/winmm 由 Runtime Module 按需加载。
         required = {
             "CloseHandle",
             "CreateDirectoryW",
@@ -531,19 +531,14 @@ def verify_asi(path: Path) -> List[CheckResult]:
             "FlushInstructionCache",
             "GetCurrentProcess",
             "GetCurrentProcessId",
-            "GetFileSize",
             "GetLastError",
             "GetProcessHeap",
             "HeapAlloc",
             "HeapFree",
             "ReadFile",
             "GetModuleFileNameW",
-            "GetModuleHandleA",
             "GetModuleHandleW",
-            "GetPrivateProfileIntW",
-            "GetPrivateProfileStringW",
             "GetProcAddress",
-            "GetTickCount",
             "LoadLibraryW",
             "VirtualProtect",
             "VirtualQuery",
@@ -562,12 +557,12 @@ def verify_asi(path: Path) -> List[CheckResult]:
         # 用户已经明确要求 NextAutoSlot 只能写进 Save\.NEXTAUTOSLOT，不能再回写 INI。
         # 如果以后有人误把 WritePrivateProfileStringW 加回源码，这条导入表硬检查会立刻失败，
         # 不会只靠人工阅读文档才发现轮换状态又跟着 INI 走了。
-        writes_private_profile = "WritePrivateProfileStringW" in kernel_names
+        profile_names = {name for name in kernel_names if "PrivateProfile" in name}
         results.append(
             CheckResult(
-                "NextAutoSlot 不再通过 INI 写回",
-                not writes_private_profile,
-                "WritePrivateProfileStringW=" + ("存在" if writes_private_profile else "不存在"),
+                "官方配置和 NextAutoSlot 不再读写旧 INI",
+                not profile_names,
+                "PrivateProfile 导入=" + (", ".join(sorted(profile_names)) if profile_names else "无"),
             )
         )
 
@@ -613,13 +608,14 @@ def verify_asi(path: Path) -> List[CheckResult]:
         )
     )
 
-    # 该 UTF-8 日志只存在于 test7 的 SaveEnhance 独立保留槽手柄 wrapper。
-    # 检查它可以抓到“路径已是 test7，但误链接了按钮屏蔽功能迁移前对象”的混包。
-    reserved_ui_marker = "[保留槽手柄] 已在 SaveEnhance 内接管保留槽两项焦点".encode("utf-8")
+    # 当前保留槽策略由 Runtime Save 统一执行。旧手柄 wrapper 已删除，必须识别当前事务标记，
+    # 同时拒绝旧标记，才能抓到误链接 SDK 迁移前对象的混包。
+    reserved_ui_marker = "SaveAction 策略由 Runtime Save v1 统一执行".encode("utf-8")
+    legacy_ui_marker = "[保留槽手柄] 已在 SaveEnhance 内接管保留槽两项焦点".encode("utf-8")
     results.append(
         CheckResult(
-            "ASI 含独立保留槽手柄焦点实现",
-            reserved_ui_marker in pe.data,
+            "ASI 使用 Runtime Save 保留槽策略且没有旧私有手柄接管",
+            reserved_ui_marker in pe.data and legacy_ui_marker not in pe.data,
             "存在" if reserved_ui_marker in pe.data else "未找到",
         )
     )
@@ -639,7 +635,7 @@ def print_group(title: str, results: Sequence[CheckResult]) -> None:
 
 def parser() -> argparse.ArgumentParser:
     command = argparse.ArgumentParser(
-        description="只读验证 Castle_SaveEnhance v0.1.0-test7 的目标 EXE、MiscInfo 与 ASI。"
+        description="只读验证 Castle_SaveEnhance RuntimeSDK 候选的目标 EXE、MiscInfo 与 ASI。"
     )
     command.add_argument("--rpg", required=True, type=Path, help="锁定原版 RPG.exe")
     command.add_argument("--miscinfo", required=True, type=Path, help="Public\\MiscInfo.ENC")

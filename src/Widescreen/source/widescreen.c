@@ -2195,13 +2195,13 @@ int Widescreen_Install(void) {
                               "Bink 640 居中与渐变黑边")) { ok = 0; goto rollback; }
 
     Runtime_Log("[初始化] v0.11-poc11 电影式模糊 / 纯黑侧区切换版 Hook 全部安装完成。");
-    Runtime_Log("[初始化] 当前策略：普通探索按 INI 输出 854×480 或 1120×480；所有消息框与 Battle 保持中央640，左右侧区按 BlurredSides 选择强模糊或纯黑，并使用完全相同的推入/退出动画。");
+    Runtime_Log("[初始化] 当前策略：普通探索按 TOML 输出 854×480 或 1120×480；所有消息框与 Battle 保持中央640，左右侧区按 BlurredSides 选择强模糊或纯黑，并使用完全相同的推入/退出动画。");
     return 1;
 
 rollback:
     /*
-     * 倒序恢复，和安装顺序相反。Runtime_RestoreCall 还会确认“当前目标仍然是我们的 Hook”才写回，
-     * 所以如果别的插件在极短窗口内接管了同一 CALL，也不会被我们粗暴覆盖。
+     * 这些调用保留安装流程的倒序收尾结构，但现在只检查 Runtime 是否已接管，不直接写码。
+     * 声明阶段尚未修改游戏内存；上层收到失败后用 Runtime_AbortSdkHookTransaction 撤销整批声明。
      */
     if (patched_rebuild_lost) {
         Runtime_RestoreCall(CALL_DISPLAY_REBUILD_LOST, (u32)Hook_DisplayRebuild, FN_DISPLAY_REBUILD);
@@ -2210,6 +2210,6 @@ rollback:
         Runtime_RestoreCall(CALL_DISPLAY_REBUILD_INIT, (u32)Hook_DisplayRebuild, FN_DISPLAY_REBUILD);
     }
 
-    Runtime_Log("[初始化] Hook 安装出现失败；已尝试回滚本轮已安装 CALL。请退出游戏并提交日志。 ");
+    Runtime_Log("[初始化] Hook 声明出现失败；本批尚未提交，上层将撤销 Runtime 事务。请退出游戏并提交日志。 ");
     return ok;
 }

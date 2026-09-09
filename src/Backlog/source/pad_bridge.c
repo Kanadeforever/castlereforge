@@ -93,9 +93,3 @@ int PadBridge_BlocksBacklogInput(void) {
     if (!PadBridge_Available()) return 1;
     return g_snapshot.allows_external_ui_input ? 0 : 1;
 }
-
-void PadBridge_Shutdown(void) {
-    g_input_api = NULL;
-    g_snapshot_valid = 0;
-    pad_zero_snapshot_();
-}

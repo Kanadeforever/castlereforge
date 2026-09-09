@@ -100,24 +100,15 @@ typedef struct Rect32 {
  */
 typedef HMODULE (WINAPI *PFN_GetModuleHandleA)(const char*);
 typedef FARPROC (WINAPI *PFN_GetProcAddress)(HMODULE,const char*);
-typedef HMODULE (WINAPI *PFN_LoadLibraryA)(const char*);
 typedef DWORD   (WINAPI *PFN_GetModuleFileNameA)(HMODULE,char*,DWORD);
 typedef BOOL    (WINAPI *PFN_GetModuleHandleExA)(DWORD,const char*,HMODULE*);
-typedef BOOL    (WINAPI *PFN_VirtualProtect)(void*,SIZE_T,DWORD,DWORD*);
 typedef BOOL    (WINAPI *PFN_GetCursorPos)(Point32*);
-typedef HANDLE  (WINAPI *PFN_CreateFileA)(const char*,DWORD,DWORD,void*,DWORD,DWORD,HANDLE);
-typedef BOOL    (WINAPI *PFN_WriteFile)(HANDLE,const void*,DWORD,DWORD*,void*);
-typedef BOOL    (WINAPI *PFN_CloseHandle)(HANDLE);
-typedef DWORD   (WINAPI *PFN_ThreadProc)(void*);
-typedef HANDLE  (WINAPI *PFN_CreateThread)(void*,SIZE_T,PFN_ThreadProc,void*,DWORD,DWORD*);
-typedef void    (WINAPI *PFN_Sleep)(DWORD);
 typedef HWND    (WINAPI *PFN_GetForegroundWindow)(void);
 typedef BOOL    (WINAPI *PFN_GetClientRect)(HWND,Rect32*);
 typedef BOOL    (WINAPI *PFN_ClientToScreen)(HWND,Point32*);
 typedef BOOL    (WINAPI *PFN_SetCursorPos)(i32,i32);
 typedef DWORD   (WINAPI *PFN_GetWindowThreadProcessId)(HWND,DWORD*);
 typedef DWORD   (WINAPI *PFN_GetCurrentProcessId)(void);
-typedef UINT    (WINAPI *PFN_GetPrivateProfileIntA)(const char*,const char*,int,const char*);
 typedef void    (WINAPI *PFN_mouse_event)(DWORD,DWORD,DWORD,DWORD,SIZE_T);
 
 /*

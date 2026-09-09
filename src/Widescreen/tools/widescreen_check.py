@@ -11,7 +11,7 @@ Castle_Widescreen v0.11-poc11 侧区样式切换静态协议检查器
 4. v0.9 已经统一成“所有消息使用同一侧区规则”，v0.11 不能让来源分支复活；
 5. Castle_Widescreen.toml 缺失、少键或丢失逐项中文注释；
 6. v0.11 宣称支持模糊/纯黑切换，但实际上改了触发/动画，或纯黑模式仍无条件做模糊计算；
-7. Battle、当前宽屏安全 Camera、毫秒过渡、事务式 Hook 回滚等既有稳定结构被误删。
+7. Battle、当前宽屏安全 Camera、毫秒过渡、Runtime Hook 事务撤销等既有稳定结构被误删。
 
 脚本只使用 Python 标准库。
 """
@@ -411,10 +411,10 @@ def main() -> int:
     result(not found, "POC1失败路线/旧导演分类未复活",
            repr(found) if found else "未发现")
 
-    # Hook 安装仍然必须可事务回滚，且主动来源 Hook 已不再安装。
+    # Hook 声明失败必须走 Runtime 事务撤销，且主动来源 Hook 已不再安装。
     result(
         "Runtime_RestoreCall" in wide and "goto rollback" in wide,
-        "Hook 安装失败仍有事务式 CALL 回滚",
+        "Hook 声明失败仍由 Runtime 事务统一撤销",
     )
     result(
         "CALL_MANUAL_INTERACTION_EVENT" not in wide

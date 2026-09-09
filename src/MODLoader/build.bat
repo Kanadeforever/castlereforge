@@ -11,28 +11,28 @@ if exist "%VSWHERE%" (
 
 if defined VSINSTALL if exist "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -arch=x86 -host_arch=x64 -no_logo
 if not defined VSINSTALL (
-    echo [提示] 未通过 vswhere 定位到 Visual Studio，将沿用当前 PATH 中的工具链。
+    echo [提示] 未通过 vswhere 定位到 Visual Studio，将沿用当前 PATH 中的工具链。  
 )
 
 where cl.exe >nul 2>nul
 if errorlevel 1 (
-    echo [错误] 找不到 cl.exe。
-    echo 请先打开“x86 Native Tools Command Prompt for VS”，再运行本脚本。
+    echo [错误] 找不到 cl.exe。  
+    echo 请先打开“x86 Native Tools Command Prompt for VS”，再运行本脚本。  
     pause
     exit /b 1
 )
 
 where link.exe >nul 2>nul
 if errorlevel 1 (
-    echo [错误] 找不到 link.exe。
+    echo [错误] 找不到 link.exe。  
     pause
     exit /b 1
 )
 
 where rc.exe >nul 2>nul
 if errorlevel 1 (
-    echo [错误] 找不到 rc.exe。
-    echo 请确认当前是 Visual Studio 的 x86 Native Tools / Developer Command Prompt 环境，并安装了 Windows SDK。
+    echo [错误] 找不到 rc.exe。  
+    echo 请确认当前是 Visual Studio 的 x86 Native Tools / Developer Command Prompt 环境，并安装了 Windows SDK。  
     pause
     exit /b 1
 )
@@ -67,7 +67,7 @@ set "CFLAGS=/nologo /c /TC /W4 /WX /utf-8 /GS- /GR- /EHsc- /O2 /Zl"
 
 set "CXXFLAGS=/nologo /c /TP /W4 /WX /utf-8 /GS- /GR- /EHs- /EHc- /O2 /Zl"
 
-echo [1/5] 编译 Launcher...
+echo [1/5] 编译 Launcher...  
 cl %CFLAGS% /Fo"%OBJ%\launcher.obj" "%SRC%\launcher.c" || goto :fail
 
 cl %CFLAGS% /Fo"%OBJ%\launcher_gui.obj" "%SRC%\launcher_gui.c" || goto :fail
@@ -75,7 +75,7 @@ cl %CFLAGS% /Fo"%OBJ%\launcher_mod_config.obj" "%SRC%\launcher_mod_config.c" || 
 cl %CXXFLAGS% /Fo"%OBJ%\about.obj" "%SRC%\about.cpp" || goto :fail
 cl %CFLAGS% /Fo"%OBJ%\pe_import_injector.obj" "%SRC%\pe_import_injector.c" || goto :fail
 
-echo [2/5] 编译 Launcher 图标资源...
+echo [2/5] 编译 Launcher 图标资源...  
 
 copy /y "%SRC%\resource.h" "%OBJ%\resource.h" >nul || goto :fail
 copy /y "%ROOT%resources\RPG.ico" "%OBJ%\RPG.ico" >nul || goto :fail
@@ -92,10 +92,10 @@ if errorlevel 1 (
 )
 popd
 
-echo [3/5] 编译最早期区域环境 Bootstrap...
+echo [3/5] 编译最早期区域环境 Bootstrap...  
 cl %CFLAGS% /Fo"%OBJ%\locale_bootstrap.obj" "%SRC%\locale_bootstrap.c" || goto :fail
 
-echo [4/5] 编译目标进程 Core...
+echo [4/5] 编译目标进程 Core...  
 cl %CFLAGS% /Fo"%OBJ%\core.obj" "%SRC%\core.c" || goto :fail
 cl %CFLAGS% /Fo"%OBJ%\entry_gate.obj" "%SRC%\entry_gate.c" || goto :fail
 cl %CFLAGS% /Fo"%OBJ%\mod_loader.obj" "%SRC%\mod_loader.c" || goto :fail
@@ -107,7 +107,7 @@ cl %CFLAGS% /Fo"%OBJ%\user32_locale.obj" "%SRC%\user32_locale.c" || goto :fail
 cl %CFLAGS% /Fo"%OBJ%\gdi_locale.obj" "%SRC%\gdi_locale.c" || goto :fail
 cl %CFLAGS% /Oi- /Fo"%OBJ%\runtime_support.obj" "%SRC%\runtime_support.c" || goto :fail
 
-echo [5/5] 链接 PE32/i386 成品...
+echo [5/5] 链接 PE32/i386 成品...  
 link /nologo /Brepro /machine:x86 /subsystem:windows /nodefaultlib /entry:WinMainCRTStartup ^
     /out:"%OUT%\CastleModLoader.exe" ^
     "%OBJ%\launcher.obj" "%OBJ%\launcher_gui.obj" "%OBJ%\launcher_mod_config.obj" "%OBJ%\about.obj" "%OBJ%\pe_import_injector.obj" "%OBJ%\runtime_support.obj" ^
@@ -129,12 +129,12 @@ link /nologo /Brepro /dll /machine:x86 /nodefaultlib /entry:DllMain ^
     kernel32.lib || goto :fail
 
 echo.
-echo [完成] 已生成：
-echo   build\CastleModLoader.exe  ^(已嵌入 resources\RPG.ico^)
+echo [完成] 已生成：  
+echo   build\CastleModLoader.exe  ^(已嵌入 resources\RPG.ico^)  
 echo   build\mods\CastleLocaleBootstrap.dll
 echo   build\mods\CastleModCore.dll
 echo.
-echo 建议随后运行：python tools\preloader_check.py "你的RPG.exe完整路径"
+echo 建议随后运行：python tools\preloader_check.py "你的RPG.exe完整路径"  
 rmdir /s /q "%OBJ%" 2>nul
 pause
 exit /b 0
@@ -142,6 +142,6 @@ exit /b 0
 :fail
 rmdir /s /q "%OBJ%" 2>nul
 echo.
-echo [失败] 构建过程中出现错误，请保留完整控制台输出用于排查。
+echo [失败] 构建过程中出现错误，请保留完整控制台输出用于排查。  
 pause
 exit /b 1

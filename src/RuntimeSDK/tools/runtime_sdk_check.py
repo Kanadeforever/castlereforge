@@ -589,6 +589,9 @@ def check_release_artifacts(ctx: CheckContext, project_root: Path, required: boo
     )
     for path in packaged_docs:
         ctx.check(path.is_file(), f"SaveEnhance随包说明存在：{path.name}")
+    legacy_save_doc = asi_root / "Castle_SaveEnhance" / "音效放置与INI配置说明.md"
+    ctx.check(not legacy_save_doc.exists(),
+              "SaveEnhance随包目录无旧INI说明残留")
 
     # 正式发行的配置必须和源码迁移后的单一 TOML 入口完全一致。
     # 这里既检查新文件存在，也拒绝旧 INI 残留，防止用户改错文件却以为配置没有生效。
@@ -606,7 +609,8 @@ def check_release_artifacts(ctx: CheckContext, project_root: Path, required: boo
         ctx.check(not old_ini.exists(), f"发行目录无旧INI残留：{old_ini.name}")
 
     ctx.check(not (asi_root / "Castle_FPSUnlock.asi").exists() and
-              not (asi_root / "Castle_FPSUnlock.toml").exists(),
+              not (asi_root / "Castle_FPSUnlock.toml").exists() and
+              not (asi_root / "Castle_FPSUnlock.ini").exists(),
               "未完成FPSUnlock未混入build_all发行树")
 
     quest_data = asi_root / "Castle_Quest"

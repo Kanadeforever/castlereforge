@@ -7,9 +7,10 @@
 #include "CastleModule_API.h"
 #include "CastleToml_API.h"
 #include "CastleFile_API.h"
+#include "CastleClock_API.h"
 
 // ============================================================================
-// Castle_SaveEnhance.cpp  v0.1.0-test7
+// Castle_SaveEnhance.cpp  v0.2.0 RuntimeSDK
 // ----------------------------------------------------------------------------
 // 《幽城幻剑录》存档增强插件第一版完整实机候选。
 //
@@ -283,7 +284,17 @@ PlaySoundWFunction gPlaySoundW = nullptr;
 const CastleModuleApiV1* gRuntimeModuleApi = nullptr;
 const CastlePathApiV1* gRuntimePathApi = nullptr;
 const CastleFileApiV1* gRuntimeFileApi = nullptr;
+const CastleClockApiV1* gRuntimeClockApi = nullptr;
 CastlePluginHandle gRuntimePluginHandle = 0u;
+
+DWORD RuntimeNowMs() {
+    CastleU32 milliseconds = 0u;
+    // Clock v1 提供进程统一的无符号毫秒计数；32 位回绕仍可按无符号减法安全计算短时间差。
+    // 查询失败时返回 0，让当前动作等待下一帧，而不是退回插件自己的第二套时钟来源。
+    if (gRuntimeClockApi == nullptr ||
+        gRuntimeClockApi->GetMonotonicMilliseconds(&milliseconds) != CASTLE_OK) return 0u;
+    return static_cast<DWORD>(milliseconds);
+}
 
 CastleAddress ResolveRuntimeProcedure(CastleModule module, const char* name) {
     CastleAddress address = 0u;
@@ -1535,7 +1546,7 @@ DWORD gLastAutoAttemptTick = 0u;
 void ResetAutoBaselineAfterLoad() {
     gSceneIdentityValid = false;
     gSceneAutoPending = false;
-    gLastAutoSaveTick = GetTickCount();
+    gLastAutoSaveTick = RuntimeNowMs();
     gLastAutoAttemptTick = 0u;
     gAnchor.identityValid = false;
     ClearArm();
@@ -1646,7 +1657,7 @@ bool PerformAutoSave(const char* reason) {
         ycrlog::Line(usedEmptySlot ? "（本次填空槽）。" : "（本次环形覆盖）。");
     }
 
-    const DWORD now = GetTickCount();
+    const DWORD now = RuntimeNowMs();
     gLastAutoSaveTick = now;
     gLastAutoAttemptTick = now;
     gSceneAutoPending = false;
@@ -1684,7 +1695,7 @@ void HandleQuickLoadRequest() {
         return;
     }
 
-    const DWORD now = GetTickCount();
+    const DWORD now = RuntimeNowMs();
     if (gQuickLoadPressCount == 0u || static_cast<LONG>(now - gQuickLoadDeadline) > 0) {
         gQuickLoadPressCount = 1u;
         gQuickLoadDeadline = now + gConfig.quickLoadWindowMs;
@@ -1731,7 +1742,7 @@ void PollQuickInputs() {
 
     // 确认窗口过期后主动清零。无输入时也不会让几分钟前的第一次 F9 留着。
     if (gQuickLoadPressCount != 0u) {
-        const DWORD now = GetTickCount();
+        const DWORD now = RuntimeNowMs();
         if (static_cast<LONG>(now - gQuickLoadDeadline) > 0) ResetQuickLoadConfirm();
     }
 }
@@ -1745,7 +1756,7 @@ void UpdateSceneIdentityAndAutoPending(const MapState& map) {
         gSceneIdentity = map;
         gSceneIdentityValid = true;
         gSceneAutoPending = false;
-        if (gLastAutoSaveTick == 0u) gLastAutoSaveTick = GetTickCount();
+        if (gLastAutoSaveTick == 0u) gLastAutoSaveTick = RuntimeNowMs();
         return;
     }
     if (!SameMapIdentity(gSceneIdentity, map)) {
@@ -1759,7 +1770,7 @@ void UpdateSceneIdentityAndAutoPending(const MapState& map) {
 
 void MaybeRunAutoSave() {
     if (!gConfig.autoEnable) return;
-    const DWORD now = GetTickCount();
+    const DWORD now = RuntimeNowMs();
     const DWORD retryMs = 5000u;
     if (gLastAutoAttemptTick != 0u && (now - gLastAutoAttemptTick) < retryMs) return;
 
@@ -1816,8 +1827,8 @@ const char* KnownModuleNameForAddress(const void* address, DWORD* moduleBaseOut)
     if (moduleBaseOut != nullptr) *moduleBaseOut = 0u;
     if (address == nullptr) return "<null>";
 
-    // VirtualQuery 可以告诉我们“这段内存由哪个 AllocationBase 拥有”。DLL 装载后的代码页
-    // AllocationBase 就是模块基址。这样即使某个 CALL 已被其它 ASI 改掉，也能在日志里尽量指出是谁。
+    // VirtualQuery 可以告诉我们“这段内存由哪个 AllocationBase 拥有”。这里只记录地址归属，
+    // 不按插件文件名建立耦合；具体冲突所有权由 Runtime Hook 统一诊断。
     MEMORY_BASIC_INFORMATION_MINI info = {};
     if (VirtualQuery(address, &info, sizeof(info)) == 0u || info.AllocationBase == nullptr) {
         return "<VirtualQuery失败>";
@@ -1825,32 +1836,12 @@ const char* KnownModuleNameForAddress(const void* address, DWORD* moduleBaseOut)
     const DWORD ownerBase = static_cast<DWORD>(reinterpret_cast<SIZE_T>(info.AllocationBase));
     if (moduleBaseOut != nullptr) *moduleBaseOut = ownerBase;
 
-    // 这里只列 CastleReforge 当前常见模块。找不到名字也会打印模块基址和目标地址，所以不会丢证据。
-    const char* names[] = {
-        "Castle_SaveEnhance.asi",
-        "AnytimeSave.asi",
-        "Castle_PadSupport.asi",
-        "Castle_Widescreen.asi",
-        "Castle_FPSUnlock.asi",
-        "BugFix.asi",
-        "BUGFix.asi",
-        "NoCD.asi",
-        "MaxGrowthAndDrop.asi",
-        "RPG.exe"};
-    for (SIZE_T i = 0u; i < sizeof(names) / sizeof(names[0]); ++i) {
-        HMODULE module = GetModuleHandleA(names[i]);
-        if (module != nullptr &&
-            static_cast<DWORD>(reinterpret_cast<SIZE_T>(module)) == ownerBase) {
-            return names[i];
-        }
-    }
-
-    // 当前 EXE 用 nullptr 取得，文件名不一定能用 "RPG.exe" 成功查询，所以再单独比较一次。
+    // 当前 EXE 用 nullptr 取得；其它 AllocationBase 只标成外部模块，不猜插件名称。
     HMODULE exe = GetModuleHandleW(nullptr);
     if (exe != nullptr && static_cast<DWORD>(reinterpret_cast<SIZE_T>(exe)) == ownerBase) {
         return "当前RPG.exe";
     }
-    return "<未知模块>";
+    return "<外部模块>";
 }
 
 void LogCallTargetIfPresent(const BYTE* site, SIZE_T size) {
@@ -2072,10 +2063,6 @@ bool InstallAllHooksIntegrated(const CastleRuntimeApiV1* runtimeApi,
     CastleStringView genericSignature = SdkView(genericSignatureText,
         static_cast<CastleU32>(sizeof(genericSignatureText) - 1u));
 
-    if (GetModuleHandleA("AnytimeSave.asi") != nullptr) {
-        ycrlog::Line("[启动失败] 检测到旧 AnytimeSave.asi；禁止两个存档插件并存。");
-        return false;
-    }
     if (!hookApi || !runtimeApi || !IsKnownSaveGateFunctionState() ||
         !PrecheckAllHookSites()) return false;
     info.magic = CASTLE_RUNTIME_INFO_MAGIC;
@@ -2182,7 +2169,9 @@ bool InstallAllHooksIntegrated(const CastleRuntimeApiV1* runtimeApi,
     if (result < 0) goto fail_runtime_install;
 
     result = hookApi->PreflightTransaction(transaction);
-    if (result >= 0) result = hookApi->CommitTransaction(transaction);
+    // 预检失败时仍是未提交事务，显式撤销声明；提交失败则由 Runtime 自己逆序回滚。
+    if (result < 0) goto fail_runtime_install;
+    result = hookApi->CommitTransaction(transaction);
     if (result < 0) return false;
     ycrlog::Line("[RuntimeSDK] SaveEnhance 存档事务已提交；SaveAction 策略由 Runtime Save v1 统一执行。");
     return true;
@@ -2315,8 +2304,7 @@ extern "C" __declspec(naked) void NextPageBaseLoopHelper() {
 // 这里是 test3 最关键的修正。
 //
 // test1/test2 的错误：
-// - 在 DllMain(DLL_PROCESS_ATTACH) 里面直接读取 TOML、GetModuleHandle、VirtualQuery、VirtualProtect、
-//   写 RPG.exe 机器码并安装 Hook；
+// - 在 DllMain(DLL_PROCESS_ATTACH) 里面读取配置、查询模块、检查游戏内存并写 RPG.exe 机器码；
 // - 但 Windows 正在执行 DLL 装载器的 Loader Lock 生命周期，Castle Mod Loader 自己也还没来得及
 //   给这个 ASI 补 Locale/Overrides IAT；
 // - 用户 test2 实机日志只写到“[配置] ...”就停止，且所有保存增强完全无效，说明正式安装路径根本
@@ -2331,7 +2319,7 @@ extern "C" __declspec(naked) void NextPageBaseLoopHelper() {
 //
 // 因此 SaveEnhance 从 test3 开始严格遵守这个接口：
 // - DllMain 只保存自身 HMODULE，并关闭无用的线程 attach/detach 通知；
-// - 所有文件 I/O、TOML、兼容模块查询、内存检查、VirtualProtect 和 Hook 写入都放进 InitializeASI；
+// - 所有文件 I/O、TOML、模块查询、内存检查和 Runtime Hook 事务都放进 InitializeASI；
 // - 这样也保证 SaveEnhance 看见的是 Loader 已经准备好的最终 Locale/Overrides 环境。
 static const void* QueryRuntimeInterface(const CastleRuntimeApiV1* runtimeApi,
                                          const char* interfaceId,
@@ -2356,14 +2344,15 @@ static const void* QueryRuntimeInterface(const CastleRuntimeApiV1* runtimeApi,
         result.api_pointer : nullptr;
 }
 
-static bool BindRuntimeInputAndSave(const CastleRuntimeApiV1* runtimeApi,
-                                    CastlePluginHandle pluginHandle) {
+static bool BindRuntimeServices(const CastleRuntimeApiV1* runtimeApi,
+                                CastlePluginHandle pluginHandle) {
     static const char inputId[] = CASTLE_INPUT_INTERFACE_ID;
     static const char saveId[] = CASTLE_SAVE_INTERFACE_ID;
     static const char moduleId[] = CASTLE_MODULE_INTERFACE_ID;
     static const char tomlId[] = CASTLE_TOML_INTERFACE_ID;
     static const char pathId[] = CASTLE_PATH_INTERFACE_ID;
     static const char fileId[] = CASTLE_FILE_INTERFACE_ID;
+    static const char clockId[] = CASTLE_CLOCK_INTERFACE_ID;
     static const char quickLabel[] = "SaveEnhance quick slot";
     static const char autoLabel[] = "SaveEnhance rolling auto slots";
     CastleManualSavePolicyV1 policy{};
@@ -2389,10 +2378,15 @@ static bool BindRuntimeInputAndSave(const CastleRuntimeApiV1* runtimeApi,
         runtimeApi, fileId, static_cast<CastleU32>(sizeof(fileId) - 1u),
         CASTLE_FILE_API_VERSION_1, CASTLE_SIZEOF_FILE_API_V1,
         CASTLE_FILE_CAP_READ));
+    gRuntimeClockApi = static_cast<const CastleClockApiV1*>(QueryRuntimeInterface(
+        runtimeApi, clockId, static_cast<CastleU32>(sizeof(clockId) - 1u),
+        CASTLE_CLOCK_API_VERSION_1, CASTLE_SIZEOF_CLOCK_API_V1,
+        CASTLE_CLOCK_CAP_MONOTONIC_MS));
     gRuntimePluginHandle = pluginHandle;
     if (gRuntimeInputApi == nullptr || gRuntimeSaveApi == nullptr ||
         gRuntimeModuleApi == nullptr || gRuntimeTomlApi == nullptr ||
-        gRuntimePathApi == nullptr || gRuntimeFileApi == nullptr) return false;
+        gRuntimePathApi == nullptr || gRuntimeFileApi == nullptr ||
+        gRuntimeClockApi == nullptr) return false;
     {
         CastleStringView configPath{"Castle_SaveEnhance.toml", 23u};
         (void)gRuntimeTomlApi->OpenPluginDocument(pluginHandle, configPath,
@@ -2436,12 +2430,12 @@ static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
     ycrlog::Open(gSelfModule, L"Castle_SaveEnhance.log");
     ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.2.0 RuntimeSDK 启动。");
     ycrlog::Line("By Luminous with ChatGPT");
-    ycrlog::Line("[装载] RuntimeHost：Path/File/Module/TOML/Hook 统一协调。");
+    ycrlog::Line("[装载] RuntimeHost：Hook/Input/Save/Clock/Path/File/Module/TOML 统一协调。");
     ycrlog::Line("[槽位] 0=Quick，1~90=Manual，91~99=Rolling Auto；普通菜单保留槽只读。");
-    ycrlog::Line("[快捷] F5=Quick Save；F9 连按确认=Quick Load；Controller API 可选联动。");
+    ycrlog::Line("[快捷] F5=Quick Save；F9 连按确认=Quick Load；Runtime Input 提供者存在时启用手柄联动。");
     ycrlog::Line("[声音] 只使用可选外置 WAV；空/非法/缺失文件静默，不影响存档结果。");
 
-    // 到这个时刻 LoadLibraryExW 已经返回，所以 GetModuleHandle/VirtualQuery/VirtualProtect 等正式
+    // 到这个时刻 LoadLibraryExW 已经返回，所以模块查询、内存检查和 Runtime 事务等正式
     // 初始化工作不再发生在 DllMain Loader Lock 中。
     gExeBase = ycr::GetExeBase();
     if (gExeBase == nullptr) {
@@ -2449,8 +2443,8 @@ static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
         ycrlog::Line("[状态] SaveEnhance 未完整安装；本轮不修改任何存档逻辑。");
         return CASTLE_ERROR_RUNTIME_FAULT;
     }
-    if (!BindRuntimeInputAndSave(runtimeApi, pluginHandle)) {
-        ycrlog::Line("[启动失败] Runtime Input/Save 服务不完整；不退回旧ASI直连或SaveAction私有Hook。");
+    if (!BindRuntimeServices(runtimeApi, pluginHandle)) {
+        ycrlog::Line("[启动失败] Runtime 所需公共服务不完整；不退回旧ASI直连或SaveAction私有Hook。");
         return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     }
 

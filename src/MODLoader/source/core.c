@@ -257,7 +257,7 @@ BOOL WINAPI DllMain(HMODULE module, DWORD reason, LPVOID reserved) {
 
         /*
          * Locale 失败时这里仍然返回 TRUE，让 Windows 把 DllMain 正常完成。
-         * 否则系统只会把失败折叠成 0xc0000142，用户拿不到 mods\modloader.log 里的精确状态码。
+         * 否则系统只会把失败折叠成 0xc0000142，用户拿不到 mods\logs\modloader.log 里的精确状态码。
          * Entry Gate 在 RPG.exe 真正入口前会检查 g_early_locale_ready；失败就记录后安全退出，绝不让游戏在半转区状态继续。
          */
         g_early_prepared = 1;

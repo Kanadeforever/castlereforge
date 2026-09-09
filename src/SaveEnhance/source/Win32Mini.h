@@ -56,7 +56,7 @@ typedef DWORD* LPDWORD;
 #define DLL_PROCESS_DETACH 0u
 #define DLL_PROCESS_ATTACH 1u
 
-// VirtualQuery / VirtualProtect 相关常量。只保留本插件真正检查/修改内存时需要的值。
+// VirtualQuery 相关常量：只读判断游戏对象和函数地址所在页面是否安全访问。
 #define MEM_COMMIT 0x00001000u
 #define PAGE_NOACCESS 0x00000001u
 #define PAGE_READONLY 0x00000002u
@@ -64,13 +64,11 @@ typedef DWORD* LPDWORD;
 #define PAGE_WRITECOPY 0x00000008u
 #define PAGE_EXECUTE 0x00000010u
 #define PAGE_EXECUTE_READ 0x00000020u
-#define PAGE_EXECUTE_READWRITE 0x00000040u
 #define PAGE_EXECUTE_WRITECOPY 0x00000080u
 #define PAGE_GUARD 0x00000100u
 
-// CreateFileW / ReadFile / WriteFile 的最小文件常量。
-// - 日志只需要 GENERIC_WRITE + CREATE_ALWAYS；
-// - 外置 WAV 的音量缩放需要 GENERIC_READ + OPEN_EXISTING，只读原文件后在内存副本里改振幅。
+// CreateFileW / ReadFile / WriteFile 只服务兼容的三字节 .NEXTAUTOSLOT 游标。
+// WAV 已由 Runtime File 读取，日志已由 Runtime Log 写入。
 #define GENERIC_READ 0x80000000u
 #define GENERIC_WRITE 0x40000000u
 #define FILE_SHARE_READ 0x00000001u
@@ -80,7 +78,6 @@ typedef DWORD* LPDWORD;
 #define ERROR_FILE_NOT_FOUND 2u
 #define ERROR_PATH_NOT_FOUND 3u
 #define ERROR_ALREADY_EXISTS 183u
-#define INVALID_FILE_SIZE 0xFFFFFFFFu
 #define CP_UTF8 65001u
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG)-1)
 
@@ -112,10 +109,8 @@ typedef struct MEMORY_BASIC_INFORMATION_MINI {
 extern "C" {
 // ---- 模块和函数地址 ---------------------------------------------------------
 HMODULE WINAPI GetModuleHandleW(LPCWSTR moduleName);
-HMODULE WINAPI GetModuleHandleA(LPCSTR moduleName);
 DWORD WINAPI GetModuleFileNameW(HMODULE module, LPWSTR filename, DWORD size);
 FARPROC WINAPI GetProcAddress(HMODULE module, LPCSTR procName);
-HMODULE WINAPI LoadLibraryW(LPCWSTR filename);
 BOOL WINAPI FreeLibrary(HMODULE module);
 int WINAPI MultiByteToWideChar(UINT codePage, DWORD flags, LPCSTR source,
                                int sourceLength, LPWSTR output, int outputLength);
@@ -123,25 +118,12 @@ int WINAPI WideCharToMultiByte(UINT codePage, DWORD flags, LPCWSTR source,
                                int sourceLength, char* output, int outputLength,
                                LPCSTR defaultCharacter, BOOL* usedDefaultCharacter);
 
-// ---- INI --------------------------------------------------------------------
-UINT WINAPI GetPrivateProfileIntW(LPCWSTR section, LPCWSTR key, int defaultValue, LPCWSTR filename);
-DWORD WINAPI GetPrivateProfileStringW(
-    LPCWSTR section,
-    LPCWSTR key,
-    LPCWSTR defaultValue,
-    LPWSTR returnedString,
-    DWORD size,
-    LPCWSTR filename);
-// ---- 时间 / 进程 ------------------------------------------------------------
-DWORD WINAPI GetTickCount(void);
+// ---- 进程 -------------------------------------------------------------------
 DWORD WINAPI GetCurrentProcessId(void);
-HANDLE WINAPI GetCurrentProcess(void);
 BOOL WINAPI DisableThreadLibraryCalls(HMODULE module);
 
 // ---- 内存 -------------------------------------------------------------------
 SIZE_T WINAPI VirtualQuery(LPCVOID address, MEMORY_BASIC_INFORMATION_MINI* info, SIZE_T length);
-BOOL WINAPI VirtualProtect(LPVOID address, SIZE_T size, DWORD newProtect, LPDWORD oldProtect);
-BOOL WINAPI FlushInstructionCache(HANDLE process, LPCVOID baseAddress, SIZE_T size);
 
 // ---- 外置 WAV 只读装载 ------------------------------------------------------
 // SaveEnhance 不改磁盘上的 WAV。它只读完整文件，复制到进程堆，再对内存副本的 PCM 样本缩放。
@@ -151,7 +133,6 @@ BOOL WINAPI ReadFile(
     DWORD bytesToRead,
     LPDWORD bytesRead,
     LPVOID overlapped);
-DWORD WINAPI GetFileSize(HANDLE file, LPDWORD fileSizeHigh);
 HANDLE WINAPI GetProcessHeap(void);
 LPVOID WINAPI HeapAlloc(HANDLE heap, DWORD flags, SIZE_T bytes);
 BOOL WINAPI HeapFree(HANDLE heap, DWORD flags, LPVOID memory);

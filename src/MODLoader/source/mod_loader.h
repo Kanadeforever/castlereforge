@@ -8,7 +8,7 @@
  * 这样“Overrides 必须早于 Locale/ASI”不是口头约定，而是调用接口本身就强迫调用者按顺序做。
  */
 
-/* 建立外置 mods 根；是否打开 mods\modloader.log 由 CastleModLoader.ini 的 ModLoaderLog 决定。 */
+/* 建立外置 mods 根；是否打开 mods\logs\modloader.log 由 CastleModLoader.ini 的 ModLoaderLog 决定。 */
 int ModLoader_Begin(HMODULE self_module);
 
 /*
