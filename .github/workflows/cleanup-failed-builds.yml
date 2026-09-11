@@ -1,0 +1,67 @@
+# ============================================================
+# cleanup-failed-builds.yml — 自动清理失败的 CastleReforge 构建
+#
+# 每天执行一次：
+#   删除 build.yml 中所有已经完成且结果为 failure 的 workflow run
+#
+# 成功构建不会删除。
+# dev-auto Release 不受影响。
+# ============================================================
+
+name: 清理失败的构建记录
+
+on:
+  schedule:
+    # GitHub Actions cron 使用 UTC。
+    # 每周日 03:30 JST = 每周六 18:30 UTC。
+    - cron: '30 18 * * 6'
+
+    # 也允许需要时手动执行。
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  cleanup:
+    name: 删除失败的 build.yml 运行记录
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: 删除所有失败的构建记录
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          echo "[清理] 仓库：${REPO}"
+          echo "[清理] 查找 build.yml 的失败记录……"
+
+          mapfile -t RUN_IDS < <(
+            gh api --paginate \
+              -H "Accept: application/vnd.github+json" \
+              "repos/${REPO}/actions/workflows/build.yml/runs?status=failure&per_page=100" \
+              --jq '.workflow_runs[].id'
+          )
+
+          if [ "${#RUN_IDS[@]}" -eq 0 ]; then
+            echo "[清理] 没有失败的构建记录。"
+            exit 0
+          fi
+
+          echo "[清理] 找到 ${#RUN_IDS[@]} 个失败记录。"
+
+          for RUN_ID in "${RUN_IDS[@]}"; do
+            echo "[删除] workflow run ${RUN_ID}"
+
+            gh api \
+              --method DELETE \
+              -H "Accept: application/vnd.github+json" \
+              "repos/${REPO}/actions/runs/${RUN_ID}"
+          done
+
+          echo "[清理] 完成。"
