@@ -1,4 +1,4 @@
-﻿#include "runtime.h"
+#include "runtime.h"
 #include "game_addresses.h"
 #include "CastleHook_API.h"
 #include "CastleLog_API.h"
@@ -26,8 +26,21 @@ static const CastleHookApiV1* g_sdk_hook_api;
 static CastlePluginHandle g_sdk_plugin_handle;
 static CastleModule g_sdk_game_module;
 static CastleTransactionHandle g_sdk_transaction;
-static CastleClaimHandle g_sdk_pointer_claim;
-static void** g_sdk_pointer_output;
+
+/*
+ * Widescreen 现在有两条函数指针链：BinkCopyToBuffer 与 RPG.exe GetCursorPos。
+ * 每条声明提交后都必须从 Runtime 取得自己稳定的 next 槽，不能再用一个全局变量让后声明
+ * 覆盖前声明的回调地址。
+ */
+typedef struct RuntimePointerBinding {
+    CastleClaimHandle claim;
+    void** output;
+    u32 address;
+    void* volatile* next_slot;
+} RuntimePointerBinding;
+
+static RuntimePointerBinding g_sdk_pointer_bindings[4];
+static u32 g_sdk_pointer_binding_count;
 static int g_sdk_transaction_building;
 static const CastleLogApiV1* g_runtime_log_api;
 static CastlePluginHandle g_runtime_log_plugin;
@@ -318,7 +331,8 @@ int Runtime_ExactBuildProtocolOk(void) {
 #define CHECK_CALL(label,address,target) do { if (!check_call(label,address,target)) ok = 0; } while (0)
     /*
      * v0.9 取消“玩家主动 / 非玩家”来源分类，因此不再 Hook 0x409982 主动交互 Event。
-     * 当前只修改 4 个 E8 CALL；任何一个原目标失配都整版拒绝安装。
+     * 当前只由本插件声明两个 DirectDraw 重建 E8 CALL；GetCursorPos 与 Bink 是后续 Runtime
+     * PointerHook 事务，主 RenderQueue/Present CALL 则由 Runtime 中央桥唯一拥有。
      */
     CHECK_CALL("初次 DirectDraw 重建", CALL_DISPLAY_REBUILD_INIT, FN_DISPLAY_REBUILD);
     CHECK_CALL("Surface lost DirectDraw 重建", CALL_DISPLAY_REBUILD_LOST, FN_DISPLAY_REBUILD);
@@ -369,8 +383,8 @@ int Runtime_BeginSdkHookTransaction(const CastleRuntimeApiV1* runtime_api,
         runtime_api->GetRuntimeInfo(&info) != CASTLE_OK) return 0;
     g_sdk_hook_api = (const CastleHookApiV1*)result.api_pointer;
     g_sdk_game_module = info.game_module;
-    g_sdk_pointer_claim = 0u;
-    g_sdk_pointer_output = NULL;
+    Runtime_MemZero(g_sdk_pointer_bindings, sizeof(g_sdk_pointer_bindings));
+    g_sdk_pointer_binding_count = 0u;
     if (!g_sdk_hook_api || g_sdk_hook_api->BeginTransaction(plugin_handle,
             sdk_view_(transaction_label,
                 (CastleU32)(sizeof(transaction_label) - 1u)),
@@ -381,6 +395,7 @@ int Runtime_BeginSdkHookTransaction(const CastleRuntimeApiV1* runtime_api,
 
 int Runtime_CommitSdkHookTransaction(void) {
     CastleResult result;
+    u32 index;
     if (!g_sdk_transaction_building || !g_sdk_hook_api) return 0;
     result = g_sdk_hook_api->PreflightTransaction(g_sdk_transaction);
     if (result >= 0) result = g_sdk_hook_api->CommitTransaction(g_sdk_transaction);
@@ -388,17 +403,19 @@ int Runtime_CommitSdkHookTransaction(void) {
         g_sdk_transaction_building = 0;
         return 0;
     }
-    if (g_sdk_pointer_claim && g_sdk_pointer_output) {
+    for (index = 0u; index < g_sdk_pointer_binding_count; ++index) {
         CastleHookBindingV1 binding = {0};
         binding.magic = CASTLE_HOOK_BINDING_MAGIC;
         binding.struct_size = CASTLE_SIZEOF_HOOK_BINDING_V1;
         binding.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
-        if (g_sdk_hook_api->GetHookBinding(g_sdk_pointer_claim, &binding) != CASTLE_OK ||
+        if (g_sdk_hook_api->GetHookBinding(g_sdk_pointer_bindings[index].claim,
+                &binding) != CASTLE_OK ||
             !binding.next_slot) {
             g_sdk_transaction_building = 0;
             return 0;
         }
-        *g_sdk_pointer_output = *binding.next_slot;
+        *g_sdk_pointer_bindings[index].output = *binding.next_slot;
+        g_sdk_pointer_bindings[index].next_slot = binding.next_slot;
     }
     g_sdk_transaction_building = 0;
     Runtime_Log("[RuntimeSDK] Widescreen Hook 事务已提交。");
@@ -471,13 +488,22 @@ int Runtime_RestoreCall(u32 call_address, u32 expected_current_target, u32 resto
 
 int Runtime_PatchPointer(u32 slot_address, const void* replacement, void** old_value, const char* label) {
     if (g_sdk_runtime_api) {
-        static const char signature[] =
+        static const char bink_signature[] =
             "org.castlereforge.signature.bink-copy-to-buffer.v1";
+        static const char cursor_signature[] =
+            "org.castlereforge.signature.get-cursor-pos.v1";
+        static const char key_signature[] = "org.castlereforge.signature.get-key-state.v1";
+        static const char async_signature[] = "org.castlereforge.signature.get-async-key-state.v1";
         CastleChainHookClaimV1 claim = {0};
+        CastleClaimHandle claim_handle = 0u;
         void* original;
         if (!g_sdk_transaction_building || !g_sdk_hook_api || !replacement ||
-            !old_value) return 0;
+            !old_value || g_sdk_pointer_binding_count >= 4u) return 0;
         original = *(void**)slot_address;
+        if (slot_address == IAT_GETKEYSTATE) {
+            /* Controller可能已先登记同签名链；原始目标必须是USER32函数，不能把Controller链头当根。 */
+            original = (void*)g_GetProcAddress(g_GetModuleHandleA("USER32.dll"), "GetKeyState");
+        }
         if (!original) return 0;
         claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
         claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
@@ -488,15 +514,26 @@ int Runtime_PatchPointer(u32 slot_address, const void* replacement, void** old_v
         claim.target.size = 4u;
         claim.expected_original_target = (CastleAddress)(SIZE_T)original;
         claim.replacement_hook = (CastleAddress)(SIZE_T)replacement;
-        claim.signature_id = sdk_view_(signature,
-            (CastleU32)(sizeof(signature) - 1u));
+        if (slot_address == IAT_GETCURSORPOS) {
+            claim.signature_id = sdk_view_(cursor_signature,
+                (CastleU32)(sizeof(cursor_signature) - 1u));
+        } else if (slot_address == IAT_GETKEYSTATE || slot_address == IAT_GETASYNCKEYSTATE) {
+            const char* signature = slot_address == IAT_GETKEYSTATE ? key_signature : async_signature;
+            claim.signature_id = sdk_view_(signature, (CastleU32)text_len(signature));
+        } else {
+            claim.signature_id = sdk_view_(bink_signature,
+                (CastleU32)(sizeof(bink_signature) - 1u));
+        }
         claim.phase = CASTLE_HOOK_PHASE_NORMAL;
         claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
         claim.label = label ? sdk_view_(label, (CastleU32)text_len(label)) :
                               claim.signature_id;
         if (g_sdk_hook_api->AddPointerHook(g_sdk_transaction, &claim,
-                &g_sdk_pointer_claim) < 0) return 0;
-        g_sdk_pointer_output = old_value;
+                &claim_handle) < 0) return 0;
+        g_sdk_pointer_bindings[g_sdk_pointer_binding_count].claim = claim_handle;
+        g_sdk_pointer_bindings[g_sdk_pointer_binding_count].output = old_value;
+        g_sdk_pointer_bindings[g_sdk_pointer_binding_count].address = slot_address;
+        ++g_sdk_pointer_binding_count;
         return 1;
     }
 
@@ -507,6 +544,35 @@ int Runtime_PatchPointer(u32 slot_address, const void* replacement, void** old_v
 void* Runtime_Alloc(SIZE_T size) {
     if (!g_VirtualAlloc || size == 0) return NULL;
     return g_VirtualAlloc(NULL, size, MEM_COMMIT_ | MEM_RESERVE_, PAGE_READWRITE_);
+}
+
+void* Runtime_GetPointerNext(u32 slot_address) {
+    u32 i;
+    for (i = 0u; i < g_sdk_pointer_binding_count; ++i) {
+        if (g_sdk_pointer_bindings[i].address == slot_address && g_sdk_pointer_bindings[i].next_slot)
+            return *g_sdk_pointer_bindings[i].next_slot;
+    }
+    return NULL;
+}
+
+int Runtime_DeclarePatch(u32 address, const u8* expected, const u8* desired, u32 size) {
+    CastleExclusivePatchClaimV1 claim = {0};
+    CastleClaimHandle handle = 0u;
+    static const char label[] = "Widescreen pointer protocol";
+    if (!g_sdk_transaction_building || !g_sdk_hook_api) return 0;
+    claim.magic = CASTLE_EXCLUSIVE_PATCH_MAGIC;
+    claim.struct_size = CASTLE_SIZEOF_EXCLUSIVE_PATCH_V1;
+    claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+    claim.flags = CASTLE_PATCH_FLAG_CODE | CASTLE_PATCH_FLAG_KEEP_ON_PROCESS_EXIT;
+    claim.target.module = g_sdk_game_module;
+    claim.target.rva = address - g_sdk_game_module;
+    claim.target.size = size;
+    claim.expected_bytes = expected;
+    claim.expected_size = size;
+    claim.replacement_bytes = desired;
+    claim.replacement_size = size;
+    claim.label = sdk_view_(label, sizeof(label)-1u);
+    return g_sdk_hook_api->AddExclusivePatch(g_sdk_transaction, &claim, &handle) >= 0;
 }
 
 int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
@@ -566,7 +632,7 @@ int Runtime_Initialize(HMODULE self_module) {
     g_GetTickCount = (PFN_GetTickCount)g_GetProcAddress(kernel32, "GetTickCount");
     if (!g_GetTickCount) return 0;
 
-    Runtime_Log("[启动] Castle_Widescreen v0.11-poc11：电影式模糊 / 纯黑侧区切换版。");
+    Runtime_Log("[启动] Castle_Widescreen v0.12.1 RuntimeSDK：电影式侧区 + 全输出鼠标坐标桥。");
     Runtime_Log("[启动] by Luminous with ChatGPT。");
     Runtime_Log("[规格] 所有对话框/提示/选择消息统一保持中央640；左右面板按 BlurredSides 选择强模糊或纯黑，触发与动画规则完全一致。");
     Runtime_Log("[规格] Battle继续使用同一侧区样式；普通探索无消息时由 TOML 选择 854×480 或 1120×480。");

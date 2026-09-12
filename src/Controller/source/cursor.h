@@ -1,4 +1,4 @@
-﻿#ifndef CASTLE_PAD_CURSOR_H
+#ifndef CASTLE_PAD_CURSOR_H
 #define CASTLE_PAD_CURSOR_H
 
 #include "platform.h"
@@ -39,6 +39,17 @@ int Cursor_MoveControllerAt(i32 x, i32 y);
 
 /* 任何真正的手柄菜单/Target 导航发生时调用，取得光标所有权并按配置隐藏普通鼠标。 */
 void Cursor_ClaimForControllerNavigation(void);
+
+/*
+ * SDL 初始化完成后调用一次：启动时已经连接手柄就默认进入普通手柄所有权；
+ * 没有手柄则保留键鼠，避免纯键鼠玩家启动后看不到光标。
+ */
+void Cursor_SetInitialControllerMode(int gamepad_connected);
+/* 调查使用输出像素；剧情选项仍调用原来的中央局部坐标接口。 */
+int Cursor_GetOutputPointerPosition(i32* x, i32* y);
+
+/* 手柄断开或后端不可用时交还键鼠；热插拔恢复后等待一次明确手柄操作再重新取得所有权。 */
+void Cursor_ReleaseForUnavailableGamepad(void);
 
 /* Target 专用：同步原版 MouseManager 与 Windows cursor，并保持目标提示光标可见。 */
 void Cursor_ShowTargetAt(i32 x, i32 y);

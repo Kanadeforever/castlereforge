@@ -1,4 +1,4 @@
-﻿#include "platform.h"
+#include "platform.h"
 #include "runtime.h"
 #include "pad_input.h"
 #include "input_router.h"
@@ -172,7 +172,7 @@ static int plugin_install_all_hooks(void) {
      * 用来拒绝“源码已经是R41，但编译内容仍误放R40旧二进制”的打包错误。
      * 两种模式的数字含义也写进成品，现场只拿到日志时仍能判断用户到底应按 A 还是 LT。
      */
-    Runtime_Log("[启动] refactor44 + Public API v1：SaveAction按原生disabled发布三位mask；焦点迁移/上下跳过/确认双检/鼠标清理；不识别插件名或槽号；R43功能保持。");
+    Runtime_Log("[启动] v0.4.1 + Public API v1：R44业务保持；默认手柄所有权、明确输入回切与RB组合释放事务已启用。");
     return 1;
 }
 
@@ -264,6 +264,10 @@ static DWORD WINAPI PluginWorker(void* unused) {
         /* 每个 tick 先清空叠加层消费标记；只有真实活动的 overlay 才会在本帧写入。 */
         InputRouter_BeginFrame();
 
+        /* 每帧只选择一次范围，且早于任何模式/菜单读取。其它页面保留普通 RB 含义。 */
+        InputRouter_SetRbChordScope(Battle_AllowsRbChord() ? INPUT_RB_CHORD_BATTLE_TOP :
+            (ControlModes_AllowsIdleRbChord() ? INPUT_RB_CHORD_FREE_IDLE : INPUT_RB_CHORD_NONE));
+
         /*
          * 单一优先级裁决先运行：Back常驻 > 地图RT临时 > 地图LT调查 > r36原业务。
          * Cursor 随后只做实体鼠标仲裁；真实鼠标接管必须无震动结束任何手柄指针会话。
@@ -276,6 +280,13 @@ static DWORD WINAPI PluginWorker(void* unused) {
         } else if (takeover == CURSOR_TAKEOVER_NONE) {
             takeover = cursor_takeover;
         }
+
+        /*
+         * 未来自由探索扩展菜单只能在“完全待机”范围复用 RB 组合事务。
+         * 当前版本尚未注册任何待机组合动作，因此这里只建立通用范围，不会凭空打开菜单；
+         * Battle_Update 稍后会在战斗顶层把范围切成 BATTLE_TOP，其它战斗层则明确切回 NONE。
+         */
+        /* 范围已在本 tick 顶部选择，后续业务不得覆盖它。 */
 
         /*
          * 到这里为止，本 tick 的 SDL 物理采样、InputRouter 映射和 ControlModes 裁决都已完成。
@@ -460,7 +471,7 @@ static void CASTLE_RUNTIME_CALL Controller_ProcessExit(void* user_context) {
 
 static const char g_plugin_id[] = "org.castlereforge.controller";
 static const char g_display_name[] = "Castle Controller";
-static const char g_version_text[] = "0.4.0";
+static const char g_version_text[] = "0.4.1";
 static const char g_build_id[] = "runtimesdk-v1";
 static const CastlePluginDescriptorV1 g_plugin_descriptor = {
     CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,

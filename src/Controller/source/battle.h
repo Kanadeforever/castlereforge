@@ -4,6 +4,9 @@
 #include "platform.h"
 #include "cursor.h"
 
+/* 只读原版当前层级，供本帧输入采样后统一选择 RB 范围；不更新战斗业务状态。 */
+int Battle_AllowsRbChord(void);
+
 /*
  * Battle 模块完整承接 dev15→dev20 已冻结的战斗手柄体验。
  * 新架构里 Battle 只吃“输入语义”和原版 UI 对象，不直接拥有 SDL3/Win32 鼠标底层。

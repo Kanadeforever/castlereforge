@@ -54,7 +54,7 @@ static void CASTLE_RUNTIME_CALL Widescreen_ProcessExit(void* user_context) {
 
 static const char g_plugin_id[] = "org.castlereforge.widescreen";
 static const char g_display_name[] = "Castle Widescreen";
-static const char g_version_text[] = "0.12.0";
+static const char g_version_text[] = "0.12.1";
 static const char g_build_id[] = "runtimesdk-v1";
 static const CastlePluginDescriptorV1 g_plugin_descriptor = {
     CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,

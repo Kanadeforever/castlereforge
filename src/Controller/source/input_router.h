@@ -1,4 +1,4 @@
-﻿#ifndef CASTLE_PAD_INPUT_ROUTER_H
+#ifndef CASTLE_PAD_INPUT_ROUTER_H
 #define CASTLE_PAD_INPUT_ROUTER_H
 
 #include "pad_input.h"
@@ -107,6 +107,22 @@ typedef enum InputRouteLayer {
     INPUT_LAYER_OVERLAY
 } InputRouteLayer;
 
+/*
+ * RB 组合会话只允许在明确声明的场景建立。
+ *
+ * - BATTLE_TOP：战斗最外层六命令；RB+ABXY/方向上下执行快捷命令；
+ * - FREE_IDLE：完全自由探索、没有剧情/菜单/客栈等覆盖层；为未来扩展菜单预留；
+ * - NONE：RB 保持当前页面自己的普通含义，例如列表换类别、调查轮换目标。
+ *
+ * 这里绝不能把 RB 全局变成修饰键，否则战斗子列表、调查和主 Interface 会同时失去
+ * 已经验收的单键 RB 功能。
+ */
+typedef enum InputRbChordScope {
+    INPUT_RB_CHORD_NONE = 0,
+    INPUT_RB_CHORD_BATTLE_TOP,
+    INPUT_RB_CHORD_FREE_IDLE
+} InputRbChordScope;
+
 typedef struct InputPolicy {
     InputBindMode mode[INPUT_ACTION_COUNT];
 } InputPolicy;
@@ -126,11 +142,17 @@ int InputRouter_RawDown(InputAction action);
 int InputRouter_RawReleased(InputAction action);
 
 /*
- * 此组合接口当前专用于 RB+ABXY 战斗快捷键，刻意保持固定物理面键位置，
- * 不跟随 SwapConfirmCancel。普通确认/取消业务不要通过这个接口读取。
- * 判定同时支持“先按住修饰键再按动作键”和“先按住动作键再按修饰键”两种自然手势。
+ * 每个可能使用 RB 组合的 Context 在读取组合前先声明本帧范围。
+ * InputRouter_BeginFrame() 会先恢复为 NONE，所以没有主动声明的页面永远不会误启用组合键。
  */
-int InputRouter_ChordPressed(InputAction modifier, InputAction action);
+void InputRouter_SetRbChordScope(InputRbChordScope scope);
+
+/*
+ * 读取一次受保护的 RB 组合按下沿。
+ * 组合成立后，RB 与动作面键会被整段锁存到物理松开；即使原版随后切入子菜单，
+ * 同一次 B/Y/方向动作也不会被新 Context 再解释成取消、确认或导航。
+ */
+int InputRouter_RbChordPressed(InputAction action);
 
 /*
  * 左摇杆水平 50% 单次方向沿。

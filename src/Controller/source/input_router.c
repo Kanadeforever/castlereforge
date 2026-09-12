@@ -1,4 +1,4 @@
-﻿#include "input_router.h"
+#include "input_router.h"
 #include "runtime.h"
 
 /*
@@ -19,6 +19,33 @@ static u32 g_consumed_actions;
  */
 static int g_left_stick_horizontal_latched;
 static int g_left_stick_horizontal_step;
+
+/*
+ * RB 组合键不能只看某一个 8ms 采样点。
+ *
+ * 玩家肉眼上做的是“按住 RB，再按 B”，但 SDL 采样可能刚好落在 RB 已开始松开、B 才出现
+ * Pressed 的边界。旧代码此时会漏掉组合；更危险的是，快捷命令已经让原版切入子菜单后，
+ * 同一颗 B 若再次形成边沿，会被新 Context 当成“取消并退出”。
+ *
+ * 下面的状态把一次组合当成完整事务：
+ * 1. 只有战斗顶层或未来的完全待机 Context 才能武装；
+ * 2. RB 松开后保留极短容错窗，吸收跨采样边界；
+ * 3. 组合成立后锁住 RB 和动作键，直到两者都真实松开；
+ * 4. Context 在中途变化也不能提前解除锁，防止按键穿透新页面。
+ */
+#define INPUT_RB_CHORD_GRACE_MS 64u
+
+typedef struct InputRbChordState {
+    InputRbChordScope current_scope;
+    InputRbChordScope armed_scope;
+    u32 grace_until_tick;
+    u32 blocked_physical_buttons;
+    int armed;
+    int waiting_for_release;
+    int all_released_seen;
+} InputRbChordState;
+
+static InputRbChordState g_rb_chord;
 
 #define INPUT_LEFT_STICK_50_THRESHOLD 16384
 
@@ -51,6 +78,47 @@ static void input_update_left_stick_horizontal_step(void) {
 void InputRouter_BeginFrame(void) {
     g_consumed_actions = 0u;
     input_update_left_stick_horizontal_step();
+
+    /*
+     * 范围声明只活一帧。Battle 或未来的完全待机模块必须在本帧重新声明，
+     * 这样从战斗顶层切进列表后，不会因为上一帧的范围残留继续接受新组合。
+     */
+    g_rb_chord.current_scope = INPUT_RB_CHORD_NONE;
+
+    if (!PadInput_GameForeground(NULL) || !PadInput_GamepadConnected()) {
+        /* 失焦/断开取消尚未提交的组合；已经提交的释放锁继续等物理松开，不能回前台补发。 */
+        g_rb_chord.armed = 0;
+        g_rb_chord.grace_until_tick = 0u;
+    }
+    if (g_rb_chord.waiting_for_release) {
+        /*
+         * blocked_physical_buttons 同时包含 RB 和本次动作键。只要还有任意一颗按住，
+         * 事务就继续覆盖后续 Context。第一次观察到全部松开时仍保留整张物理键掩码，
+         * 专门吞掉这一帧的 Released；下一 tick 仍全部松开才真正重新武装。
+         */
+        {
+            u32 button;
+            int any_down = 0;
+            for (button = 0u; button <= (u32)PAD_RT; ++button) {
+                u32 bit = 1u << button;
+                if ((g_rb_chord.blocked_physical_buttons & bit) != 0u &&
+                    PadInput_Down((PadButton)button)) {
+                    any_down = 1;
+                    break;
+                }
+            }
+            if (g_rb_chord.all_released_seen) {
+                g_rb_chord.waiting_for_release = 0;
+                g_rb_chord.armed = 0;
+                g_rb_chord.armed_scope = INPUT_RB_CHORD_NONE;
+                g_rb_chord.grace_until_tick = 0u;
+                g_rb_chord.blocked_physical_buttons = 0u;
+                g_rb_chord.all_released_seen = 0;
+            } else if (!any_down) {
+                g_rb_chord.all_released_seen = 1;
+            }
+        }
+    }
 }
 
 void InputRouter_Consume(InputAction action) {
@@ -62,11 +130,21 @@ void InputRouter_Consume(InputAction action) {
 void InputRouter_CaptureAll(void) {
     g_consumed_actions = (1u << (u32)INPUT_ACTION_COUNT) - 1u;
     g_left_stick_horizontal_step = 0;
+    /* 模态指针会话中取消未提交组合，避免退出Back/调查后使用旧RB；已提交的释放锁独立保持。 */
+    g_rb_chord.armed = 0;
+    g_rb_chord.grace_until_tick = 0u;
 }
 
 static int input_action_consumed(InputAction action) {
     if ((int)action < 0 || action >= INPUT_ACTION_COUNT) return 1;
     return (g_consumed_actions & (1u << (u32)action)) != 0u;
+}
+
+/* 已被组合事务认领的物理键，在任何语义映射下都不能泄漏给后续 Context。 */
+static int input_physical_button_blocked(PadButton button) {
+    u32 value = (u32)button;
+    if (!g_rb_chord.waiting_for_release || value > (u32)PAD_RT) return 0;
+    return (g_rb_chord.blocked_physical_buttons & (1u << value)) != 0u;
 }
 
 /*
@@ -119,61 +197,152 @@ static PadButton input_action_button(InputAction action) {
  */
 int InputRouter_RawPressed(InputAction action) {
     if ((int)action < 0 || action >= INPUT_ACTION_COUNT) return 0;
-    return PadInput_Pressed(input_action_button(action));
+    {
+        PadButton button = input_action_button(action);
+        if (input_physical_button_blocked(button)) return 0;
+        return PadInput_Pressed(button);
+    }
 }
 
 int InputRouter_RawDown(InputAction action) {
     if ((int)action < 0 || action >= INPUT_ACTION_COUNT) return 0;
-    return PadInput_Down(input_action_button(action));
+    {
+        PadButton button = input_action_button(action);
+        if (input_physical_button_blocked(button)) return 0;
+        return PadInput_Down(button);
+    }
 }
 
 int InputRouter_RawReleased(InputAction action) {
     if ((int)action < 0 || action >= INPUT_ACTION_COUNT) return 0;
-    return PadInput_Released(input_action_button(action));
+    {
+        PadButton button = input_action_button(action);
+        if (input_physical_button_blocked(button)) return 0;
+        return PadInput_Released(button);
+    }
 }
 
 /* 把语义动作翻译成物理键后读取按下沿；这仍是不带 Context 的基础通道。 */
 int InputRouter_Pressed(InputAction action) {
     if ((int)action < 0 || action >= INPUT_ACTION_COUNT || input_action_consumed(action)) return 0;
-    return PadInput_Pressed(input_action_button(action));
+    {
+        PadButton button = input_action_button(action);
+        if (input_physical_button_blocked(button)) return 0;
+        return PadInput_Pressed(button);
+    }
 }
 
 /* 语义版持续按住查询，用于 repeat 和组合键。 */
 int InputRouter_Down(InputAction action) {
     if ((int)action < 0 || action >= INPUT_ACTION_COUNT || input_action_consumed(action)) return 0;
-    return PadInput_Down(input_action_button(action));
+    {
+        PadButton button = input_action_button(action);
+        if (input_physical_button_blocked(button)) return 0;
+        return PadInput_Down(button);
+    }
 }
 
 /* 语义版松开沿查询。 */
 int InputRouter_Released(InputAction action) {
     if ((int)action < 0 || action >= INPUT_ACTION_COUNT || input_action_consumed(action)) return 0;
-    return PadInput_Released(input_action_button(action));
+    {
+        PadButton button = input_action_button(action);
+        if (input_physical_button_blocked(button)) return 0;
+        return PadInput_Released(button);
+    }
 }
 
-int InputRouter_ChordPressed(InputAction modifier, InputAction action) {
-    PadButton modifier_button;
+void InputRouter_SetRbChordScope(InputRbChordScope scope) {
+    u32 now = Runtime_Tick();
+
+    if (!PadInput_GameForeground(NULL) || !PadInput_GamepadConnected() ||
+        (scope != INPUT_RB_CHORD_BATTLE_TOP && scope != INPUT_RB_CHORD_FREE_IDLE)) {
+        scope = INPUT_RB_CHORD_NONE;
+    }
+    g_rb_chord.current_scope = scope;
+
+    /* 已成立的组合只等待物理释放，任何页面切换都不能重写这项所有权。 */
+    if (g_rb_chord.waiting_for_release) return;
+
+    if (scope == INPUT_RB_CHORD_NONE) {
+        g_rb_chord.armed = 0;
+        g_rb_chord.armed_scope = INPUT_RB_CHORD_NONE;
+        g_rb_chord.grace_until_tick = 0u;
+        return;
+    }
+
+    /*
+     * 只接受在当前合法范围内出现的新 RB 按下沿。
+     * 如果玩家从调查/列表一直按着 RB 再进入战斗顶层，不会把那颗旧按键偷换成快捷修饰键。
+     */
+    if (PadInput_Pressed(PAD_RB)) {
+        g_rb_chord.armed = 1;
+        g_rb_chord.armed_scope = scope;
+        g_rb_chord.grace_until_tick = 0u;
+        return;
+    }
+
+    if (!g_rb_chord.armed || g_rb_chord.armed_scope != scope) return;
+
+    if (PadInput_Down(PAD_RB)) {
+        /* RB 还真实按住时不需要计时，组合保持完整武装。 */
+        g_rb_chord.grace_until_tick = 0u;
+        return;
+    }
+
+    if (PadInput_Released(PAD_RB) && g_rb_chord.grace_until_tick == 0u) {
+        g_rb_chord.grace_until_tick = now + Runtime_MsToTicks(INPUT_RB_CHORD_GRACE_MS);
+    }
+    if (g_rb_chord.grace_until_tick != 0u &&
+        (i32)(now - g_rb_chord.grace_until_tick) >= 0) {
+        g_rb_chord.armed = 0;
+        g_rb_chord.armed_scope = INPUT_RB_CHORD_NONE;
+        g_rb_chord.grace_until_tick = 0u;
+    }
+}
+
+int InputRouter_RbChordPressed(InputAction action) {
     PadButton action_button;
+    u32 now = Runtime_Tick();
+    int modifier_available;
 
-    if ((int)modifier < 0 || modifier >= INPUT_ACTION_COUNT) return 0;
-    if ((int)action < 0 || action >= INPUT_ACTION_COUNT) return 0;
-    if (input_action_consumed(modifier) || input_action_consumed(action)) return 0;
+    if (!g_rb_chord.armed || g_rb_chord.waiting_for_release ||
+        g_rb_chord.current_scope == INPUT_RB_CHORD_NONE ||
+        g_rb_chord.current_scope != g_rb_chord.armed_scope) return 0;
 
     /*
-     * 这个接口当前只用于 RB+ABXY 战斗快捷键。用户明确要求快捷键保持物理位置：
-     * RB+南键永远攻击，RB+东键永远道具，不能因为O/X确定布局而互换。
-     * 因此这里特意使用 fixed 表；普通菜单和调查不要调用本函数读取确定/取消。
+     * 当前正式组合只接受固定物理 ABXY 与方向上下。
+     * 确定/取消交换不能改变已经发布的物理快捷含义：
+     * RB+南键永远攻击，RB+东键永远道具；RB+西/北键仍分别是技能/防御。
      */
-    modifier_button = input_action_button_fixed(modifier);
+    if (action != INPUT_CONFIRM && action != INPUT_CANCEL &&
+        action != INPUT_SPECIAL_X && action != INPUT_SPECIAL_Y &&
+        action != INPUT_NAV_UP && action != INPUT_NAV_DOWN) return 0;
+
+    modifier_available = PadInput_Down(PAD_RB) ||
+        (g_rb_chord.grace_until_tick != 0u &&
+         (i32)(now - g_rb_chord.grace_until_tick) < 0);
+    if (!modifier_available) return 0;
+
     action_button = input_action_button_fixed(action);
+    /* 模态层已消费时，快捷键也必须让路；固定物理键还要按当前布局换回语义检查。 */
+    if (input_action_consumed(INPUT_CATEGORY_NEXT) || input_action_consumed(action) ||
+        ((action == INPUT_CONFIRM || action == INPUT_CANCEL) &&
+         Runtime_Config()->swap_confirm_cancel &&
+         input_action_consumed(action == INPUT_CONFIRM ? INPUT_CANCEL : INPUT_CONFIRM))) return 0;
+    if (!PadInput_Pressed(action_button)) return 0;
 
     /*
-     * 情况一：修饰键已经按住，这一帧动作键刚按下。
-     * 情况二：动作键已经按住，这一帧修饰键刚按下。
-     * 两种顺序都只在“新产生组合”的那个边沿返回 1，不会按住后每帧重复触发。
+     * 从这一刻起，RB 与动作键都属于本次快捷事务。InputRouter 的普通 Raw/语义读取
+     * 会统一挡住它们，直到 BeginFrame 观察到两颗键都完全松开。
      */
-    return PadInput_Down(modifier_button) &&
-           (PadInput_Pressed(action_button) ||
-            (PadInput_Pressed(modifier_button) && PadInput_Down(action_button)));
+    g_rb_chord.blocked_physical_buttons =
+        (1u << (u32)PAD_RB) | (1u << (u32)action_button);
+    g_rb_chord.waiting_for_release = 1;
+    g_rb_chord.armed = 0;
+    g_rb_chord.grace_until_tick = 0u;
+    g_rb_chord.all_released_seen = 0;
+    return 1;
 }
 
 

@@ -1,3 +1,8 @@
+> **2026-09-10 v0.4.1 当前候选：** 有手柄启动默认普通手柄所有权；实体鼠标同 tick 优先，
+> 明确数字键/左杆出沿可回切，普通右杆漂移忽略。战斗顶层 RB+ABXY/方向上/下使用 64ms
+> 容错与跨 Context 释放事务；完全待机范围已为未来扩展菜单预留，但当前不新增菜单。
+> x86 严格构建和权威 EXE 专项 101 PASS / 0 FAIL，仍需实机。
+>
 > **2026-09-06 RuntimeSDK 当前基线：** 官方 `Castle_PadSupport.asi` 必须与
 > `Castle_Runtime.dll` 同目录；配置为 `Castle_PadSupport.toml`，日志为
 > `mods/logs/Castle_PadSupport.log`。SDL3 由 Runtime Module 加载，输入通过 Runtime Input

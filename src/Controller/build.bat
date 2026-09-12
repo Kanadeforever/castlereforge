@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 setlocal DisableDelayedExpansion
 set "PATH=%SystemRoot%\System32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SystemRoot%\System32\WindowsPowerShell\v1.0;%PATH%"
 "%SystemRoot%\System32\chcp.com" 65001 >nul

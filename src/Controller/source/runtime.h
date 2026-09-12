@@ -1,4 +1,4 @@
-﻿#ifndef CASTLE_PAD_RUNTIME_H
+#ifndef CASTLE_PAD_RUNTIME_H
 #define CASTLE_PAD_RUNTIME_H
 
 #include "platform.h"
@@ -6,6 +6,12 @@
 #include "CastleLog_API.h"
 #include "CastleModule_API.h"
 #include "CastleToml_API.h"
+#include "CastleDisplay_API.h"
+
+/* 本帧输出几何来自Runtime Display；菜单不再自行猜107/240偏移。 */
+int Runtime_CopyDisplayGeometry(CastleDisplayGeometryV1* output);
+/* 完全待机的共享事实：场景和事件表就绪，所有菜单/剧情/战斗/电影关闭，输入门开放。 */
+int Runtime_IsFreeIdle(void);
 
 /*
  * runtime.h

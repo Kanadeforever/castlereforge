@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》手柄操控模组 v0.3-refactor44 综合静态检查工具。
+《幽城幻剑录》手柄操控模组 v0.4.1 综合静态检查工具。
 
 这个工具只使用 Python 标准库，不修改 RPG.exe，也不修改源码。
 它把这次重构最容易发生的“大回归”变成可以重复执行的机械检查：
@@ -17,21 +17,22 @@
 9. 检查 dev20 的 INI 对外键名仍然完整；
 10. 检查地图十字键只提供八方向步行，且松开后保留左摇杆既有全向走跑阈值；
 11. 检查统一 Shop Adapter 保留 refactor36 已实机通过的连续翻页、Y 信息窗与列标记；
-12. 检查 refactor44 的SaveAction原生disabled三位mask、最近可用焦点、上下跳过、确认双检、鼠标清理及零插件耦合；并保留refactor43剧情/鼠标稳定边界；
-13. 检查 build.bat 逐个编译 30 个独立 .c（含Public API、ControlModes与Investigation），并保留 x86、/W4 /WX、UTF-8、无 CRT 约束；
-14. 检查编译产物确实是 PE32 / i386 DLL；
-15. 检查源码文件名均为英文/ASCII，并给出注释覆盖率，帮助持续遵守“项目圣经”；
-16. 检查所有现行说明文档都集中在“文档”目录，且不再携带逐版“证据”树；
-16. 检查已验收业务底座保持受控：稳定旧模块继续 SHA 锁死；state3 技能页、state4 及身、state5 五内、Battle Target、法宝确认框与热插拔按用户 PASS 边界保护；并继续检查 r19 主 Interface、Back 精细鼠标会话与 r15/r16 输入底座；
-17. 检查 SDL3 热插拔顺序固定为 UpdateGamepads -> 旧句柄连接检查 -> 低频重新枚举 -> 采样，并要求新连接第一帧同步 prev/current 以避免插拔误触；
-18. 检查 refactor27 已实机通过的 state7 天书仍复用共享 SaveSlot，历史五个 SaveSlot Hook 与 SaveAction Hook 分离安装，并禁止页面 Adapter 自己做存档文件 I/O；
-19. 检查 refactor27 已实机通过的 state8 机能仍只把 LT/RT/A 送进五个原版 ButtonEvent；refactor28 仅允许焦点坐标小幅左/下微调，且不得直接写音乐/音效数值；
-20. 检查 refactor28 的 state3 治疗目标阶段只复用 page+0x768、五个角色真实 Button 与全屏取消 Button：左右只改插件私有焦点，A 注入 code=2，B 注入 code=1，禁止直接写治疗目标业务字段，并要求该状态作为 modal 阻断 InterfaceShell；
-21. 检查 refactor29 客栈根层“诸态/炼化/歇息”只使用真实 Button，B 不制造不存在的退出；
-22. 检查 refactor29 炼化根层 B 必须点击“用器”右侧退出图标，第二层 B 必须点击专属取消 Button，禁止鼠标右键；
-23. 检查公共剧情 mode=3 两项选择使用 0x404600 真实鼠标命中/原版选择框/左键协议，不直接写剧情结果；
-24. 检查地图存档点的 0x89FCD0 独立包装层只负责解包 +0x580 SaveSlot，并复用唯一一套槽位/翻页/存档业务；
-25. 检查共享 SaveSlot 三项动作 Hook 不再依赖天书 owner，存档点内的二次 Yes/No 可继续读取手柄，前置剧情询问的 LEFTUP 不会被包装层阻断；
+12. 检查 R44 的SaveAction原生disabled三位mask、最近可用焦点、上下跳过、确认双检、鼠标清理及零插件耦合；
+13. 检查 v0.4.1 默认手柄所有权、明确输入回切、右杆漂移隔离与 RB 组合释放事务；
+14. 检查 build.bat 逐个编译 30 个独立 .c（含Public API、ControlModes与Investigation），并保留 x86、/W4 /WX、UTF-8、无 CRT 约束；
+15. 检查编译产物确实是 PE32 / i386 DLL；
+16. 检查源码文件名均为英文/ASCII，并给出注释覆盖率，帮助持续遵守“项目圣经”；
+17. 检查所有现行说明文档都集中在“文档”目录，且不再携带逐版“证据”树；
+18. 检查已验收业务底座保持受控：稳定旧模块继续 SHA 锁死；state3 技能页、state4 及身、state5 五内、Battle Target、法宝确认框与热插拔按用户 PASS 边界保护；并继续检查 r19 主 Interface、Back 精细鼠标会话与 r15/r16 输入底座；
+19. 检查 SDL3 热插拔顺序固定为 UpdateGamepads -> 旧句柄连接检查 -> 低频重新枚举 -> 采样，并要求新连接第一帧同步 prev/current 以避免插拔误触；
+20. 检查 refactor27 已实机通过的 state7 天书仍复用共享 SaveSlot，历史五个 SaveSlot Hook 与 SaveAction Hook 分离安装，并禁止页面 Adapter 自己做存档文件 I/O；
+21. 检查 refactor27 已实机通过的 state8 机能仍只把 LT/RT/A 送进五个原版 ButtonEvent；refactor28 仅允许焦点坐标小幅左/下微调，且不得直接写音乐/音效数值；
+22. 检查 refactor28 的 state3 治疗目标阶段只复用 page+0x768、五个角色真实 Button 与全屏取消 Button：左右只改插件私有焦点，A 注入 code=2，B 注入 code=1，禁止直接写治疗目标业务字段，并要求该状态作为 modal 阻断 InterfaceShell；
+23. 检查 refactor29 客栈根层“诸态/炼化/歇息”只使用真实 Button，B 不制造不存在的退出；
+24. 检查 refactor29 炼化根层 B 必须点击“用器”右侧退出图标，第二层 B 必须点击专属取消 Button，禁止鼠标右键；
+25. 检查公共剧情 mode=3 两项选择使用 0x404600 真实鼠标命中/原版选择框/左键协议，不直接写剧情结果；
+26. 检查地图存档点的 0x89FCD0 独立包装层只负责解包 +0x580 SaveSlot，并复用唯一一套槽位/翻页/存档业务；
+27. 检查共享 SaveSlot 三项动作 Hook 不再依赖天书 owner，存档点内的二次 Yes/No 可继续读取手柄，前置剧情询问的 LEFTUP 不会被包装层阻断；
 26. 检查客栈由父层记住进入诸态/炼化前的项目，子界面返回后逻辑与 HitTest 视觉共同恢复同一入口，且禁止子模块反向回写首项。
 
 注意：静态 PASS 不等于实机 PASS。这个工具只能证明“我们没有明显破坏已经闭合的结构和地址协议”，
@@ -313,7 +314,7 @@ EXPECTED_INI_KEYS = {
 # refactor20 封包时统一了文本换行为 CRLF。下列稳定文件若 SHA 与旧版不同，均已逐文件确认归一化换行后内容完全一致。
 # 因此这里记录 r20 最终 CRLF 字节级 SHA，后续继续以它们作为稳定业务护栏。
 SEALED_REFACTOR16_STABLE_SHA256 = {
-    "battle.h": "7b6f915c3bfd3b62132327739494f01ad215af178c72a244551efc553154dda1",
+    # battle.h本轮新增只读范围查询，由RB安装时序护栏验证，不再冻结整文件哈希。
     "frontend.c": "5c5bdfa00973f08f4f3c587c4c993607efb637e07aa5577eb2a73985950d2774",
     "frontend.h": "526c4743e27f7ace66e788f0aa98fe97e96cb3d89c0ebd3c96476dc419a96c0e",
     "movie_skip.c": "316c55482c7794340833016413d3e91b4557033061a0c6977d0f88588edf689a",
@@ -1063,7 +1064,9 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     router = read_utf8(src / "input_router.h") + read_utf8(src / "input_router.c")
     required_tokens = [
         "INPUT_PASS", "INPUT_MERGE", "INPUT_OVERRIDE", "INPUT_CONSUME",
-        "INPUT_LAYER_COMMON", "INPUT_LAYER_OVERLAY", "InputRouter_ChordPressed",
+        "INPUT_LAYER_COMMON", "INPUT_LAYER_OVERLAY",
+        "InputRouter_SetRbChordScope", "InputRouter_RbChordPressed",
+        "INPUT_RB_CHORD_BATTLE_TOP", "INPUT_RB_CHORD_FREE_IDLE",
         "INPUT_CTX_DIALOGUE", "INPUT_CTX_SCENE_CHOICE", "INPUT_CTX_CONFIRM_DIALOG", "INPUT_CTX_INTERFACE_SHELL", "INPUT_CTX_INTERFACE_ITEMS", "INPUT_CTX_INTERFACE_SKILLS", "INPUT_CTX_INTERFACE_EQUIPMENT", "INPUT_CTX_INTERFACE_INNER_STATS", "INPUT_CTX_INTERFACE_FORMATION", "INPUT_CTX_SAVE_ACTION", "INPUT_CTX_INTERFACE_OPTIONS", "INPUT_CTX_INN_ROOT", "INPUT_CTX_SYNTHESIS_PRIMARY", "INPUT_CTX_SYNTHESIS_SECONDARY", "INPUT_CTX_SHOP_ROOT", "INPUT_CTX_SHOP_QUANTITY",
         "INPUT_SUBTYPE_PREV", "INPUT_SUBTYPE_NEXT",
         "InputRouter_BeginFrame", "InputRouter_Consume",
@@ -1348,11 +1351,16 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
 
     pad_text = read_utf8(src / "pad_input.c")
     pad_header = read_utf8(src / "pad_input.h")
-    generic_activity_removed = "PadInput_HasAnyActivity" not in (pad_text + pad_header + read_utf8(src / "cursor.c"))
-    if "PAD_START" in pad_header and generic_activity_removed:
-        result.ok("Start 不污染 Cursor 所有权", "Start仍被采样；普通活动自动夺权接口已经整体删除，不再需要逐键排除")
+    cursor_activity_text = read_utf8(src / "cursor.c")
+    intentional_begin = cursor_activity_text.find("static int cursor_has_intentional_controller_activity")
+    intentional_end = cursor_activity_text.find("static void FASTCALL Cursor_HookMouseDraw", intentional_begin)
+    intentional_code = cursor_activity_text[intentional_begin:intentional_end] if intentional_begin >= 0 and intentional_end > intentional_begin else ""
+    start_reclaims = "PAD_START" in intentional_code
+    right_stick_ignored = "PAD_AXIS_RIGHT_X" not in intentional_code and "PAD_AXIS_RIGHT_Y" not in intentional_code
+    if "PAD_START" in pad_header and start_reclaims and right_stick_ignored:
+        result.ok("Start 与右杆的 Cursor 所有权", "Start是明确手柄操作并可切回手柄；普通态右摇杆漂移不参与模式切换")
     else:
-        result.fail("Start 不污染 Cursor 所有权", f"Start采样={'PAD_START' in pad_header}，普通活动接口已删除={generic_activity_removed}")
+        result.fail("Start 与右杆的 Cursor 所有权", f"Start采样={'PAD_START' in pad_header}，Start切回={start_reclaims}，右杆忽略={right_stick_ignored}")
 
     # refactor22：SDL3 热插拔必须主动刷新设备层。
     # 本插件没有跑 SDL 事件循环，因此不能沿用 r21 的“先 SDL_GamepadConnected，后 SDL_UpdateGamepads”顺序；
@@ -1401,10 +1409,12 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         values = re.findall(r"INPUT_(?:PASS|MERGE|OVERRIDE|CONSUME)", match.group(2))
         if len(values) != 15 or values[-1] != "INPUT_PASS":
             policy_shift_bad.append(match.group(1))
-    if not shift_missing and not policy_shift_bad and generic_activity_removed:
-        result.ok("Back 全局 Shift 修饰键", f"SDL Back已采样；普通活动自动夺权已删除；{len(list(re.finditer(r'static const InputPolicy\s+g_policy_', router)))}张策略均让Shift PASS")
+    intentional_code_no_comments = re.sub(r"/\*.*?\*/|//[^\n]*", "", intentional_code, flags=re.S)
+    back_not_generic = "PAD_BACK" not in intentional_code_no_comments
+    if not shift_missing and not policy_shift_bad and back_not_generic:
+        result.ok("Back 全局 Shift修饰键", f"SDL Back已采样；不进入普通手柄回切集合；{len(list(re.finditer(r'static const InputPolicy\s+g_policy_', router)))}张策略均让Shift PASS")
     else:
-        result.fail("Back 全局 Shift 修饰键", f"缺少={shift_missing}，Shift策略异常={policy_shift_bad}，普通活动接口已删除={generic_activity_removed}")
+        result.fail("Back 全局 Shift修饰键", f"缺少={shift_missing}，Shift策略异常={policy_shift_bad}，Back未进入普通回切={back_not_generic}")
 
     # refactor41 仍用一套状态机裁决 Back/RT/调查；调查激活键由 INI 选择 A 或 LT。
     # Cursor 只提供低层鼠标桥，不能自己解释 A/LT/RT 的模式含义。
@@ -1518,15 +1528,15 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "PadInput_Released(PAD_SOUTH)", "PadInput_Released(PAD_EAST)",
     ])
 
-    # InputRouter_ChordPressed 当前只服务RB+ABXY，必须取fixed表；Battle业务文件无需修改。
-    chord_begin = input_router_code.find("int InputRouter_ChordPressed")
+    # RB组合会话必须继续使用fixed物理表；确定/取消交换不能改变RB+ABXY的物理位置。
+    chord_begin = input_router_code.find("int InputRouter_RbChordPressed")
     chord_end = input_router_code.find("int InputRouter_LeftStickHorizontalStep50", chord_begin)
     chord_code = input_router_code[chord_begin:chord_end] if chord_begin >= 0 and chord_end > chord_begin else ""
     battle_shortcut_source = read_utf8(src / "battle.c")
     fixed_shortcut_ok = (
-        chord_code.count("input_action_button_fixed(") >= 2 and
+        chord_code.count("input_action_button_fixed(") >= 1 and
         "input_action_button(action)" not in chord_code and
-        "return InputRouter_ChordPressed(INPUT_CATEGORY_NEXT, action);" in battle_shortcut_source
+        "return InputRouter_RbChordPressed(action);" in battle_shortcut_source
     )
 
     # X/Y和其它面键仍由固定表直接返回，不能在swap分支里被一起改掉。
@@ -1539,6 +1549,30 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         result.ok("refactor42确定/取消布局", "Swap=0南确定/东取消，=1东确定/南取消；调查和鼠标左右键跟随语义；RB+ABXY与X/Y固定物理位置不变")
     else:
         result.fail("refactor42确定/取消布局", f"缺少={swap_missing}，鼠标语义={mouse_semantic_ok}，无直接面键={no_direct_face_reads}，快捷固定={fixed_shortcut_ok}，XY固定={xy_unchanged_ok}")
+
+    # 本轮把瞬时RB判断提升为Context范围内的组合事务：跨页锁存，直到按键释放帧也被吞掉。
+    chord_transaction_required = [
+        "INPUT_RB_CHORD_GRACE_MS 64u", "blocked_physical_buttons",
+        "waiting_for_release", "all_released_seen",
+        "InputRouter_SetRbChordScope", "InputRouter_RbChordPressed",
+        "INPUT_RB_CHORD_BATTLE_TOP", "INPUT_RB_CHORD_FREE_IDLE",
+        "action != INPUT_NAV_UP && action != INPUT_NAV_DOWN",
+        "g_rb_chord.blocked_physical_buttons =",
+    ]
+    plugin_chord_source = read_utf8(src / "plugin.c")
+    chord_transaction_joined = input_router_code + battle_shortcut_source + control_code + plugin_chord_source
+    chord_transaction_missing = [token for token in chord_transaction_required if token not in chord_transaction_joined]
+    chord_scope_ok = (
+        "return Runtime_Config()->battle_shortcuts && detect_context() == BCTX_TOP;" in battle_shortcut_source and
+        plugin_chord_source.count("InputRouter_SetRbChordScope(") == 1 and
+        "Battle_AllowsRbChord() ? INPUT_RB_CHORD_BATTLE_TOP" in plugin_chord_source and
+        "ControlModes_AllowsIdleRbChord" in control_code and
+        "INPUT_RB_CHORD_FREE_IDLE" in plugin_chord_source
+    )
+    if not chord_transaction_missing and chord_scope_ok:
+        result.ok("RB组合事务与范围隔离", "RB+ABXY/上下支持64ms采样容错；成立后跨Context吞到完整释放；只在战斗顶层/完全待机武装")
+    else:
+        result.fail("RB组合事务与范围隔离", f"缺少={chord_transaction_missing}，范围={chord_scope_ok}")
 
     # 全局强度与每事件独立时长；模式回切优先级必须压住调查短震。
     rumble_required = [
@@ -1834,23 +1868,20 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     else:
         result.fail("Target A/B 游戏线程事务门槛", f"缺少={missing_target}；消费段仍依赖 worker Context={'g_context == BCTX_TARGET' in target_hook.split('if (g_nav_active',1)[0]}")
 
-    # refactor43 明确键鼠优先，同时已经删除普通手柄活动自动回抢路径。
+    # 同一 tick 先让实体鼠标获胜；只有随后新的明确手柄输入才能在未来 tick 重新取得所有权。
     cursor_text = read_utf8(src / "cursor.c")
     cursor_update_begin = cursor_text.find("CursorTakeoverEvent Cursor_Update")
     cursor_update_end = cursor_text.find("int Cursor_GetPointerPosition", cursor_update_begin)
     cursor_update = cursor_text[cursor_update_begin:cursor_update_end] if cursor_update_begin >= 0 and cursor_update_end > cursor_update_begin else ""
     order_physical = cursor_update.find("physical_moved = cursor_observe_physical_mouse")
     immediate_return = cursor_update.find("if (physical_moved) return CURSOR_TAKEOVER_PHYSICAL_MOUSE;")
-    old_gamepad_reclaim_absent = (
-        "gamepad_active" not in cursor_update and
-        "cursor_gamepad_has_navigation_activity" not in cursor_update and
-        "PadInput_HasAnyActivity" not in cursor_update
-    )
-    physical_wins = 0 <= order_physical < immediate_return and old_gamepad_reclaim_absent
+    intentional_reclaim = cursor_update.find("if (!g_cursor.controller_owner && intentional_activity)")
+    right_stick_absent = "PAD_AXIS_RIGHT_X" not in intentional_code and "PAD_AXIS_RIGHT_Y" not in intentional_code
+    physical_wins = 0 <= order_physical < immediate_return < intentional_reclaim and right_stick_absent
     if physical_wins:
-        result.ok("Cursor 同 tick 键鼠优先", "真实鼠标先无条件接管；普通手柄活动不再自动抢回或隐藏指针")
+        result.ok("Cursor 同 tick 所有权顺序", "实体鼠标同tick优先；后续明确数字键/左杆出沿可切回手柄；普通态右杆漂移不抢所有权")
     else:
-        result.fail("Cursor 同 tick 键鼠优先", f"physical={order_physical}，立即返回={immediate_return}，旧自动回抢已删除={old_gamepad_reclaim_absent}")
+        result.fail("Cursor 同 tick 所有权顺序", f"physical={order_physical}，立即返回={immediate_return}，明确手柄={intentional_reclaim}，右杆忽略={right_stick_absent}")
 
     # refactor18 仍把未涉及本轮 owner 迁移的稳定业务文件按 r16 SHA 锁死。
     # Battle/Save/Confirm 的 .c 因 owner-aware API 迁移有意改变，另用 r18 新 SHA 封住。
@@ -1999,8 +2030,8 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "i32 result = original(scene, count);", "inv_publish_snapshot(scene, count, result);", "return result;",
         "scene + 0x1Cu", "scene + 0x20u", "scene + 0x2Cu", "scene + 0x30u",
         "record + 0x73u", "type >= 5u", "distance_squared < 10000",
-        "collision + 0x48u", "frame + 0x54u", "INVESTIGATION_SCREEN_WIDTH  640",
-        "INVESTIGATION_SCREEN_HEIGHT 480", "INVESTIGATION_CANDIDATES    25",
+        "collision + 0x48u", "frame + 0x54u", "Runtime_CopyDisplayGeometry(&geometry)",
+        "camera_x = geometry.effective_camera_x - geometry.center_x;", "INVESTIGATION_CANDIDATES    25",
         "g_snapshot_sequence", "before == after", "snapshot->serial == g_investigation.pending_snapshot_serial",
         "INVESTIGATION_DIRECTION_AXIS_DIVISOR", "INVESTIGATION_DIRECTION_HYSTERESIS_PERMILLE",
         "wheel_origin_x", "wheel_origin_y", "left_selected_object", "left_manual_override", "left_failed_object",
@@ -3149,7 +3180,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         result.fail("refactor43剧情mode=2/mode=3选择边界", f"缺多行/是非精确协议或输入消费，直接剧情结果写入，或普通对话pending未隔离；对话隔离={dialogue_choice_isolation_ok}")
 
     # refactor43 鼠标模式修复：剧情放行RT、Back不自动回切、主动warp按系统实际落点登记。
-    # 同时删除旧的“任意普通手柄活动自动取得所有权并隐藏鼠标”路径；真正菜单仍显式Claim。
+    # 新版只允许明确数字键或左摇杆出沿重新取得所有权；右摇杆漂移仍不参与普通模式切换。
     control_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", control_text, flags=re.S)
     cursor_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", cursor_text, flags=re.S)
     pad_code = re.sub(r"/\*.*?\*/|//[^\n]*", "", pad_text, flags=re.S)
@@ -3158,6 +3189,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "if (rt_mouse_allowed && rt_pressed", "int resume = free_map &&",
         "actual.x = x", "actual.y = y", "api->get_cursor_pos(&actual)",
         "g_cursor.last_cursor_sample = actual", "Cursor_ClaimForControllerNavigation",
+        "Cursor_SetInitialControllerMode", "cursor_has_intentional_controller_activity",
     ]
     mouse_mode_joined = control_text + cursor_text
     mouse_mode_missing = [token for token in mouse_mode_required if token not in mouse_mode_joined]
@@ -3169,7 +3201,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         token for token in mouse_mode_forbidden if token in (control_code + cursor_code + pad_code)
     ]
     if not mouse_mode_missing and not mouse_mode_forbidden_hits:
-        result.ok("refactor43剧情RT与鼠标模式稳定边界", "剧情可进入/保持RT；Back仅显式退出；主动warp记录实际落点；普通活动自动隐藏接口已删除，实体鼠标仍可接管")
+        result.ok("剧情RT与鼠标模式稳定边界", "剧情可进入/保持RT；Back仅显式退出；主动warp记录实际落点；启动默认手柄且明确输入可回切，实体鼠标仍优先接管")
     else:
         result.fail("refactor43剧情RT与鼠标模式稳定边界", f"缺少={mouse_mode_missing}，旧机制残留={mouse_mode_forbidden_hits}")
 
@@ -3267,7 +3299,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "RB+南键永远攻击，RB+东键永远道具",
         "mode=2：MSG 文本里的 /q",
         "Windows 最终落点可能和请求值差1像素",
-        "不再使用“任意普通手柄活动就隐藏鼠标”的旧通用机制",
+        "右摇杆在普通态完全忽略",
         "最高位表示“本数值已经由",
         "同距离自然保留较小index",
         "disabled只在本次原版Update窗口内可靠存在",
@@ -3371,7 +3403,7 @@ def check_ini_and_build(
     raw_build = build.read_bytes()
     utf8_bom = raw_build.startswith(b"\xef\xbb\xbf")
     crlf_only = b"\n" not in raw_build.replace(b"\r\n", b"")
-    if missing_flags or missing_units or not chcp_ok or not utf8_bom or not crlf_only:
+    if missing_flags or missing_units or not chcp_ok or utf8_bom or not crlf_only:
         result.fail("Windows 独立编译单元构建规则", f"缺标志={missing_flags}，缺源码={missing_units}，chcp65001={chcp_ok}，UTF8_BOM={utf8_bom}，CRLF={crlf_only}")
     else:
         result.ok("Windows 独立编译单元构建规则", "30 个 .c + x86 /W4 /WX /utf-8 /nodefaultlib + UTF-8 BOM/CRLF；输出到仓库根build")
@@ -3393,15 +3425,15 @@ def check_artifact(root: Path, result: CheckResult) -> None:
         is_pe32 = magic == 0x010B
         is_dll = bool(characteristics & 0x2000)
         compiled_markers = [
-            b"refactor44",
-            "SaveAction按原生disabled发布三位mask".encode("utf-8"),
-            "焦点迁移/上下跳过/确认双检/鼠标清理".encode("utf-8"),
-            "不识别插件名或槽号".encode("utf-8"),
-            "R43功能保持".encode("utf-8"),
+            b"0.4.1",
+            "R44业务保持".encode("utf-8"),
+            "默认手柄所有权".encode("utf-8"),
+            "明确输入回切".encode("utf-8"),
+            "RB组合释放事务".encode("utf-8"),
         ]
         missing_markers = [marker.decode("utf-8") for marker in compiled_markers if marker not in data]
         if is_i386 and is_pe32 and is_dll and not missing_markers:
-            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + refactor44 SaveAction disabled通用导航与R43保留标记，SHA-256={sha256(asi)}")
+            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + v0.4.1 所有权/RB组合事务标记，SHA-256={sha256(asi)}")
         else:
             result.fail("ASI PE 结构/本轮编译标记", f"machine=0x{machine:04X}, magic=0x{magic:04X}, DLL={is_dll}，缺编译标记={missing_markers}")
     except Exception as exc:
@@ -3556,7 +3588,7 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="strict")
     if hasattr(sys.stderr, "reconfigure"):
         sys.stderr.reconfigure(encoding="utf-8", errors="strict")
-    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 refactor44：校验SaveAction原生disabled导航、R43剧情/鼠标基线、新目录结构与目标RPG.exe")
+    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 v0.4.1：校验R44业务基线、默认手柄所有权、RB组合事务、新目录结构与目标RPG.exe")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent, help="包根目录；默认自动取工具目录的上一层")
     parser.add_argument("--exe", type=Path, help="可选：待验证的 RPG.exe。提供后先检查双样本 SHA 白名单，再执行既有冻结协议以及主 Interface state2～state8 页面协议；state3 治疗目标的 +0x768 短锚点与两处新 Event CALL、以及既有 state7/state8 协议也必须通过")
     parser.add_argument("--source-only", action="store_true", help="仓库开发模式：检查src/Controller/source、templete、build.bat、仓库根build产物、docs/Controller和可选RPG.exe Oracle")

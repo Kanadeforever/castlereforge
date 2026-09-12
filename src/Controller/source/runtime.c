@@ -1,5 +1,6 @@
-﻿#include "runtime.h"
+#include "runtime.h"
 #include "game_addresses.h"
+#include "CastleGameState_API.h"
 #include "CastleHook_API.h"
 #include "CastlePath_API.h"
 
@@ -39,6 +40,27 @@ static const CastleLogApiV1* g_runtime_log_api;
 static CastlePluginHandle g_runtime_log_plugin;
 static const CastleModuleApiV1* g_runtime_module_api;
 static const CastleTomlApiV1* g_runtime_toml_api;
+static const CastleDisplayApiV1* g_runtime_display_api;
+static const CastleGameStateApiV1* g_runtime_game_state_api;
+
+int Runtime_IsFreeIdle(void) {
+    CastleGameStateSnapshotV1 state = {0};
+    if (!g_runtime_game_state_api) return 0;
+    state.magic = CASTLE_GAME_SNAPSHOT_MAGIC;
+    state.struct_size = CASTLE_SIZEOF_GAME_STATE_SNAPSHOT_V1;
+    state.version = CASTLE_GAME_STATE_STRUCTURE_VERSION_1;
+    return g_runtime_game_state_api->GetSnapshot(&state) >= 0 && state.map_input_gate && state.map_key_mode &&
+        (state.flags & CASTLE_GAME_FLAG_FREE_ROAM_CANDIDATE) != 0u;
+}
+
+int Runtime_CopyDisplayGeometry(CastleDisplayGeometryV1* output) {
+    if (!output || !g_runtime_display_api) return 0;
+    /* 调用者提供完整结构，失败时不拿旧帧几何继续定位。 */
+    output->magic = CASTLE_DISPLAY_GEOMETRY_MAGIC;
+    output->struct_size = CASTLE_SIZEOF_DISPLAY_GEOMETRY_V1;
+    output->api_version = CASTLE_DISPLAY_API_VERSION_1;
+    return g_runtime_display_api->GetGeometry(output) >= 0;
+}
 static CastleTomlDocumentHandle g_runtime_toml_document;
 static u32 g_tick;
 
@@ -144,8 +166,9 @@ void Runtime_BindEarlyApi(void) {
             HMODULE u32m = g_api.get_module_handle_a("USER32.dll");
             if (u32m) {
                 g_api.get_foreground_window = (PFN_GetForegroundWindow)g_api.get_proc_address(u32m, "GetForegroundWindow");
-                g_api.get_client_rect = (PFN_GetClientRect)g_api.get_proc_address(u32m, "GetClientRect");
-                g_api.client_to_screen = (PFN_ClientToScreen)g_api.get_proc_address(u32m, "ClientToScreen");
+                /* 与游戏GetCursorPos使用同一虚拟坐标系；cnc-ddraw可能按输出像素代理这些IAT函数。 */
+                g_api.get_client_rect = *(PFN_GetClientRect*)0x004601E8u;
+                g_api.client_to_screen = *(PFN_ClientToScreen*)0x004601F0u;
                 g_api.set_cursor_pos = (PFN_SetCursorPos)g_api.get_proc_address(u32m, "SetCursorPos");
                 g_api.get_window_thread_process_id = (PFN_GetWindowThreadProcessId)g_api.get_proc_address(u32m, "GetWindowThreadProcessId");
                 g_api.mouse_event = (PFN_mouse_event)g_api.get_proc_address(u32m, "mouse_event");
@@ -1547,7 +1570,8 @@ int Runtime_PatchIatPointer(u32 slot, void* replacement, void** original_out) {
         claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
         claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
         claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
-        claim.hook_kind = CASTLE_HOOK_VTABLE_POINTER;
+        claim.hook_kind = slot == IAT_GETKEYSTATE || slot == IAT_SETCURSORPOS ?
+            CASTLE_HOOK_IAT_POINTER : CASTLE_HOOK_VTABLE_POINTER;
         claim.target.module = g_sdk_game_module;
         claim.target.rva = slot - (u32)g_sdk_game_module;
         claim.target.size = 4u;
@@ -1555,6 +1579,10 @@ int Runtime_PatchIatPointer(u32 slot, void* replacement, void** original_out) {
         claim.replacement_hook = (CastleAddress)(SIZE_T)replacement;
         claim.signature_id = sdk_view_(pointer_signature,
             (CastleU32)(sizeof(pointer_signature) - 1u));
+        if (slot == IAT_GETKEYSTATE) {
+            static const char key_signature[] = "org.castlereforge.signature.get-key-state.v1";
+            claim.signature_id = sdk_view_(key_signature, sizeof(key_signature)-1u);
+        }
         /* Controller 放在 POST，SaveEnhance 的 NORMAL SaveAction wrapper 会先执行并链到这里。 */
         claim.phase = CASTLE_HOOK_PHASE_POST;
         claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
@@ -1706,6 +1734,14 @@ int Runtime_BindSdkLog(const CastleRuntimeApiV1* runtime_api,
     if (runtime_api->QueryInterface(&query, &result) != CASTLE_OK ||
         !result.api_pointer) return 0;
     g_runtime_toml_api = (const CastleTomlApiV1*)result.api_pointer;
+    g_runtime_display_api = (const CastleDisplayApiV1*)sdk_query_interface_(runtime_api,
+        CASTLE_DISPLAY_INTERFACE_ID, sizeof(CASTLE_DISPLAY_INTERFACE_ID)-1u,
+        CASTLE_DISPLAY_API_VERSION_1, CASTLE_SIZEOF_DISPLAY_API_V1);
+    if (!g_runtime_display_api) return 0;
+    g_runtime_game_state_api = (const CastleGameStateApiV1*)sdk_query_interface_(runtime_api,
+        CASTLE_GAME_STATE_INTERFACE_ID, sizeof(CASTLE_GAME_STATE_INTERFACE_ID)-1u,
+        CASTLE_GAME_STATE_API_VERSION_1, CASTLE_SIZEOF_GAME_STATE_API_V1);
+    if (!g_runtime_game_state_api) return 0;
     {
         CastleStringView config_path;
         config_path.data = "Castle_PadSupport.toml";

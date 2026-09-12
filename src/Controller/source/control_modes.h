@@ -20,6 +20,12 @@ void ControlModes_OnPhysicalMouseTakeover(void);
 int ControlModes_BlocksMapMovement(void);
 
 /*
+ * 只有普通手柄模式、自由地图快照有效且没有任何剧情/菜单/客栈/战斗等覆盖层时返回 1。
+ * InputRouter 用它武装未来扩展菜单的 RB 组合范围；函数本身不打开任何界面。
+ */
+int ControlModes_AllowsIdleRbChord(void);
+
+/*
  * 给 Public API 发布器使用的稳定模式编号。
  * 返回值固定为：0=普通手柄、1=Back常驻鼠标、2=RT临时鼠标、3=调查模式。
  * 这里不把内部 ControlMode enum 的地址或结构体暴露出去；未来内部 enum 即使重排，

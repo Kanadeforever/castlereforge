@@ -1,4 +1,4 @@
-﻿#ifndef CASTLE_WIDESCREEN_RUNTIME_H
+#ifndef CASTLE_WIDESCREEN_RUNTIME_H
 #define CASTLE_WIDESCREEN_RUNTIME_H
 
 #include "platform.h"
@@ -44,6 +44,12 @@ int Runtime_RestoreCall(u32 call_address, u32 expected_current_target, u32 resto
 
 /* 登记 Bink IAT 指针 Hook；整批提交后从 Runtime next 槽取得后续调用目标。 */
 int Runtime_PatchPointer(u32 slot_address, const void* replacement, void** old_value, const char* label);
+
+/* 每次调用读取Runtime稳定next槽，不把初次提交时的链目标缓存成永久地址。 */
+void* Runtime_GetPointerNext(u32 slot_address);
+
+/* 小段已核实机器码也加入同一个事务；expected不符时整批失败。 */
+int Runtime_DeclarePatch(u32 address, const u8* expected, const u8* desired, u32 size);
 
 /* 对目标 EXE 的 Display/Camera/绘制队列/Event 协议做总预检；失败时 DllMain 不安装任何业务 Hook。 */
 int Runtime_ExactBuildProtocolOk(void);

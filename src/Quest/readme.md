@@ -24,7 +24,7 @@ Castle_Quest 已按 CastleReforge 主项目结构迁移到 `src/Quest/`。本目
 CastleReforge/
 ├─ build_all.bat
 ├─ docs/
-│  └─ 任务系统/
+│  └─ Quest/
 └─ src/
    ├─ RuntimeSDK/
    └─ Quest/

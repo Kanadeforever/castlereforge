@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Castle_Widescreen v0.11-poc11 侧区样式切换静态协议检查器
+Castle_Widescreen v0.12.1 RuntimeSDK 宽屏与鼠标静态协议检查器
 ==========================================
 
 这个脚本用于“发布前机械复核”，它不能代替用户实机验收，但能自动阻止几类最危险的回归：
@@ -11,7 +11,8 @@ Castle_Widescreen v0.11-poc11 侧区样式切换静态协议检查器
 4. v0.9 已经统一成“所有消息使用同一侧区规则”，v0.11 不能让来源分支复活；
 5. Castle_Widescreen.toml 缺失、少键或丢失逐项中文注释；
 6. v0.11 宣称支持模糊/纯黑切换，但实际上改了触发/动画，或纯黑模式仍无条件做模糊计算；
-7. Battle、当前宽屏安全 Camera、毫秒过渡、Runtime Hook 事务撤销等既有稳定结构被误删。
+7. Battle、当前宽屏安全 Camera、毫秒过渡、Runtime Hook 事务撤销等既有稳定结构被误删；
+8. 鼠标没有在最终宽屏 staging 单次绘制，或黑边/模糊侧区仍被原版当成可点击内容。
 
 脚本只使用 Python 标准库。
 """
@@ -115,7 +116,7 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="strict")
     if hasattr(sys.stderr, "reconfigure"):
         sys.stderr.reconfigure(encoding="utf-8", errors="strict")
-    parser = argparse.ArgumentParser(description="检查 Castle_Widescreen v0.11-poc11 16:9 / 21:9 + 模糊/纯黑侧区切换静态协议")
+    parser = argparse.ArgumentParser(description="检查 Castle_Widescreen v0.12.1 16:9 / 21:9、侧区样式和全输出鼠标协议")
     parser.add_argument("--root", type=Path, required=True, help="交付包根目录")
     parser.add_argument("--exe", type=Path, required=True, help="目标 RPG.exe")
     args = parser.parse_args()
@@ -250,6 +251,44 @@ def main() -> int:
         and "right_room = total_extra - left_room;" in wide
         and "center = min_x + left_room;" in wide,
         "小于当前输出宽度的地图采用对称居中安全策略",
+    )
+
+    # 本轮宽屏鼠标桥：显示范围跟随输出，命中范围跟随当前真实内容，而不是无条件放开黑边。
+    required_wide_cursor = [
+        "IAT_GETCURSORPOS",
+        "Hook_GetCursorPos",
+        "g_original_get_cursor_pos",
+        "g_output_cursor_point",
+        "render_queue_without_main_cursor",
+        "draw_cursor_on_present_staging",
+        "MOUSE_DRAW_ENABLE",
+        "GLOBAL_MOUSE_WORLD_X",
+        "geometry->left_world_width",
+        "geometry->right_world_width",
+        "CASTLE_GAME_FLAG_FREE_ROAM_CANDIDATE",
+        "point->x = -0x4000",
+        "draw_cursor_on_present_staging(self);",
+        "Hook_GetKeyState", "Hook_GetAsyncKeyState", "pointer_window_filter",
+        "Runtime_DeclarePatch(ADDR_WORLD_MOUSE_X_CLAMP",
+    ]
+    cursor_joined = wide + (src / "game_addresses.h").read_text(encoding="utf-8-sig")
+    cursor_missing = [item for item in required_wide_cursor if item not in cursor_joined]
+    result(not cursor_missing,
+           "宽屏鼠标最终绘制与实际内容命中门完整",
+           repr(cursor_missing) if cursor_missing else "854/1120全范围显示；真实世界侧区可命中；装饰侧区拒绝")
+
+    result(
+        "g_sdk_pointer_bindings[4]" in runtime
+        and "g_sdk_pointer_binding_count" in runtime
+        and "org.castlereforge.signature.get-cursor-pos.v1" in runtime
+        and runtime.count("GetHookBinding(g_sdk_pointer_bindings[index].claim") == 1,
+        "Bink与三条鼠标函数指针链分别保存稳定 next",
+    )
+
+    result(
+        "CASTLE_GAME_STATE_INTERFACE_ID" in wide
+        and "g_sdk_game_state_api->GetSnapshot" in wide,
+        "鼠标侧区交互使用 Runtime GameState 当前自由探索事实",
     )
 
     # v0.7 已实机通过的消息隔离必须继续冻结。

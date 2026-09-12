@@ -271,6 +271,7 @@ void ControlModes_Initialize(void) {
 
     /* 清掉 Cursor/Investigation 可能留下的会话和鼠标按键脉冲，建立干净起点。 */
     control_clear_pointer_sessions();
+    Cursor_SetInitialControllerMode(PadInput_GamepadConnected());
 
     if (control_investigation_uses_hold_confirm()) {
         Runtime_Log("[模式] 路由已启用：Back常驻鼠标 > 地图/剧情RT临时鼠标 > 确定键按住调查 > 原手柄操作；ActivationMode=0。");
@@ -280,6 +281,8 @@ void ControlModes_Initialize(void) {
 }
 
 CursorTakeoverEvent ControlModes_Update(void) {
+    int game_foreground;
+    int gamepad_connected;
     int ui_active;
     int free_map;
     int rt_mouse_allowed;
@@ -293,10 +296,17 @@ CursorTakeoverEvent ControlModes_Update(void) {
     int cancel_pressed;
     int moved;
 
-    if (!PadInput_GameForeground(NULL) || !PadInput_GamepadConnected()) {
+    game_foreground = PadInput_GameForeground(NULL);
+    gamepad_connected = PadInput_GamepadConnected();
+    if (!game_foreground || !gamepad_connected) {
         g_modes.mode = CONTROL_MODE_CONTROLLER;
         g_modes.resume_investigation_after_rt = 0;
         control_clear_pointer_sessions();
+        /*
+         * Alt+Tab 只结束临时会话，不改变“手柄/键鼠所有权”；否则回到游戏时会无故显示鼠标。
+         * 只有手柄真的断开才交还键鼠，热插拔恢复后再等待明确手柄操作重新取得所有权。
+         */
+        if (!gamepad_connected) Cursor_ReleaseForUnavailableGamepad();
         return CURSOR_TAKEOVER_NONE;
     }
 
@@ -538,6 +548,20 @@ void ControlModes_OnPhysicalMouseTakeover(void) {
 
 int ControlModes_BlocksMapMovement(void) {
     return g_modes.mode != CONTROL_MODE_CONTROLLER;
+}
+
+int ControlModes_AllowsIdleRbChord(void) {
+    int ui_active;
+
+    /*
+     * “完全待机”不是“没有检测到某一个菜单指针”的近似值，而是复用本模块已经用于调查/RT
+     * 裁决的完整 owner 集合。这样未来扩展菜单不会在剧情、战斗、客栈、存档、主 Interface、
+     * 电影、未消费 ButtonEvent 或地图 busy 期间被 RB 组合误打开。
+     */
+    if (g_modes.mode != CONTROL_MODE_CONTROLLER ||
+        !PadInput_GameForeground(NULL) || !PadInput_GamepadConnected() || !Runtime_IsFreeIdle()) return 0;
+    ui_active = control_any_mouse_ui_active();
+    return control_free_map_active(ui_active);
 }
 
 /*

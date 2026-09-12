@@ -1,4 +1,4 @@
-﻿#ifndef CASTLE_WIDESCREEN_GAME_ADDRESSES_H
+#ifndef CASTLE_WIDESCREEN_GAME_ADDRESSES_H
 #define CASTLE_WIDESCREEN_GAME_ADDRESSES_H
 
 /*
@@ -24,6 +24,14 @@
 #define IAT_GETPROCADDRESS         0x00460090u
 #define IAT_GETCURRENTPROCESS      0x00460120u
 #define IAT_CREATEFILEA            0x0046015Cu
+#define IAT_GETCURSORPOS           0x00460204u
+#define IAT_SETCURSORPOS           0x0046019Cu
+#define IAT_GETKEYSTATE            0x004601A8u
+#define IAT_GETASYNCKEYSTATE        0x004601A4u
+/* 原版0x408830先取得鼠标坐标，再截断X上界并加Camera；宽屏只替换已核实的X截断分支。 */
+#define GLOBAL_MOUSE_WORLD_X       0x0089F7C0u
+#define ADDR_WORLD_MOUSE_X_CLAMP    0x0040886Au
+#define CALL_UI_SET_CURSOR         0x0043DF3Au
 #define IAT_BINK_COPYTOBUFFER      0x0046024Cu
 
 /*
@@ -44,6 +52,20 @@
 #define GLOBAL_INTERFACE_UI        0x008DED0Cu
 #define GLOBAL_TITLE_UI            0x008E241Cu
 #define GLOBAL_MOVIE_OBJECT        0x0046F390u
+
+/*
+ * 原版 MouseManager 与软件鼠标绘制入口。
+ *
+ * MouseManager +0x238/+0x23C 保存游戏当前取得的屏幕坐标；0x43E1B0 绘制时分别减去
+ * 0x13F/0x104，得到原版 640×480 backing 中的位置。宽屏必须在中央绘制阶段暂时屏蔽
+ * 这一次旧位置，再在最终 854/1120 staging 上按真实输出坐标只绘制一次，否则鼠标永远
+ * 被裁在中央 640 区域。
+ */
+#define GLOBAL_MOUSE_MANAGER       0x008E1C4Cu
+#define FN_MOUSE_DRAW              0x0043E1B0u
+#define MOUSE_POS_X                0x238u
+#define MOUSE_POS_Y                0x23Cu
+#define MOUSE_DRAW_ENABLE          0x248u
 
 /*
  * 原版消息系统的当前 Event 槽。SHOW_MESSAGE 通过 0x403B90 写入当前 Event ID 的低 8 位，

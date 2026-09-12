@@ -1,4 +1,4 @@
-﻿#ifndef CASTLE_WIDESCREEN_PLATFORM_H
+#ifndef CASTLE_WIDESCREEN_PLATFORM_H
 #define CASTLE_WIDESCREEN_PLATFORM_H
 
 /*
@@ -24,6 +24,12 @@ typedef int            BOOL;
 typedef void*           HANDLE;
 typedef void*           HMODULE;
 typedef void*           FARPROC;
+
+/* Win32 POINT 与 GetCursorPos；宽屏只需要两个有符号屏幕坐标，不包含完整 windows.h。 */
+typedef struct Point32 {
+    i32 x;
+    i32 y;
+} Point32;
 
 /*
  * Windows 32 位程序存在多种调用约定。
@@ -64,6 +70,10 @@ typedef void*   (WINAPI *PFN_VirtualAlloc)(void*, SIZE_T, DWORD, DWORD);
  * 回绕也不会破坏本插件只有几百毫秒的过渡动画。
  */
 typedef DWORD   (WINAPI *PFN_GetTickCount)(void);
+typedef BOOL    (WINAPI *PFN_GetCursorPos)(Point32* point);
+/* USER32 鼠标键轮询返回有符号16位；SetCursorPos 返回32位BOOL，调用约定均为stdcall。 */
+typedef short   (WINAPI *PFN_KeyState)(int key);
+typedef BOOL    (WINAPI *PFN_SetCursorPos)(i32 x, i32 y);
 
 /*
  * 0x405BD0、0x405A10、0x434710 都是“ECX 里传 this、没有显式栈参数”的成员函数。

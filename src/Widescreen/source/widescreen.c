@@ -1,9 +1,11 @@
-﻿#include "widescreen.h"
+#include "widescreen.h"
 #include "platform.h"
 #include "game_addresses.h"
 #include "runtime.h"
 #include "CastleDisplay_API.h"
 #include "CastleRender_API.h"
+#include "CastleGameState_API.h"
+#include "CastleWindow_API.h"
 
 /*
  * widescreen.c — v0.11-poc11 电影式模糊 / 纯黑侧区切换版
@@ -97,6 +99,9 @@ static int g_ultrawide_enabled;
 static const CastleRuntimeApiV1* g_sdk_runtime_api;
 static const CastleDisplayApiV1* g_sdk_display_api;
 static const CastleRenderApiV1* g_sdk_render_api;
+static const CastleGameStateApiV1* g_sdk_game_state_api;
+static const CastleWindowApiV1* g_sdk_window_api;
+static CastleLeaseHandle g_pointer_window_filter;
 static CastlePluginHandle g_sdk_plugin_handle;
 static CastleProviderHandle g_sdk_display_provider;
 static CastleProviderHandle g_sdk_render_provider;
@@ -196,6 +201,19 @@ static PFN_ThisVoid g_original_rebuild = (PFN_ThisVoid)FN_DISPLAY_REBUILD;
 static PFN_ThisVoid g_original_present = (PFN_ThisVoid)FN_DISPLAY_PRESENT;
 static PFN_ThisVoid g_original_render_queue = (PFN_ThisVoid)FN_RENDER_QUEUE;
 static PFN_BinkCopyToBuffer g_original_bink_copy;
+static PFN_GetCursorPos g_original_get_cursor_pos;
+static PFN_KeyState g_original_key_state;
+static PFN_KeyState g_original_async_key_state;
+
+/*
+ * GetCursorPos Hook 会先保存“宽屏输出坐标”，再把返回给原版游戏的坐标换算成中央 UI 或
+ * 当前真实世界坐标。最终 Present 使用这里保存的原始输出坐标，把鼠标只绘制一次到宽屏 staging。
+ */
+static Point32 g_output_cursor_point;
+static int g_output_cursor_valid;
+static int g_logged_wide_cursor_ready;
+
+static BOOL WINAPI Hook_GetCursorPos(Point32* point);
 
 /*
  * 三块运行时内存：
@@ -420,6 +438,28 @@ static int message_ui_is_active(void) {
 }
 
 /*
+ * 中央原版队列仍要绘制全部 UI，但软件鼠标必须延后到最终宽屏 staging 再画一次。
+ *
+ * 如果这里不临时关闭 MouseManager+0x248，原版会先把鼠标画进 640 backing；随后我们又在
+ * 854/1120 staging 按真实输出位置绘制，中央区域就会出现两只鼠标。这个开关只包住一次
+ * RenderQueue 调用，返回前恢复原值；没有取得宽屏鼠标坐标时则保留原版路径作为安全回退。
+ */
+static void render_queue_without_main_cursor(void* self) {
+    u8* mouse = *(u8* volatile*)GLOBAL_MOUSE_MANAGER;
+    u8 old_enabled;
+
+    if (!g_output_cursor_valid || !mouse) {
+        g_original_render_queue(self);
+        return;
+    }
+
+    old_enabled = *(volatile u8*)(mouse + MOUSE_DRAW_ENABLE);
+    *(volatile u8*)(mouse + MOUSE_DRAW_ENABLE) = 0u;
+    g_original_render_queue(self);
+    *(volatile u8*)(mouse + MOUSE_DRAW_ENABLE) = old_enabled;
+}
+
+/*
  * 左右 Camera 侧画时临时屏蔽消息 UI，然后完整恢复。
  *
  * 0x40B050 的调用顺序里包含：
@@ -443,7 +483,7 @@ static void render_side_world_without_message_ui(void* self) {
     *(volatile u8*)GLOBAL_MESSAGE_TARGET_STATE = 0u;
     *(volatile u8*)GLOBAL_MESSAGE_CURRENT_STATE = 0u;
 
-    g_original_render_queue(self);
+    render_queue_without_main_cursor(self);
 
     *(volatile u8*)GLOBAL_MESSAGE_CURRENT_STATE = old_current;
     *(volatile u8*)GLOBAL_MESSAGE_TARGET_STATE = old_target;
@@ -939,6 +979,143 @@ static int sdk_copy_geometry_snapshot(CastleDisplayGeometryV1* output) {
 }
 
 /*
+ * 游戏输入使用 cnc-ddraw 已经换算好的输出像素坐标，原点是 (0,0)。
+ * MouseDraw 内的 319/260 是图形锚点偏移，不能用来换算屏幕原点。
+ * UI 始终使用中央局部坐标；只有 0x408830 传入的 MouseWorld 缓冲区使用世界反投影。
+ */
+static int pointer_geometry(CastleDisplayGeometryV1* geometry, int* world) {
+    CastleGameStateSnapshotV1 state = {0};
+    *world = 0;
+    if (!g_sdk_services_ready || !sdk_copy_geometry_snapshot(geometry) ||
+        !geometry->output_width || !geometry->output_height) return 0;
+    state.magic = CASTLE_GAME_SNAPSHOT_MAGIC;
+    state.struct_size = CASTLE_SIZEOF_GAME_STATE_SNAPSHOT_V1;
+    state.version = CASTLE_GAME_STATE_STRUCTURE_VERSION_1;
+    if (g_sdk_game_state_api && g_sdk_game_state_api->GetSnapshot(&state) == CASTLE_OK) {
+        *world = (state.flags & CASTLE_GAME_FLAG_FREE_ROAM_CANDIDATE) != 0u &&
+            state.map_input_gate && state.map_key_mode &&
+            geometry->display_mode == CASTLE_DISPLAY_WIDE_WORLD &&
+            geometry->projection_scope == CASTLE_PROJECTION_FULL_OUTPUT;
+    }
+    return 1;
+}
+
+/* 先检查物理输出矩形，再检查当前可交互内容；模糊侧栏和小地图空白永远不是世界。 */
+static int pointer_inside_content(const Point32* point,
+    const CastleDisplayGeometryV1* geometry, int world) {
+    i32 left = geometry->center_x;
+    i32 right = left + geometry->center_width;
+    if (world) {
+        left -= (i32)geometry->left_world_width;
+        right += (i32)geometry->right_world_width;
+    }
+    return point->x >= 0 && point->y >= 0 &&
+        point->x < (i32)geometry->output_width && point->y < (i32)geometry->output_height &&
+        point->x >= left && point->x < right &&
+        point->y >= geometry->center_y && point->y < geometry->center_y + geometry->center_height;
+}
+
+/* 从稳定 next 槽取得兼容层输出；绝不再调用 RPG.exe 已被自己挂钩的 IAT 造成递归。 */
+static int pointer_read_output(Point32* output) {
+    PFN_GetCursorPos next = (PFN_GetCursorPos)Runtime_GetPointerNext(IAT_GETCURSORPOS);
+    return next && next(output);
+}
+
+static BOOL WINAPI Hook_GetCursorPos(Point32* point) {
+    CastleDisplayGeometryV1 geometry = {0};
+    Point32 raw;
+    int world;
+    if (!point || !pointer_read_output(&raw)) return FALSE;
+    g_output_cursor_point = raw;
+    g_output_cursor_valid = 1;
+    if (!pointer_geometry(&geometry, &world)) { *point = raw; return TRUE; }
+    if (!pointer_inside_content(&raw, &geometry, world)) {
+        point->x = -0x4000;
+        point->y = -0x4000;
+        return TRUE;
+    }
+
+    point->x = raw.x - geometry.center_x;
+    point->y = raw.y - geometry.center_y;
+    if ((SIZE_T)point == GLOBAL_MOUSE_WORLD_X && world) {
+        /* 原版随后加当前 Camera；用当前值抵消，再换成玩家刚看见的有效 Camera。 */
+        point->x += geometry.effective_camera_x - *(volatile i32*)GLOBAL_CAMERA_X;
+        point->y += geometry.effective_camera_y - *(volatile i32*)GLOBAL_CAMERA_Y;
+    }
+    return TRUE;
+}
+
+/*
+ * 原版主动定位（战斗目标、菜单初始行）给的是中央 UI 坐标。
+ * 只包装游戏自己的 SetCursorPos CALL，Controller 手动摇杆移动仍走下层完整输出坐标。
+ */
+static BOOL WINAPI Hook_UiSetCursorPos(i32 x, i32 y) {
+    PFN_SetCursorPos next = *(PFN_SetCursorPos*)IAT_SETCURSORPOS;
+    if (!next) return FALSE;
+    return next(x + (i32)SIDE_WIDTH, y);
+}
+
+/*
+ * 光有无效坐标还不够：普通剧情的“点任意处继续”和右键取消可能不检查坐标。
+ * 两种键状态轮询都要过滤。先从下层取状态（包括 Controller 合成脉冲），
+ * 再在装饰区吞掉按压。无效按压开始后即使移入中央，也必须松开再按才能触发。
+ */
+static short pointer_filter_button(int key, short state, u32* blocked) {
+    CastleDisplayGeometryV1 geometry = {0};
+    Point32 raw;
+    int world;
+    u32 bit;
+    int valid;
+    if (key != 1 && key != 2) return state;
+    bit = key == 1 ? 1u : 2u;
+    valid = pointer_read_output(&raw) && pointer_geometry(&geometry, &world) &&
+        pointer_inside_content(&raw, &geometry, world);
+    if (!valid && ((u16)state & 0x8001u)) *blocked |= bit;
+    if (*blocked & bit) {
+        if (((u16)state & 0x8000u) == 0u) *blocked &= ~bit;
+        return 0;
+    }
+    return valid ? state : 0;
+}
+
+static short WINAPI Hook_GetKeyState(int key) {
+    static u32 blocked;
+    PFN_KeyState next = (PFN_KeyState)Runtime_GetPointerNext(IAT_GETKEYSTATE);
+    return pointer_filter_button(key, next ? next(key) : 0, &blocked);
+}
+
+static short WINAPI Hook_GetAsyncKeyState(int key) {
+    static u32 blocked;
+    PFN_KeyState next = (PFN_KeyState)Runtime_GetPointerNext(IAT_GETASYNCKEYSTATE);
+    return pointer_filter_button(key, next ? next(key) : 0, &blocked);
+}
+
+/* 窗口消息也经过同一内容判定，覆盖不使用GetKeyState的鼠标点击路径。 */
+static CastleResult CASTLE_RUNTIME_CALL pointer_window_filter(
+    const CastleWindowMessageV1* message, CastleWindowFilterDecisionV1* decision, void* context) {
+    static u32 rejected;
+    CastleDisplayGeometryV1 geometry = {0};
+    Point32 raw;
+    u32 bit;
+    int world;
+    int is_up;
+    (void)context;
+    if (!message || !decision) return CASTLE_ERROR_INVALID_ARGUMENT;
+    /* 左/右键的DOWN、UP、双击消息；不吞窗口销毁、激活或普通移动。 */
+    if (message->message < 0x201u || message->message > 0x206u) return CASTLE_OK;
+    bit = message->message <= 0x203u ? 1u : 2u;
+    is_up = message->message == 0x202u || message->message == 0x205u;
+    if (!is_up && (!pointer_read_output(&raw) || !pointer_geometry(&geometry, &world) ||
+        !pointer_inside_content(&raw, &geometry, world))) rejected |= bit;
+    if (rejected & bit) {
+        decision->consume = 1u;
+        decision->result = 0;
+    }
+    if (is_up) rejected &= ~bit;
+    return CASTLE_OK;
+}
+
+/*
  * 从队列对象取得 vtable[1]，也就是 0x434710 真正会 CALL 的 draw 方法地址。
  *
  * 队列条目格式已经静态闭合：
@@ -1034,7 +1211,7 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
     if (frame_requires_hard_4x3()) {
         sdk_publish_geometry(CASTLE_DISPLAY_HARD_4_3, CASTLE_PROJECTION_NONE,
             original_camera_x, original_camera_x, 0u, 0u);
-        g_original_render_queue(self);
+        render_queue_without_main_cursor(self);
         return;
     }
 
@@ -1051,7 +1228,7 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
         sdk_publish_geometry(g_battle_latched ? CASTLE_DISPLAY_BATTLE_4_3 :
             CASTLE_DISPLAY_CINEMATIC_4_3, CASTLE_PROJECTION_NONE,
             original_camera_x, original_camera_x, 0u, 0u);
-        g_original_render_queue(self);
+        render_queue_without_main_cursor(self);
         return;
     }
 
@@ -1063,7 +1240,7 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
         }
         sdk_publish_geometry(CASTLE_DISPLAY_TRANSITION, CASTLE_PROJECTION_NONE,
             original_camera_x, original_camera_x, 0u, 0u);
-        g_original_render_queue(self);
+        render_queue_without_main_cursor(self);
         return;
     }
     g_logged_bad_geometry = 0;
@@ -1076,7 +1253,7 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
         }
         sdk_publish_geometry(CASTLE_DISPLAY_TRANSITION, CASTLE_PROJECTION_NONE,
             original_camera_x, original_camera_x, 0u, 0u);
-        g_original_render_queue(self);
+        render_queue_without_main_cursor(self);
         return;
     }
     g_logged_bad_queue = 0;
@@ -1088,7 +1265,7 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
         }
         sdk_publish_geometry(CASTLE_DISPLAY_TRANSITION, CASTLE_PROJECTION_NONE,
             original_camera_x, original_camera_x, 0u, 0u);
-        g_original_render_queue(self);
+        render_queue_without_main_cursor(self);
         return;
     }
     g_logged_bad_camera_bounds = 0;
@@ -1105,7 +1282,7 @@ static void FASTCALL Hook_RenderQueue(void* self, void* unused_edx) {
      * 如果原 Camera 已经处在地图边缘，plan.center_x 会按当前 SIDE_WIDTH（107或240）提前向地图内部夹住。
      */
     *(volatile i32*)GLOBAL_CAMERA_X = plan.center_x;
-    g_original_render_queue(self);
+    render_queue_without_main_cursor(self);
 
     /* 中央 640 来自刚刚真正用 wide-safe Camera 画好的原版 backing。 */
     copy_core_to_wide(display, SIDE_WIDTH);
@@ -1725,6 +1902,56 @@ static void build_present_staging(void) {
 }
 
 /*
+ * 在原版 768×576 backing 中画鼠标，再把结果贴回最终输出。
+ * 先把 staging 中鼠标附近的一段 640×480 复制回原版核心区；一次原生 Draw 后，
+ * 原样拷回这段像素，最后恢复 backing。这样透明/混色仍由原版处理，光标只有一次动画推进，
+ * 而所有低层 blitter 继续使用已证实的 768 行距，不会误把 staging 当可扩大的 renderer。
+ */
+static void draw_cursor_on_present_staging(void* display) {
+    u8* mouse = *(u8* volatile*)GLOBAL_MOUSE_MANAGER;
+    Point32 point;
+    i32 old_x, old_y;
+    i32 offset;
+    u32 row;
+    u8* backing;
+    PFN_ThisVoid draw_mouse = (PFN_ThisVoid)FN_MOUSE_DRAW;
+
+    if (!mouse || !g_output_cursor_valid || !original_display_geometry_ok(display) ||
+        !pointer_read_output(&point)) return;
+    if (point.x < 0 || point.y < 0 || (u32)point.x >= OUTPUT_WIDTH ||
+        (u32)point.y >= OUTPUT_HEIGHT) return;
+    /* 鼠标尽量落在临时 640 区段中央；到左右输出边缘时把区段夹回合法范围。 */
+    offset = point.x - (i32)LOGICAL_WIDTH / 2;
+    if (offset < 0) offset = 0;
+    if (offset > (i32)(OUTPUT_WIDTH - LOGICAL_WIDTH)) offset = (i32)(OUTPUT_WIDTH - LOGICAL_WIDTH);
+    backing = *(u8**)((u8*)display + DISPLAY_BACKING_PIXELS);
+    save_original_backing(display);
+    for (row = 0u; row < LOGICAL_HEIGHT; ++row) {
+        Runtime_MemCopy(backing + ((row + ORIGINAL_EXTRA_Y) * ORIGINAL_BACKING_W + ORIGINAL_EXTRA_X) * 2u,
+            g_present_staging + ((row + ORIGINAL_EXTRA_Y) * PRESENT_STAGING_W + ORIGINAL_EXTRA_X + (u32)offset) * 2u,
+            LOGICAL_WIDTH * 2u);
+    }
+    old_x = *(i32*)(mouse + MOUSE_POS_X);
+    old_y = *(i32*)(mouse + MOUSE_POS_Y);
+    *(i32*)(mouse + MOUSE_POS_X) = point.x - offset;
+    *(i32*)(mouse + MOUSE_POS_Y) = point.y;
+    /* 这个原入口可能已由 Controller 改成显隐包装器，调用它自然尊重默认隐藏和特殊焦点。 */
+    draw_mouse(mouse);
+    *(i32*)(mouse + MOUSE_POS_X) = old_x;
+    *(i32*)(mouse + MOUSE_POS_Y) = old_y;
+    for (row = 0u; row < LOGICAL_HEIGHT; ++row) {
+        Runtime_MemCopy(g_present_staging + ((row + ORIGINAL_EXTRA_Y) * PRESENT_STAGING_W + ORIGINAL_EXTRA_X + (u32)offset) * 2u,
+            backing + ((row + ORIGINAL_EXTRA_Y) * ORIGINAL_BACKING_W + ORIGINAL_EXTRA_X) * 2u,
+            LOGICAL_WIDTH * 2u);
+    }
+    restore_original_backing(display);
+    if (!g_logged_wide_cursor_ready) {
+        g_logged_wide_cursor_ready = 1;
+        Runtime_Log("[鼠标] 全输出光标已就绪；保持原版768行距，装饰侧区按压由输入门拒绝。");
+    }
+}
+
+/*
  * 每帧最后的 Present Hook。
  *
  * v0.6 在这里完成三件“只属于最终显示”的工作：
@@ -1833,6 +2060,9 @@ static void FASTCALL Hook_DisplayPresent(void* self, void* unused_edx) {
         apply_cinematic_slide_to_staging(g_cinematic_fill_amount);
     }
     apply_bar_darkness_to_staging(g_bar_darkness);
+
+    /* 鼠标先在原版 backing 绘制并合回 staging；此时 Display 的所有尺寸仍是 640/768。 */
+    draw_cursor_on_present_staging(self);
 
     old_pixels = *(void**)((u8*)self + DISPLAY_BACKING_PIXELS);
     old_width = read_u32(mode, MODE_WIDTH);
@@ -2049,10 +2279,13 @@ int Widescreen_RegisterRuntimeServices(const CastleRuntimeApiV1* runtime_api,
                                        CastlePluginHandle plugin_handle) {
     static const char display_id[] = CASTLE_DISPLAY_INTERFACE_ID;
     static const char render_id[] = CASTLE_RENDER_INTERFACE_ID;
+    static const char game_state_id[] = CASTLE_GAME_STATE_INTERFACE_ID;
+    static const char window_id[] = CASTLE_WINDOW_INTERFACE_ID;
     static const char display_provider_id[] = "org.castlereforge.widescreen.display";
     static const char render_provider_id[] = "org.castlereforge.widescreen.render";
     CastleStringView provider_id;
     CastleResult result_value;
+    CastleWindowClientV1 window_client = {0};
     g_sdk_runtime_api = runtime_api;
     g_sdk_plugin_handle = plugin_handle;
     /* 第一步只取得 Runtime 的稳定门面，绝不缓存具体后端插件私有地址。 */
@@ -2062,7 +2295,21 @@ int Widescreen_RegisterRuntimeServices(const CastleRuntimeApiV1* runtime_api,
     g_sdk_render_api = (const CastleRenderApiV1*)sdk_query_interface(runtime_api,
         render_id, (CastleU32)(sizeof(render_id) - 1u),
         CASTLE_RENDER_API_VERSION_1, CASTLE_SIZEOF_RENDER_API_V1);
-    if (!g_sdk_display_api || !g_sdk_render_api) return 0;
+    g_sdk_game_state_api = (const CastleGameStateApiV1*)sdk_query_interface(runtime_api,
+        game_state_id, (CastleU32)(sizeof(game_state_id) - 1u),
+        CASTLE_GAME_STATE_API_VERSION_1, CASTLE_SIZEOF_GAME_STATE_API_V1);
+    g_sdk_window_api = (const CastleWindowApiV1*)sdk_query_interface(runtime_api,
+        window_id, sizeof(window_id)-1u, CASTLE_WINDOW_API_VERSION_1, CASTLE_SIZEOF_WINDOW_API_V1);
+    if (!g_sdk_display_api || !g_sdk_render_api || !g_sdk_game_state_api || !g_sdk_window_api) return 0;
+    window_client.magic = CASTLE_WINDOW_CLIENT_MAGIC;
+    window_client.struct_size = CASTLE_SIZEOF_WINDOW_CLIENT_V1;
+    window_client.version = CASTLE_WINDOW_STRUCTURE_VERSION_1;
+    window_client.phase = CASTLE_WINDOW_PHASE_EARLY;
+    window_client.priority = CASTLE_WINDOW_PRIORITY_DEFAULT;
+    window_client.filter = pointer_window_filter;
+    if (g_sdk_window_api->RegisterMessageFilter(plugin_handle, &window_client, &g_pointer_window_filter) < 0) return 0;
+    result_value = g_sdk_window_api->SetWindowClientReady(g_pointer_window_filter, 1u);
+    if (result_value < 0 && result_value != CASTLE_ERROR_NOT_READY) return 0;
     /* 第二步先登记 Display，并发布一份“过渡/不可投影”初始快照后再标记就绪。 */
     provider_id.data = display_provider_id;
     provider_id.length = (CastleU32)(sizeof(display_provider_id) - 1u);
@@ -2090,7 +2337,8 @@ int Widescreen_RegisterRuntimeServices(const CastleRuntimeApiV1* runtime_api,
 /*
  * 安装顺序：
  * 1. 先把六块运行时缓冲区一次性分配好：宽屏帧、Present staging、原 backing 备份、队列快照、两块模糊工作区；任何一个失败都不安装 Hook。
- * 2. Runtime_ExactBuildProtocolOk 已经做过总预检；这里只安装两个 DirectDraw 重建 CALL 和 Bink 指针。
+ * 2. Runtime_ExactBuildProtocolOk 已经做过总预检；这里只安装两个 DirectDraw 重建 CALL、
+ *    GetCursorPos 坐标桥和 Bink 指针。
  *    主 RenderQueue/Present CALL 由 Castle_Runtime 唯一拥有，本插件通过 Render Provider 被调用。
  * 3. 本版不碰 backing 分配、不碰 11 个低层 blitter；这正是和 POC1 的关键区别。
  */
@@ -2173,6 +2421,8 @@ int Widescreen_Install(void) {
     Runtime_MemZero(g_queue_snapshot, QUEUE_SNAPSHOT_BYTES);
     Runtime_MemZero(g_blur_low_a, CINEMATIC_LOW_BYTES);
     Runtime_MemZero(g_blur_low_b, CINEMATIC_LOW_BYTES);
+    g_output_cursor_valid = 0;
+    g_logged_wide_cursor_ready = 0;
 
     /*
      * Runtime_ExactBuildProtocolOk 已经一次性验证过所有原始 CALL；这里每次真正写入时仍再核对原目标。
@@ -2187,14 +2437,37 @@ int Widescreen_Install(void) {
     patched_rebuild_lost = 1;
 
     /*
-     * Bink 是函数指针槽，不是 E8 CALL。RenderQueue/Present 已由 Runtime 桥接，所以这里
+     * GetCursorPos 是 RPG.exe 的 IAT 函数指针槽。Hook 先保留宽屏输出坐标，再把交给原版
+     * UI/世界命中的副本按 Display geometry 换算；这条链由 Runtime 管理，不覆盖其它兼容层。
+     */
+    if (!Runtime_PatchPointer(IAT_GETCURSORPOS, Hook_GetCursorPos,
+                              (void**)&g_original_get_cursor_pos,
+                              "宽屏鼠标输出与内容命中坐标桥")) { ok = 0; goto rollback; }
+    if (!Runtime_PatchPointer(IAT_GETKEYSTATE, Hook_GetKeyState, (void**)&g_original_key_state,
+                              "内容区域鼠标键状态门") ||
+        !Runtime_PatchPointer(IAT_GETASYNCKEYSTATE, Hook_GetAsyncKeyState, (void**)&g_original_async_key_state,
+                              "内容区域异步鼠标键状态门")) { ok = 0; goto rollback; }
+    {
+        /* 精确替换两个已反汇编点；声明只复制字节，真正写入由整批Commit完成。 */
+        static const u8 original_clamp[2] = {0x7Eu,0x08u};
+        static const u8 wide_clamp[2] = {0xEBu,0x08u};
+        static const u8 original_warp[6] = {0xFFu,0x15u,0x9Cu,0x01u,0x46u,0x00u};
+        u8 warp[6] = {0xE8u,0u,0u,0u,0u,0x90u};
+        u32 relative = (u32)(SIZE_T)Hook_UiSetCursorPos - (CALL_UI_SET_CURSOR + 5u);
+        Runtime_MemCopy(warp+1u, &relative, 4u);
+        if (!Runtime_DeclarePatch(ADDR_WORLD_MOUSE_X_CLAMP, original_clamp, wide_clamp, 2u) ||
+            !Runtime_DeclarePatch(CALL_UI_SET_CURSOR, original_warp, warp, 6u)) { ok = 0; goto rollback; }
+    }
+
+    /*
+     * Bink 同样是函数指针槽，不是 E8 CALL。RenderQueue/Present 已由 Runtime 桥接，所以这里
      * 不再出现任何“读取当前 CALL 目标后覆盖”的双边兼容代码。
      */
     if (!Runtime_PatchPointer(IAT_BINK_COPYTOBUFFER, Hook_BinkCopyToBuffer,
                               (void**)&g_original_bink_copy,
                               "Bink 640 居中与渐变黑边")) { ok = 0; goto rollback; }
 
-    Runtime_Log("[初始化] v0.11-poc11 电影式模糊 / 纯黑侧区切换版 Hook 全部安装完成。");
+    Runtime_Log("[初始化] 宽屏显示、全输出鼠标与内容区域命中 Hook 已全部声明完成。");
     Runtime_Log("[初始化] 当前策略：普通探索按 TOML 输出 854×480 或 1120×480；所有消息框与 Battle 保持中央640，左右侧区按 BlurredSides 选择强模糊或纯黑，并使用完全相同的推入/退出动画。");
     return 1;
 

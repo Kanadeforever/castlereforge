@@ -1,4 +1,4 @@
-﻿#include "battle.h"
+#include "battle.h"
 #include "runtime.h"
 #include "game_addresses.h"
 #include "input_router.h"
@@ -177,7 +177,7 @@ static int battle_chord_edge(InputAction action) {
      * dev20 的快捷命令以 RB 为修饰键。这里仍由 Battle 决定“这个组合代表哪条战斗命令”，
      * 但物理按钮关系交给 input_router；Battle 本身不再出现 SDL/PadButton 编号。
      */
-    return InputRouter_ChordPressed(INPUT_CATEGORY_NEXT, action);
+    return InputRouter_RbChordPressed(action);
 }
 
 static int battle_present(void) {
@@ -328,6 +328,10 @@ static int detect_context(void) {
     if (cmd == 2) return BCTX_CMD2;
     if (cmd == 3) return BCTX_CMD3;
     return BCTX_NONE;
+}
+
+int Battle_AllowsRbChord(void) {
+    return Runtime_Config()->battle_shortcuts && detect_context() == BCTX_TOP;
 }
 
 /* 根据 Context 只返回对应原版子 UI 指针；其它 Context 明确返回 NULL。 */
@@ -2277,6 +2281,12 @@ void Battle_Update(void) {
     /* dev11：不再用 GetCursorPos 位移自动释放手柄焦点。老游戏/DirectDraw/菜单会主动 warp 光标，
        dev10 日志已证明这会产生大量“physical mouse moved”假接管并破坏视觉握手。右摇杆仍可自由移动真实鼠标。 */
     sync_context();
+    /*
+     * RB 只在战斗最外层六命令中是组合修饰键。
+     * 一旦进入技能/道具列表、Target 或确认框，本帧范围立刻回到 NONE；已经成立的组合
+     * 仍由 InputRouter 跨 Context 锁到完全松开，因此 B 不会穿透成新页面的取消。
+     */
+    /* 范围已在采样后统一设置；这里不能第二次改写，避免清掉上一帧仍按住 RB 的武装状态。 */
     apply_pending_page_focus();
     /*
      * 在读取本帧新按键之前先处理上一轮 A 的结局。

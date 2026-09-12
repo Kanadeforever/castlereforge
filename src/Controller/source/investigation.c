@@ -1,4 +1,4 @@
-﻿#include "investigation.h"
+#include "investigation.h"
 #include "runtime.h"
 #include "game_addresses.h"
 #include "pad_input.h"
@@ -44,8 +44,11 @@
  *     配置键历史名称仍为 InvestigationHoverDurationMs，Back/RT 鼠标模式也复用这一时长。
  */
 
-#define INVESTIGATION_SCREEN_WIDTH  640
-#define INVESTIGATION_SCREEN_HEIGHT 480
+/* 只由游戏线程采样更新；目标矩形与玩家所见的Display输出采用同一坐标原点。 */
+static i32 g_investigation_width = 640;
+static i32 g_investigation_height = 480;
+#define INVESTIGATION_SCREEN_WIDTH g_investigation_width
+#define INVESTIGATION_SCREEN_HEIGHT g_investigation_height
 #define INVESTIGATION_MAX_TARGETS   96
 #define INVESTIGATION_CANDIDATES    25
 #define INVESTIGATION_FRESH_TICKS   8u
@@ -298,6 +301,7 @@ static void inv_publish_snapshot(void* scene_ptr, i32 resolver_count, i32 origin
     int i;
     int output_count = 0;
     u32 original_hover = 0u;
+    CastleDisplayGeometryV1 geometry = {0};
 
     ++g_snapshot_sequence; /* odd: writer active */
     g_published_snapshot.tick = Runtime_Tick();
@@ -326,6 +330,13 @@ static void inv_publish_snapshot(void* scene_ptr, i32 resolver_count, i32 origin
 
     camera_x = *(const i32*)GLOBAL_MAP_CAMERA_X;
     camera_y = *(const i32*)GLOBAL_MAP_CAMERA_Y;
+    if (!Runtime_CopyDisplayGeometry(&geometry) || geometry.projection_scope == CASTLE_PROJECTION_NONE)
+        goto publish_done;
+    /* 世界减去(有效Camera-中央偏移)就是输出坐标；右杆读回、吸附和25点probe也使用此坐标。 */
+    camera_x = geometry.effective_camera_x - geometry.center_x;
+    camera_y = geometry.effective_camera_y - geometry.center_y;
+    g_investigation_width = (i32)geometry.output_width;
+    g_investigation_height = (i32)geometry.output_height;
 
     /*
      * actor+0x10 / +0x14 已由原版协议和固化研究确认是当前受控角色的世界 X/Y。
@@ -1123,7 +1134,7 @@ int Investigation_UpdateActive(void) {
         inv_cancel_probe();
     }
 
-    if (!Cursor_GetPointerPosition(&pointer_x, &pointer_y)) {
+    if (!Cursor_GetOutputPointerPosition(&pointer_x, &pointer_y)) {
         return 1;
     }
 

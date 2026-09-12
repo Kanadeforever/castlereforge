@@ -1,12 +1,14 @@
 # SaveEnhance 主功能源码完整接档说明
 
-## 1. 当前状态
+> **历史备份说明：** 本目录只保存 2026-08-28 的旧 `AnytimeSave.asi` 源码与接档，正式构建和当前开发均忽略这里。现行插件是上级目录的 `Castle_SaveEnhance.asi`，配置为 `Castle_SaveEnhance.toml`，强制依赖同目录 `Castle_Runtime.dll`；当前状态以 `src/SaveEnhance/readme.md` 和 `docs/SaveEnhance/完整接档.md` 为准。下文“当前”只表示旧 v0.3.2 当时状态。
+
+## 1. 历史状态
 
 安全存档增强功能已在 2026-08-28 从 `src/Extra` 移到 `src/SaveEnhance`，成为与 `Backlog`、`Controller`、`Widescreen` 等目录同级的主功能。源码主文件与正式产物名称继续使用 `AnytimeSave`，避免改变功能身份和部署文件名。
 
 本次只移动正式源码和构建入口，没有修改 `AnytimeSave.cpp` 或公共头文件的功能内容。正式算法继续沿用 v0.3.1a 的安全回退存档方案，功能版本仍属于 v0.3.2 整体交付结论的一部分。
 
-## 2. 当前目录
+## 2. 历史目录
 
 ```text
 src/SaveEnhance/

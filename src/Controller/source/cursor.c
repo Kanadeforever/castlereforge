@@ -1,4 +1,4 @@
-﻿#include "cursor.h"
+#include "cursor.h"
 #include "runtime.h"
 #include "game_addresses.h"
 #include "pad_input.h"
@@ -10,8 +10,8 @@
  *
  * 当前 Cursor 只拥有三种低层职责：显式鼠标会话、调查指针、既有菜单视觉。
  * Back/RT/LT/A/B 的业务解释全部由 ControlModes 完成；这里不再读取任何模式键。
- * refactor43 又删除了“任意普通手柄活动自动夺回所有权并隐藏鼠标”的旧通用路径；
- * 只有明确菜单导航、目标选择或显式鼠标/调查会话才会取得所有权。
+ * refactor43 删除了“任意活动都夺权”的旧通用路径；v0.4.1 只恢复可证明用户意图的回切：
+ * 数字键新按沿或左摇杆从死区内推到死区外。普通右摇杆噪声仍不能取得所有权。
  * 键鼠一旦产生真实移动，显隐与点击都交回原版；插件不替键鼠维持会话。
  * RT/LT 结束时必须释放仍在计时的模拟按键，避免把 DOWN 带回普通菜单。
  * 所有坐标 API 对外都以 640x480 客户区为准，系统 SetCursorPos 才使用屏幕坐标。
@@ -51,6 +51,12 @@ typedef struct CursorState {
     i32 mouse_right_remainder_y;
     i32 investigation_remainder_x;
     i32 investigation_remainder_y;
+
+    /*
+     * 左摇杆只有从死区内真正推到死区外才算一次“明确手柄操作”。
+     * 若一直按住时玩家又移动实体鼠标，不能每个 8ms tick 都把所有权抢回来。
+     */
+    int left_stick_activity_latched;
 } CursorState;
 
 static CursorState g_cursor;
@@ -310,6 +316,32 @@ void Cursor_ClaimForControllerNavigation(void) {
     cursor_update_visibility();
 }
 
+void Cursor_SetInitialControllerMode(int gamepad_connected) {
+    /*
+     * 这一步发生在 PadInput_Initialize 之后、RPG.exe 原入口之前。
+     * 已连接手柄代表本次启动默认按手柄产品规格工作；没有手柄则不能把键鼠用户的光标藏起来。
+     */
+    g_cursor.controller_owner = gamepad_connected ? 1 : 0;
+    g_cursor.target_indicator_active = 0;
+    g_cursor.menu_focus_indicator_active = 0;
+    g_cursor.left_stick_activity_latched = 0;
+    cursor_update_visibility();
+    Runtime_Log(gamepad_connected ?
+        "[模式] 启动时检测到手柄：默认进入普通手柄模式，鼠标只在规定场景显示。" :
+        "[模式] 启动时没有可用手柄：保留键鼠所有权；首次明确手柄操作会自动切回手柄。");
+}
+
+void Cursor_ReleaseForUnavailableGamepad(void) {
+    if (g_cursor.controller_owner) {
+        Runtime_Log("[模式] 手柄不可用：已交还键鼠所有权并恢复原版鼠标显隐。");
+    }
+    g_cursor.controller_owner = 0;
+    g_cursor.target_indicator_active = 0;
+    g_cursor.menu_focus_indicator_active = 0;
+    g_cursor.left_stick_activity_latched = 0;
+    cursor_update_visibility();
+}
+
 static void cursor_release_to_physical_mouse(void) {
     if (g_cursor.controller_owner) Runtime_Log("[光标] 检测到实体鼠标移动，恢复键鼠所有权。");
     g_cursor.controller_owner = 0;
@@ -337,6 +369,41 @@ static int cursor_observe_physical_mouse(void) {
 
     cursor_release_to_physical_mouse();
     return 1;
+}
+
+/*
+ * 判断本帧是否出现“玩家明确想用手柄”的普通输入。
+ *
+ * 数字键只看 Pressed，避免玩家按住某键时移动实体鼠标后，下一 tick 又被旧 Down 状态抢回。
+ * 左摇杆使用死区出沿；右摇杆在普通态完全忽略，因为摇杆静止噪声不应让键鼠模式闪回手柄。
+ * Back/合法 RT/调查键会在更早的 ControlModes 中建立显式可见鼠标会话，不走这里的普通隐藏路径。
+ */
+static int cursor_has_intentional_controller_activity(void) {
+    static const PadButton digital_buttons[] = {
+        PAD_SOUTH, PAD_EAST, PAD_WEST, PAD_NORTH,
+        PAD_START, PAD_R3, PAD_LB, PAD_RB,
+        PAD_DPAD_UP, PAD_DPAD_DOWN, PAD_DPAD_LEFT, PAD_DPAD_RIGHT,
+        PAD_LT, PAD_RT
+    };
+    i16 left_x = PadInput_Axis(PAD_AXIS_LEFT_X);
+    i16 left_y = PadInput_Axis(PAD_AXIS_LEFT_Y);
+    int left_active = cursor_abs((int)left_x) >= PAD_STICK_DEADZONE ||
+                      cursor_abs((int)left_y) >= PAD_STICK_DEADZONE;
+    int left_edge = left_active && !g_cursor.left_stick_activity_latched;
+    SIZE_T index;
+
+    if (!PadInput_GamepadConnected()) {
+        g_cursor.left_stick_activity_latched = 0;
+        return 0;
+    }
+
+    /* 每帧都记轴状态，即使已是手柄所有权或同帧按了数字键；否则持杆后的鼠标接管会被误抢回。 */
+    g_cursor.left_stick_activity_latched = left_active;
+    for (index = 0u; index < sizeof(digital_buttons) / sizeof(digital_buttons[0]); ++index) {
+        if (PadInput_Pressed(digital_buttons[index])) return 1;
+    }
+
+    return left_edge;
 }
 
 /* 主鼠标 draw hook：插件只能额外压制，从不强迫原版本来不画的光标出现。 */
@@ -395,25 +462,29 @@ int Cursor_InstallHooks(void) {
     g_cursor.controller_owner = 0;
     g_cursor.effective_visible = 1;
     g_cursor.visible_state_logged = -1;
+    g_cursor.left_stick_activity_latched = 0;
     cursor_update_visibility();
-    Runtime_Log("[鼠标] refactor43：普通手柄活动不再自动隐藏鼠标；完整鼠标由Back或地图/剧情RT显式启用，主动warp按实际落点登记。");
+    Runtime_Log("[鼠标] 普通手柄所有权默认隐藏；实体鼠标可接管，明确手柄操作可重新取得所有权，右杆漂移不会误切模式。");
     return 1;
 }
 
 /*
  * Cursor_Update 只维护按键脉冲、实体鼠标接管与显式会话所有权。
  * 显式 Back/RT/LT 会话已经在同 tick 更早由 ControlModes 建立；此处绝不再次解释扳机，
- * 也不再使用“任意普通手柄活动就隐藏鼠标”的旧通用机制。
+ * 也不使用“任意轴变化都隐藏鼠标”的旧通用机制。
  * 菜单/战斗真正需要手柄焦点时会明确调用 Cursor_ClaimForControllerNavigation；
  * 地图移动本身不再偷偷改变鼠标显隐或所有权。
  */
 CursorTakeoverEvent Cursor_Update(void) {
     int foreground = PadInput_GameForeground(NULL);
+    int intentional_activity = cursor_has_intentional_controller_activity();
     int physical_moved;
 
     cursor_update_click_pulses();
 
     if (!foreground) {
+        /* 窗口外的鼠标移动不能在重新切回时误判为游戏内真实输入。 */
+        g_cursor.last_cursor_sample_valid = 0;
         g_cursor.mouse_mode_active = 0;
         g_cursor.investigation_session_active = 0;
         cursor_clear_mouse_mode_remainders();
@@ -433,7 +504,14 @@ CursorTakeoverEvent Cursor_Update(void) {
         return CURSOR_TAKEOVER_NONE;
     }
 
-    /* 普通态不做自动所有权切换；只有各业务模块的显式Claim才代表真的开始手柄导航。 */
+    /*
+     * 实体鼠标接管后，下一次明确数字键或左摇杆出沿会恢复普通手柄所有权。
+     * 特定菜单稍后仍会按自己的视觉规则显示唯一手形；其它普通状态在这里立即隐藏鼠标。
+     */
+    if (!g_cursor.controller_owner && intentional_activity) {
+        Runtime_Log("[模式] 检测到明确手柄操作：已从键鼠切回普通手柄所有权。");
+        g_cursor.controller_owner = 1;
+    }
     cursor_update_visibility();
     return CURSOR_TAKEOVER_NONE;
 }
@@ -494,7 +572,7 @@ void Cursor_SetInvestigationSession(int active) {
     cursor_update_visibility();
 }
 
-int Cursor_GetPointerPosition(i32* x, i32* y) {
+int Cursor_GetOutputPointerPosition(i32* x, i32* y) {
     const RuntimeApi* api = Runtime_Api();
     HWND hwnd = NULL;
     Point32 point;
@@ -510,17 +588,36 @@ int Cursor_GetPointerPosition(i32* x, i32* y) {
     return 1;
 }
 
+int Cursor_GetPointerPosition(i32* x, i32* y) {
+    CastleDisplayGeometryV1 geometry = {0};
+    if (!Cursor_GetOutputPointerPosition(x,y)) return 0;
+    if (Runtime_CopyDisplayGeometry(&geometry)) {
+        *x -= geometry.center_x;
+        *y -= geometry.center_y;
+    }
+    return 1;
+}
+
+/* 菜单给出原版局部坐标，在最终输出中只平移中央区；不改变按钮几何和页面焦点。 */
+static int cursor_set_ui_position(i32 x, i32 y) {
+    CastleDisplayGeometryV1 geometry = {0};
+    if (!Runtime_CopyDisplayGeometry(&geometry)) return 0;
+    return Cursor_HookGameSetCursorPos(x + geometry.center_x, y + geometry.center_y);
+}
+
 int Cursor_MoveControllerAt(i32 x, i32 y) {
     const RuntimeApi* api = Runtime_Api();
     HWND hwnd = NULL;
     u8* mouse = *(u8**)GLOBAL_MOUSE_MANAGER;
     Point32 screen;
+    CastleDisplayGeometryV1 geometry = {0};
 
     if (!PadInput_GameForeground(&hwnd) || !g_cursor.game_set_cursor_pos) return 0;
     if (x < 0) x = 0;
     if (y < 0) y = 0;
-    if (x > 639) x = 639;
-    if (y > 479) y = 479;
+    if (!Runtime_CopyDisplayGeometry(&geometry) || !geometry.output_width || !geometry.output_height) return 0;
+    if (x >= (i32)geometry.output_width) x = (i32)geometry.output_width - 1;
+    if (y >= (i32)geometry.output_height) y = (i32)geometry.output_height - 1;
 
     screen.x = x;
     screen.y = y;
@@ -543,7 +640,7 @@ void Cursor_ShowTargetAt(i32 x, i32 y) {
 
     *(i32*)(mouse + MOUSE_POS_X) = x;
     *(i32*)(mouse + MOUSE_POS_Y) = y;
-    Cursor_HookGameSetCursorPos(x, y);
+    cursor_set_ui_position(x, y);
     g_cursor.target_indicator_active = 1;
     cursor_update_visibility();
 }
@@ -561,7 +658,7 @@ void Cursor_ShowMenuFocusAt(i32 x, i32 y) {
 
     *(i32*)(mouse + MOUSE_POS_X) = x;
     *(i32*)(mouse + MOUSE_POS_Y) = y;
-    Cursor_HookGameSetCursorPos(x, y);
+    cursor_set_ui_position(x, y);
     g_cursor.menu_focus_indicator_active = 1;
     cursor_update_visibility();
 }
@@ -575,7 +672,7 @@ void Cursor_MoveHiddenSelectionAt(i32 x, i32 y) {
 
     *(i32*)(mouse + MOUSE_POS_X) = x;
     *(i32*)(mouse + MOUSE_POS_Y) = y;
-    Cursor_HookGameSetCursorPos(x, y);
+    cursor_set_ui_position(x, y);
     g_cursor.menu_focus_indicator_active = 0;
     cursor_update_visibility();
 }
@@ -594,6 +691,7 @@ void Cursor_Shutdown(void) {
     g_cursor.menu_focus_indicator_active = 0;
     g_cursor.mouse_mode_active = 0;
     g_cursor.investigation_session_active = 0;
+    g_cursor.left_stick_activity_latched = 0;
     g_cursor.effective_visible = 1;
     Cursor_ResetClicks();
 }

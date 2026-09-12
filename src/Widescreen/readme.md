@@ -1,6 +1,6 @@
-﻿# 构建配置与工具说明
+# 构建配置与工具说明
 
-> 当前候选：v0.11-poc11
+> 当前候选：v0.12.0 RuntimeSDK 适配候选；最新业务实机基线：v0.11-poc11。
 
 ## 1. 部署
 
@@ -12,7 +12,7 @@ Castle_Widescreen.toml
 Castle_Runtime.dll
 ```
 
-两者放在 ASI Loader 实际加载目录。
+三个文件放在 ASI Loader 实际加载目录。
 
 ## 2. Windows 一键构建
 
@@ -30,7 +30,7 @@ build.bat
 4. `/W4 /WX` 编译三个 C 文件；
 5. `/nodefaultlib /machine:x86` 链接；
 6. 生成 `build\Castle_Widescreen.asi`；
-7. 同步同名 INI；
+7. 同步同名 TOML；
 8. 清理中间 OBJ/LIB。
 
 ## 3. 本轮交叉构建
@@ -58,16 +58,16 @@ lld-link /machine:x86
 
 ### 4.1 默认配置
 
-```ini
+```toml
 [Display]
-Ultrawide=0
+Ultrawide = 0
 
 [Cinematic]
-BlurredSides=1
+BlurredSides = 1
 
 [Transition]
-EnterDurationMs=250
-ExitDurationMs=250
+EnterDurationMs = 250
+ExitDurationMs = 250
 ```
 
 ### 4.2 Display.Ultrawide
@@ -101,9 +101,9 @@ ExitDurationMs=250
 
 ### 4.4 模糊模式
 
-```ini
+```toml
 [Cinematic]
-BlurredSides=1
+BlurredSides = 1
 ```
 
 侧面板使用已经在 v0.10 验收通过的：
@@ -115,9 +115,9 @@ BlurredSides=1
 
 ### 4.5 黑边模式
 
-```ini
+```toml
 [Cinematic]
-BlurredSides=0
+BlurredSides = 0
 ```
 
 侧面板仍然按完全相同的空间动画推入和退出，但最终像素为纯黑 `RGB565 0x0000`。
@@ -148,7 +148,7 @@ BlurredSides=0
 
 ### 4.8 配置读取规则
 
-插件启动时只读取一次 INI。
+插件启动时通过 Runtime TOML 服务读取一次配置。
 
 缺文件、缺键、无法解析或越界时回退默认值。
 
@@ -163,14 +163,14 @@ BlurredSides=0
 [配置] ExitDurationMs=...
 ```
 
-修改 INI 后需要重新启动游戏。
+修改 TOML 后需要重新启动游戏。
 
 ## 5. 静态检查工具
 
 ### 5.1 当前工具
 
 ```text
-工具/widescreen_check.py
+tools/widescreen_check.py
 ```
 
 ### 5.2 用途
@@ -185,7 +185,7 @@ BlurredSides=0
 - 854-safe Camera；
 - v0.7 侧画消息隔离；
 - v0.9 全消息统一规则没有回退；
-- v0.11 `BlurredSides` 默认值、INI、源码读取；
+- v0.11 `BlurredSides` 默认值、当前 TOML 模板与源码读取；
 - 模糊 / 纯黑分支只位于侧面板像素路径；
 - 纯黑模式可跳过模糊计算；
 - 两种样式继续共享同一推入/退出与柔化函数；
@@ -197,7 +197,7 @@ BlurredSides=0
 ### 5.3 使用
 
 ```text
-python 工具/widescreen_check.py --root . --exe 证据/RPG.exe
+python tools/widescreen_check.py --root . --exe 证据/RPG.exe
 ```
 
 返回码：
@@ -223,8 +223,9 @@ python 工具/widescreen_check.py --root . --exe 证据/RPG.exe
 
 ## 6. 编码 / 换行
 
-- C/H/BAT/Markdown：UTF-8 BOM + CRLF；
+- Markdown：UTF-8 无 BOM + CRLF；
+- C/H/BAT：保持各自当前构建要求，本轮不随文档编码调整；
 - Python：UTF-8 + LF；
-- INI：ASCII + CRLF；
+- TOML：UTF-8 + CRLF；
 - 源码文件名英文；
 - 包内文档文件名简体中文。
