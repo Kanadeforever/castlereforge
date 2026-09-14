@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Castle_Widescreen v0.12.1 RuntimeSDK 宽屏与鼠标静态协议检查器
+Castle_Widescreen v0.12.2 RuntimeSDK 宽屏与鼠标静态协议检查器
 ==========================================
 
 这个脚本用于“发布前机械复核”，它不能代替用户实机验收，但能自动阻止几类最危险的回归：
@@ -121,7 +121,7 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="strict")
     if hasattr(sys.stderr, "reconfigure"):
         sys.stderr.reconfigure(encoding="utf-8", errors="strict")
-    parser = argparse.ArgumentParser(description="检查 Castle_Widescreen v0.12.1 16:9 / 21:9、侧区样式和全输出鼠标协议")
+    parser = argparse.ArgumentParser(description="检查 Castle_Widescreen v0.12.2 16:9 / 21:9、侧区样式和合成指针协议")
     parser.add_argument("--root", type=Path, required=True, help="交付包根目录")
     parser.add_argument("--exe", type=Path, required=True, help="目标 RPG.exe")
     args = parser.parse_args()
@@ -266,6 +266,9 @@ def main() -> int:
         "g_output_cursor_point",
         "render_queue_without_main_cursor",
         "draw_cursor_on_present_staging",
+        "point.x = *(volatile i32*)(mouse + MOUSE_POS_X) + (i32)SIDE_WIDTH",
+        "world_buffer = (SIZE_T)point == GLOBAL_MOUSE_WORLD_X && world",
+        "if (world_buffer && !pointer_inside_content",
         "MOUSE_DRAW_ENABLE",
         "GLOBAL_MOUSE_WORLD_X",
         "geometry->left_world_width",
@@ -278,9 +281,17 @@ def main() -> int:
     ]
     cursor_joined = wide + (src / "game_addresses.h").read_text(encoding="utf-8-sig")
     cursor_missing = [item for item in required_wide_cursor if item not in cursor_joined]
-    result(not cursor_missing,
+    draw_begin = wide.find("static void draw_cursor_on_present_staging")
+    draw_end = wide.find("static void FASTCALL Hook_DisplayPresent", draw_begin)
+    draw_source = wide[draw_begin:draw_end] if draw_begin >= 0 and draw_end > draw_begin else ""
+    synthetic_cursor_source_ok = (
+        "MOUSE_POS_X" in draw_source and "MOUSE_POS_Y" in draw_source and
+        "pointer_read_output(&point)" not in draw_source
+    )
+    result(not cursor_missing and synthetic_cursor_source_ok,
            "宽屏鼠标最终绘制与实际内容命中门完整",
-           repr(cursor_missing) if cursor_missing else "854/1120全范围显示；真实世界侧区可命中；装饰侧区拒绝")
+           repr(cursor_missing) if cursor_missing else
+           ("MouseManager合成焦点 + 全输出移动；真实世界侧区可命中；装饰侧区拒绝" if synthetic_cursor_source_ok else "最终绘制仍绕过MouseManager合成焦点"))
 
     result(
         "g_sdk_pointer_bindings[4]" in runtime

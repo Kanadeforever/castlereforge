@@ -10,7 +10,7 @@
  *
  * 当前 Cursor 只拥有三种低层职责：显式鼠标会话、调查指针、既有菜单视觉。
  * Back/RT/LT/A/B 的业务解释全部由 ControlModes 完成；这里不再读取任何模式键。
- * refactor43 删除了“任意活动都夺权”的旧通用路径；v0.4.1 只恢复可证明用户意图的回切：
+ * refactor43 删除了“任意活动都夺权”的旧通用路径；v0.4.2 只恢复可证明用户意图的回切：
  * 数字键新按沿或左摇杆从死区内推到死区外。普通右摇杆噪声仍不能取得所有权。
  * 键鼠一旦产生真实移动，显隐与点击都交回原版；插件不替键鼠维持会话。
  * RT/LT 结束时必须释放仍在计时的模拟按键，避免把 DOWN 带回普通菜单。
@@ -624,8 +624,13 @@ int Cursor_MoveControllerAt(i32 x, i32 y) {
     if (api->client_to_screen) api->client_to_screen(hwnd, &screen);
 
     if (Runtime_PtrOk(mouse)) {
-        *(i32*)(mouse + MOUSE_POS_X) = screen.x;
-        *(i32*)(mouse + MOUSE_POS_Y) = screen.y;
+        /*
+         * MouseManager始终保存原版中央局部坐标。调查传入的是输出坐标，所以只在写入
+         * MouseManager时减去Display中央偏移；真正SetCursorPos仍使用完整输出坐标。
+         * 这样宽屏最终绘制可以把所有实体/合成指针都按同一规则加回center_x。
+         */
+        *(i32*)(mouse + MOUSE_POS_X) = x - geometry.center_x;
+        *(i32*)(mouse + MOUSE_POS_Y) = y - geometry.center_y;
     }
     if (!Cursor_HookGameSetCursorPos(screen.x, screen.y)) return 0;
     g_cursor.controller_owner = 1;

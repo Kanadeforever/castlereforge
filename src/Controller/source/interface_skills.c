@@ -1,4 +1,4 @@
-﻿#include "interface_skills.h"
+#include "interface_skills.h"
 #include "runtime.h"
 #include "game_addresses.h"
 #include "input_router.h"
@@ -363,13 +363,23 @@ static void skills_update_target_selector(u8* page) {
     InputRouter_Consume(INPUT_SUBTYPE_NEXT);
 }
 
-/* 新弹窗刚出现时安全默认“取消”，不再相信构造函数临时写入的 +0x58C=1。 */
+/*
+ * 新弹窗必须从这个页面自己的原版当前项开始，而不是无条件写成取消。
+ * 原版0x4276F0明确用+0x58C：1=第一个确认按钮，0=第二个取消按钮；随后同一字段
+ * 还驱动画面当前选择。手柄一旦接管，UiBridge会在Event之前按本地焦点强制HitTest，
+ * 因此读取当前原版值后立刻确认，也能保证画面与提交的是同一按钮。
+ */
 static void skills_sync_popup_owner(u8* popup) {
+    i32 native_focus;
     if ((void*)popup == g_skills.popup_owner) return;
 
     g_skills.popup_owner = popup;
     g_skills.popup_nav_active = 0;
     g_skills.popup_focus = 1;
+    if (!Runtime_PtrOk(popup)) return;
+    native_focus = *(i32*)(popup + POPUP_NATIVE_SELECTION);
+    if (native_focus == 1) g_skills.popup_focus = 0;
+    if (native_focus == 0) g_skills.popup_focus = 1;
 }
 
 static void skills_claim_popup_navigation(void) {
@@ -449,7 +459,7 @@ static void skills_update_popup(u8* popup) {
     }
 
     if (InputRouter_PressedOn(INPUT_CTX_INTERFACE_SKILLS, INPUT_CONFIRM, INPUT_LAYER_OVERLAY)) {
-        /* A 的第一步只是锁定“手柄现在拥有 popup 焦点”，并不会自动等价于确定。 */
+        /* 第一次A也必须提交当前原版选择，不能只建立焦点后要求玩家重做整套使用流程。 */
         skills_claim_popup_navigation();
 
         /* 第二步根据当前焦点选真实 Button：focus=0 才是确定，focus=1 必须点取消。 */

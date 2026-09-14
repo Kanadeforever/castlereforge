@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》手柄操控模组 v0.4.1 综合静态检查工具。
+《幽城幻剑录》手柄操控模组 v0.4.2 综合静态检查工具。
 
 这个工具只使用 Python 标准库，不修改 RPG.exe，也不修改源码。
 它把这次重构最容易发生的“大回归”变成可以重复执行的机械检查：
@@ -18,7 +18,7 @@
 10. 检查地图十字键只提供八方向步行，且松开后保留左摇杆既有全向走跑阈值；
 11. 检查统一 Shop Adapter 保留 refactor36 已实机通过的连续翻页、Y 信息窗与列标记；
 12. 检查 R44 的SaveAction原生disabled三位mask、最近可用焦点、上下跳过、确认双检、鼠标清理及零插件耦合；
-13. 检查 v0.4.1 默认手柄所有权、明确输入回切、右杆漂移隔离与 RB 组合释放事务；
+13. 检查 v0.4.2 默认手柄所有权、RB持续快捷层、合成指针坐标与技能首次确认；
 14. 检查 build.bat 逐个编译 30 个独立 .c（含Public API、ControlModes与Investigation），并保留 x86、/W4 /WX、UTF-8、无 CRT 约束；
 15. 检查编译产物确实是 PE32 / i386 DLL；
 16. 检查源码文件名均为英文/ASCII，并给出注释覆盖率，帮助持续遵守“项目圣经”；
@@ -2294,7 +2294,8 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         result.fail("state2法宝/道具页面专属Adapter", f"缺少={items_missing}，直接写字段={items_direct_writes}，X硬猜子类型index={special_index_guess}")
 
 
-    # refactor21：state3 必须是独立 Adapter，并继承“安全默认取消 + 原版 HitTest 观察”原则。
+    # state3必须是独立Adapter。技能确认框首次接管要继承该对象自己的原版当前项，不能硬设取消；
+    # 之后仍用HitTest观察，并在手柄导航后强制视觉与提交一致。
     skills_text = read_utf8(src / "interface_skills.c")
     skills_header = read_utf8(src / "interface_skills.h")
     skills_required = [
@@ -2311,6 +2312,9 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "skills_request_event(button, 2", "skills_request_event(button, 1",
         "InterfaceSkills_TargetSelectionActive",
         "UiBridge_RequestEventOwned(UI_EVENT_OWNER_INTERFACE",
+        "native_focus = *(i32*)(popup + POPUP_NATIVE_SELECTION)",
+        "if (native_focus == 1) g_skills.popup_focus = 0",
+        "if (native_focus == 0) g_skills.popup_focus = 1",
     ]
     skills_joined = skills_text + skills_header + bridge_text + confirm_text + router + runtime_shell_text + addresses_text
     skills_missing = [token for token in skills_required if token not in skills_joined]
@@ -2326,7 +2330,8 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     skills_popup_safe = (
         "g_skills.popup_focus == 0 ? POPUP_BUTTON_YES : POPUP_BUTTON_NO" in skills_popup_text and
         "button = *(void**)(popup + POPUP_BUTTON_NO);" in skills_popup_text and
-        "InterfaceSkills_ObservePopupHit" in skills_text
+        "InterfaceSkills_ObservePopupHit" in skills_text and
+        "skills_claim_popup_navigation();" in skills_popup_text
     )
     target_modal_safe = all(token in skills_joined + shell_text for token in [
         "INTERFACE_SKILLS_TARGET_ACTIVE", "INTERFACE_SKILLS_TARGET_BUTTON0", "INTERFACE_SKILLS_TARGET_CANCEL",
@@ -2337,7 +2342,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     # 治疗目标真正的角色ID/目标数位于 +0x58C/+0x588/+0x788/+0x78C；refactor28 只能让原版 Event 自己写。
     target_business_direct_write = re.search(r"\+\s*0x(?:58C|588|788|78C)u?[^\n]*\)\s*=", skills_text, flags=re.IGNORECASE) is not None
     if not skills_missing and not skills_direct_writes and skills_popup_safe and target_modal_safe and not target_business_direct_write:
-        result.ok("state3绝学/法术页面专属Adapter", "既有列表/分页/安全确认保持；治疗法术目标复用原版5角色Button与右键取消，←/→选人、A使用、B取消；不直接写目标ID")
+        result.ok("state3绝学/法术页面专属Adapter", "首次A继承原版确认框当前项并同帧接管；列表/分页保持；治疗目标复用5角色Button，←/→选人、A使用、B取消；不直接写目标ID")
     else:
         result.fail("state3绝学/法术页面专属Adapter", f"缺少={skills_missing}，直接写字段={skills_direct_writes}，确认安全={skills_popup_safe}，目标modal={target_modal_safe}，目标业务直写={target_business_direct_write}")
 
@@ -3431,15 +3436,14 @@ def check_artifact(root: Path, result: CheckResult) -> None:
         is_pe32 = magic == 0x010B
         is_dll = bool(characteristics & 0x2000)
         compiled_markers = [
-            b"0.4.1",
-            "R44业务保持".encode("utf-8"),
-            "默认手柄所有权".encode("utf-8"),
-            "明确输入回切".encode("utf-8"),
-            "RB组合释放事务".encode("utf-8"),
+            b"0.4.2",
+            "持续RB快捷层保持".encode("utf-8"),
+            "宽屏合成指针".encode("utf-8"),
+            "技能首次确认修复".encode("utf-8"),
         ]
         missing_markers = [marker.decode("utf-8") for marker in compiled_markers if marker not in data]
         if is_i386 and is_pe32 and is_dll and not missing_markers:
-            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + v0.4.1 所有权/RB组合事务标记，SHA-256={sha256(asi)}")
+            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + v0.4.2 所有权/RB组合/指针修复标记，SHA-256={sha256(asi)}")
         else:
             result.fail("ASI PE 结构/本轮编译标记", f"machine=0x{machine:04X}, magic=0x{magic:04X}, DLL={is_dll}，缺编译标记={missing_markers}")
     except Exception as exc:
@@ -3594,7 +3598,7 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="strict")
     if hasattr(sys.stderr, "reconfigure"):
         sys.stderr.reconfigure(encoding="utf-8", errors="strict")
-    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 v0.4.1：校验R44业务基线、默认手柄所有权、RB组合事务、新目录结构与目标RPG.exe")
+    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 v0.4.2：校验R44基线、默认所有权、RB持续层、合成指针、技能首次确认与目标RPG.exe")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent, help="包根目录；默认自动取工具目录的上一层")
     parser.add_argument("--exe", type=Path, help="可选：待验证的 RPG.exe。提供后先检查双样本 SHA 白名单，再执行既有冻结协议以及主 Interface state2～state8 页面协议；state3 治疗目标的 +0x768 短锚点与两处新 Event CALL、以及既有 state7/state8 协议也必须通过")
     parser.add_argument("--source-only", action="store_true", help="仓库开发模式：检查src/Controller/source、templete、build.bat、仓库根build产物、docs/Controller和可选RPG.exe Oracle")

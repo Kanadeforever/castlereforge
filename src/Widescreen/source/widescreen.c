@@ -1035,11 +1035,20 @@ static BOOL WINAPI Hook_GetCursorPos(Point32* point) {
     CastleDisplayGeometryV1 geometry = {0};
     Point32 raw;
     int world;
+    int world_buffer;
     if (!point || !pointer_read_output(&raw)) return FALSE;
     g_output_cursor_point = raw;
     g_output_cursor_valid = 1;
     if (!pointer_geometry(&geometry, &world)) { *point = raw; return TRUE; }
-    if (!pointer_inside_content(&raw, &geometry, world)) {
+
+    /*
+     * 只有探索世界坐标缓冲区需要用无效值拒绝装饰侧区。普通UI和MouseManager必须始终
+     * 收到“输出坐标减中央偏移”的连续局部坐标：左侧可以是负数、右侧可以大于639，
+     * 原版按钮矩形自然不会命中，但软件鼠标仍能经过整张宽屏。点击另由两条键状态门和
+     * Window Filter拒绝，不能为了挡点击而破坏所有菜单共用的鼠标位置。
+     */
+    world_buffer = (SIZE_T)point == GLOBAL_MOUSE_WORLD_X && world;
+    if (world_buffer && !pointer_inside_content(&raw, &geometry, world)) {
         point->x = -0x4000;
         point->y = -0x4000;
         return TRUE;
@@ -1047,7 +1056,7 @@ static BOOL WINAPI Hook_GetCursorPos(Point32* point) {
 
     point->x = raw.x - geometry.center_x;
     point->y = raw.y - geometry.center_y;
-    if ((SIZE_T)point == GLOBAL_MOUSE_WORLD_X && world) {
+    if (world_buffer) {
         /* 原版随后加当前 Camera；用当前值抵消，再换成玩家刚看见的有效 Camera。 */
         point->x += geometry.effective_camera_x - *(volatile i32*)GLOBAL_CAMERA_X;
         point->y += geometry.effective_camera_y - *(volatile i32*)GLOBAL_CAMERA_Y;
@@ -1926,8 +1935,15 @@ static void draw_cursor_on_present_staging(void* display) {
     u8* backing;
     PFN_ThisVoid draw_mouse = (PFN_ThisVoid)FN_MOUSE_DRAW;
 
-    if (!mouse || !g_output_cursor_valid || !original_display_geometry_ok(display) ||
-        !pointer_read_output(&point)) return;
+    if (!mouse || !g_output_cursor_valid || !original_display_geometry_ok(display)) return;
+    /*
+     * MouseManager的+0x238/+0x23C才是本帧原版软件鼠标的权威位置。实体鼠标经过
+     * Hook_GetCursorPos后会写成中央局部坐标；Controller的战斗目标、法术对象、阵形、
+     * 五内、机能、商店和隐藏剧情命中点也会直接写同一坐标。若重新读取实体指针，
+     * 就会丢掉这些合成焦点并在错误位置绘制。这里统一只把局部X加回中央偏移。
+     */
+    point.x = *(volatile i32*)(mouse + MOUSE_POS_X) + (i32)SIDE_WIDTH;
+    point.y = *(volatile i32*)(mouse + MOUSE_POS_Y);
     if (point.x < 0 || point.y < 0 || (u32)point.x >= OUTPUT_WIDTH ||
         (u32)point.y >= OUTPUT_HEIGHT) return;
     /* 鼠标尽量落在临时 640 区段中央；到左右输出边缘时把区段夹回合法范围。 */

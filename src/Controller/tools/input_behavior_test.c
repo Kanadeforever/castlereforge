@@ -6,6 +6,11 @@
 #include <string.h>
 #undef NULL
 #include "../source/input_router.c"
+/* 把Cursor唯一会写的游戏全局指针换成宿主内存，测试不接触RPG固定地址。 */
+#include "../source/game_addresses.h"
+static u8* test_mouse_manager_pointer;
+#undef GLOBAL_MOUSE_MANAGER
+#define GLOBAL_MOUSE_MANAGER ((SIZE_T)&test_mouse_manager_pointer)
 #include "../source/cursor.c"
 #include "../source/exploration.c"
 
@@ -15,13 +20,19 @@ static u32 test_tick, test_buttons, test_previous;
 static i16 test_axes[6];
 static int test_foreground = 1, test_connected = 1, checks;
 static Point32 test_point;
+static CastleDisplayGeometryV1 test_geometry;
+static int test_geometry_ready;
 const RuntimeConfig* Runtime_Config(void) { return &test_config; }
 const RuntimeApi* Runtime_Api(void) { return &test_api; }
 u32 Runtime_Tick(void) { return test_tick; }
 u32 Runtime_MsToTicks(u32 ms) { return (ms + 7u) / 8u; }
 void Runtime_Log(const char* message) { (void)message; }
 int Runtime_PtrOk(const void* p) { return p != NULL; }
-int Runtime_CopyDisplayGeometry(CastleDisplayGeometryV1* out) { (void)out; return 0; }
+int Runtime_CopyDisplayGeometry(CastleDisplayGeometryV1* out) {
+    if (!out || !test_geometry_ready) return 0;
+    *out = test_geometry;
+    return 1;
+}
 int Runtime_PatchCall(u32 a, void* b, u32 c) { (void)a;(void)b;(void)c;return 0; }
 int Runtime_PatchJmp6(u32 a, void* b, const u8 c[6]) { (void)a;(void)b;(void)c;return 0; }
 int Runtime_PatchIatPointer(u32 a, void* b, void** c) { (void)a;(void)b;(void)c;return 0; }
@@ -35,6 +46,10 @@ int PadInput_GamepadConnected(void) { return test_connected; }
 int ControlModes_BlocksMapMovement(void) { return 0; }
 void InterfaceShell_OnExplorationGameThread(void) { }
 static BOOL WINAPI test_get_cursor(Point32* p) { *p = test_point; return 1; }
+static BOOL WINAPI test_set_cursor(i32 x, i32 y) { test_point.x=x;test_point.y=y;return 1; }
+static BOOL WINAPI test_client_to_screen(HWND window, Point32* point) {
+    (void)window;(void)point;return 1;
+}
 
 /* 失败时报告用例所在行；保留所有断言计数，便于结果接档。 */
 #define CHECK(x) do { ++checks; if (!(x)) { printf("FAIL line %d: %s\n", __LINE__, #x); return 1; } } while (0)
@@ -222,6 +237,46 @@ int main(void) {
     Cursor_SetInvestigationSession(1); CHECK(g_cursor.effective_visible);
     Cursor_SetInvestigationSession(0); CHECK(!g_cursor.effective_visible);
     Cursor_SetInitialControllerMode(0); CHECK(g_cursor.effective_visible);
+
+    /*
+     * Controller所有合成指针统一保存中央局部坐标，SetCursorPos才使用完整输出坐标。
+     * 这组断言覆盖战斗目标、法术/阵形等菜单焦点、剧情隐藏命中点和调查输出坐标。
+     */
+    {
+        static u8 mouse_manager[640];
+        memset(&g_cursor,0,sizeof(g_cursor));memset(mouse_manager,0,sizeof(mouse_manager));
+        memset(&test_geometry,0,sizeof(test_geometry));test_geometry_ready=1;
+        test_geometry.output_width=854;test_geometry.output_height=480;
+        test_geometry.center_x=107;test_geometry.center_y=0;
+        test_geometry.center_width=640;test_geometry.center_height=480;
+        test_mouse_manager_pointer=mouse_manager;
+        test_config.cursor_default_hidden=1;test_config.target_cursor_indicator=1;
+        test_api.get_cursor_pos=test_get_cursor;test_api.client_to_screen=test_client_to_screen;
+        g_cursor.game_set_cursor_pos=test_set_cursor;
+        Cursor_SetInitialControllerMode(1);
+
+        Cursor_ShowTargetAt(120,210);
+        CHECK(*(i32*)(mouse_manager+MOUSE_POS_X)==120 && *(i32*)(mouse_manager+MOUSE_POS_Y)==210);
+        CHECK(test_point.x==227 && test_point.y==210 && g_cursor.target_indicator_active);
+        CHECK(g_cursor.effective_visible);
+        Cursor_HideTargetImmediately();
+        CHECK(!g_cursor.effective_visible);
+
+        Cursor_ShowMenuFocusAt(330,75);
+        CHECK(*(i32*)(mouse_manager+MOUSE_POS_X)==330 && *(i32*)(mouse_manager+MOUSE_POS_Y)==75);
+        CHECK(test_point.x==437 && test_point.y==75 && g_cursor.menu_focus_indicator_active);
+        CHECK(g_cursor.effective_visible);
+        Cursor_MoveHiddenSelectionAt(550,365);
+        CHECK(*(i32*)(mouse_manager+MOUSE_POS_X)==550 && *(i32*)(mouse_manager+MOUSE_POS_Y)==365);
+        CHECK(test_point.x==657 && test_point.y==365 && !g_cursor.menu_focus_indicator_active);
+        CHECK(!g_cursor.effective_visible);
+
+        Cursor_SetInvestigationSession(1);
+        CHECK(Cursor_MoveControllerAt(853,479));
+        CHECK(*(i32*)(mouse_manager+MOUSE_POS_X)==746 && *(i32*)(mouse_manager+MOUSE_POS_Y)==479);
+        CHECK(test_point.x==853 && test_point.y==479);
+        test_geometry_ready=0;test_mouse_manager_pointer=NULL;
+    }
     printf("PASS %d input assertions\n", checks);
     return 0;
 }

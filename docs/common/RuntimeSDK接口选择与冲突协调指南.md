@@ -114,8 +114,10 @@ Controller 发布 Runtime Input；其它插件读取快照。Backlog 打开时�
 
 Controller 决定手柄/键鼠所有权与哪些业务场景允许显示原版手形；Widescreen 决定最终输出坐标、
 实际内容区域和世界投影。Widescreen 的 GetCursorPos 使用 Runtime PointerHook 链，不能覆盖
-Controller 或第三方兼容层；鼠标在原版768 backing中绘制一次，再合回宽屏 staging。自由探索真实侧区可命中，
-对话、战斗、菜单、电影、过渡和空白侧区只允许经过、不接受点击。
+Controller 或第三方兼容层；MouseManager统一保存中央局部坐标，最终绘制必须以它为权威，
+不得重新读取实体点覆盖Target、技能对象、阵形等合成焦点。鼠标在原版768 backing中绘制一次，
+再合回宽屏staging。自由探索真实侧区可命中；普通UI侧区保持连续坐标但不点击，MouseWorld缺口
+才使用无效坐标。对话、战斗、菜单、电影、过渡和空白侧区只允许经过、不接受点击。
 
 ## 九、何时新增接口
 

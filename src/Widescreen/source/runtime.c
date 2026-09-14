@@ -639,7 +639,7 @@ int Runtime_Initialize(HMODULE self_module) {
     g_GetTickCount = (PFN_GetTickCount)g_GetProcAddress(kernel32, "GetTickCount");
     if (!g_GetTickCount) return 0;
 
-    Runtime_Log("[启动] Castle_Widescreen v0.12.1 RuntimeSDK：电影式侧区 + 全输出鼠标坐标桥。");
+    Runtime_Log("[启动] Castle_Widescreen v0.12.2 RuntimeSDK：电影式侧区 + MouseManager合成焦点坐标桥。");
     Runtime_Log("[启动] by Luminous with ChatGPT。");
     Runtime_Log("[规格] 所有对话框/提示/选择消息统一保持中央640；左右面板按 BlurredSides 选择强模糊或纯黑，触发与动画规则完全一致。");
     Runtime_Log("[规格] Battle继续使用同一侧区样式；普通探索无消息时由 TOML 选择 854×480 或 1120×480。");
