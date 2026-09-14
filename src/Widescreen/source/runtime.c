@@ -243,6 +243,10 @@ int Runtime_ExactBuildProtocolOk(void) {
     static const u8 sig_alloc[] = {0x56,0x8B,0xF1,0x57,0x8B,0x46,0x28};
     static const u8 sig_present[] = {0x56,0x8B,0xF1,0x6A,0x01,0x8B,0x46,0x70};
     static const u8 sig_render_queue[] = {0x53,0x56,0x6A,0x00,0x8B,0xD9,0x6A,0x01};
+    /* 输入桥依赖的原版协议：MouseWorld固定缓冲区、相机加回、主鼠标队列登记。 */
+    static const u8 sig_world_mouse[] = {0x68,0xC0,0xF7,0x89,0x00,0xFF,0x15,0x04,0x02,0x46,0x00};
+    static const u8 sig_world_camera[] = {0x8B,0x15,0x14,0x85,0x97,0x00};
+    static const u8 sig_mouse_queue[] = {0x68,0xC0,0x02,0x24,0x00,0x56,0x8B,0xCE,0xE8};
     static const u8 sig_camera_bounds[] = {0x8B,0x44,0x24,0x04,0x8B,0x4C,0x24,0x08};
     static const u8 sig_camera_update[] = {0xA1,0x50,0x85,0x97,0x00,0x53,0x56,0x57};
     static const u8 sig_event_loop[] = {0xA1,0x08,0xF8,0x89,0x00};
@@ -284,6 +288,9 @@ int Runtime_ExactBuildProtocolOk(void) {
 
     /* PE 头最基本检查：如果 0x400000 连 MZ 都不是，下面所有绝对地址都没有意义。 */
     if (!check_bytes("PE MZ", 0x00400000u, mz, sizeof(mz))) ok = 0;
+    if (!check_bytes("探索鼠标坐标读取", 0x00408830u, sig_world_mouse, sizeof(sig_world_mouse))) ok = 0;
+    if (!check_bytes("探索鼠标加回Camera", 0x00408885u, sig_world_camera, sizeof(sig_world_camera))) ok = 0;
+    if (!check_bytes("主鼠标队列登记", 0x0043E189u, sig_mouse_queue, sizeof(sig_mouse_queue))) ok = 0;
 
     /* 原版 backing 分配器虽然本版不 Hook，但它必须仍然是我们确认的 768×576 几何实现。 */
     if (!check_bytes("原版 backing 分配函数", FN_DISPLAY_ALLOCATE, sig_alloc, sizeof(sig_alloc))) ok = 0;

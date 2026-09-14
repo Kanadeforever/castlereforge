@@ -27,22 +27,33 @@ static int g_left_stick_horizontal_step;
  * Pressed 的边界。旧代码此时会漏掉组合；更危险的是，快捷命令已经让原版切入子菜单后，
  * 同一颗 B 若再次形成边沿，会被新 Context 当成“取消并退出”。
  *
- * 下面的状态把一次组合当成完整事务：
- * 1. 只有战斗顶层或未来的完全待机 Context 才能武装；
- * 2. RB 松开后保留极短容错窗，吸收跨采样边界；
- * 3. 组合成立后锁住 RB 和动作键，直到两者都真实松开；
- * 4. Context 在中途变化也不能提前解除锁，防止按键穿透新页面。
+ * 下面把RB作为持续快捷层开关，而不是一次动作就结束的组合：
+ * 1. 只有战斗顶层或完全待机可以开始快捷层；
+ * 2. RB按住时，八键每次新Pressed都能触发自己的快捷，同一帧重复查询只返回一次；
+ * 3. RB松开后保留一份64ms容错，期间的新快捷不会延长这个截止时间；
+ * 4. 八键普通功能在准备阶段就被挡住，离开快捷层后旧按压仍保护到自身释放。
  */
 #define INPUT_RB_CHORD_GRACE_MS 64u
+
+/* 八个动作键共用一张物理掩码；左右即使尚未绑定业务，也不能退回地图移动等旧功能。 */
+#define INPUT_RB_ACTION_BUTTONS ((1u << PAD_SOUTH) | (1u << PAD_EAST) | \
+    (1u << PAD_WEST) | (1u << PAD_NORTH) | (1u << PAD_DPAD_UP) | \
+    (1u << PAD_DPAD_DOWN) | (1u << PAD_DPAD_LEFT) | (1u << PAD_DPAD_RIGHT))
 
 typedef struct InputRbChordState {
     InputRbChordScope current_scope;
     InputRbChordScope armed_scope;
     u32 grace_until_tick;
-    u32 blocked_physical_buttons;
+    /* 只记录本帧已返回的快捷键；下一帧清零，不要求RB松开才能继续使用快捷层。 */
+    u32 chord_consumed_buttons;
     int armed;
-    int waiting_for_release;
-    int all_released_seen;
+    /*
+     * “准备快捷键”与“某个快捷已执行”分开记录。前者从合法范围按住RB就开始，
+     * 不必等业务调用组合接口，因此未来没有绑定的动作也不会先触发普通功能。
+     */
+    int reserve_until_rb_release;
+    u32 reserved_frame_buttons;
+    u32 reserved_physical_buttons;
 } InputRbChordState;
 
 static InputRbChordState g_rb_chord;
@@ -76,8 +87,26 @@ static void input_update_left_stick_horizontal_step(void) {
 }
 
 void InputRouter_BeginFrame(void) {
+    u32 button;
     g_consumed_actions = 0u;
+    g_rb_chord.chord_consumed_buttons = 0u;
     input_update_left_stick_horizontal_step();
+
+    /*
+     * 清理上一轮预留：旧按压的Released帧仍要挡住，但下一次新Pressed不能被旧记录吞掉。
+     * 尚未释放的动作键即使离开合法范围，也保留隔离，防止松RB后突然开始走路或打开菜单。
+     */
+    g_rb_chord.reserved_frame_buttons = 0u;
+    for (button = 0u; button <= (u32)PAD_RT; ++button) {
+        PadButton physical = (PadButton)button;
+        if (PadInput_Pressed(physical) ||
+            (!PadInput_Down(physical) && !PadInput_Released(physical))) {
+            g_rb_chord.reserved_physical_buttons &= ~(1u << button);
+        }
+    }
+    /* 新的一次RB按压必须重新经过场景门，不能继承上一轮在战斗/地图中的资格。 */
+    if (PadInput_Pressed(PAD_RB) || (!PadInput_Down(PAD_RB) && !PadInput_Released(PAD_RB)))
+        g_rb_chord.reserve_until_rb_release = 0;
 
     /*
      * 范围声明只活一帧。Battle 或未来的完全待机模块必须在本帧重新声明，
@@ -86,38 +115,9 @@ void InputRouter_BeginFrame(void) {
     g_rb_chord.current_scope = INPUT_RB_CHORD_NONE;
 
     if (!PadInput_GameForeground(NULL) || !PadInput_GamepadConnected()) {
-        /* 失焦/断开取消尚未提交的组合；已经提交的释放锁继续等物理松开，不能回前台补发。 */
+        /* 失焦/断开取消快捷层资格；普通功能的旧按压保护继续等自身松开，不能回前台补发。 */
         g_rb_chord.armed = 0;
         g_rb_chord.grace_until_tick = 0u;
-    }
-    if (g_rb_chord.waiting_for_release) {
-        /*
-         * blocked_physical_buttons 同时包含 RB 和本次动作键。只要还有任意一颗按住，
-         * 事务就继续覆盖后续 Context。第一次观察到全部松开时仍保留整张物理键掩码，
-         * 专门吞掉这一帧的 Released；下一 tick 仍全部松开才真正重新武装。
-         */
-        {
-            u32 button;
-            int any_down = 0;
-            for (button = 0u; button <= (u32)PAD_RT; ++button) {
-                u32 bit = 1u << button;
-                if ((g_rb_chord.blocked_physical_buttons & bit) != 0u &&
-                    PadInput_Down((PadButton)button)) {
-                    any_down = 1;
-                    break;
-                }
-            }
-            if (g_rb_chord.all_released_seen) {
-                g_rb_chord.waiting_for_release = 0;
-                g_rb_chord.armed = 0;
-                g_rb_chord.armed_scope = INPUT_RB_CHORD_NONE;
-                g_rb_chord.grace_until_tick = 0u;
-                g_rb_chord.blocked_physical_buttons = 0u;
-                g_rb_chord.all_released_seen = 0;
-            } else if (!any_down) {
-                g_rb_chord.all_released_seen = 1;
-            }
-        }
     }
 }
 
@@ -130,7 +130,7 @@ void InputRouter_Consume(InputAction action) {
 void InputRouter_CaptureAll(void) {
     g_consumed_actions = (1u << (u32)INPUT_ACTION_COUNT) - 1u;
     g_left_stick_horizontal_step = 0;
-    /* 模态指针会话中取消未提交组合，避免退出Back/调查后使用旧RB；已提交的释放锁独立保持。 */
+    /* 显式模态捕获取消快捷资格，避免退出Back/调查后补发；旧按压的释放保护独立保持。 */
     g_rb_chord.armed = 0;
     g_rb_chord.grace_until_tick = 0u;
 }
@@ -143,8 +143,10 @@ static int input_action_consumed(InputAction action) {
 /* 已被组合事务认领的物理键，在任何语义映射下都不能泄漏给后续 Context。 */
 static int input_physical_button_blocked(PadButton button) {
     u32 value = (u32)button;
-    if (!g_rb_chord.waiting_for_release || value > (u32)PAD_RT) return 0;
-    return (g_rb_chord.blocked_physical_buttons & (1u << value)) != 0u;
+    if (value > (u32)PAD_RT) return 0;
+    /* 普通与Raw读取共用这道门；预留早于ControlModes，RB+A就不会先进入调查。 */
+    return ((g_rb_chord.reserved_frame_buttons | g_rb_chord.reserved_physical_buttons) &
+            (1u << value)) != 0u;
 }
 
 /*
@@ -252,7 +254,7 @@ int InputRouter_Released(InputAction action) {
     }
 }
 
-void InputRouter_SetRbChordScope(InputRbChordScope scope) {
+static void input_update_rb_chord_scope(InputRbChordScope scope) {
     u32 now = Runtime_Tick();
 
     if (!PadInput_GameForeground(NULL) || !PadInput_GamepadConnected() ||
@@ -261,11 +263,13 @@ void InputRouter_SetRbChordScope(InputRbChordScope scope) {
     }
     g_rb_chord.current_scope = scope;
 
-    /* 已成立的组合只等待物理释放，任何页面切换都不能重写这项所有权。 */
-    if (g_rb_chord.waiting_for_release) return;
-
     if (scope == INPUT_RB_CHORD_NONE) {
-        g_rb_chord.armed = 0;
+        /*
+         * 当前页面不允许就停止分发。若快捷层本来已经开启且RB仍按住，只暂停资格；
+         * 回到合法页面可以继续。未曾在合法页面开启的旧RB不会凭空获得资格。
+         * RB若在不允许的页面松开，则直接结束，不把64ms容错带到其它页面。
+         */
+        if (!PadInput_Down(PAD_RB)) g_rb_chord.armed = 0;
         g_rb_chord.armed_scope = INPUT_RB_CHORD_NONE;
         g_rb_chord.grace_until_tick = 0u;
         return;
@@ -282,10 +286,18 @@ void InputRouter_SetRbChordScope(InputRbChordScope scope) {
         return;
     }
 
-    if (!g_rb_chord.armed || g_rb_chord.armed_scope != scope) return;
+    if (!g_rb_chord.armed) return;
 
     if (PadInput_Down(PAD_RB)) {
-        /* RB 还真实按住时不需要计时，组合保持完整武装。 */
+        /* RB还按住就维持快捷层，允许多次动作以及暂停后回到合法范围；不重置动作键边沿。 */
+        g_rb_chord.armed_scope = scope;
+        g_rb_chord.grace_until_tick = 0u;
+        return;
+    }
+
+    /* 松开后的容错只属于松开时的同一合法范围，不能携带到另一个场景。 */
+    if (g_rb_chord.armed_scope != scope) {
+        g_rb_chord.armed = 0;
         g_rb_chord.grace_until_tick = 0u;
         return;
     }
@@ -301,23 +313,52 @@ void InputRouter_SetRbChordScope(InputRbChordScope scope) {
     }
 }
 
+void InputRouter_SetRbChordScope(InputRbChordScope scope) {
+    u32 button;
+    u32 now = Runtime_Tick();
+    int grace_active;
+
+    input_update_rb_chord_scope(scope);
+    /* 只有合法范围可以开始预留；开始后保持到RB松开，跨入新菜单也不能漏出同轮动作。 */
+    if (g_rb_chord.current_scope != INPUT_RB_CHORD_NONE && PadInput_Down(PAD_RB))
+        g_rb_chord.reserve_until_rb_release = 1;
+    grace_active = g_rb_chord.armed &&
+        g_rb_chord.current_scope == g_rb_chord.armed_scope &&
+        g_rb_chord.grace_until_tick != 0u && (i32)(now - g_rb_chord.grace_until_tick) < 0;
+    if (!g_rb_chord.reserve_until_rb_release && !grace_active) return;
+
+    /*
+     * 本帧八键与RB一律不提供普通功能。逐颗登记实际Down/Released，以便RB先松开、
+     * 容错到期或页面改变后，仍把那些已经被预留的按压保护到释放，不凭空补发旧动作。
+     * 组合读取直接读取物理采样，不经过普通门，因此仍能正常执行快捷键。
+     */
+    g_rb_chord.reserved_frame_buttons = INPUT_RB_ACTION_BUTTONS | (1u << PAD_RB);
+    for (button = 0u; button <= (u32)PAD_RT; ++button) {
+        u32 bit = 1u << button;
+        if ((g_rb_chord.reserved_frame_buttons & bit) != 0u &&
+            (PadInput_Down((PadButton)button) || PadInput_Released((PadButton)button)))
+            g_rb_chord.reserved_physical_buttons |= bit;
+    }
+}
+
 int InputRouter_RbChordPressed(InputAction action) {
     PadButton action_button;
     u32 now = Runtime_Tick();
     int modifier_available;
 
-    if (!g_rb_chord.armed || g_rb_chord.waiting_for_release ||
+    if (!g_rb_chord.armed ||
         g_rb_chord.current_scope == INPUT_RB_CHORD_NONE ||
         g_rb_chord.current_scope != g_rb_chord.armed_scope) return 0;
 
     /*
-     * 当前正式组合只接受固定物理 ABXY 与方向上下。
+     * 通用组合接受固定物理ABXY与方向上下左右；战斗仍只绑定原有六项，左右留给未来业务。
      * 确定/取消交换不能改变已经发布的物理快捷含义：
      * RB+南键永远攻击，RB+东键永远道具；RB+西/北键仍分别是技能/防御。
      */
     if (action != INPUT_CONFIRM && action != INPUT_CANCEL &&
         action != INPUT_SPECIAL_X && action != INPUT_SPECIAL_Y &&
-        action != INPUT_NAV_UP && action != INPUT_NAV_DOWN) return 0;
+        action != INPUT_NAV_UP && action != INPUT_NAV_DOWN &&
+        action != INPUT_NAV_LEFT && action != INPUT_NAV_RIGHT) return 0;
 
     modifier_available = PadInput_Down(PAD_RB) ||
         (g_rb_chord.grace_until_tick != 0u &&
@@ -331,17 +372,14 @@ int InputRouter_RbChordPressed(InputAction action) {
          Runtime_Config()->swap_confirm_cancel &&
          input_action_consumed(action == INPUT_CONFIRM ? INPUT_CANCEL : INPUT_CONFIRM))) return 0;
     if (!PadInput_Pressed(action_button)) return 0;
+    if ((g_rb_chord.chord_consumed_buttons & (1u << (u32)action_button)) != 0u) return 0;
 
     /*
-     * 从这一刻起，RB 与动作键都属于本次快捷事务。InputRouter 的普通 Raw/语义读取
-     * 会统一挡住它们，直到 BeginFrame 观察到两颗键都完全松开。
+     * 只消费这颗键本帧的新沿，不关闭整个快捷层。这样按住RB可以A→B→A连续快捷；
+     * 一直按着A没有新的Pressed，不会每帧重复执行。普通/Raw输入由预留掩码独立隔离。
+     * 此处也不延长grace_until_tick，防止容错窗口被连续按键无限续期。
      */
-    g_rb_chord.blocked_physical_buttons =
-        (1u << (u32)PAD_RB) | (1u << (u32)action_button);
-    g_rb_chord.waiting_for_release = 1;
-    g_rb_chord.armed = 0;
-    g_rb_chord.grace_until_tick = 0u;
-    g_rb_chord.all_released_seen = 0;
+    g_rb_chord.chord_consumed_buttons |= 1u << (u32)action_button;
     return 1;
 }
 

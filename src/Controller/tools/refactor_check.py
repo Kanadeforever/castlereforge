@@ -1550,14 +1550,17 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     else:
         result.fail("refactor42确定/取消布局", f"缺少={swap_missing}，鼠标语义={mouse_semantic_ok}，无直接面键={no_direct_face_reads}，快捷固定={fixed_shortcut_ok}，XY固定={xy_unchanged_ok}")
 
-    # 本轮把瞬时RB判断提升为Context范围内的组合事务：跨页锁存，直到按键释放帧也被吞掉。
+    # RB是范围内持续快捷层；每帧消费快捷新沿，普通输入另用掩码保护到每颗键的释放帧。
     chord_transaction_required = [
-        "INPUT_RB_CHORD_GRACE_MS 64u", "blocked_physical_buttons",
-        "waiting_for_release", "all_released_seen",
+        "INPUT_RB_CHORD_GRACE_MS 64u", "chord_consumed_buttons",
+        "g_rb_chord.chord_consumed_buttons = 0u",
         "InputRouter_SetRbChordScope", "InputRouter_RbChordPressed",
         "INPUT_RB_CHORD_BATTLE_TOP", "INPUT_RB_CHORD_FREE_IDLE",
         "action != INPUT_NAV_UP && action != INPUT_NAV_DOWN",
-        "g_rb_chord.blocked_physical_buttons =",
+        "action != INPUT_NAV_LEFT && action != INPUT_NAV_RIGHT",
+        "INPUT_RB_ACTION_BUTTONS", "reserved_frame_buttons", "reserved_physical_buttons",
+        "reserve_until_rb_release", "input_update_rb_chord_scope(scope)",
+        "g_rb_chord.chord_consumed_buttons |=",
     ]
     plugin_chord_source = read_utf8(src / "plugin.c")
     chord_transaction_joined = input_router_code + battle_shortcut_source + control_code + plugin_chord_source
@@ -1569,10 +1572,13 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "ControlModes_AllowsIdleRbChord" in control_code and
         "INPUT_RB_CHORD_FREE_IDLE" in plugin_chord_source
     )
-    if not chord_transaction_missing and chord_scope_ok:
-        result.ok("RB组合事务与范围隔离", "RB+ABXY/上下支持64ms采样容错；成立后跨Context吞到完整释放；只在战斗顶层/完全待机武装")
+    continuous_chord_ok = all(token not in chord_code for token in [
+        "waiting_for_release", "g_rb_chord.armed = 0", "g_rb_chord.grace_until_tick =",
+    ])
+    if not chord_transaction_missing and chord_scope_ok and continuous_chord_ok:
+        result.ok("RB组合事务与范围隔离", "RB持续快捷层支持ABXY/上下左右连续新沿；单份64ms容错；八键普通/Raw功能保护到自身释放；战斗仍只绑定六项")
     else:
-        result.fail("RB组合事务与范围隔离", f"缺少={chord_transaction_missing}，范围={chord_scope_ok}")
+        result.fail("RB组合事务与范围隔离", f"缺少={chord_transaction_missing}，范围={chord_scope_ok}，持续层={continuous_chord_ok}")
 
     # 全局强度与每事件独立时长；模式回切优先级必须压住调查短震。
     rumble_required = [

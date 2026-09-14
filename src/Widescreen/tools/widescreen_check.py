@@ -42,6 +42,11 @@ PROTOCOL_CALLS = [
 ]
 
 SIGNATURES = [
+    (0x00408830, bytes.fromhex("68 C0 F7 89 00 FF 15 04 02 46 00"), "探索GetCursorPos缓冲区"),
+    (0x00408885, bytes.fromhex("8B 15 14 85 97 00"), "探索加回Camera"),
+    (0x0040886A, bytes.fromhex("7E 08"), "探索旧X上界分支"),
+    (0x0043DF3A, bytes.fromhex("FF 15 9C 01 46 00"), "原版UI定位CALL"),
+    (0x0043E189, bytes.fromhex("68 C0 02 24 00 56 8B CE E8"), "主鼠标队列登记"),
     (0x00405960, bytes.fromhex("56 8B F1 57 8B 46 28"), "原版 backing 分配"),
     (0x00405A10, bytes.fromhex("56 8B F1 6A 01 8B 46 70"), "Present"),
     (0x00434710, bytes.fromhex("53 56 6A 00 8B D9 6A 01"), "绘制队列 0x434710"),

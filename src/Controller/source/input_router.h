@@ -116,6 +116,8 @@ typedef enum InputRouteLayer {
  *
  * 这里绝不能把 RB 全局变成修饰键，否则战斗子列表、调查和主 Interface 会同时失去
  * 已经验收的单键 RB 功能。
+ * 通用组合接口支持ABXY与上下左右八键。合法范围按住RB就预留八键的普通/Raw输入，
+ * 未绑定动作也不能回落到旧功能；战斗只绑定上述六项，左右没有新增命令。
  */
 typedef enum InputRbChordScope {
     INPUT_RB_CHORD_NONE = 0,
@@ -135,7 +137,7 @@ int InputRouter_Released(InputAction action);
 /*
  * 模式层专用的原始语义读取：遵守 SwapConfirmCancel，但不受本tick consumed mask影响。
  * 普通页面仍应使用上面的三个接口；只有ControlModes/Investigation这类必须维护物理按住
- * 生命周期的底层状态机才使用 Raw 版本。
+ * 生命周期的底层状态机才使用 Raw 版本。Raw不绕过RB八键预留与已成立组合的释放保护。
  */
 int InputRouter_RawPressed(InputAction action);
 int InputRouter_RawDown(InputAction action);
@@ -149,8 +151,11 @@ void InputRouter_SetRbChordScope(InputRbChordScope scope);
 
 /*
  * 读取一次受保护的 RB 组合按下沿。
- * 组合成立后，RB 与动作面键会被整段锁存到物理松开；即使原版随后切入子菜单，
- * 同一次 B/Y/方向动作也不会被新 Context 再解释成取消、确认或导航。
+ * 接受ABXY与方向上下左右；按固定物理位置，不受确定/取消交换影响。
+ * 合法范围按住RB时八键的普通功能先被预留；本接口仍能读取其物理按下沿。
+ * RB持续按住期间可连续触发不同键，也可松开并重按同一动作键；同一帧同一键只返回一次。
+ * RB松开后共用一份64ms容错，不随动作延长。旧动作键仍保护到自身松开，避免变成普通功能。
+ * 不允许的页面暂停分发；保持RB回到合法页面可继续。失焦、断开或显式模态捕获则取消资格。
  */
 int InputRouter_RbChordPressed(InputAction action);
 

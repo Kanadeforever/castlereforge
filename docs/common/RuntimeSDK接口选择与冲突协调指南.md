@@ -114,7 +114,7 @@ Controller 发布 Runtime Input；其它插件读取快照。Backlog 打开时�
 
 Controller 决定手柄/键鼠所有权与哪些业务场景允许显示原版手形；Widescreen 决定最终输出坐标、
 实际内容区域和世界投影。Widescreen 的 GetCursorPos 使用 Runtime PointerHook 链，不能覆盖
-Controller 或第三方兼容层；最终鼠标只在宽屏 staging 绘制一次。自由探索真实侧区可命中，
+Controller 或第三方兼容层；鼠标在原版768 backing中绘制一次，再合回宽屏 staging。自由探索真实侧区可命中，
 对话、战斗、菜单、电影、过渡和空白侧区只允许经过、不接受点击。
 
 ## 九、何时新增接口

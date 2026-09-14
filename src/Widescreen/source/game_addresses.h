@@ -57,9 +57,8 @@
  * 原版 MouseManager 与软件鼠标绘制入口。
  *
  * MouseManager +0x238/+0x23C 保存游戏当前取得的屏幕坐标；0x43E1B0 绘制时分别减去
- * 0x13F/0x104，得到原版 640×480 backing 中的位置。宽屏必须在中央绘制阶段暂时屏蔽
- * 这一次旧位置，再在最终 854/1120 staging 上按真实输出坐标只绘制一次，否则鼠标永远
- * 被裁在中央 640 区域。
+ * 0x13F/0x104作为SF2图形锚点偏移，它们不是窗口原点。宽屏从原队列移除MouseManager，
+ * 在最终输出前仍用原版768 backing绘制一次，再把结果合回staging。不能改变旧blitter行距。
  */
 #define GLOBAL_MOUSE_MANAGER       0x008E1C4Cu
 #define FN_MOUSE_DRAW              0x0043E1B0u

@@ -12,6 +12,7 @@
 static i32 test_camera_x, test_camera_y;
 static Point32 test_world;
 static u8* test_mouse_pointer;
+static u32 test_queue_count, test_queue_entries[8], test_seen_count, test_seen_entries[8];
 static void FASTCALL fake_draw(void* mouse,void* edx);
 #undef GLOBAL_MOUSE_WORLD_X
 #undef GLOBAL_CAMERA_X
@@ -23,6 +24,10 @@ static void FASTCALL fake_draw(void* mouse,void* edx);
 #define GLOBAL_CAMERA_Y ((SIZE_T)&test_camera_y)
 #define GLOBAL_MOUSE_MANAGER ((SIZE_T)&test_mouse_pointer)
 #define FN_MOUSE_DRAW ((SIZE_T)fake_draw)
+#undef GLOBAL_DRAW_QUEUE_COUNT
+#undef GLOBAL_DRAW_QUEUE_ENTRIES
+#define GLOBAL_DRAW_QUEUE_COUNT ((SIZE_T)&test_queue_count)
+#define GLOBAL_DRAW_QUEUE_ENTRIES ((SIZE_T)test_queue_entries)
 #include "../source/widescreen.c"
 
 static Point32 test_output;
@@ -61,6 +66,12 @@ static void FASTCALL fake_draw(void* mouse,void* edx) {
     if (!original_display_geometry_ok(test_display)) test_bad_geometry=1;
     /* 假绘制器只写一个像素，验证拷回区域与原始backing恢复，而不假装测试真实SF2效果。 */
     ((u16*)test_backing)[(y+48u)*768u+x+64u]=0xF800u;
+}
+static void THISCALL fake_queue(void* self) {
+    (void)self;
+    test_seen_count=test_queue_count;
+    memcpy(test_seen_entries,test_queue_entries,sizeof(test_queue_entries));
+    test_queue_count=0u;
 }
 #define CHECK(x) do { ++checks; if (!(x)) {printf("FAIL %d: %s\n",__LINE__,#x);return 1;} } while(0)
 int main(void) {
@@ -103,6 +114,17 @@ int main(void) {
         /* 小地图左边没有实际世界；图标可经过，输入必须拒绝。 */
         test_flags=CASTLE_GAME_FLAG_FREE_ROAM_CANDIDATE;g_sdk_geometry.left_world_width=20;
         test_output.x=0;CHECK(Hook_GetCursorPos(&p) && p.x==-0x4000);
+        {
+            /* 消息路径：边栏按下、移入内容、松开必须整段消费；下一次内容内新按下可通过。 */
+            CastleWindowMessageV1 message={0};
+            CastleWindowFilterDecisionV1 decision={0};
+            message.message=0x201u;pointer_window_filter(&message,&decision,NULL);
+            CHECK(decision.consume==1u);
+            test_output.x=(i32)g_side_width+320;message.message=0x202u;decision.consume=0u;
+            pointer_window_filter(&message,&decision,NULL);CHECK(decision.consume==1u);
+            message.message=0x201u;decision.consume=0u;
+            pointer_window_filter(&message,&decision,NULL);CHECK(decision.consume==0u);
+        }
         /* 两个边缘的绘制都要保持原版行距、单次调用和backing逐字节恢复。 */
         for(x=0;x<2;++x) {
             memset(test_backing,0x11,sizeof(test_backing));memset(test_staging,0x22,sizeof(test_staging));
@@ -114,6 +136,18 @@ int main(void) {
             CHECK(memcmp(test_backing,test_backup,sizeof(test_backing))==0);
         }
     }
+    /* 队列去重只删除主鼠标对象，保留其它对象和排序键，不临时覆盖游戏显隐。 */
+    test_queue_count=3u;
+    test_queue_entries[0]=10u;test_queue_entries[1]=0x1234u;
+    test_queue_entries[2]=20u;test_queue_entries[3]=(u32)(SIZE_T)test_mouse;
+    test_queue_entries[4]=30u;test_queue_entries[5]=0x5678u;
+    test_mouse[MOUSE_DRAW_ENABLE]=1u;
+    g_original_render_queue=fake_queue;
+    render_queue_without_main_cursor(test_display);
+    CHECK(test_seen_count==2u && test_queue_count==0u);
+    CHECK(test_seen_entries[0]==10u && test_seen_entries[1]==0x1234u);
+    CHECK(test_seen_entries[2]==30u && test_seen_entries[3]==0x5678u);
+    CHECK(test_mouse[MOUSE_DRAW_ENABLE]==1u);
     printf("PASS %d pointer assertions\n",checks);
     return 0;
 }

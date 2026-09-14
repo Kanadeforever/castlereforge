@@ -440,23 +440,33 @@ static int message_ui_is_active(void) {
 /*
  * 中央原版队列仍要绘制全部 UI，但软件鼠标必须延后到最终宽屏 staging 再画一次。
  *
- * 如果这里不临时关闭 MouseManager+0x248，原版会先把鼠标画进 640 backing；随后我们又在
- * 854/1120 staging 按真实输出位置绘制，中央区域就会出现两只鼠标。这个开关只包住一次
- * RenderQueue 调用，返回前恢复原值；没有取得宽屏鼠标坐标时则保留原版路径作为安全回退。
+ * 原队列中的主鼠标对象需要移除，避免中央与最终输出各画一次。其余队列顺序保持；
+ * 没有取得宽屏鼠标坐标时保留原版路径。原生显隐字节始终归游戏和Controller管理。
  */
 static void render_queue_without_main_cursor(void* self) {
     u8* mouse = *(u8* volatile*)GLOBAL_MOUSE_MANAGER;
-    u8 old_enabled;
+    u32 count = *(volatile u32*)GLOBAL_DRAW_QUEUE_COUNT;
+    u32 read_index, write_index = 0u;
+    u8* entries = (u8*)GLOBAL_DRAW_QUEUE_ENTRIES;
 
-    if (!g_output_cursor_valid || !mouse) {
+    if (!g_output_cursor_valid || !mouse || count > DRAW_QUEUE_MAX_ENTRIES) {
         g_original_render_queue(self);
         return;
     }
-
-    old_enabled = *(volatile u8*)(mouse + MOUSE_DRAW_ENABLE);
-    *(volatile u8*)(mouse + MOUSE_DRAW_ENABLE) = 0u;
+    /*
+     * 原版0x43E189把MouseManager自身作为队列对象登记。只去掉这一个对象，所有其它项保序。
+     * 不临时改visible字节：队列里的剧情更新也可能写它，保存/恢复会覆盖真正的显隐变化。
+     * 原RenderQueue照常消费剩余队列并清零；Present再调用鼠标一次，不重放整套GUI。
+     */
+    for (read_index = 0u; read_index < count; ++read_index) {
+        u8* entry = entries + read_index * DRAW_QUEUE_ENTRY_BYTES;
+        if (*(void**)(entry + 4u) == mouse) continue;
+        if (write_index != read_index)
+            Runtime_MemCopy(entries + write_index * DRAW_QUEUE_ENTRY_BYTES, entry, DRAW_QUEUE_ENTRY_BYTES);
+        ++write_index;
+    }
+    *(volatile u32*)GLOBAL_DRAW_QUEUE_COUNT = write_index;
     g_original_render_queue(self);
-    *(volatile u8*)(mouse + MOUSE_DRAW_ENABLE) = old_enabled;
 }
 
 /*
