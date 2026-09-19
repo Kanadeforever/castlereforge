@@ -1,0 +1,19 @@
+﻿地址,当前定义,等级,证据
+0x0040B2D0,EVE VM事件执行循环,A,v0.7C与本次Oracle复核
+0x0040B3B0,EVE Command工厂,A,读取0x40BF2C映射并跳0x40BDC8
+0x0040BF2C,EVE 155-byte opcode→CommandIndex表,A,88合法+67默认
+0x0040BDC8,EVE 89-entry工厂跳转表,A,88合法分支+1默认
+0x004284D0,ENC period-255 XOR,A,当前Oracle直接反汇编
+0x0041F171,BattleUnit+0x84C清0x350,A,rep stosd 0xD4
+0x0041F643,API 0x350记录复制到BattleUnit+0x84C,A,index*0x350 + rep movsd 0xD4
+0x00444240,Enemy_AI主决策,A/结构,unit stride 0xDE4；Enemy_AI*56；rand%100
+0x00444330,候选ID联合FIRTTECH/MagicCon筛选,"A/结构,B/业务名",同ID索引560与64字节记录
+0x004440D0,Enemy_AI与MagicCon加载区,A,路径字符串+文件长度整除+0x4284D0解码
+0x00420170,BattleUnit+0xCF4 Ail2记录指针建立,A,0x39E*index + 0x8A01B0
+0x0042A7D0,Article/Item Effect DamageProcessor,"A/分类,B/字段名",DamageProcessor.CPP+ArticleNO+直接Ail2指针来源
+0x0042C680,恢复点：generic FIRTTECH processor候选,E2,本次未重新闭合；禁止当事实
+0x0042B0D0,恢复点：five-slot status/effect pipeline候选,E2,本次未重新闭合；禁止当事实
+0x0043B360,TSF Writer,A,v0.7C Writer/Reader/159 corpus
+0x0043B510,TSF Reader,A,v0.7C Writer/Reader/159 corpus
+0x0040A160,Entity SCI reader,A/结构,v0.7B与本次Oracle复核
+0x0040AC00,Map SCI reader,A/结构,v0.7B与本次Oracle复核

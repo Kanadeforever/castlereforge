@@ -1,0 +1,193 @@
+{
+  "版本": "v0.6",
+  "结果变量": {
+    "索引": 999,
+    "十六进制": "0x3E7",
+    "用途": "多种条件/尝试型命令的布尔/结果寄存器"
+  },
+  "命令簇": [
+    {
+      "Opcode": "0x51",
+      "Canonical": "YIELD_EVENT_VM_A",
+      "Execute": "0x0040DEC0",
+      "语义": "PC++、清 stage 状态、置 yield flag；另保存当前 record pointer",
+      "证据": "已确认控制流"
+    },
+    {
+      "Opcode": "0x52",
+      "Canonical": "YIELD_EVENT_VM_B",
+      "Execute": "0x0040DEF0",
+      "语义": "PC++、清 stage 状态、置 yield flag",
+      "证据": "已确认控制流"
+    },
+    {
+      "Opcode": "0x82",
+      "Canonical": "NOP",
+      "Execute": "0x0040E960",
+      "语义": "仅 PC++，不置 yield",
+      "证据": "已确认"
+    },
+    {
+      "Opcode": "0x6A",
+      "Canonical": "SAVE_CAMERA_ORIGIN",
+      "Execute": "0x0040E510",
+      "语义": "0x978514/0x978518 → 0x978554/0x978558",
+      "证据": "已确认数据流"
+    },
+    {
+      "Opcode": "0x79",
+      "Canonical": "REMOVE_PARTY_MEMBER",
+      "Execute": "0x0040E620",
+      "参数": "record+4 = u8 role_id",
+      "辅助函数": "0x0043B870",
+      "证据": "已确认"
+    },
+    {
+      "Opcode": "0x7A",
+      "Canonical": "ADD_PARTY_MEMBER",
+      "Execute": "0x0040E670",
+      "参数": "record+4 = u8 role_id",
+      "辅助函数": "0x0043B740",
+      "补充": "队伍最大 5 人",
+      "证据": "已确认"
+    },
+    {
+      "Opcode": "0x7C",
+      "Canonical": "ADJUST_PARTY_CURRENT_RESOURCES",
+      "Execute": "0x0040E6C0",
+      "语义": "对全体当前队员两组 current 资源加 signed delta 并 clamp；A 最低1，B最低0",
+      "证据": "已确认算法，资源业务名未确认"
+    },
+    {
+      "Opcode": "0x7D",
+      "Canonical": "SET_PARTY_RESOURCE_PERCENT",
+      "Execute": "0x0040E720",
+      "语义": "按百分比重设全体当前队员两组 current 资源；A最低1，B最低0；另有固定角色资源预检写 VAR999",
+      "证据": "已确认算法，预检业务意义未确认"
+    },
+    {
+      "Opcode": "0x7E",
+      "Canonical": "ADD_ITEM",
+      "Execute": "0x0040E7B0",
+      "参数": "item_id + quantity + category(0..5)",
+      "证据": "已确认"
+    },
+    {
+      "Opcode": "0x7F",
+      "Canonical": "CONSUME_ITEM_IF_AVAILABLE",
+      "Execute": "0x0040E800",
+      "语义": "跨6类库存统计，足够则逐个移除并 VAR999=1，否则不移除且0",
+      "移除搜索顺序": [
+        5,
+        4,
+        3,
+        2,
+        0,
+        1
+      ],
+      "证据": "已确认"
+    },
+    {
+      "Opcode": "0x80",
+      "Canonical": "ADD_MONEY",
+      "Execute": "0x0040E8A0",
+      "证据": "已由商店买卖路径交叉确认"
+    },
+    {
+      "Opcode": "0x81",
+      "Canonical": "TRY_SPEND_MONEY",
+      "Execute": "0x0040E8F0",
+      "语义": "余额足够时扣减并写结果，否则保持",
+      "结果": "VAR999",
+      "证据": "已由商店买卖路径交叉确认"
+    },
+    {
+      "Opcode": "0x83",
+      "Canonical": "CHECK_ROLE_SLOT_FIELD_EQ",
+      "Execute": "0x0040E990",
+      "语义": "selector 0/1/2 → role +0x90/+0x94/+0x98，与 expected 比较，写 VAR999",
+      "证据": "已确认算法，字段强烈疑似装备槽但未冻结业务名"
+    },
+    {
+      "Opcode": "0x85",
+      "Canonical": "SELECT_PARTY_PRESET_AND_ROLE_BANK",
+      "Execute": "0x0040EA60",
+      "语义": "selector0 清队后加1..5；selector1 清队后加7,8；随后切换 active role data bank",
+      "证据": "已确认数据流，剧情业务意义未确认"
+    },
+    {
+      "Opcode": "0x86",
+      "Canonical": "CHECK_ROLE_STAT_GT",
+      "Execute": "0x0040EB20",
+      "语义": "selector1..6 → role +0x20/+0x58/+0x54/+0x5C/+0x60/+0x64，比较 > threshold，写 VAR999",
+      "证据": "已确认算法，stat 名未知"
+    },
+    {
+      "Opcode": "0x87",
+      "Canonical": "ROLE_SLOT_REPLACE_CANDIDATE",
+      "Execute": "0x0040EC70",
+      "语义": "常规路径替换 role+0x90；可将旧值重新加入库存 category1；特殊新值0xD0会清 role+0x98",
+      "证据": "强证据，确切装备业务语义待定"
+    },
+    {
+      "Opcode": "0x88",
+      "Canonical": "ADD_ROLE_STAT_0x24",
+      "Execute": "0x0040ED10",
+      "语义": "role+0x24 += delta",
+      "证据": "已确认数据流，stat 名未知"
+    },
+    {
+      "Opcode": "0x8C",
+      "Canonical": "REBUILD_EXPLORATION_CONTEXT_AND_YIELD",
+      "Execute": "0x0040ED70",
+      "语义": "调用0x44B1F0后 PC++ 并 yield",
+      "证据": "强证据"
+    },
+    {
+      "Opcode": "0x8D",
+      "Canonical": "MULTIPHASE_TRANSITION_8D",
+      "语义": "多阶段状态机，涉及 VAR998、subevent、manager +FC/+100/+104、Public\\API.ENC、0x44B1F0",
+      "证据": "已确认复杂数据流；禁止提前命名为战斗"
+    },
+    {
+      "Opcode": "0x8E",
+      "Canonical": "AUDIO_CONTROL",
+      "Execute": "0x0040EFC0",
+      "参数": "record+4 channel_selector; +8 audio_id; +C option",
+      "语义": "selector0=MP3；selector1=WAV；audio_id 0 为停止路径",
+      "证据": "已确认路由；option 精确循环/淡入淡出语义未完成"
+    }
+  ],
+  "角色记录": {
+    "stride": "0x350",
+    "资源对A": {
+      "max": "+0x2C",
+      "current": "+0x30",
+      "业务名": "未确认"
+    },
+    "资源对B": {
+      "max": "+0x34",
+      "current": "+0x38",
+      "业务名": "未确认"
+    },
+    "约束": "禁止在未交叉验证前直接命名 HP/MP。"
+  },
+  "库存管理器": {
+    "分类数": 6,
+    "选择分类": "0x00439290",
+    "增加/合并": "0x00439120",
+    "跨类统计": "0x004391C0",
+    "移除一个": "0x00439520"
+  },
+  "金钱管理器": {
+    "偏移": "+0x5DD8",
+    "增加": "0x00439820",
+    "扣减并clamp非负": "0x00439840",
+    "读取": "0x00439870",
+    "交叉证据": [
+      "商店买入约0x0041468F用单价×数量扣款",
+      "商店卖出约0x0041475B按售价折半后加款",
+      "调试路径增加1,000,000"
+    ]
+  }
+}

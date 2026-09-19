@@ -1,0 +1,37 @@
+﻿地址,名称,证据级别,固化12说明
+0x0040AC00,Map SCI 0x473记录Loader,A,按0x473前进源record，按0x38构造runtime entry
+0x00408E80,Map SCI runtime entry parser,A,entry+0保存源Map SCI record*
+0x0040ADA0,Map SCI runtime entries updater,A,selected entry→0x409580；其余→0x409510
+0x0040AE50,selected Map SCI runtime entry accessor,A,base + selected_index*0x38
+0x0040AE70,first Map SCI runtime entry accessor,A,返回entry array base
+0x0040A0C0,MapSCI+0x380 save-entry gate accessor,A,first MapSCI source record+0x380；启用值1经+0x108映射允许Save入口
+0x0040A0D0,MapSCI+0x384 accessor,A,entry->source_record+0x384
+0x0040CCC2,MapSCI+0x380 consumer,A,first entry +0x380，DataCenter+0x108=1-value
+0x0040CEE9,MapSCI+0x384 code12 consumer,A,selected entry +0x384
+0x0040CEEE,code12 MapSCI gate compare,A,要求+0x384==1
+0x0040CEF9,code12 fallback Event activation,A,Event ID3=current EVE slot2
+0x00434B10,DataCenter+0x108 Interface consumer A,A,非零时条件加载Menus\MEN0009.SF2
+0x00435C66,DataCenter+0x108 Interface consumer B,A,控件状态2命中后仅+0x108==0选择state7
+0x0040D715,DataCenter+0x108 clear writer,A,0x40D510入口EDI=0；此处明确写+0x108=0
+0x00409580,selected Map SCI runtime entry active update,A,固化9 saved Event输入失效链的上层对象已识别
+0x00468484,Map SCI默认路径字符串,A,MP0000\MPMP0000.SCI
+0x0040D530,DataCenter+0x108 clear source,A,"xor edi,edi；与0x40D715闭合为+0x108=0"
+0x00434A2A,Interface init author-string reference,A,引用DataCenter Initial Fail.(Interface)
+0x00434B1A,Interface MEN0009 gated load,A,仅DataCenter+0x108非零路径引用Menus\MEN0009.SF2
+0x00435C70,Interface state7 selector,A,"DataCenter+0x108==0时mov ebx,7"
+0x00435DB3,Interface state7 handler,A,读取Interface+0x654子系统
+0x00434E93,Interface Save-subsystem constructor call,A,调用0x4245B0并于0x434E9C保存到+0x654
+0x004245B0,Save menu/interface subsystem constructor,A,引用MEN8004/MEN8005并关联Save路径构造
+0x00425760,Save TSF path builder,A,组合%s%03d%s + Save\Save + .TSF
+0x0040CBF0,EVE opcode0x35正常Interface调度 Execute,A,正常Interface路径；构造前重算DataCenter+0x108
+0x0040CCF2,opcode0x35 Interface ctor call,A,写+0x108后直接调用0x434920
+0x0040D510,EVE opcode0x39休整界面 Execute,A,state0强制+0x108=0并创建0x594休整对象
+0x00413570,休整界面0x594对象构造器,A,加载MEN9001/MEN9002/WAV0002
+0x00413850,休整界面三项更新/分派,A,调态/炼化/歇息三项实际行为
+0x00413980,休整“调态”Interface ctor call,A,直接构造0x434920，绕过opcode0x35重算
+0x004139DB,休整“炼化”子系统 ctor call,A,调用0x40F6D0
+0x00413A6A,休整“歇息”全队双资源恢复循环,A,8×0x350 RoleDefinition；current=max
+0x0040F6D0,炼化子系统构造器,A,引用RefineT.ENC/RefineK.ENC/MEN9103
+0x00469480,MEN9002资源字符串,A,三项休整选择面板
+0x00469494,MEN9001资源字符串,A,休整室内场景
+0x004694A8,WAV0002资源字符串,A,歇息项引用

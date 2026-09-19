@@ -1,0 +1,239 @@
+{
+  "版本": "v0.7D阶段中-固化22（沿用v0.7B文件名；Map背景相机模式公式增量闭合）",
+  "记录大小": 1139,
+  "Reader": "0x0040AC00",
+  "字段消费者": "0x00408E80",
+  "字段": [
+    {
+      "偏移": "+0x65",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "background_camera_parallax_mode",
+      "状态": "结构与数值公式已确认；作者枚举业务名仍未知",
+      "证据": "0x408F3C→0x406660(controller+0x20)→0x4067A0；mode1=trunc(delta/5)，mode2=trunc(7*delta/5)，mode10跳过基值重算，其他正值1:1",
+      "已确认数值行为": {
+        "<=0": "不进入相机相对基值重算",
+        "1": "signed trunc(camera_delta/5)",
+        "2": "signed trunc(7*camera_delta/5)，render专门分支",
+        "10": "跳过基值重算，render专门分支",
+        "其他正值": "1:1 camera_delta"
+      }
+    },
+    {
+      "偏移": "+0x66",
+      "大小": 2,
+      "类型": "i16",
+      "Canonical": "scene_origin_x",
+      "状态": "已确认",
+      "证据": "0x408E80/0x4094B0 场景矩形"
+    },
+    {
+      "偏移": "+0x68",
+      "大小": 2,
+      "类型": "i16",
+      "Canonical": "scene_origin_y",
+      "状态": "已确认",
+      "证据": "同上"
+    },
+    {
+      "偏移": "+0x6A",
+      "大小": 2,
+      "类型": "u16",
+      "Canonical": "world_width",
+      "状态": "已确认",
+      "证据": "0x4094B0 计算 origin+width"
+    },
+    {
+      "偏移": "+0x6C",
+      "大小": 2,
+      "类型": "u16",
+      "Canonical": "world_height",
+      "状态": "已确认",
+      "证据": "0x4094B0 计算 origin+height"
+    },
+    {
+      "偏移": "+0x6E",
+      "大小": 1,
+      "类型": "i8",
+      "Canonical": "background_blit_boolean_option",
+      "状态": "消费者已确认：signed byte存controller+0x1C；普通背景render仅按>0转bool；作者业务名未知",
+      "证据": "0x408F47→0x406660；0x4069F9..0x406A10；mode2/10走专门render分支"
+    },
+    {
+      "偏移": "+0x6F",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "background_scroll_enabled",
+      "状态": "已确认",
+      "证据": "0x4067A0 >0 才更新滚动累加器"
+    },
+    {
+      "偏移": "+0x70",
+      "大小": 2,
+      "类型": "i16",
+      "Canonical": "background_scroll_step_x",
+      "状态": "已确认",
+      "证据": "0x406660/+0x4067A0"
+    },
+    {
+      "偏移": "+0x72",
+      "大小": 2,
+      "类型": "i16",
+      "Canonical": "background_scroll_step_y",
+      "状态": "已确认",
+      "证据": "0x406660/+0x4067A0"
+    },
+    {
+      "偏移": "+0x74",
+      "大小": 100,
+      "类型": "cp950 cstr",
+      "Canonical": "background_resource_path",
+      "状态": "已确认",
+      "证据": "0x408E80"
+    },
+    {
+      "偏移": "+0xD8",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "background_resource_type",
+      "状态": "已确认0=JPEG/1=SF2",
+      "证据": "0x408E80→0x406630/0x406660 or SF2 controller"
+    },
+    {
+      "偏移": "+0xD9",
+      "大小": 100,
+      "类型": "cp950 cstr",
+      "Canonical": "overlay_sf2_a",
+      "状态": "已确认可选路径",
+      "证据": "0x408E80"
+    },
+    {
+      "偏移": "+0x13D",
+      "大小": 100,
+      "类型": "cp950 cstr",
+      "Canonical": "overlay_sf2_b",
+      "状态": "已确认可选路径",
+      "证据": "0x408E80"
+    },
+    {
+      "偏移": "+0x1A1",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "regional_encounter_map_enabled",
+      "状态": "已确认bool语义；所在100-byte区余字段未知",
+      "证据": "0x408E80→0x46F624；0x4035A0 固定加载MP3001\\MP3001.MDT"
+    },
+    {
+      "偏移": "+0x205",
+      "大小": 100,
+      "类型": "cp950 cstr",
+      "Canonical": "local_entity_sci_path",
+      "状态": "已确认",
+      "证据": "0x408E80"
+    },
+    {
+      "偏移": "+0x269",
+      "大小": 100,
+      "类型": "raw",
+      "Canonical": "unknown_block_269",
+      "状态": "主Loader未消费",
+      "证据": "保留原始"
+    },
+    {
+      "偏移": "+0x2CD",
+      "大小": 100,
+      "类型": "cp950 cstr",
+      "Canonical": "event_program_path",
+      "状态": "已确认",
+      "证据": "0x408E80→0x40B210；派生%sMSG→0x403B20"
+    },
+    {
+      "偏移": "+0x331",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "bgm_selector",
+      "状态": "已确认",
+      "证据": "0x408E80→0x4032C0，%s.MP3"
+    },
+    {
+      "偏移": "+0x332",
+      "大小": 65,
+      "类型": "raw",
+      "Canonical": "unknown_block_332",
+      "状态": "主Loader未消费",
+      "证据": "保留原始"
+    },
+    {
+      "偏移": "+0x373",
+      "大小": 5,
+      "类型": "5*u8",
+      "Canonical": "wav_selectors",
+      "状态": "已确认",
+      "证据": "逐个0x403380(value,1)，%s.WAV"
+    },
+    {
+      "偏移": "+0x378",
+      "大小": 4,
+      "类型": "u32",
+      "Canonical": "random_encounters_enabled_raw",
+      "状态": "已确认非零启用；数值大小不参与阈值",
+      "证据": "0x403510：非零时base=150,next=rand()%300+150"
+    },
+    {
+      "偏移": "+0x37C",
+      "大小": 4,
+      "类型": "u32",
+      "Canonical": "initial_encounter_selector_variable_id",
+      "状态": "强结构证据",
+      "证据": "0x44B0D0(varID)→0x403590→0x46F608"
+    },
+    {
+      "偏移": "+0x380",
+      "大小": 4,
+      "类型": "u32",
+      "Canonical": "scene_save_entry_allowed_raw",
+      "状态": "正常Interface存档入口许可结构语义已闭合；启用值=1；opcode0x39休整路径有覆盖生命周期；作者原名未知",
+      "证据": "opcode0x35: 0x40AE70→0x40A0C0→0x40CCC2→0x40CCD6，正常Interface构造前DataCenter+0x108=1-value；0x435C66/70仅+0x108==0选择state7→Save。opcode0x39 state0: 0x40D530/0x40D715强制+0x108=0，“調態”0x413980直接构造Interface并绕过0x35重算。"
+    },
+    {
+      "偏移": "+0x384",
+      "大小": 4,
+      "类型": "u32",
+      "Canonical": "world_item_code12_fallback_slot2_gate_raw",
+      "状态": "已确认code12场景门控结构语义；启用值=1；作者原名未知",
+      "证据": "0x40AE50取selected runtime entry；0x40A0D0读源MapSCI+0x384；0x40CEEE要求值==1才0x40B230(3)，而Event ID3已冻结为当前EVE slot2"
+    },
+    {
+      "偏移": "+0x388",
+      "大小": 235,
+      "类型": "raw",
+      "Canonical": "unknown_tail_388_472",
+      "状态": "当前未命名/RAW PRESERVE",
+      "证据": "本固化已证明+0x380/+0x384被消费；+0x388..+0x472仍不得因当前两个样本全零而删除"
+    }
+  ],
+  "固化22样本边界": {
+    "Map样本数": 2,
+    "当前样本加380值": [
+      0,
+      0
+    ],
+    "当前样本加384值": [
+      0,
+      0
+    ],
+    "加380等于1存档许可正例": 0,
+    "加384等于1code12门控正例": 0,
+    "边界": "当前输入无正例；字段语义来自同SHA RPG.exe的直接consumer链，不能以样本全零否定。",
+    "当前Map样本数": 2,
+    "当前样本加65值": [
+      0,
+      0
+    ],
+    "当前样本加6E值": [
+      0,
+      0
+    ],
+    "说明": "+0x65/+0x6E的公式来自同SHA RPG.exe直接consumer；当前两个样本均0，不提供mode1/2/10资源正例。"
+  }
+}

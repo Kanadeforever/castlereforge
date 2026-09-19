@@ -1,0 +1,32 @@
+﻿模式,名称,机器算法,闭式公式,磁盘正样本
+0,NORMAL_COPY,透明RLE普通拷贝；+0x0B/+0x0D/+0x0F均不参与。,opaque: out=src；skip: 保留dst,True
+1,ALPHA_BLEND_16,源权重 p1，目标权重 16-p1；两个缩放结果逐通道饱和相加。,"out=SatAdd(Scale(src,p1), Scale(dst,16-p1))",True
+2,WEIGHTED_BLEND_16,源、目标使用独立权重 p1/p2；p3 不参与。,"out=SatAdd(Scale(src,p1), Scale(dst,p2))",True
+3,MASKED_DESTINATION_TINT_BLEND,源RLE只决定覆盖位置；源literal像素值被跳过。常量色 p3 先按 p1 缩放，目标按 p2 缩放后逐通道饱和相加。,"C=Scale(p3,p1); out=SatAdd(Scale(dst,p2),C)",True
+4,WEIGHTED_SOURCE_PLUS_CONSTANT_COLOR,常量色 p3 按 p1 缩放，源像素按 p2 缩放，然后逐通道饱和相加。,"C=Scale(p3,p1); out=SatAdd(Scale(src,p2),C)",True
+5,INVERT_SOURCE_COPY,源像素逐位反相后按透明RLE写入。,out=(~src) masked to active pixel format,False
+6,INVERT_DESTINATION_MASK,源RLE只作mask；命中位置把目标像素逐位反相。,out=(~dst) masked to active pixel format,False
+7,LEGACY_LOOKUP_COMPOSITE_7,源像素每个颜色通道分别量化成1..16强度，再用完整目标像素索引对应LUT，只保留该输出通道并拼回。,"RGB555 strength=2+2*floor(channel5/4)；RGB565 R/B=1+floor(channel5/2), G=1+floor(channel6/4)；每通道取 Scale(dst,strength) 的对应通道",True
+8,LEGACY_BRIGHTEN_BY_SOURCE_MAX,先保留清LSB后的源像素，再按源像素最大通道计算目标缩放强度，最后逐通道饱和相加。,"RGB555 s=2+(((31-max5)&0x1C)//2); RGB565 s=1+(((31-max5)&0x1E)//2); out=SatAdd(src_even,Scale(dst,s))",True
+9,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+10,MASKED_DESTINATION_NEIGHBOR_AVERAGE_A,源只作mask，对目标画面的第一组方向邻域求平均。,邻域地址/边界语义见既有规格；本轮未改名为现代滤镜。,True
+11,MASKED_DESTINATION_NEIGHBOR_AVERAGE_B,源只作mask，对目标画面的另一组方向邻域求平均。,邻域地址/边界语义见既有规格。,False
+12,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+13,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+14,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+15,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+16,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+17,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+18,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+19,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+20,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+21,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+22,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+23,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+24,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+25,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+26,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+27,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+28,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+29,FALLBACK_NOOP,原版0..30分派落入fallback/no-op。,无专用处理器,False
+30,SOURCE_ADD_CONSTANT_BITMASK,p2先按像素偶数位掩码；源像素也清通道LSB，然后做16位打包整数加法，再依次AND p1与像素格式偶数位掩码。不是逐通道饱和加法，跨通道进位属于原版行为。,out=((src & evenMask)+(p2 & evenMask)) & p1 & evenMask,False

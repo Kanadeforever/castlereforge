@@ -1,0 +1,26 @@
+﻿地址,当前结构名,固化17结论,证据等级,备注
+0x40D200,EVE opcode0x37 Execute,Battle命令状态机,A/继承固化16,固化16已直接复核；固化17继续有效
+0x40D412,比较record+0x04==0x82,伏龍A特殊初始化门,A/继承固化16,固化16已直接复核；固化17继续有效
+0x40D433,写DataCenter+0xF4,RNG%400+800,A/继承固化16,固化16已直接复核；固化17继续有效
+0x40D450,record+0x04→DataCenter+0xD8,LayoutGR索引,A/继承固化16,固化16已直接复核；固化17继续有效
+0x424430,LayoutGR→LayoutTeam选择,+18 count/+1C IDs,A/继承固化16,固化16已直接复核；固化17继续有效
+0x442920,Battle主虚函数更新,F4递减,A/继承固化16,固化16已直接复核；固化17继续有效
+0x443590,Battle outcome detector,F4==1特殊return4,A/继承固化16,固化16已直接复核；固化17继续有效
+0x4328A0,高层Battle结束状态机,detector4→dispatcher1,A/继承固化16,固化16已直接复核；固化17继续有效
+0x443660,结果分派/奖励,参数1胜利主链,A/继承固化16,固化16已直接复核；固化17继续有效
+0x00411FB0,战斗结果UI外层对象构造,构造0x61C外层结果UI；+0x579初始0；创建+0x600明细子界面,A,全局指针0x89FCC8
+0x00412190,战斗结果UI外层对象析构,Battle清理阶段析构外层结果UI,A,随后全局0x89FCC8清0
+0x00412290,战斗结果UI外层virtual update,根据+0x579推进结果UI状态；退出state完成后清活动标志,A,vtable0x460790+0x18
+0x00412440,战斗结果UI外层启动,启动正常结果UI并置+0x579=1、内部state=1,A,detector1/2/3走此路径；伏龍A detector4跳过
+0x00412570,战斗结果明细子界面构造,独立结果明细/升级子界面；自身+0x579初始0,A,保存于parent+0x600
+0x00412CA0,战斗结果明细子界面virtual update,推进明细子界面活动周期，state2完成后清+0x579,A,vtable0x4607B0+0x18
+0x004133C0,战斗结果明细子界面启动,置child+0x579=1、state+0x644=1并准备内容,A,外层按child+0x64C内容数决定启动
+0x00432090,Battle container构造,容器大小0x24C；+0x244初始化15；+0x248初始化0,A,由EVE opcode0x37创建
+0x00432130,Battle container析构,销毁Battle容器并清全局0x8B01F0,A,API回写后调用
+0x004322C0,Battle子系统/结果UI初始化,分配0x61C结果UI、调用0x411FB0并写0x89FCC8,A,opcode0x37构造Battle后调用
+0x004328A0,Battle结果阶段上层状态机,detector分派→结果UI双活动门→FANIN→15次递减→API回写→销毁,A,D7结果生命周期主入口
+0x0042D4D0,Effect Manager效果句柄创建/取得,结果结束路径以FANIN.SF2为资源创建效果句柄,A,不是cleanup函数
+0x0042D6E0,Effect slot启动/配置,结果路径把0x42D4D0返回的FANIN effect slot交给本函数,A,FANIN一次性启动
+0x004329F7,结果阶段持久回写调用点,call 0x441F60；只在UI双门结束、FANIN已启动、+0x244<=0后到达,A,随后销毁Battle container
+0x00441F60,Battle RoleDefinition→API整记录回写,将FightRole+0x84C整0x350写回API主表,A,固化15已闭合，固化17放入完整提交时序
+0x0046A498,Fight\Other\FANIN.SF2字符串,Battle结果UI结束后使用的Effect Manager转场资源名,A,"真实SF2解析证明视觉上逐步进入RGB(8,8,8)近黑并保持"

@@ -1,0 +1,17 @@
+{
+  "审计": "固化59双轮独立原始输入重放审计",
+  "状态": "PASS",
+  "输入方式": "两轮分别重新解压RPG.exe.org.zip，并分别从multimedia.zip重新提取multimedia/public/Firttech.enc；研究版RPG.exe每轮单独复制。",
+  "重放1主题状态": true,
+  "重放2主题状态": true,
+  "正式JSON与重放1_归一化输入路径后一致": true,
+  "正式JSON与重放2_归一化输入路径后一致": true,
+  "两轮JSON_归一化输入路径后一致": true,
+  "三份CSV逐字节一致": true,
+  "CSV_SHA256": "07b34d7f64acd471fcd6d95c32e6212695897ef9b7855d4e9d74d05153325e28",
+  "原版EXE_SHA256_重放1": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+  "原版EXE_SHA256_重放2": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+  "Firttech_SHA256_重放1": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+  "Firttech_SHA256_重放2": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+  "历史节点说明": "固化37～58既有机器输出本轮不冒充重新研究；其未改性由固化58最终ZIP的966/966继承非Markdown逐字节审计证明。"
+}

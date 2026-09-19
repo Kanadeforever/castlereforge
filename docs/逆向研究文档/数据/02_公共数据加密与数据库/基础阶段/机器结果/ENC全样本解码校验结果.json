@@ -1,0 +1,254 @@
+{
+  "工具版本": "0.7A.0",
+  "原目录": "/mnt/data/multimedia_extracted/multimedia/public",
+  "参考解码目录": "/mnt/data/enc_decoded",
+  "总数": 13,
+  "通过": 13,
+  "失败": 0,
+  "表": [
+    {
+      "表": "levelup",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Levelup.enc",
+      "参考解码": "/mnt/data/enc_decoded/Levelup.bin",
+      "原大小": 404,
+      "解码大小": 404,
+      "解码SHA256": "7b357d2a401c4860e97dac44264d92bc4674d7e38c659f2995bd9e05fb48b44b",
+      "参考SHA256": "7b357d2a401c4860e97dac44264d92bc4674d7e38c659f2995bd9e05fb48b44b",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 4,
+        "预期记录数": 101,
+        "实际记录数": 101,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "magictb",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Magictb.enc",
+      "参考解码": "/mnt/data/enc_decoded/Magictb.bin",
+      "原大小": 3672,
+      "解码大小": 3672,
+      "解码SHA256": "439feaa92b664e7c3518a3e9221d915b1e293e1962d6a5ee6f166d6b543076e1",
+      "参考SHA256": "439feaa92b664e7c3518a3e9221d915b1e293e1962d6a5ee6f166d6b543076e1",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 36,
+        "预期记录数": 102,
+        "实际记录数": 102,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "magiccon",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Magiccon.enc",
+      "参考解码": "/mnt/data/enc_decoded/Magiccon.bin",
+      "原大小": 32000,
+      "解码大小": 32000,
+      "解码SHA256": "a8fb1cb7479cd3db4fafbb68c73bef574f33bf50df65dc49ea81ee96e1118c29",
+      "参考SHA256": "a8fb1cb7479cd3db4fafbb68c73bef574f33bf50df65dc49ea81ee96e1118c29",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 64,
+        "预期记录数": 500,
+        "实际记录数": 500,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "enemy_ai",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Enemy_ai.enc",
+      "参考解码": "/mnt/data/enc_decoded/Enemy_ai.bin",
+      "原大小": 15848,
+      "解码大小": 15848,
+      "解码SHA256": "bbe09efa3a6b969d4cc2a9a3b4e5a7a41e62b5a3c489f34922f747389e235439",
+      "参考SHA256": "bbe09efa3a6b969d4cc2a9a3b4e5a7a41e62b5a3c489f34922f747389e235439",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 56,
+        "预期记录数": 283,
+        "实际记录数": 283,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "refinet",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Refinet.enc",
+      "参考解码": "/mnt/data/enc_decoded/Refinet.bin",
+      "原大小": 504,
+      "解码大小": 504,
+      "解码SHA256": "156730f7aef05e9c3cafb57c2df46d673b8e849be00426d535714cc5f9eee1a7",
+      "参考SHA256": "156730f7aef05e9c3cafb57c2df46d673b8e849be00426d535714cc5f9eee1a7",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 12,
+        "预期记录数": 42,
+        "实际记录数": 42,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "refinek",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Refinek.enc",
+      "参考解码": "/mnt/data/enc_decoded/Refinek.bin",
+      "原大小": 1156,
+      "解码大小": 1156,
+      "解码SHA256": "a7108280cf1fa4fb9df4f6553afd88ac66b09358b9670f8eb74ea3e4bfcef1b4",
+      "参考SHA256": "a7108280cf1fa4fb9df4f6553afd88ac66b09358b9670f8eb74ea3e4bfcef1b4",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 4,
+        "预期记录数": 289,
+        "实际记录数": 289,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "api",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Api.enc",
+      "参考解码": "/mnt/data/enc_decoded/Api.bin",
+      "原大小": 216240,
+      "解码大小": 216240,
+      "解码SHA256": "b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d",
+      "参考SHA256": "b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 848,
+        "预期记录数": 255,
+        "实际记录数": 255,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "ail2",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Ail2.ENC",
+      "参考解码": "/mnt/data/enc_decoded/Ail2.bin",
+      "原大小": 648200,
+      "解码大小": 648200,
+      "解码SHA256": "a85d0904e969700b996ee89134582552bfabb98af76321804af34f9896b051a8",
+      "参考SHA256": "a85d0904e969700b996ee89134582552bfabb98af76321804af34f9896b051a8",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 926,
+        "预期记录数": 700,
+        "实际记录数": 700,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "firttech",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Firttech.enc",
+      "参考解码": "/mnt/data/enc_decoded/Firttech.bin",
+      "原大小": 280000,
+      "解码大小": 280000,
+      "解码SHA256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+      "参考SHA256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 560,
+        "预期记录数": 500,
+        "实际记录数": 500,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "layoutteam",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/LayoutTeam.ENC",
+      "参考解码": "/mnt/data/enc_decoded/LayoutTeam.bin",
+      "原大小": 169672,
+      "解码大小": 169672,
+      "解码SHA256": "2812b0a29f1aca8604cd7044bfcb48c7a3cce90233189a764b4f9f6f014e8c7d",
+      "参考SHA256": "2812b0a29f1aca8604cd7044bfcb48c7a3cce90233189a764b4f9f6f014e8c7d",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 508,
+        "预期记录数": 334,
+        "实际记录数": 334,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "layoutgr",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Layoutgr.enc",
+      "参考解码": "/mnt/data/enc_decoded/Layoutgr.bin",
+      "原大小": 127000,
+      "解码大小": 127000,
+      "解码SHA256": "71ab7931f5489d1bd053243d707089373636f43684f85ce802c54dfecd2bf392",
+      "参考SHA256": "71ab7931f5489d1bd053243d707089373636f43684f85ce802c54dfecd2bf392",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 508,
+        "预期记录数": 250,
+        "实际记录数": 250,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "battlegb",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Battlegb.enc",
+      "参考解码": "/mnt/data/enc_decoded/Battlegb.bin",
+      "原大小": 6204,
+      "解码大小": 6204,
+      "解码SHA256": "46d4bca425789f0514eb5610219b7136584b50233421f8b7db1b3af94685b56e",
+      "参考SHA256": "46d4bca425789f0514eb5610219b7136584b50233421f8b7db1b3af94685b56e",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "fixed_records",
+        "记录大小": 94,
+        "预期记录数": 66,
+        "实际记录数": 66,
+        "整除": true,
+        "几何符合": true
+      },
+      "通过": true
+    },
+    {
+      "表": "miscinfo",
+      "原文件": "/mnt/data/multimedia_extracted/multimedia/public/Miscinfo.enc",
+      "参考解码": "/mnt/data/enc_decoded/Miscinfo.bin",
+      "原大小": 1054,
+      "解码大小": 1054,
+      "解码SHA256": "cd18d110d458fe60928eb874f76453f751489cf2d0341d2c7c250c4ece13e6e9",
+      "参考SHA256": "cd18d110d458fe60928eb874f76453f751489cf2d0341d2c7c250c4ece13e6e9",
+      "字节完全一致": true,
+      "结构检查": {
+        "类型": "blob",
+        "预期大小": 1054,
+        "大小符合": true
+      },
+      "通过": true
+    }
+  ]
+}

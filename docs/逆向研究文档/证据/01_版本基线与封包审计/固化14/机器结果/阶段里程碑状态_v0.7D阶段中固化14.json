@@ -1,0 +1,30 @@
+{
+  "版本": "v0.7D阶段中-固化14",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "直接前代": "v0.7D阶段中-固化13_opcode39休整场景索引静态闭合版",
+  "本轮闭合": [
+    "Interface+0x620导航对象默认MEN0003；DataCenter+0x108非零时同一对象释放旧资源后替换MEN0009",
+    "业务state7=用户可见“天書”入口，后端进入Save\\Save%03d.TSF存档槽子系统",
+    "state7经state-1精确映射MEN0003/MEN0009 Section0 index6",
+    "MEN0009资源A/B：天書标签压暗、index6天書高亮层删除；不是叠加层/警告图",
+    "MapSCI+0x380精确结构语义升级为天書（存档）入口许可，启用值1；DataCenter+0x108为运行时禁用状态"
+  ],
+  "回归": {
+    "SCI与天書门控": "67/67 PASS",
+    "MEN0003_MEN0009资源比较": "PASS",
+    "EVE事件与休整索引": "57/57 PASS",
+    "Battle": "126/126 PASS"
+  },
+  "当前样本缺口": [
+    "MapSCI+0x380==1正例",
+    "MapSCI+0x384==1正例",
+    "更多含opcode0x39与0x96的EVE语料"
+  ],
+  "已关闭待办": [
+    "MEN0009精确合成职责"
+  ],
+  "下一主线": "无新SCI/EVE样本时返回Battle D7 Win/Lose/Battle Result/Reward，随后D8 RNG draw order/deterministic BattleTrace",
+  "当前证据目录": "证据/阶段D/固化14/",
+  "历史固化13机器输出": "数据/阶段D/历史固化13原始输出/"
+}

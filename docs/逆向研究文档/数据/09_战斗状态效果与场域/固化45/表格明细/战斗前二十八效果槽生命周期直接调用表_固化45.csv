@@ -1,0 +1,7 @@
+﻿目标函数,含义,期望callers,实际callers,PASS
+0x004231D0,前28 runtime效果槽 lifecycle reset primitive 的全部direct callers,0x0041F27D; 0x0042329B; 0x00442708; 0x00443F40,0x0041F27D; 0x0042329B; 0x00442708; 0x00443F40,True
+0x0041F230,FightRole复位helper只被构造/析构复位两处直接调用,0x0041F106; 0x0041F1DD,0x0041F106; 0x0041F1DD,True
+0x004231F0,主生存资源归零失效helper的全部direct callers,0x0042070E; 0x00421043,0x0042070E; 0x00421043,True
+0x0041F2B0,角色/API装载helper分别用于战斗编队装载与特殊召唤动态创建,0x0044267C; 0x00443F39,0x0044267C; 0x00443F39,True
+0x0041F580,Public/API.ENC RoleDefinition加载器的唯一direct caller,0x0041F30D,0x0041F30D,True
+0x00443D90,呼叫增援/屍魔召喚动态角色创建入口的唯一direct caller,0x0042040A,0x0042040A,True

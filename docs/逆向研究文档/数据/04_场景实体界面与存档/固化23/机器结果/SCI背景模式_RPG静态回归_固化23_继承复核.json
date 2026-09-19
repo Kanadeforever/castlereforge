@@ -1,0 +1,108 @@
+{
+  "工具版本": "0.7D.6-固化23修正2",
+  "文件": "/mnt/data/RPG.exe",
+  "SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "Oracle哈希匹配": true,
+  "关键验证": [
+    {
+      "类型": "关键字节",
+      "地址": "0x00408F3C",
+      "含义": "Map loader读取record+0x65",
+      "期望": "8a 4b 65",
+      "实际": "8a 4b 65",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x00408F47",
+      "含义": "Map loader以signed byte读取record+0x6E",
+      "期望": "0f be 53 6e",
+      "实际": "0f be 53 6e",
+      "status": "PASS"
+    },
+    {
+      "类型": "直接调用",
+      "地址": "0x00408F6A",
+      "含义": "Map loader把+0x65/+0x6E及滚动参数传入背景控制器构造",
+      "期望目标": "0x00406660",
+      "实际目标": "0x00406660",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x004067A0",
+      "含义": "background controller update读取controller+0x20（来自Map+0x65）",
+      "期望": "8b 41 20 57 85 c0",
+      "实际": "8b 41 20 57 85 c0",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x004067AC",
+      "含义": "mode10跳过相机相对基值重算",
+      "期望": "83 f8 0a 0f 84 8b 00 00 00",
+      "实际": "83 f8 0a 0f 84 8b 00 00 00",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x004067D3",
+      "含义": "mode1和mode2进入两个专门缩放分支，其余正值非10保留1:1",
+      "期望": "48 89 51 04 74 3d 48 75 64",
+      "实际": "48 89 51 04 74 3d 48 75 64",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x004067E7",
+      "含义": "mode2路径对14*delta使用signed /10 magic，等价trunc(7*delta/5)",
+      "期望": "b8 67 66 66 66 d1 e2 f7 ea c1 fa 02",
+      "实际": "b8 67 66 66 66 d1 e2 f7 ea c1 fa 02",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x00406816",
+      "含义": "mode1路径对delta使用signed /5 magic",
+      "期望": "8b 11 b8 67 66 66 66 f7 ea d1 fa",
+      "实际": "8b 11 b8 67 66 66 66 f7 ea d1 fa",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x004069E7",
+      "含义": "render对mode2和mode10走专门blit分支",
+      "期望": "8b 46 20 83 f8 02 74 6b 83 f8 0a 74 66",
+      "实际": "8b 46 20 83 f8 02 74 6b 83 f8 0a 74 66",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x004069F9",
+      "含义": "普通render读取controller+0x1C（来自Map+0x6E）",
+      "期望": "8b 5e 1c 85 db",
+      "实际": "8b 5e 1c 85 db",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x00406A04",
+      "含义": "Map+0x6E在普通render路径仅按>0转换为布尔参数",
+      "期望": "0f 9f c3",
+      "实际": "0f 9f c3",
+      "status": "PASS"
+    }
+  ],
+  "关键验证数量": 11,
+  "关键验证全部通过": true,
+  "Map加65静态变换": {
+    "<=0": "不进入0x4067A0相机相对基值重算。",
+    "1": "base_delta = signed trunc(camera_delta / 5)。",
+    "2": "base_delta = signed trunc(7 * camera_delta / 5)；render另走mode2专门blit。",
+    "10": "跳过相机相对基值重算；render另走mode10专门blit。",
+    "其他正值": "base_delta = camera_delta（1:1）；作者枚举业务名未知。"
+  },
+  "Map加6E静态语义": "signed byte存入controller+0x1C；普通背景render仅以>0转bool传给blit helper。mode2/10专门render分支不使用该bool。作者业务名未知。",
+  "证据边界": "当前multimedia两条Map样本+0x65/+0x6E均为0；公式来自同SHA RPG.exe直接consumer，不能反推出作者枚举名称或未见模式的资源用途。"
+}

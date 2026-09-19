@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "baseline": "固化62最终ZIP独立解压",
+  "baseline_non_markdown": 1032,
+  "inherited_non_markdown_unchanged": 1031,
+  "intentional_modified_inherited_non_markdown": [
+    "工具/youcheng_battle_field_effect_consumer_inspector.py"
+  ],
+  "unexpected_modified_inherited_non_markdown": [],
+  "missing_inherited_files": [],
+  "new_files_before_this_audit_write": 12,
+  "markdown": {
+    "count": 107,
+    "banner_bad": [],
+    "odd_fences": [],
+    "stale_live_assignments": []
+  },
+  "python": {
+    "count": 39,
+    "bad": [],
+    "tool_docs": 39
+  },
+  "structured_before_this_audit_write": {
+    "json_count": 545,
+    "json_bad": [],
+    "csv_count": 60,
+    "csv_bad": []
+  },
+  "formal_status_checks": {
+    "theme": true,
+    "first_audit": true,
+    "replay": true,
+    "preaudit_fail_preserved": true
+  },
+  "cache_files": [],
+  "notes": [
+    "第二轮为只读审计；本JSON写入前不修改主题机器结果、工具或Markdown。",
+    "固化63第一次预审FAIL必须继续保持FAIL，不能被正式PASS文件覆盖。"
+  ]
+}

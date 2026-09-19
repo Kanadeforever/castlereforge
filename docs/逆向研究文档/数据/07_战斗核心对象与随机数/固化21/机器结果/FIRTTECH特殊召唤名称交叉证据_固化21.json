@@ -1,0 +1,19 @@
+{
+  "来源": "/mnt/data/multimedia.zip::multimedia/public/Firttech.enc",
+  "FIRTTECH解码SHA256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+  "记录": [
+    {
+      "ID": "0x161",
+      "名称": "呼叫增援",
+      "说明": "",
+      "记录SHA256": "deadf3ffb36f92d4111045bdeafcc36d6ea0abb94ce9422d07315bb0069440d2"
+    },
+    {
+      "ID": "0x169",
+      "名称": "屍魔召喚",
+      "说明": "",
+      "记录SHA256": "1f7a8529fb9d27a5859cfecdee42c19c8f028fdd4ea9927d45cfca87b82f32b5"
+    }
+  ],
+  "边界": "名称/说明来自原始Firttech.enc；随机执行规则需与当前Oracle静态证据合并。"
+}

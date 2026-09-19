@@ -1,0 +1,156 @@
+﻿Opcode,Opcode十六进制,合法,Canonical名称,中文,证据,Execute,FactoryExecute,Execute与Factory一致,序列化大小,静态最小访问字节,大小证据类型,参数,说明
+0,0x00,True,END_EVENT,结束/停止当前事件,已确认,0x0040BFE0,0x0040BFE0,True,4,,exact,[],
+1,0x01,True,WAIT_LEGACY_TICKS,等待指定 Legacy Tick,已确认,0x0040C000,0x0040C000,True,8,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""tick_count""}]",
+2,0x02,True,SET_VAR,写入脚本变量,已确认,0x0040C080,0x0040C080,True,12,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""var_index""},{""偏移"":""+0x08"",""类型"":""u32→int16"",""名称"":""value""}]",
+3,0x03,True,ADD_VAR,脚本变量加值,已确认,0x0040C0C0,0x0040C0C0,True,12,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""var_index""},{""偏移"":""+0x08"",""类型"":""u32→int16"",""名称"":""delta""}]",
+4,0x04,True,SUB_VAR,脚本变量减值,已确认,0x0040C100,0x0040C100,True,12,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""var_index""},{""偏移"":""+0x08"",""类型"":""u32→int16"",""名称"":""delta""}]",
+5,0x05,True,SHOW_MESSAGE,按当前 Event ID 从当前地图 MSG 取文本并启动对话（与 0x33 同 Execute）,强结构证据,0x0040CB70,0x0040CB70,True,,,unknown,"[{""偏移"":""+0x04/+0x05/+0x06"",""类型"":""u8"",""名称"":""dialogue_ui_args""},{""偏移"":""+0x07"",""类型"":""u32"",""名称"":""message_index_minus_one""},{""偏移"":""+0x0B"",""类型"":""u8"",""名称"":""message_option""}]","0x403B90(current_event_id, cmd+7+1, cmd+0B) 选择 MSG；0x403C60(cmd+4,+5,+6) 初始化表现；随后同时置 0x89F81D/1E，阻塞并 yield。"
+6,0x06,False,,,,,,True,,,unknown,[],
+7,0x07,False,,,,,,True,,,unknown,[],
+8,0x08,False,,,,,,True,,,unknown,[],
+9,0x09,False,,,,,,True,,,unknown,[],
+10,0x0A,False,,,,,,True,,,unknown,[],
+11,0x0B,True,LOAD_NPC,载入 NPC,强证据,0x0040C140,0x0040C140,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""名称/固定区"",""名称"":""npc_name""},{""偏移"":""+0x18/+0x1C/+0x20"",""类型"":""待定"",""名称"":""args""}]",
+12,0x0C,True,UNLOAD_NPC,卸载命名 NPC；可选固定16 Legacy Tick过渡后移除,已确认,0x0040C220,0x0040C220,True,,28,lower_bound,"[{""偏移"":""+0x04"",""类型"":""名称/固定区"",""名称"":""npc_name""},{""偏移"":""+0x18"",""类型"":""u32/枚举"",""名称"":""transition_mode""}]",transition_mode 为1或2时设置全局倒计时0x89F828=16；每Tick调用实体过渡helper并yield，归零后由0x409ED0移除实体。具体视觉表现仍需动态Oracle。
+13,0x0D,True,ENABLE_SCENE_RENDER_OVERRIDE,把场景渲染覆盖状态置为1并主动 yield,已确认数据行为,0x0040C320,0x0040C320,True,4,,exact,[],写 0x89F7B8=1；业务视觉名称仍不提前冻结。
+14,0x0E,False,,,,,,True,,,unknown,[],
+15,0x0F,False,,,,,,True,,,unknown,[],
+16,0x10,False,,,,,,True,,,unknown,[],
+17,0x11,True,SET_NPC_SPEED,设置 NPC 速度,强证据,0x0040C360,0x0040C360,True,,,unknown,[],
+18,0x12,True,SET_NPC_STATE,设置 NPC 状态,强证据,0x0040C3F0,0x0040C3F0,True,,,unknown,[],
+19,0x13,True,SET_NPC_POSITION_FACING,设置 NPC 位置/方向,强证据,0x0040C4A0,0x0040C4A0,True,,,unknown,[],
+20,0x14,True,SET_ENTITY_POSITION,按名称设置场景实体坐标并保留其状态,已确认结构,0x0040C550,0x0040C550,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""名称区"",""名称"":""entity_name""},{""偏移"":""+0x18"",""类型"":""i32"",""名称"":""x""},{""偏移"":""+0x1C"",""类型"":""i32"",""名称"":""y""}]",
+21,0x15,True,SET_ENTITY_STATE_BYTE,按名称修改实体 packed state 的状态字节并保留坐标,已确认结构,0x0040C5C0,0x0040C5C0,True,,,unknown,[],
+22,0x16,True,CONFIGURE_ENTITY_ACTION_STATE,按名称配置实体动作/状态参数，可选择等待,强结构证据,0x0040C640,0x0040C640,True,,,unknown,[],向 0x40A740 传入 +0x18/+0x1C/+0x20/+0x24 四参数，并处理 +0x28/+0x2C/+0x30 状态/阻塞字段；各字段业务名待样本。
+23,0x17,False,,,,,,True,,,unknown,[],
+24,0x18,False,,,,,,True,,,unknown,[],
+25,0x19,True,CONFIGURE_ENTITY_ACTION_RELATIVE_TO_PLAYER,以当前玩家位置为基准配置命名实体动作/目标,强结构证据,0x0040C700,0x0040C700,True,,,unknown,[],
+26,0x1A,True,SET_ENTITY_ACTION_RANGE_E2_E3,设置命名实体第一组 SF2 动作入口/长度,已确认结构,0x0040C7E0,0x0040C7E0,True,,,unknown,[],source SCI +0xE2=start(+0x18 byte)；+0xE3=end(+0x1C)-start+1。直接证明实体记录保存 Section0 start/sequence_length。
+27,0x1B,True,SET_CAMERA_TRACK_ENTITY,把相机跟踪目标切换到命名实体,已确认结构,0x0040C880,0x0040C880,True,,,unknown,[],实体查找成功后写全局 camera target 0x978550，并 yield。
+28,0x1C,True,RESET_CAMERA_TRACK_TO_PLAYER,把相机跟踪目标恢复为当前受控角色,已确认结构,0x0040C8E0,0x0040C8E0,True,4,,exact,[],
+29,0x1D,True,WAIT_SCENE_ENTITY_ACTIONS_COMPLETE,等待当前场景所有实体动作控制器空闲,强结构证据,0x0040C920,0x0040C920,True,4,,exact,[],0x409CB0 扫描 active scene entity list，只要 runtime +0x40 非零就继续 yield/retry；全部为0才 PC++。
+30,0x1E,True,PAN_CAMERA_PROXY_TO,把脚本相机代理实体线性移动到目标坐标,已确认,0x0040C980,0x0040C980,True,,16,lower_bound,"[{""偏移"":""+0x04"",""类型"":""i32"",""名称"":""target_x""},{""偏移"":""+0x08"",""类型"":""i32"",""名称"":""target_y""},{""偏移"":""+0x0C"",""类型"":""u32"",""名称"":""duration_legacy_ticks""}]",查找CP950名称“隱形”的隐藏场景实体并设为camera target；按Legacy Tick线性移动并yield。Core应规范化为ScriptCameraProxy，不必复刻隐藏NPC实现。
+31,0x1F,True,POSITION_ENTITY_RELATIVE_TO_PLAYER,把命名实体放到当前玩家坐标加偏移的位置并设置状态字节,强结构证据,0x0040CAA0,0x0040CAA0,True,,,unknown,[],
+32,0x20,False,,,,,,True,,,unknown,[],
+33,0x21,False,,,,,,True,,,unknown,[],
+34,0x22,False,,,,,,True,,,unknown,[],
+35,0x23,False,,,,,,True,,,unknown,[],
+36,0x24,False,,,,,,True,,,unknown,[],
+37,0x25,False,,,,,,True,,,unknown,[],
+38,0x26,False,,,,,,True,,,unknown,[],
+39,0x27,False,,,,,,True,,,unknown,[],
+40,0x28,False,,,,,,True,,,unknown,[],
+41,0x29,False,,,,,,True,,,unknown,[],
+42,0x2A,False,,,,,,True,,,unknown,[],
+43,0x2B,False,,,,,,True,,,unknown,[],
+44,0x2C,False,,,,,,True,,,unknown,[],
+45,0x2D,False,,,,,,True,,,unknown,[],
+46,0x2E,False,,,,,,True,,,unknown,[],
+47,0x2F,False,,,,,,True,,,unknown,[],
+48,0x30,False,,,,,,True,,,unknown,[],
+49,0x31,False,,,,,,True,,,unknown,[],
+50,0x32,False,,,,,,True,,,unknown,[],
+51,0x33,True,SHOW_MESSAGE_ALIAS_33,对话/消息命令；与 0x05 为不同 Command 类但共享同一 Execute,强结构证据,0x0040CB70,0x0040CB70,True,,,unknown,[],参数解释与 0x05 相同。Factory 中 command index/vtable 不同，Execute 完全相同；Core 可 canonicalize 为同一 SHOW_MESSAGE 并保留 raw_opcode 供调试。
+52,0x34,True,REQUEST_APPLICATION_EXIT,请求退出应用程序主循环,已确认,0x0040CBC0,0x0040CBC0,True,4,4,exact,[],调用0x434900切换app-running状态；主循环随后投递窗口消息并销毁窗口。Core应转成RuntimeExitRequest事件。
+53,0x35,True,RUN_INTERFACE_MENU_DISPATCHER,运行多阶段界面/菜单总调度器,已确认结构语义,0x0040CBF0,0x0040CBF0,True,4,4,exact,[],真实样本中0x35 record由下一条offset证明恰为4字节。内部为异步状态机，创建0x660界面对象并涉及MEN0001/MEN1018/MEN0008/MEN0002/MEN0004/MEN0009、VAR998与deferred continuation。不能缩窄为单一菜单。
+54,0x36,True,OPEN_INTERFACE_SCREEN_WITH_MODE,按模式打开大型界面屏幕并阻塞Event VM,已确认结构语义,0x0040D120,0x0040D120,True,,8,lower_bound,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""interface_mode""}]",写manager+0xCC，清+0x144/+0x148，创建0x5F0对象（ctor 0x413FA0，全局0x89FCD4），随后block/yield。对象包含多子菜单含商店。
+55,0x37,True,RUN_BATTLE_AND_WAIT_RESULT,启动战斗并等待结果,A/直接,0x0040D200,0x0040D200,True,,16,lower_bound,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""layout_group_index""},{""偏移"":""+0x08"",""类型"":""u32/bool-like"",""名称"":""defeat_to_mp0000_event11_flag""},{""偏移"":""+0x0C"",""类型"":""u32"",""名称"":""defeat_target_instruction""}]",多阶段Battle命令。state1将record+0x04写DataCenter+0xD8并创建Fight/Battle对象；Battle初始化再把+0xD8作为LayoutGR索引传给0x424430。state2读取DataCenter+0x118结果。败北时若record+0x08非0则载入MP0000\MPMP0000.SCI并激活Event ID11，否则把record+0x0C写入Event IP。特殊地，layout_group_index==0x82时初始化DataCenter+0xF4=RNG%400+800；真实LayoutGR[130]名称为“伏龍A”。注意这里的数值0x82不是EVE opcode 0x82；后者仍是独立NOP。
+56,0x38,False,,,,,,True,,,unknown,[],
+57,0x39,True,RUN_REST_REFINE_STATUS_HUB,运行“調態/煉化/歇息”休整界面的异步状态机,已确认,0x0040D510,0x0040D510,True,,8,lower_bound,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""men9001_section0_index""}]",state=0时强制DataCenter+0x108=0并创建0x594对象。record+0x04经DataCenter+0xD0传入MEN9001.SF2控制器0x43E6F0，被夹在raw SF2 +0x14 Section0 count定义的合法范围，并最终作为0x428E70的Section0索引实参，因此精确语义为MEN9001初始Section0组合记录索引。当前MEN9001有4个Section0记录0..3，且各自单层引用同号Section1图像；实图显示为四种休整场景布景。MEN9002另行显示“調態/煉化/歇息”三项，不能把该索引误当三项选择index。第0项直接构造Interface；第1项构造读取Public\RefineT.ENC/Public\RefineK.ENC的炼化子系统；第2项将8个RoleDefinition的+0x30恢复为+0x2C、+0x38恢复为+0x34。
+58,0x3A,True,LOAD_SCENE_WITH_WORLD_RESET,载入场景SCI并执行完整世界/相机/视觉状态重置,已确认,0x0040D780,0x0040D780,True,,34,lower_bound,"[{""偏移"":""+0x04"",""类型"":""NUL字符串区"",""名称"":""scene_name""},{""偏移"":""+0x18"",""类型"":""u8/bool-like"",""名称"":""reset_option""},{""偏移"":""+0x19/+0x1D"",""类型"":""u32"",""名称"":""visual_params""},{""偏移"":""+0x21"",""类型"":""u8"",""名称"":""visual_option""}]",构造%s\MP%s.SCI并加载，随后执行world/camera origin reset与视觉helper。与0x3B的轻量LOAD_SCENE必须区分。
+59,0x3B,True,LOAD_SCENE,载入场景/地图,强证据,0x0040D8A0,0x0040D8A0,True,,,unknown,[],
+60,0x3C,True,CONFIGURE_SCENE_VISUAL_EFFECT,在不换图的情况下配置/重置场景视觉效果,已确认结构语义,0x0040D9C0,0x0040D9C0,True,,14,lower_bound,"[{""偏移"":""+0x04"",""类型"":""u8/bool-like"",""名称"":""reset_option""},{""偏移"":""+0x05/+0x09"",""类型"":""u32"",""名称"":""effect_params""},{""偏移"":""+0x0D"",""类型"":""u8"",""名称"":""effect_option""}]",不访问场景路径；调用同场景视觉/effect helper。具体画面效果名称需要动态Oracle。
+61,0x3D,True,SET_ACTIVE_SCENE_SUBSYSTEM_MODE_BYTE,设置当前场景子系统的模式字节,已确认结构语义,0x0040DA50,0x0040DA50,True,,5,lower_bound,"[{""偏移"":""+0x04"",""类型"":""u8"",""名称"":""mode""}]",取得当前scene container（runtime+0x280），将mode零扩展为DWORD写入scene_container+4。最终业务字段名未知。
+62,0x3E,True,RUN_SAVE_SLOT_INTERFACE,运行存档槽位界面的异步状态机,已确认,0x0040DAA0,0x0040DAA0,True,,4,lower_bound,[],创建0x594对象（ctor 0x413B00，全局0x89FCD0），加载Menus\MEN8001.SF2，界面含“地點/等級/日期/時間”；与VAR998/event re-entry联动。静态证据不足以限定为只保存或只读取。
+63,0x3F,False,,,,,,True,,,unknown,[],
+64,0x40,False,,,,,,True,,,unknown,[],
+65,0x41,False,,,,,,True,,,unknown,[],
+66,0x42,False,,,,,,True,,,unknown,[],
+67,0x43,False,,,,,,True,,,unknown,[],
+68,0x44,False,,,,,,True,,,unknown,[],
+69,0x45,False,,,,,,True,,,unknown,[],
+70,0x46,False,,,,,,True,,,unknown,[],
+71,0x47,True,BRANCH_VAR_EQ,变量等于时跳转,已确认,0x0040DC60,0x0040DC60,True,16,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""var_index""},{""偏移"":""+0x08"",""类型"":""i32/与signed WORD变量比较"",""名称"":""compare_value""},{""偏移"":""+0x0C"",""类型"":""u32"",""名称"":""target_instruction""}]",
+72,0x48,True,BRANCH_VAR_NE,变量不等于时跳转,已确认,0x0040DCC0,0x0040DCC0,True,16,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""var_index""},{""偏移"":""+0x08"",""类型"":""i32/与signed WORD变量比较"",""名称"":""compare_value""},{""偏移"":""+0x0C"",""类型"":""u32"",""名称"":""target_instruction""}]",
+73,0x49,True,BRANCH_VAR_GT,变量大于时跳转,已确认,0x0040DD20,0x0040DD20,True,16,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""var_index""},{""偏移"":""+0x08"",""类型"":""i32/与signed WORD变量比较"",""名称"":""compare_value""},{""偏移"":""+0x0C"",""类型"":""u32"",""名称"":""target_instruction""}]",
+74,0x4A,True,BRANCH_VAR_GE,变量大于等于时跳转,已确认,0x0040DD80,0x0040DD80,True,16,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""var_index""},{""偏移"":""+0x08"",""类型"":""i32/与signed WORD变量比较"",""名称"":""compare_value""},{""偏移"":""+0x0C"",""类型"":""u32"",""名称"":""target_instruction""}]",
+75,0x4B,True,BRANCH_VAR_LT,变量小于时跳转,已确认,0x0040DDE0,0x0040DDE0,True,16,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""var_index""},{""偏移"":""+0x08"",""类型"":""i32/与signed WORD变量比较"",""名称"":""compare_value""},{""偏移"":""+0x0C"",""类型"":""u32"",""名称"":""target_instruction""}]",
+76,0x4C,True,BRANCH_VAR_LE,变量小于等于时跳转,已确认,0x0040DE40,0x0040DE40,True,16,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""var_index""},{""偏移"":""+0x08"",""类型"":""i32/与signed WORD变量比较"",""名称"":""compare_value""},{""偏移"":""+0x0C"",""类型"":""u32"",""名称"":""target_instruction""}]",
+77,0x4D,True,GOTO,无条件跳转,已确认,0x0040DEA0,0x0040DEA0,True,8,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""target_instruction""}]",
+78,0x4E,False,,,,,,True,,,unknown,[],
+79,0x4F,False,,,,,,True,,,unknown,[],
+80,0x50,False,,,,,,True,,,unknown,[],
+81,0x51,True,YIELD_EVENT_VM_A,推进后主动结束本轮 Event VM 执行（A 型 marker）,已确认行为,0x0040DEC0,0x0040DEC0,True,,,unknown,[],PC++、清阶段状态并置 yield flag；同时保存当前 record 指针。原作者业务名称未知。
+82,0x52,True,YIELD_EVENT_VM_B,推进后主动结束本轮 Event VM 执行（B 型 marker）,已确认行为,0x0040DEF0,0x0040DEF0,True,4,,exact,[],PC++、清阶段状态并置 yield flag；与 0x51 的区别是未观察到保存 record 指针。不能再简单折叠成普通 NOP。
+83,0x53,True,VISUAL_TRANSITION_RAMP_A,启动并等待视觉转场状态机 A 型,已确认控制流/参数形状,0x0040DF20,0x0040DF20,True,,,unknown,[],"首次调用 0x406F20(cmd+4 byte,0)，之后用 0x406F20(4,0) 轮询完成；全过程 yield。视觉业务名待 Oracle。"
+84,0x54,True,VISUAL_TRANSITION_RAMP_B,启动并等待视觉转场状态机 B 型,已确认控制流/参数形状,0x0040DF90,0x0040DF90,True,,,unknown,[],与 0x53 平行，helper 为 0x406EE0。
+85,0x55,True,VISUAL_TRANSITION_HOLD,驱动/等待转场状态机达到空闲,已确认控制流,0x0040E000,0x0040E000,True,,,unknown,[],使用 0x406F80(cmd+4 byte)；全局 0x468AE8 为转场状态。
+86,0x56,True,VISUAL_TRANSITION_CUSTOM,以五个 u16 参数配置视觉转场状态机,已确认控制流/参数形状,0x0040E060,0x0040E060,True,,,unknown,"[{""偏移"":""+0x04/+0x06/+0x08/+0x0A/+0x0C"",""类型"":""5×u16"",""名称"":""transition_params""}]",调用 0x406FA0；最后一个参数会影响是否等待完成。
+87,0x57,True,RESET_VISUAL_TRANSITION,复位视觉转场状态机,已确认结构,0x0040E0F0,0x0040E0F0,True,4,,exact,[],
+88,0x58,True,CONFIGURE_CAMERA_JITTER,配置相机随机抖动/震动,已确认算法,0x0040E120,0x0040E120,True,,,unknown,"[{""偏移"":""+0x04/+0x08"",""类型"":""i32"",""名称"":""x_bias_y_bias""},{""偏移"":""+0x0C"",""类型"":""i32"",""名称"":""radius""},{""偏移"":""+0x10"",""类型"":""i32"",""名称"":""cadence_threshold""},{""偏移"":""+0x14"",""类型"":""i32/bool-like"",""名称"":""cadence_mode""}]",0x44B500 生成 dx/dy = rand()%(2*radius)-radius+bias，临时加到 camera origin；0x44B590 渲染后撤销。
+89,0x59,True,SET_SCENE_RENDER_OVERRIDE,设置场景渲染覆盖状态,已确认数据行为,0x0040E170,0x0040E170,True,,,unknown,[],写 0x89F7B8；非零时探索 render 绕过 normal active-scene render，走 0x407020。确切视觉业务名待 Oracle。
+90,0x5A,True,VISUAL_TRANSITION_RAMP_A_EX,A 型转场，两字节参数变体,已确认控制流/参数形状,0x0040E1B0,0x0040E1B0,True,,,unknown,[],"0x406F20(cmd+4 byte,cmd+5 byte)；之后轮询完成。"
+91,0x5B,True,VISUAL_TRANSITION_RAMP_B_EX,B 型转场，两字节参数变体,已确认控制流/参数形状,0x0040E230,0x0040E230,True,,,unknown,[],"0x406EE0(cmd+4 byte,cmd+5 byte)；之后轮询完成。"
+92,0x5C,True,HARD_HALT_SPIN,无推进、无 yield 的原版 VM 自旋陷阱,已确认行为,0x0040E2B0,0x0040E2B0,True,4,,exact,[],"Execute 仅 xor eax,eax; ret。若可达会被 VM 立即重复执行。新 Core 不应冻结宿主，必须 trap + trace，并把是否原版故意 hard halt 作为兼容诊断。"
+93,0x5D,False,,,,,,True,,,unknown,[],
+94,0x5E,False,,,,,,True,,,unknown,[],
+95,0x5F,False,,,,,,True,,,unknown,[],
+96,0x60,False,,,,,,True,,,unknown,[],
+97,0x61,False,,,,,,True,,,unknown,[],
+98,0x62,False,,,,,,True,,,unknown,[],
+99,0x63,False,,,,,,True,,,unknown,[],
+100,0x64,False,,,,,,True,,,unknown,[],
+101,0x65,True,SET_PLAYER_POSITION_AND_STATE_BYTE,设置当前受控角色坐标和状态字节,已确认结构,0x0040E2C0,0x0040E2C0,True,,,unknown,[],
+102,0x66,True,SET_PLAYER_POSITION,仅设置当前受控角色坐标,已确认结构,0x0040E320,0x0040E320,True,,,unknown,[],
+103,0x67,True,SET_PLAYER_STATE_BYTE,仅设置当前受控角色 packed state 状态字节,已确认结构,0x0040E370,0x0040E370,True,,,unknown,[],
+104,0x68,True,SWITCH_CONTROLLED_ACTOR_PRESERVE_POSITION,切换当前受控角色并继承旧角色位置，同时恢复相机跟随,已确认结构,0x0040E3D0,0x0040E3D0,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""actor_index""}]",
+105,0x69,True,APPEND_FIXED_ROLE_LIST_ENTRY_BY_SELECTOR,按 selector 向角色相关列表追加固定 ID,已确认数据行为/业务候选,0x0040E440,0x0040E440,True,,,unknown,[],selector1/2/3 分别追加 0x198/0x1BF/0x1A6；列表间距呈 0x350 role stride。与 FIRTTECH/技能高度相关但尚未建立直接调用证据，禁止先命名“学会技能”。
+106,0x6A,True,SAVE_CAMERA_ORIGIN,保存当前相机/世界原点到备份槽,强结构证据,0x0040E510,0x0040E510,True,4,,exact,[],复制 0x978514/0x978518 → 0x978554/0x978558。最终 Core 使用语义相机状态，不保留地址。
+107,0x6B,True,POSITION_PLAYER_RELATIVE_TO_ENTITY,把当前受控角色放到命名实体坐标加偏移的位置并设置状态字节,强结构证据,0x0040E550,0x0040E550,True,,,unknown,[],
+108,0x6C,False,,,,,,True,,,unknown,[],
+109,0x6D,False,,,,,,True,,,unknown,[],
+110,0x6E,False,,,,,,True,,,unknown,[],
+111,0x6F,False,,,,,,True,,,unknown,[],
+112,0x70,False,,,,,,True,,,unknown,[],
+113,0x71,False,,,,,,True,,,unknown,[],
+114,0x72,False,,,,,,True,,,unknown,[],
+115,0x73,False,,,,,,True,,,unknown,[],
+116,0x74,False,,,,,,True,,,unknown,[],
+117,0x75,False,,,,,,True,,,unknown,[],
+118,0x76,False,,,,,,True,,,unknown,[],
+119,0x77,False,,,,,,True,,,unknown,[],
+120,0x78,False,,,,,,True,,,unknown,[],
+121,0x79,True,REMOVE_PARTY_MEMBER,从当前队伍移除角色,已确认,0x0040E620,0x0040E620,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""u8"",""名称"":""role_id""}]",调用 0x43B870；仅在当前队伍非空且 role_id!=0 时执行。
+122,0x7A,True,ADD_PARTY_MEMBER,向当前队伍加入角色,已确认,0x0040E670,0x0040E670,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""u8"",""名称"":""role_id""}]",调用 0x43B740；队伍上限 5，重复角色由 helper 自身去重。
+123,0x7B,False,,,,,,True,,,unknown,[],
+124,0x7C,True,ADJUST_PARTY_CURRENT_RESOURCES,对当前队伍全员的两项 current/max 资源做有符号增减并夹紧,已确认数据行为,0x0040E6C0,0x0040E6C0,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""i32"",""名称"":""resource_a_delta""},{""偏移"":""+0x08"",""类型"":""i32"",""名称"":""resource_b_delta""}]",调用 0x43B8F0 mode=1。资源 A current 位于 role+0x30、max +0x2C，最低夹到1；资源B current +0x38、max +0x34，最低夹到0。业务名称（HP/MP 等）待角色结构正式映射后再冻结。
+125,0x7D,True,SET_PARTY_RESOURCE_PERCENT,按最大值百分比重设当前队伍全员两项 current 资源,已确认数据行为,0x0040E720,0x0040E720,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""i32"",""名称"":""resource_a_percent""},{""偏移"":""+0x08"",""类型"":""i32"",""名称"":""resource_b_percent""}]",调用 0x43B8F0 mode=2：current = max * percent / 100 后夹紧。执行前还对一个固定角色的第二资源做下溢检查并写 VAR999；该附加条件的作者意图仍待语境样本确认。
+126,0x7E,True,ADD_ITEM,向指定库存类别增加物品,已确认,0x0040E7B0,0x0040E7B0,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""i32/u32"",""名称"":""item_id""},{""偏移"":""+0x08"",""类型"":""i32"",""名称"":""quantity""},{""偏移"":""+0x0C"",""类型"":""u32"",""名称"":""category""}]",0x439120；category 取 0..5，共六类库存。item_id 必须 >0。
+127,0x7F,True,CONSUME_ITEM_IF_AVAILABLE,库存数量足够时跨六类消耗指定数量并写 VAR999,已确认,0x0040E800,0x0040E800,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""item_id""},{""偏移"":""+0x08"",""类型"":""i32"",""名称"":""required_count""}]","0x4391C0 统计六类总数；足够则重复调用 0x439520 删除单个，VAR999=1，否则 VAR999=0。删除搜索顺序为类别 5,4,3,2,0,1。"
+128,0x80,True,ADD_MONEY,增加金钱,已确认,0x0040E8A0,0x0040E8A0,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""i32"",""名称"":""amount""}]","0x439820；商店卖出路径调用同 helper，加回折半售价；调试路径一次增加 1,000,000。"
+129,0x81,True,TRY_SPEND_MONEY,金钱足够则扣除并写 VAR999,已确认,0x0040E8F0,0x0040E8F0,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""i32"",""名称"":""amount""}]",0x439870 查询余额；足够则 0x439840 扣除并 VAR999=1，否则不扣且 VAR999=0。
+130,0x82,True,NOP,真正无副作用顺序推进，不主动 yield,已确认行为,0x0040E960,0x0040E960,True,4,,exact,[],与 0x51/0x52 的 yield marker 必须区分。
+131,0x83,True,CHECK_ROLE_SLOT_FIELD_EQ,检查角色三个槽字段之一是否等于目标值并写 VAR999,强结构证据,0x0040E990,0x0040E990,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""role_id""},{""偏移"":""+0x08"",""类型"":""u32"",""名称"":""slot_selector_0_2""},{""偏移"":""+0x0C"",""类型"":""i32/u32"",""名称"":""expected_value""}]",selector 0/1/2 分别读取 role +0x90/+0x94/+0x98。与装备操作高度相关，但三槽的最终业务名称尚未冻结。
+132,0x84,False,,,,,,True,,,unknown,[],
+133,0x85,True,SELECT_PARTY_PRESET_AND_ROLE_BANK,选择两套固定队伍预设之一并切换对应角色数据银行,强结构证据,0x0040EA60,0x0040EA60,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""selector_0_1""}]","selector0 清队伍后加入 1..5；selector1 加入 7,8；随后 0x43AC90 在 +0x98/+0x9C 两套角色数据银行间切换。剧情业务名称待语境确认。"
+134,0x86,True,CHECK_ROLE_STAT_GT,检查角色六个候选数值字段之一是否大于阈值并写 VAR999,强结构证据,0x0040EB20,0x0040EB20,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""role_id""},{""偏移"":""+0x08"",""类型"":""u32"",""名称"":""stat_selector_1_6""},{""偏移"":""+0x0C"",""类型"":""i32"",""名称"":""threshold""}]",selector 映射 role +0x20/+0x58/+0x54/+0x5C/+0x60/+0x64；字段业务名待角色结构章节恢复。
+135,0x87,True,SET_ROLE_SLOT_RETURN_OLD_ITEM_CANDIDATE,角色槽位替换/清除并可把旧值返还库存（装备相关强候选）,强结构证据,0x0040EC70,0x0040EC70,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""role_id""},{""偏移"":""+0x08"",""类型"":""u32"",""名称"":""new_value_or_special""},{""偏移"":""+0x0C"",""类型"":""bool-like"",""名称"":""return_old_to_inventory""}]",常规路径交换 role+0x90；可将旧值加入库存类别1。特殊值 0xD0 清 role+0x98。确切装备槽语义尚未冻结。
+136,0x88,True,ADD_ROLE_FIELD_24,给角色 +0x24 数值字段加值,已确认数据行为,0x0040ED10,0x0040ED10,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""role_id""},{""偏移"":""+0x08"",""类型"":""i32"",""名称"":""delta""}]",角色 +0x24 的业务名称待角色数据表恢复。
+137,0x89,False,,,,,,True,,,unknown,[],
+138,0x8A,False,,,,,,True,,,unknown,[],
+139,0x8B,False,,,,,,True,,,unknown,[],
+140,0x8C,True,REBUILD_EXPLORATION_CONTEXT_AND_YIELD,重建/恢复探索上下文后主动 yield Event VM,强结构证据,0x0040ED70,0x0040ED70,True,4,,exact,[],调用 0x44B1F0，随后 PC++、置 yield flag。
+141,0x8D,True,RUN_START_MENU_DISPATCHER,运行标题/START菜单总调度器,已确认,0x0040EDB0,0x0040EDB0,True,,4,lower_bound,[],创建对象ctor 0x4473F0（全局0x8E241C），直接引用MEN9300..MEN9304、FanIn.SF2、Music000.mp3、字符串“play mp3 fail!(START Menu)”与“NewGame”；后续分派退出、存取档、恢复探索等。
+142,0x8E,True,AUDIO_CONTROL,MP3/WAV 音频控制命令族,已确认通道类型,0x0040EFC0,0x0040EFC0,True,,,unknown,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""channel_selector""},{""偏移"":""+0x08"",""类型"":""u32"",""名称"":""audio_id""},{""偏移"":""+0x0C"",""类型"":""u32"",""名称"":""option""}]",selector=0 进入 MP3 路径（0x4032C0，格式字符串 %s.MP3；audio_id=0 停止当前 MP3）；selector=1 进入 WAV 路径（0x403380，%s.WAV；ID0 为停止路由，非零 ID 具有按缓存句柄停止/播放的切换行为）。option 的精确 loop/fade/播放参数语义仍待恢复。
+143,0x8F,True,CONFIGURE_PROXIMITY_TRIGGER,配置实体碰撞/接近事件触发,强证据,0x0040F070,0x0040F070,True,,,unknown,[],写 source SCI +0xEA，清 +0xEB/+0x73，并设置对象模式/几何状态；由补充基线与当前 EXE 双重验证。
+144,0x90,True,SHIFT_WORLD_POS_X_PLUS_640,当前探索位置 X 增加 640 并同步相机/角色,强结构证据,0x0040F170,0x0040F170,True,4,,exact,[],
+145,0x91,True,SHIFT_WORLD_POS_Y_PLUS_480,当前探索位置 Y 增加 480 并同步相机/角色,强结构证据,0x0040F1D0,0x0040F1D0,True,4,,exact,[],
+146,0x92,True,SHIFT_WORLD_POS_X_MINUS_640,当前探索位置 X 减少 640 并同步相机/角色,强结构证据,0x0040F230,0x0040F230,True,4,,exact,[],
+147,0x93,True,SHIFT_WORLD_POS_Y_MINUS_480,当前探索位置 Y 减少 480 并同步相机/角色,强结构证据,0x0040F290,0x0040F290,True,4,,exact,[],
+148,0x94,True,BRANCH_ON_WORLD_ITEM_RESULT_EQ,比较world-item异步结果物品ID；相等则跳转并清结果，不等时按策略继续或中止,A/直接,0x0040F2F0,0x0040F2F0,True,,16,lower_bound,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""expected_item_id""},{""偏移"":""+0x08"",""类型"":""u32"",""名称"":""target_instruction""},{""偏移"":""+0x0C"",""类型"":""u32/bool-like"",""名称"":""failure_policy""}]",0x89F7D0当前Oracle唯一非零writer为0x40D03A，写入DataCenter+0xEC当前world-item ID；本opcode比较该通道。
+149,0x95,True,BRANCH_IF_WORLD_ITEM_RESULT_NONZERO,world-item异步结果物品ID非零时跳转,A/直接,0x0040F390,0x0040F390,True,,8,lower_bound,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""target_instruction_if_nonzero""}]",读取0x89F7D0；零则顺序前进，非零则PC=record+0x04。
+150,0x96,True,STORE_DEFERRED_EVENT_RESUME_KEYS_AND_EXIT,保存当前 Event 与两个恢复匹配键后退出当前事件,A/直接,0x0040F3E0,0x0040F3E0,True,,12,lower_bound,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""resume_key_a""},{""偏移"":""+0x08"",""类型"":""u32"",""名称"":""resume_key_b""}]",event id→0x89F7F8，cmd+4→0x89F7FC(keyA)，cmd+8→0x89F800(keyB)，随后0x40B340清active Event并yield；code12用keyA==12，code11用keyB==当前物品ID恢复saved Event。
+151,0x97,True,REQUIRE_MOVEMENT_MODE_1_OR_ABORT,要求当前移动状态/模式为1，否则进入原版错误/中止路径,强结构证据,0x0040F430,0x0040F430,True,4,,exact,[],
+152,0x98,True,PLAY_MOVIE,播放预渲染影片,已确认,0x0040F4A0,0x0040F4A0,True,12,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""movie_id""},{""偏移"":""+0x08"",""类型"":""u32/bool-like"",""名称"":""option""}]",
+153,0x99,True,RANDOM_TO_VAR999,生成闭区间随机整数并写入变量 999,已确认,0x0040F620,0x0040F620,True,12,,exact,"[{""偏移"":""+0x04"",""类型"":""i32"",""名称"":""upper""},{""偏移"":""+0x08"",""类型"":""i32"",""名称"":""lower""}]",
+154,0x9A,True,BRANCH_IF_MOVEMENT_NOT_SUCCESS,最近移动状态不为成功时跳转,强证据,0x0040F680,0x0040F680,True,8,,exact,"[{""偏移"":""+0x04"",""类型"":""u32"",""名称"":""target_instruction""}]",0x408D30 返回 1 时顺序推进，否则 PC=target；最终业务命名仍可在更多事件样本后微调。

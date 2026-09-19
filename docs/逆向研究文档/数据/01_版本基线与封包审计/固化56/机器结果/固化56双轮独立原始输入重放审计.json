@@ -1,0 +1,28 @@
+{
+  "节点": "固化56",
+  "阶段": "双轮独立原始输入重放",
+  "输入来源": {
+    "原版": "每轮独立重新解压RPG.exe.org.zip",
+    "资源": "每轮独立重新解压multimedia.zip",
+    "研究版": "/mnt/data/RPG.exe，仅用于已知范围等价复核"
+  },
+  "第一轮": {
+    "总体PASS": true,
+    "JSON_SHA256": "c7769e715dfd6f4d8371ae02c63733996a677ba79da3e98b63f5b171cbbbfa24",
+    "CSV_SHA256": "aba243c78ec74ff95a986998e069629d4ba76cb93a5f3cd1604868c44d6b0612",
+    "日志": "[固化56] 总体结果：PASS\n[固化56] JSON：/mnt/data/solid56_replay_round1/out/固化56.json\n[固化56] CSV ：/mnt/data/solid56_replay_round1/out/固化56.csv"
+  },
+  "第二轮": {
+    "总体PASS": true,
+    "JSON_SHA256": "142dac9bc0ef77a86bbf7dc7fb877c428ec5479d3567976e4d8eae79618c2177",
+    "CSV_SHA256": "aba243c78ec74ff95a986998e069629d4ba76cb93a5f3cd1604868c44d6b0612",
+    "日志": "[固化56] 总体结果：PASS\n[固化56] JSON：/mnt/data/solid56_replay_round2/out/固化56.json\n[固化56] CSV ：/mnt/data/solid56_replay_round2/out/固化56.csv"
+  },
+  "两轮JSON归一化临时路径后完全一致": true,
+  "两轮CSV逐字节完全一致": true,
+  "两轮核心事实与正式包首轮输出一致": true,
+  "继承历史回归": {
+    "说明": "固化55包内保留37～55共19节点的两轮独立回归PASS机器记录；固化56对固化55全部906个非Markdown资产SHA继承通过，因此这些历史回归记录未被篡改。本节点不借封包审计推进其他研究问题。"
+  },
+  "整体PASS": true
+}

@@ -1,0 +1,686 @@
+{
+  "节点": "固化56",
+  "阶段": "文档冻结后的最终只读确认",
+  "说明": "本审计只读取冻结后的文档/代码/数据；除本JSON自身外不修改任何既有项目文件。",
+  "固化55继承非Markdown": {
+    "总数": 906,
+    "缺失": [],
+    "变化": [],
+    "PASS": true
+  },
+  "Markdown冻结状态": {
+    "总数": 93,
+    "UTF8或横幅问题": [],
+    "围栏问题": [],
+    "非中文文档文件名": [],
+    "活跃旧节点冒充当前": [],
+    "冻结SHA256": {
+      "文档/RPG原版与研究版可信基线说明.md": {
+        "size": 11533,
+        "sha256": "2de2bc40585374986853a75a59a982bdabe0d7e57bb87c7bf0f398cbb433f746"
+      },
+      "文档/世界遇敌持续状态鼠标输入事件计数边界说明.md": {
+        "size": 25487,
+        "sha256": "9b53ef319e013982b2cb142815ccd3295f2aa5c8f2abf72e99d17bd3b75840e3"
+      },
+      "文档/事件程序指令词典.md": {
+        "size": 71255,
+        "sha256": "90fa3539768160a7126f8704f8ebe622050777b5be87509bf55729f2e7626950"
+      },
+      "文档/公共数据加密与数据库格式完整规格.md": {
+        "size": 57333,
+        "sha256": "96ae51d79c67be5f7cfc55e7f9d5d523e4fe5befe8dd1d7afd52ff1ca982eddf"
+      },
+      "文档/动画剩余属性槽直接调用边界说明.md": {
+        "size": 21078,
+        "sha256": "6de34198a6af3529a4d100bebf61625fcf76d05ab039457a03c3b9e66ff0bda5"
+      },
+      "文档/动画属性槽目标与自身锚点路由说明.md": {
+        "size": 21900,
+        "sha256": "ce1f0dcdbd2af16dc4d5ac59c245111f989aa7523e1b94948dcb0f5fb160fc41"
+      },
+      "文档/动画属性槽磁盘取值域与效果消费链说明.md": {
+        "size": 21828,
+        "sha256": "7ad20f118c556aed08b7621307d67021b2a901694461fc3d60ed517e9a2dd62e"
+      },
+      "文档/动画渲染模式查表公式与参数路由说明.md": {
+        "size": 33938,
+        "sha256": "9dbf5db62f3c381b0f0a665fb3e27083f13f1487fb88097d0af845cccccf7f68"
+      },
+      "文档/原版存档与规范化游戏状态完整规格.md": {
+        "size": 49509,
+        "sha256": "4f5a4ef43fb1dd186c86a56dcda73373e80d55ce3baf3ed5c0c66abdee9616b0"
+      },
+      "文档/图像动画图层三十二位序列化元数据与运行时直读边界说明.md": {
+        "size": 24002,
+        "sha256": "62954473b4c1cd5fe041fb7946ac9b85a297bb1cfc4ed0ea0750e1cb503f9e01"
+      },
+      "文档/图像动画嵌入音频到波形文件转换与八位无符号语义说明.md": {
+        "size": 30754,
+        "sha256": "ea612f29bb9a4765a846822086bcf77b2c4ee9200c3867e612c7d20d41365a87"
+      },
+      "文档/图像动画资源格式完整规格.md": {
+        "size": 45989,
+        "sha256": "8d2ada1e8372f677091247da74e1a6af249e6ba94b40688f7ae67eb9b1072641"
+      },
+      "文档/地图后半三未知块直接访问负证据说明.md": {
+        "size": 23405,
+        "sha256": "42dc4ee33716bde36624c28f0e3262ede90dbdccdc724c8945ebe2b0627236f1"
+      },
+      "文档/场景与实体数据格式完整规格.md": {
+        "size": 55120,
+        "sha256": "645aaed62cf974939a7fb2f3a862bfd4c73f11398bdd1eca7abc84d6a511d86b"
+      },
+      "文档/场景实体行为与背景模式静态闭合说明.md": {
+        "size": 25975,
+        "sha256": "d57510225aeabe2a85b22c9adc2dd29b50d9a41a686c41653ac8203c61aaddfe"
+      },
+      "文档/实体尾部未知字段直接访问负证据说明.md": {
+        "size": 21447,
+        "sha256": "d87c49d4f03613cb9bdafa750d4932b582764f5675ed4a0d477e154af9887d29"
+      },
+      "文档/工具详细说明_世界遇敌持续状态事件计数调查器.md": {
+        "size": 23522,
+        "sha256": "7a940ce8e3b81ccebe1437484ed81077e7b539e7c3718ebb43fcc04fb5c28e2e"
+      },
+      "文档/工具详细说明_固化包全文件索引器.md": {
+        "size": 20619,
+        "sha256": "6a7f3f5871f0c0e39beb12231cf80d79a88ee5aeccc847ea67965cd273af5ac9"
+      },
+      "文档/工具详细说明_图像动画图层元数据调查器.md": {
+        "size": 22333,
+        "sha256": "b5e7baa42636536a12793812314c4e131a2f7f70721bacd7d9ffd8becee5872d"
+      },
+      "文档/工具详细说明_图像动画嵌入音频调查器.md": {
+        "size": 24188,
+        "sha256": "af1f57ba2f7ac1952a2495aa3a3a7664cdf75b18060c31324051cf2f6128f5ab"
+      },
+      "文档/工具详细说明_幽城事件与图像动画调查器.md": {
+        "size": 34321,
+        "sha256": "267048bce830f71c9d33937b5749ce0df1fc6dba1f0e7424618a7fdeda323809"
+      },
+      "文档/工具详细说明_幽城兼容引擎综合调查器.md": {
+        "size": 27818,
+        "sha256": "109841646d869fe54b37865928d73708966af0d18675a0f6280e49aa51372d9f"
+      },
+      "文档/工具详细说明_幽城加密公共数据调查器.md": {
+        "size": 25278,
+        "sha256": "edeb5e2f995c97986d4d4b1d65843f55511842dfaa6e665bae63b7408f2a1fdb"
+      },
+      "文档/工具详细说明_幽城场景与图像动画调查器.md": {
+        "size": 40373,
+        "sha256": "14c7a638b4a052fd903d7fa2e59cf9c570b22048b8e8752fe26f38cdb36ac4f6"
+      },
+      "文档/工具详细说明_幽城存档与游戏状态调查器.md": {
+        "size": 27829,
+        "sha256": "dffe51c0d6795154e222cea7680278862ae9632aa75995e9a9b696a1f212ec10"
+      },
+      "文档/工具详细说明_幽城战斗核心调查器.md": {
+        "size": 42932,
+        "sha256": "2150487df5ea686652ae7c2c14c7806a5f72439b2fc725850cdc64a13b91e841"
+      },
+      "文档/工具详细说明_幽城样本结构验证器.md": {
+        "size": 27894,
+        "sha256": "d760665d4b8d078d49f419351e7090d5d1aa8a2c8e568d5c2a34a3f0a940864c"
+      },
+      "文档/工具详细说明_幽城资源容器调查器.md": {
+        "size": 27518,
+        "sha256": "6bfdd565975cb8bbf2b1878fce9f3f9890cb6040867f6bcf9ea083819e0ef39d"
+      },
+      "文档/工具详细说明_异格式动画调查器.md": {
+        "size": 24492,
+        "sha256": "cb09dc23af0b7bd8660be88d783c95f9a285d4dcbcf9bb02f77ce209a3be486e"
+      },
+      "文档/工具详细说明_异格式动画运行时请求面与资源语料调查器.md": {
+        "size": 25584,
+        "sha256": "3ac3baacbb55876687e8cf6c140ef326a76b6d1a8cbfa5633f86f8e157b02ee3"
+      },
+      "文档/工具详细说明_战斗三十九槽序列化零块调查器.md": {
+        "size": 19739,
+        "sha256": "3524f59419a933c1169665dfb53b2db0c7076ac3c8285b412aabf5ddfd134f69"
+      },
+      "文档/工具详细说明_战斗互反抵消效果对调查器.md": {
+        "size": 15994,
+        "sha256": "5d68398e518b4fab4dccb6f74b49d7107477023ac5e57d03ac6ddca4dc33aac2"
+      },
+      "文档/工具详细说明_战斗五项核心能力作者名称调查器.md": {
+        "size": 13156,
+        "sha256": "e70f64eadde4718dc54d2a40c894afaefd28e92eb6ba49c05cccca6c89f1eba0"
+      },
+      "文档/工具详细说明_战斗公式选择器调查器.md": {
+        "size": 13746,
+        "sha256": "2aba1f2852b54c0492ae5cf50ff368d222bb55cdca295b095467253466a9c5c4"
+      },
+      "文档/工具详细说明_战斗前二十八效果槽生命周期调查器.md": {
+        "size": 18691,
+        "sha256": "063e7a265cd4144db74afe83b4ff81587c61c4ea91ebe01c9066ab687b924f01"
+      },
+      "文档/工具详细说明_战斗动作类五六可达路径调查器.md": {
+        "size": 10650,
+        "sha256": "6456605ea1a5d5caa69502c4dc96c88b4420e6b4e5179d1ee638106406848ea1"
+      },
+      "文档/工具详细说明_战斗动作类四分派调查器.md": {
+        "size": 11182,
+        "sha256": "f39d5874496513eb24b9d9a9a1b30beb1f9b39d9cb11bf6f4357af530d0160a8"
+      },
+      "文档/工具详细说明_战斗单分支状态表现调查器.md": {
+        "size": 17353,
+        "sha256": "8bae3e717a5ea7303ea4f3a43b91f0829b91555f51be6d5eaf1d8f2fbee2a1a1"
+      },
+      "文档/工具详细说明_战斗单向对向槽与第二字段调查器.md": {
+        "size": 15152,
+        "sha256": "3f2dc5979da2b70200e995d159c4739f1911d14d7379824c31a22e311fd8f1f1"
+      },
+      "文档/工具详细说明_战斗大效果编号与伤害信息下游调查器.md": {
+        "size": 20663,
+        "sha256": "2c06e75679172a28a05fc42ce2452adb23ed77e0a268a4c1b7025dab289fd43a"
+      },
+      "文档/工具详细说明_战斗物品威力与防禦侧修正调查器.md": {
+        "size": 10411,
+        "sha256": "5a13e79d8a60a1f79add031751b4ab237b0bbd8db9d0a7b6ce075d61f30bd26b"
+      },
+      "文档/工具详细说明_战斗状态三十九槽计时量子调查器.md": {
+        "size": 20696,
+        "sha256": "ed8c31af527d42ade972fd2c523186ff2bab8cbcb1dc2a26b5af46353aa25551"
+      },
+      "文档/工具详细说明_战斗状态表现路由调查器.md": {
+        "size": 17973,
+        "sha256": "6b885462d56355dde3a2fc1462eca71713630f606b12f4c8fb13f2c79325bb2b"
+      },
+      "文档/工具详细说明_战斗状态资源选择器十五调查器.md": {
+        "size": 18092,
+        "sha256": "a4190b20804d2e2aa84af44299c78770e5ae1676a8a1bcadfb2a4e54c8950d14"
+      },
+      "文档/工具详细说明_战斗结果分派参数四调查器.md": {
+        "size": 19783,
+        "sha256": "0874484fd6654dc818527cc4db4216f169fbce26f6581b51e3e9ea8b95912887"
+      },
+      "文档/工具详细说明_战斗绝剑凶号资源代价调查器.md": {
+        "size": 14602,
+        "sha256": "4728a20417c3a82c6ba351f55af0efded8bcf3b565d7335c57969293175594ca"
+      },
+      "文档/工具详细说明_数据与证据整理器.md": {
+        "size": 20714,
+        "sha256": "ebe451779be488ec076c8400f9c50df1f942c26e2804058bfb46458f6f380105"
+      },
+      "文档/工具详细说明_旧式逻辑时钟调查器.md": {
+        "size": 23085,
+        "sha256": "94c78eb2da335e5579713d2bf81f69eff6ecb42bef07c11d517a9a55f7ca9318"
+      },
+      "文档/幽城幻剑录兼容引擎完整实施手册.md": {
+        "size": 138740,
+        "sha256": "aa8c9031be6435e0d9826598d7d7e3c22815382ed0d044fa4302b8e233dfdc00"
+      },
+      "文档/幽城幻剑录重制增强目标蓝图.md": {
+        "size": 32607,
+        "sha256": "f721f754b3b6c9ee1aff4b97a4923a52477ee802df6943fb1e1391df9ccfbca0"
+      },
+      "文档/幽城运行时接口规范.md": {
+        "size": 91414,
+        "sha256": "1f6dcf73f36cc1de1e4701310de04c8399ebfb1858dd7f5d015b6d4cbf12aa5a"
+      },
+      "文档/异格式动画压缩包装与标准动画拒绝边界说明.md": {
+        "size": 21916,
+        "sha256": "820166668d63640aa47178b94184fdfb046fe99d658af6eee538e8ce4f1e8a45"
+      },
+      "文档/异格式动画独立结构与界面图集静态重建说明.md": {
+        "size": 29653,
+        "sha256": "4769a2612bdb090e30dc668e85cd1cc5fbfc00b6491d474fc7bda270eec66cff"
+      },
+      "文档/异格式动画运行时请求面与资源语料负证据说明.md": {
+        "size": 32213,
+        "sha256": "d48c60bebc7f3cae52bf5b7b2231984797d2651bb9fd644a14eb3091c6e47169"
+      },
+      "文档/当前静态逆向剩余未知项与所需新证据.md": {
+        "size": 101623,
+        "sha256": "47d3e56dd67cf7879d7f61e198c15f090a1bbe8ef36327a24965c8061ce9e3a2"
+      },
+      "文档/恢复来源与文件完整性说明.md": {
+        "size": 26789,
+        "sha256": "d37ed52523849fecb53bb0de0b37913c14159115c22881f31fb7720acc1cacec"
+      },
+      "文档/战斗七个单分支状态表现槽资源语义与机器行为边界说明.md": {
+        "size": 21615,
+        "sha256": "fd7a23ca256185cea1437acecaed6e219486e8f545cd652d1b84b22232725a69"
+      },
+      "文档/战斗七组互反抵消效果对与作者状态语义边界说明.md": {
+        "size": 23081,
+        "sha256": "ec07d62effdbb8112a266a3a17339a7d2894df03b282273d6b2b3885bc568544"
+      },
+      "文档/战斗三十九槽序列化零块与后十一槽不可生产正值边界说明.md": {
+        "size": 25059,
+        "sha256": "688a0b7d543eef83038d8ce1ed9bbb10e52d61f44a40fd5d195ca808f0f66881"
+      },
+      "文档/战斗五项核心能力作者名称与公式派生量边界说明.md": {
+        "size": 16596,
+        "sha256": "38a9168218ae52d8168bfcb8e7814e5973f243c42f6a999c28e979cebbbb80de"
+      },
+      "文档/战斗公式选择器二至六参数量纲与选择器五除零输入边界说明.md": {
+        "size": 18664,
+        "sha256": "b8224b3b33caa7ef0ef2640b905933ba273d9e5233f0d7f475b534d6f996b3c6"
+      },
+      "文档/战斗冰系单向对向槽与第二字段静态无直读边界说明.md": {
+        "size": 18611,
+        "sha256": "e229ee64df6a3a9f391bb3c87b358210ab480cc9d737ac522f9fa327b7daedcf"
+      },
+      "文档/战斗前二十八效果槽生命周期重置与后十一槽保留边界说明.md": {
+        "size": 21396,
+        "sha256": "22a761902bd36b814f1d58bd486c2bbb76236a300c210df677d4044b0020ffd7"
+      },
+      "文档/战斗动作类五六假计算分支与类六结果表现抑制边界说明.md": {
+        "size": 14037,
+        "sha256": "0ba0230922c4126739d8a3579b290c2d6f1fc7f149a03f84fad4ee9ac31d886a"
+      },
+      "文档/战斗动作类四同参双调用与战场结界语义边界说明.md": {
+        "size": 14791,
+        "sha256": "b7eb7b9c132d7811d88911f4839653ea3e3a000af43e19e66bd27353e02a1129"
+      },
+      "文档/战斗十四路状态表现槽与二十三序列路由边界说明.md": {
+        "size": 21397,
+        "sha256": "a04f215787446c56acae57bbe6e07f7e4dee923d757db5ed8d960b45d0890205"
+      },
+      "文档/战斗大效果编号固定八千与独立物品路径边界说明.md": {
+        "size": 23359,
+        "sha256": "e5a5abdc1cd383356afbaca2517f069499327a497dc615bab7aaa8ce03927da4"
+      },
+      "文档/战斗核心路线卡与恢复入口.md": {
+        "size": 91883,
+        "sha256": "0c2cce232d196957043b12bf0ee82e7591828b2d17cb2d56e960b199c2f72ad4"
+      },
+      "文档/战斗核心逆向研究规格.md": {
+        "size": 106398,
+        "sha256": "b4c3ce2d0ceea632530a8d15519f61fa7d27d32265e25e8c25082679c947d3c8"
+      },
+      "文档/战斗物品威力与防禦侧修正字段作者文字边界说明.md": {
+        "size": 12922,
+        "sha256": "de134795e73a7043190dc1f6e0bab3c832bfb37775255b2c95b9ecc25159c93e"
+      },
+      "文档/战斗状态三十九槽二十赫兹递减量子与门控边界说明.md": {
+        "size": 26710,
+        "sha256": "42e417b973d044199a62dc79939216e79259eed0947d2c9690d5f719916dd322"
+      },
+      "文档/战斗状态资源选择器十五静态无生产者边界说明.md": {
+        "size": 17500,
+        "sha256": "74947ee4c1a7324364610af25516febc88580dec306419872abc46f5e677d065"
+      },
+      "文档/战斗界面双表下游严格动画构造链说明.md": {
+        "size": 20727,
+        "sha256": "1680e2605954fb902b746aed184d649e2ba47dfc66ea09a8f28003d9088cf17f"
+      },
+      "文档/战斗界面编号资源对象链与双表路由说明.md": {
+        "size": 20924,
+        "sha256": "ff876dea86994da8c49e008fd78ae6b3038f3a7d589f8b85ce51b73f23511126"
+      },
+      "文档/战斗界面调用图与异格式动画不可达边界说明.md": {
+        "size": 22759,
+        "sha256": "5049e9f0f6580e1e51e33f97db74acda0049fa91b28a296c75738982a6f25037"
+      },
+      "文档/战斗结果分派参数四静态无生产者与检测器四改写边界说明.md": {
+        "size": 22190,
+        "sha256": "4e6c05c89dece443463265b29d8c5b86a641adfce99cbba7ee2289f29d2624fc"
+      },
+      "文档/战斗绝剑凶号最大主资源百分比代价与最低一点保留边界说明.md": {
+        "size": 17755,
+        "sha256": "de8d8e61de5395ae2a5251cc993cc43896bc36e4745ce9e75bbd3df91b290bef"
+      },
+      "文档/战斗阶段未复核线索与原始产物追索清单.md": {
+        "size": 35939,
+        "sha256": "aaf6f186fd69be292c31859addce14b20ef74802a4c44fa7d5811f811aec7bcd"
+      },
+      "文档/战斗阶段证据分级与恢复记录.md": {
+        "size": 82122,
+        "sha256": "118251d03eddb6d0e9abbc364fe56f06dc5bd0f84cf20c7790ba201bb2f883a8"
+      },
+      "文档/截至当前版本的完整接档说明.md": {
+        "size": 410058,
+        "sha256": "8046b81bc1be2998652557757530ac2ff38c32a8f8dd3379d138944a5ef7637f"
+      },
+      "文档/数据与证据整理审计报告.md": {
+        "size": 40732,
+        "sha256": "8018facbed34b3796b7f85bec8afaa346473a109ac251359626731ccb22f210c"
+      },
+      "文档/数据与证据目录说明.md": {
+        "size": 41249,
+        "sha256": "0bcebca7cdb2fb7b7026eb21a4aeea80aed9dbdb0d5bd7fcaad5155287f05947"
+      },
+      "文档/文档全面审查与修订记录.md": {
+        "size": 141859,
+        "sha256": "a8b42edab2893726c3a6d9f48c0b2dbac5eb30a0d3ba7beb67678d0770076a1a"
+      },
+      "文档/文档包说明.md": {
+        "size": 57801,
+        "sha256": "7c225b622eb38704151622bd2591ebddfc04f3f3a9341ca72f3ca28020bc1618"
+      },
+      "文档/旧式逻辑时钟二十赫兹与主循环单步调度说明.md": {
+        "size": 29096,
+        "sha256": "58039c93ea66b4d1f21b88680fac34dbd57128c7da6f57474df24d02ca2b57fc"
+      },
+      "文档/显示定时配置与实体双事件触发协议静态闭合说明.md": {
+        "size": 28140,
+        "sha256": "db30f7a6ff508aba92e9cdd66e4d3147866b3ff29dcfd93e7d67f5bb0646f60b"
+      },
+      "文档/本次核对与合并审计报告.md": {
+        "size": 47057,
+        "sha256": "030027b3e90a1cae4cf059b2f4dd831ac1e91d4e5e3d7df9c3330c08e080ddb3"
+      },
+      "文档/源包全文件遍历审计清单.md": {
+        "size": 87327,
+        "sha256": "e2b7a71f6eb1cb01ca5fec5a02ac07b6a32ec25ff9651acedb19ab3470afa96d"
+      },
+      "文档/系统资源容器与音乐列表配置补证说明.md": {
+        "size": 32746,
+        "sha256": "ba1f6c9e83aaf141023afc9dfbd5b0b2b202e2698f911550da9dc60f6d9d54a0"
+      },
+      "文档/补充线程证据交叉复核记录.md": {
+        "size": 24729,
+        "sha256": "b65507c021bbc2a8303c4c1f13d54a368bb3ecca1df693c19c9932db7c291a2f"
+      },
+      "文档/资源与逆向证据索引.md": {
+        "size": 127671,
+        "sha256": "7c814689021e1c319da8128fcd7e491f1c35af8b19489e1be4591de7b89291b7"
+      },
+      "文档/资源容器目录与加载协议静态闭合说明.md": {
+        "size": 34876,
+        "sha256": "9b932b7d4763c901d887f5ee691ac819b733c5cfbd0050e0ef08e41258e288d2"
+      },
+      "文档/逆向分析方法与本地人工智能接续工作规范.md": {
+        "size": 44033,
+        "sha256": "8089c8976c1dcb574838e25027b451c0a596cf1cfe3c1e7f088f08f135185266"
+      }
+    },
+    "PASS": true
+  },
+  "Python工具": {
+    "总数": 32,
+    "失败": [],
+    "详细": [
+      {
+        "文件": "工具/organize_data_evidence.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/package_file_indexer.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_12f_resource_cost_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_big_effect_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_class4_dispatch_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_class56_dispatch_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_core_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_core_stat_names_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_effect_lifecycle_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_effect_pair_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_formula_selector_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_item_power_defense_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_one_way_counterpart_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_result_dispatch_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_runtime_clock_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_selector15_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_single_status_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_status_presentation_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_battle_tail_slots_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_compatibility_engine_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_enc_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_eve_sf2_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_legacy_clock_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_resource_container_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_saf_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_saf_runtime_surface_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_sample_structure_validator.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_sci_sf2_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_sf2_audio_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_sf2_layer_metadata_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_tsf_gamestate_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "工具/youcheng_world_encounter_duration_inspector.py",
+        "AST": true,
+        "compile": true,
+        "help_returncode": 0,
+        "help": true
+      }
+    ],
+    "PASS": true
+  },
+  "工具详细说明": {
+    "总数": 32,
+    "固化56专项说明存在": true,
+    "PASS": true
+  },
+  "固化56新工具注释": {
+    "总行数": 1022,
+    "中文纯注释行": 190,
+    "最低门槛": 120,
+    "PASS": true
+  },
+  "数据解析_写入本审计前": {
+    "JSON总数": 483,
+    "JSON错误": [],
+    "CSV总数": 53,
+    "CSV错误": [],
+    "PASS": true
+  },
+  "关键状态": {
+    "第一轮正式审计": {
+      "文件": "数据/固化56/固化56代码工具文档与数据第一轮审计.json",
+      "整体PASS": true,
+      "PASS": true
+    },
+    "双轮独立输入重放": {
+      "文件": "数据/固化56/固化56双轮独立原始输入重放审计.json",
+      "整体PASS": true,
+      "PASS": true
+    },
+    "第二轮全包只读审计": {
+      "文件": "数据/固化56/固化56第二轮全包只读审计.json",
+      "整体PASS": true,
+      "PASS": true
+    },
+    "固化56主题调查": {
+      "文件": "数据/固化56/战斗动作类五六可达路径调查.json",
+      "总体PASS": true,
+      "PASS": true
+    },
+    "PASS": true
+  },
+  "预审失败历史保留": {
+    "记录": [
+      {
+        "文件": "数据/固化56/固化56预审失败记录_旧节点状态扫描与文档包入口残留.json",
+        "整体PASS": false,
+        "保留为FAIL": true
+      },
+      {
+        "文件": "数据/固化56/固化56预审失败记录_第二轮横幅匹配条件过严.json",
+        "整体PASS": false,
+        "保留为FAIL": true
+      }
+    ],
+    "PASS": true
+  },
+  "缓存污染": {
+    "项目": [],
+    "数量": 0,
+    "PASS": true
+  },
+  "整体PASS": true
+}

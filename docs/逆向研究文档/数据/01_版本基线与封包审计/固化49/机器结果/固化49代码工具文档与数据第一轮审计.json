@@ -1,0 +1,160 @@
+{
+  "status": "PASS",
+  "audit_round": "first",
+  "date": "2026-08-19",
+  "counts_before_audit_json": {
+    "files": 904,
+    "markdown": 78,
+    "python_tools": 25,
+    "tool_docs": 25,
+    "json": 430,
+    "csv": 46
+  },
+  "inheritance": {
+    "solid48_non_markdown_total": 817,
+    "byte_identical": 817,
+    "missing": [],
+    "mismatch": []
+  },
+  "documents": {
+    "pass": 78,
+    "total": 78,
+    "first_line_bad": [],
+    "filename_stem_bad": []
+  },
+  "tools": {
+    "pass": 25,
+    "total": 25,
+    "failures": [],
+    "tool_docs": 25,
+    "missing_tool_refs": [],
+    "new_tool_comment_stats": {
+      "total_lines": 628,
+      "comment_lines": 39,
+      "chinese_comment_lines": 33,
+      "note": "另含大量中文模块/类/函数docstring；并非只有函数顶部说明，关键常量、机器码、扫描边界与主流程均有行内中文解释。"
+    }
+  },
+  "data": {
+    "json_pass": 430,
+    "json_total": 430,
+    "json_bad": [],
+    "csv_pass": 46,
+    "csv_total": 46,
+    "csv_bad": []
+  },
+  "cache": [],
+  "formal_solid49_output_exact_match": {
+    "json": true,
+    "csv": true
+  },
+  "core_regression": {
+    "solid48_to_solid37_nodes": 12,
+    "all_pass": true,
+    "nodes": [
+      {
+        "solidification": 48,
+        "pass": true,
+        "detail": {
+          "RPG_org_SHA身份匹配": true,
+          "机器码断言": true,
+          "作者施加文本锚点": true,
+          "专用解除链锚点": true
+        }
+      },
+      {
+        "solidification": 47,
+        "pass": true,
+        "detail": {
+          "machine": "31/31",
+          "reciprocal_pairs_exact": true,
+          "author_anchors": "16/16"
+        }
+      },
+      {
+        "solidification": 46,
+        "pass": true,
+        "detail": {
+          "route": "21/21",
+          "constructor_clamp": "11/11"
+        }
+      },
+      {
+        "solidification": 45,
+        "pass": true,
+        "detail": {
+          "machine": "23/23",
+          "direct_calls": "6/6"
+        }
+      },
+      {
+        "solidification": 44,
+        "pass": true,
+        "detail": {
+          "machine": "20/20",
+          "all39_zero": "9945/9945",
+          "tail11_zero": "2805/2805"
+        }
+      },
+      {
+        "solidification": 43,
+        "pass": true,
+        "detail": {
+          "machine": "15/15"
+        }
+      },
+      {
+        "solidification": 42,
+        "pass": true,
+        "detail": {
+          "通过": 11,
+          "总数": 11,
+          "PASS": true
+        }
+      },
+      {
+        "solidification": 41,
+        "pass": true,
+        "detail": {
+          "通过": 13,
+          "总数": 13,
+          "PASS": true
+        }
+      },
+      {
+        "solidification": 40,
+        "pass": true,
+        "detail": {
+          "machine": "10/10"
+        }
+      },
+      {
+        "solidification": 39,
+        "pass": true,
+        "detail": {
+          "layers": 11184,
+          "standard_sf2": 505
+        }
+      },
+      {
+        "solidification": 38,
+        "pass": true,
+        "detail": {
+          "machine": "29/29"
+        }
+      },
+      {
+        "solidification": 37,
+        "pass": true,
+        "detail": {
+          "machine": "29/29",
+          "sf2_occurrences": 672,
+          "unique_sha": 506,
+          "standard_sf2": 505,
+          "section3": 132,
+          "audio_refs": "147/147"
+        }
+      }
+    ]
+  }
+}

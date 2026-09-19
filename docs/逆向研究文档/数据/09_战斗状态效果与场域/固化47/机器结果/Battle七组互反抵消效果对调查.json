@@ -1,0 +1,1052 @@
+{
+  "tool_version": "0.7D-solid47.0",
+  "status": "PASS",
+  "inputs": {
+    "RPG.exe": {
+      "size": 462848,
+      "sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f"
+    },
+    "Firttech.enc": {
+      "size": 280000,
+      "sha256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d"
+    },
+    "Ail2.ENC": {
+      "size": 648200,
+      "sha256": "a24784316c2bd23fc2683637ab860c0e54f1b4175f6db990398843bd0a13c5d8"
+    }
+  },
+  "core_correction": {
+    "solid46_historical_label": "raw ID -> runtime slot mapping",
+    "solid47_current_label": "raw ID -> counterpart runtime slot used by cancellation/residual arithmetic",
+    "normal_effect_self_index_note": "normal raw ID 0..27仍按原raw ID进入其自身pending/runtime协议；0x46A668不是自身目的槽表"
+  },
+  "counterpart_table": [
+    {
+      "raw_id": 0,
+      "counterpart_slot": 21,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 1,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 2,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 3,
+      "counterpart_slot": 22,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 4,
+      "counterpart_slot": 23,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 5,
+      "counterpart_slot": 24,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 6,
+      "counterpart_slot": 25,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 7,
+      "counterpart_slot": 26,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 8,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 9,
+      "counterpart_slot": 8,
+      "second_dword": 0,
+      "关系": "单向映射"
+    },
+    {
+      "raw_id": 10,
+      "counterpart_slot": 15,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 11,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 12,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 13,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 14,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 15,
+      "counterpart_slot": 10,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 16,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 17,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 18,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 19,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 20,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    },
+    {
+      "raw_id": 21,
+      "counterpart_slot": 0,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 22,
+      "counterpart_slot": 3,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 23,
+      "counterpart_slot": 4,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 24,
+      "counterpart_slot": 5,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 25,
+      "counterpart_slot": 6,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 26,
+      "counterpart_slot": 7,
+      "second_dword": 0,
+      "关系": "严格互反2-cycle"
+    },
+    {
+      "raw_id": 27,
+      "counterpart_slot": -1,
+      "second_dword": 0,
+      "关系": "无对向槽"
+    }
+  ],
+  "counterpart_table_exact": true,
+  "counterpart_second_dword_all_zero": true,
+  "discovered_reciprocal_pairs": [
+    [
+      0,
+      21
+    ],
+    [
+      3,
+      22
+    ],
+    [
+      4,
+      23
+    ],
+    [
+      5,
+      24
+    ],
+    [
+      6,
+      25
+    ],
+    [
+      7,
+      26
+    ],
+    [
+      10,
+      15
+    ]
+  ],
+  "expected_reciprocal_pairs": [
+    [
+      0,
+      21
+    ],
+    [
+      3,
+      22
+    ],
+    [
+      4,
+      23
+    ],
+    [
+      5,
+      24
+    ],
+    [
+      6,
+      25
+    ],
+    [
+      7,
+      26
+    ],
+    [
+      10,
+      15
+    ]
+  ],
+  "reciprocal_pairs_exact": true,
+  "one_way_relation": {
+    "raw_id": 9,
+    "counterpart_slot": 8,
+    "reverse": -1
+  },
+  "pair_semantics_and_ui": [
+    {
+      "raw_a": 0,
+      "raw_b": 21,
+      "table_a_to_b": 21,
+      "table_b_to_a": 0,
+      "互反成立": true,
+      "语义A": "中毒",
+      "语义B": "命蘊式持续自愈",
+      "Firttech锚点A": "433:戾血萬毒",
+      "Firttech锚点B": "466:生聚靈陣",
+      "UI逻辑槽": 0,
+      "A字段": "+0x1E8",
+      "Aselector": 1,
+      "A_UI优先级": 1,
+      "B字段": "+0x23C",
+      "Bselector": 12,
+      "B_UI优先级": 2
+    },
+    {
+      "raw_a": 3,
+      "raw_b": 22,
+      "table_a_to_b": 22,
+      "table_b_to_a": 3,
+      "互反成立": true,
+      "语义A": "疲弱",
+      "语义B": "神力",
+      "Firttech锚点A": "440:絕魄之陣",
+      "Firttech锚点B": "444:血刃之咒",
+      "UI逻辑槽": 2,
+      "A字段": "+0x1F4",
+      "Aselector": 7,
+      "A_UI优先级": 1,
+      "B字段": "+0x240",
+      "Bselector": 6,
+      "B_UI优先级": 2
+    },
+    {
+      "raw_a": 4,
+      "raw_b": 23,
+      "table_a_to_b": 23,
+      "table_b_to_a": 4,
+      "互反成立": true,
+      "语义A": "迟缓/如受绳缚",
+      "语义B": "奮馳",
+      "Firttech锚点A": "439:戾魄封陣",
+      "Firttech锚点B": "443:攬風神行",
+      "UI逻辑槽": 3,
+      "A字段": "+0x1F8",
+      "Aselector": 17,
+      "A_UI优先级": 1,
+      "B字段": "+0x244",
+      "Bselector": 4,
+      "B_UI优先级": 2
+    },
+    {
+      "raw_a": 5,
+      "raw_b": 24,
+      "table_a_to_b": 24,
+      "table_b_to_a": 5,
+      "互反成立": true,
+      "语义A": "愚鈍",
+      "语义B": "聖睿",
+      "Firttech锚点A": "442:冥幻之陣",
+      "Firttech锚点B": "446:靈智真法",
+      "UI逻辑槽": 1,
+      "A字段": "+0x1FC",
+      "Aselector": 2,
+      "A_UI优先级": 1,
+      "B字段": "+0x248",
+      "Bselector": 3,
+      "B_UI优先级": 2
+    },
+    {
+      "raw_a": 6,
+      "raw_b": 25,
+      "table_a_to_b": 25,
+      "table_b_to_a": 6,
+      "互反成立": true,
+      "语义A": "蝕禦",
+      "语义B": "披甲",
+      "Firttech锚点A": "441:凶祟之陣",
+      "Firttech锚点B": "445:地禦之陣",
+      "UI逻辑槽": 4,
+      "A字段": "+0x200",
+      "Aselector": 14,
+      "A_UI优先级": 1,
+      "B字段": "+0x24C",
+      "Bselector": 13,
+      "B_UI优先级": 2
+    },
+    {
+      "raw_a": 7,
+      "raw_b": 26,
+      "table_a_to_b": 26,
+      "table_b_to_a": 7,
+      "互反成立": true,
+      "语义A": "障眼",
+      "语义B": "迅目",
+      "Firttech锚点A": "437:黑暗冥獄",
+      "Firttech锚点B": "438:妙心神念",
+      "UI逻辑槽": 5,
+      "A字段": "+0x204",
+      "Aselector": 10,
+      "A_UI优先级": 1,
+      "B字段": "+0x250",
+      "Bselector": 11,
+      "B_UI优先级": 2
+    },
+    {
+      "raw_a": 10,
+      "raw_b": 15,
+      "table_a_to_b": 15,
+      "table_b_to_a": 10,
+      "互反成立": true,
+      "语义A": "昏沉睡眠",
+      "语义B": "狂魔/狂暴",
+      "Firttech锚点A": "434:幽夢幻界",
+      "Firttech锚点B": "436:狂魔大法",
+      "UI逻辑槽": 8,
+      "A字段": "+0x210",
+      "Aselector": 19,
+      "A_UI优先级": 2,
+      "B字段": "+0x224",
+      "Bselector": 8,
+      "B_UI优先级": 1
+    }
+  ],
+  "author_text_anchor_checks": [
+    {
+      "记录索引": 433,
+      "记录ID": 433,
+      "名称": "戾血萬毒",
+      "目标raw_id": 0,
+      "五组raw_id": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "對敵陣噴入無形黑霧，沾附其體後使毒物滲入血肉經脈，因而使所有敵人蒙受中毒之效。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 466,
+      "记录ID": 466,
+      "名称": "生聚靈陣",
+      "目标raw_id": 21,
+      "五组raw_id": [
+        21,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "此術乃神通中的秘術，能引聚四周靈氣於受術者周身，令其傷勢不斷生發自癒，故名生聚。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 440,
+      "记录ID": 440,
+      "名称": "絕魄之陣",
+      "目标raw_id": 3,
+      "五组raw_id": [
+        3,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "此術引逆魂封元的邪力環繞眾敵，使他們盡皆衰神喪力，生疲弱之效而攻擊力大降。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 444,
+      "记录ID": 444,
+      "名称": "血刃之咒",
+      "目标raw_id": 22,
+      "五组raw_id": [
+        22,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "引聚破殺邪氣附於兵刃之上，在其時效之內可使所有伙伴的武器威力大增，生神力之效。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 439,
+      "记录ID": 439,
+      "名称": "戾魄封陣",
+      "目标raw_id": 4,
+      "五组raw_id": [
+        4,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "此咒能以邪念戾魄侵封敵陣，使所有中術者心智受擾，因而動作遲緩、如受繩縛。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 443,
+      "记录ID": 443,
+      "名称": "攬風神行",
+      "目标raw_id": 23,
+      "五组raw_id": [
+        23,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "此術可引聚風靈之力承托於同伴之下，可使其敏速立增、疾行如風，而生奮馳之效。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 442,
+      "记录ID": 442,
+      "名称": "冥幻之陣",
+      "目标raw_id": 5,
+      "五组raw_id": [
+        5,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "此術可在敵陣中化生逆靈惡氣，使敵人心念渾沌、靈智頓失，因而生愚鈍之效。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 446,
+      "记录ID": 446,
+      "名称": "靈智真法",
+      "目标raw_id": 24,
+      "五组raw_id": [
+        24,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "此術發天徵木象之氣，使受者神清智銳而生聖睿之效，在時效內提增所施術法的威力。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 441,
+      "记录ID": 441,
+      "名称": "凶祟之陣",
+      "目标raw_id": 6,
+      "五组raw_id": [
+        6,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "此術自幽冥之界引諸魂怨厲之氣入敵陣，散化眾敵披甲防禦之能，從而生蝕禦之效。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 445,
+      "记录ID": 445,
+      "名称": "地禦之陣",
+      "目标raw_id": 25,
+      "五组raw_id": [
+        25,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "引地象護禦之氣，圍聚於受法眾人周遭，可在時效內提供護禦之力而生披甲之效",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 437,
+      "记录ID": 437,
+      "名称": "黑暗冥獄",
+      "目标raw_id": 7,
+      "五组raw_id": [
+        7,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "引繚繞黑氣圍繞敵陣，可使敵群視線受阻，因看不清楚對方而生障眼之效，出手屢屢不中。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 438,
+      "记录ID": 438,
+      "名称": "妙心神念",
+      "目标raw_id": 26,
+      "五组raw_id": [
+        26,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "以靈氣注蘊己陣之間，可使己方諸人凝念於心，因而生迅目之效，出手更易擊中敵人。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 434,
+      "记录ID": 434,
+      "名称": "幽夢幻界",
+      "目标raw_id": 10,
+      "五组raw_id": [
+        10,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "放出魅影附縛所有敵人，令其心神迷弛而在迎敵時昏沈睡去，但只要受襲便會立即驚醒。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 436,
+      "记录ID": 436,
+      "名称": "狂魔大法",
+      "目标raw_id": 15,
+      "五组raw_id": [
+        15,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "引發魂魄之底的狂性殺心，使受術者擁有雙倍的攻擊力，但其護禦之能亦會因此而減半。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Firttech"
+    },
+    {
+      "记录索引": 313,
+      "记录ID": 313,
+      "名称": "九子菩提",
+      "目标raw_id": 0,
+      "五组raw_id": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "雖是著名的毒物之一，但與其他藥物共煉時亦具療效，倘若單獨服用則為尋死之舉。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Ail2"
+    },
+    {
+      "记录索引": 288,
+      "记录ID": 288,
+      "名称": "迦葉神藥",
+      "目标raw_id": 21,
+      "五组raw_id": [
+        21,
+        0,
+        0,
+        0,
+        0
+      ],
+      "五组value": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "描述": "傳說中以神樹之葉煉製的神藥，能產生傷勢持續復癒的命蘊之效。",
+      "名称匹配": true,
+      "关键文本匹配": true,
+      "目标effect存在且value>0": true,
+      "记录ID等于索引": true,
+      "PASS": true,
+      "来源": "Ail2"
+    }
+  ],
+  "machine_checks": [
+    {
+      "名称": "0x46A668对向槽消费与残量减法",
+      "VA": "0x0042B536",
+      "期望": "8b 4c 9f 10 8b 14 cd 68 a6 46 00 85 d2 7c 24 8b 74 24 34 8b 4c 9f 24 8b 84 96 e8 01 00 00 3b c1 7e 0b 2b c1 89 84 96 e8 01 00 00 eb 06 2b c8 89 4c 9f 24",
+      "实际": "8b 4c 9f 10 8b 14 cd 68 a6 46 00 85 d2 7c 24 8b 74 24 34 8b 4c 9f 24 8b 84 96 e8 01 00 00 3b c1 7e 0b 2b c1 89 84 96 e8 01 00 00 eb 06 2b c8 89 4c 9f 24",
+      "PASS": true
+    },
+    {
+      "名称": "斑蜥煉脂路径清raw0/runtime slot0",
+      "VA": "0x00421828",
+      "期望": "89 97 34 0a 00 00",
+      "实际": "89 97 34 0a 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "九子菩提路径清raw21/runtime slot21",
+      "VA": "0x00421861",
+      "期望": "89 97 88 0a 00 00",
+      "实际": "89 97 88 0a 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽0 raw0字段读取",
+      "VA": "0x0041CD79",
+      "期望": "8b 86 e8 01 00 00",
+      "实际": "8b 86 e8 01 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽0 raw0 selector=1",
+      "VA": "0x0041CD89",
+      "期望": "6a 01",
+      "实际": "6a 01",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽0 raw21字段读取",
+      "VA": "0x0041CD96",
+      "期望": "8b 86 3c 02 00 00",
+      "实际": "8b 86 3c 02 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽0 raw21 selector=12",
+      "VA": "0x0041CDA6",
+      "期望": "6a 0c",
+      "实际": "6a 0c",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽1 raw5字段读取",
+      "VA": "0x0041CDC9",
+      "期望": "8b 86 fc 01 00 00",
+      "实际": "8b 86 fc 01 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽1 raw5 selector=2",
+      "VA": "0x0041CDD9",
+      "期望": "6a 02",
+      "实际": "6a 02",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽1 raw24字段读取",
+      "VA": "0x0041CDE6",
+      "期望": "8b 86 48 02 00 00",
+      "实际": "8b 86 48 02 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽1 raw24 selector=3",
+      "VA": "0x0041CDF6",
+      "期望": "6a 03",
+      "实际": "6a 03",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽2 raw3字段读取",
+      "VA": "0x0041CE19",
+      "期望": "8b 86 f4 01 00 00",
+      "实际": "8b 86 f4 01 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽2 raw3 selector=7",
+      "VA": "0x0041CE29",
+      "期望": "6a 07",
+      "实际": "6a 07",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽2 raw22字段读取",
+      "VA": "0x0041CE36",
+      "期望": "8b 86 40 02 00 00",
+      "实际": "8b 86 40 02 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽2 raw22 selector=6",
+      "VA": "0x0041CE46",
+      "期望": "6a 06",
+      "实际": "6a 06",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽3 raw4字段读取",
+      "VA": "0x0041CE69",
+      "期望": "8b 86 f8 01 00 00",
+      "实际": "8b 86 f8 01 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽3 raw4 selector=17",
+      "VA": "0x0041CE79",
+      "期望": "6a 11",
+      "实际": "6a 11",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽3 raw23字段读取",
+      "VA": "0x0041CE86",
+      "期望": "8b 86 44 02 00 00",
+      "实际": "8b 86 44 02 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽3 raw23 selector=4",
+      "VA": "0x0041CE96",
+      "期望": "6a 04",
+      "实际": "6a 04",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽4 raw6字段读取",
+      "VA": "0x0041CEB9",
+      "期望": "8b 86 00 02 00 00",
+      "实际": "8b 86 00 02 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽4 raw6 selector=14",
+      "VA": "0x0041CEC9",
+      "期望": "6a 0e",
+      "实际": "6a 0e",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽4 raw25字段读取",
+      "VA": "0x0041CED6",
+      "期望": "8b 86 4c 02 00 00",
+      "实际": "8b 86 4c 02 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽4 raw25 selector=13",
+      "VA": "0x0041CEE6",
+      "期望": "6a 0d",
+      "实际": "6a 0d",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽5 raw7字段读取",
+      "VA": "0x0041CF09",
+      "期望": "8b 86 04 02 00 00",
+      "实际": "8b 86 04 02 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽5 raw7 selector=10",
+      "VA": "0x0041CF19",
+      "期望": "6a 0a",
+      "实际": "6a 0a",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽5 raw26字段读取",
+      "VA": "0x0041CF26",
+      "期望": "8b 86 50 02 00 00",
+      "实际": "8b 86 50 02 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽5 raw26 selector=11",
+      "VA": "0x0041CF36",
+      "期望": "6a 0b",
+      "实际": "6a 0b",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽8 raw15字段读取",
+      "VA": "0x0041CFBF",
+      "期望": "8b 86 24 02 00 00",
+      "实际": "8b 86 24 02 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽8 raw15 selector=8",
+      "VA": "0x0041CFCF",
+      "期望": "6a 08",
+      "实际": "6a 08",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽8 raw10字段读取",
+      "VA": "0x0041CFDC",
+      "期望": "8b 86 10 02 00 00",
+      "实际": "8b 86 10 02 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "UI逻辑槽8 raw10 selector=19",
+      "VA": "0x0041CFEC",
+      "期望": "6a 13",
+      "实际": "6a 13",
+      "PASS": true
+    }
+  ],
+  "machine_check_pass_count": 31,
+  "machine_check_total": 31,
+  "conclusions": [
+    "0x46A668在0x42B53A处按raw_id*8读取第一DWORD；该值是对向runtime槽索引，用于直接减法/残量运算，不是normal effect自身目的槽索引。",
+    "当前28项表恰有七组严格互反2-cycle：0<->21、3<->22、4<->23、5<->24、6<->25、7<->26、10<->15。",
+    "七组2-cycle与固化46七个双分支Battle状态表现槽逐组完全一致；UI仍保留各槽原有第一/第二分支优先级。",
+    "Firttech作者文本可为七组两端提供语义锚点；Ail2进一步把raw0锚定到毒物/中毒、raw21锚定到命蘊式持续复癒。",
+    "raw9->slot8是单向关系，不属于七组互反2-cycle；不得凭数字相邻或图标把它并入七组。",
+    "兼容引擎应把counterpart cancellation与normal effect自身pending/runtime写入分开建模，不能继续把0x46A668实现成raw ID目的槽重映射。"
+  ]
+}

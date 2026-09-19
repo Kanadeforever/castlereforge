@@ -1,0 +1,31 @@
+{
+  "版本": "v0.7D阶段中-固化10",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "状态": "STATIC_TWO_CHANNEL_AND_EVENT_SLOT_LIFECYCLE_CLOSED_SAMPLE_SEMANTICS_PENDING",
+  "通道A_world_item_result": {
+    "全局": "0x89F7D0",
+    "writer": "0x40D03A <- 当前world-item ID",
+    "consumers": [
+      "EVE 0x94 compare expected item ID",
+      "EVE 0x95 branch if nonzero"
+    ]
+  },
+  "通道B_saved_event_resume_keys": {
+    "saved_event": "0x89F7F8",
+    "keyA": "0x89F7FC",
+    "keyB": "0x89F800",
+    "writer": "EVE 0x96",
+    "code11": "keyB==当前物品ID",
+    "code12": "keyA==12"
+  },
+  "EventID寻址": "0x40B230中Event ID n → 当前EVE slot(n-1)，n>0；code12 fallback的ID3因此为slot2。",
+  "savedEvent生命周期": "0x96保存后清active Event；0x408C40可在输入轮询gate允许且导航/输入token非零时清0x89F7F8；0x40B340本身不清keyA/keyB。",
+  "code12_fallback": "resume gate失败后predicate==1才激活当前EVE slot2；predicate!=1走提示/UI。",
+  "样本边界": "当前唯一原始EVE无0x96，无法给slot2统一业务名或统计全游戏keyA/keyB。",
+  "下一恢复入口": [
+    "继续追0x409580的对象/上层caller以给输入token和0x468BB9更精确的业务名",
+    "继续追0x40A0D0 predicate业务语义",
+    "获得更多EVE后运行eve96批量并解析各EVE slot2内容"
+  ],
+  "固化10继承说明": "该静态结论在固化10未被推翻；固化10重新定位0x409580/0x40A0D0对象来源为Map SCI runtime/source record。原始固化9机器快照保留于历史目录。"
+}

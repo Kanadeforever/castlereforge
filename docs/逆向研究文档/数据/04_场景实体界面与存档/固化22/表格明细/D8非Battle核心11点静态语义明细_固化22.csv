@@ -1,0 +1,12 @@
+﻿分类,调用点,静态闭合,交叉证据,边界
+窗口创建初始化_2点,0x00401109,0x401000先用0x451583结果调用seed setter 0x45155B；随后0x401109生成0..3随机字段，0x40113D在ESI=1..30循环中生成RNG%0x55+1。0x401000的直接调用位于窗口消息分派message==1分支0x401A23。,,这里只把它归入窗口创建/启动初始化，不擅自命名DataCenter-like对象+0xBC或+0x90子结构的作者业务字段名。
+窗口创建初始化_2点,0x0040113D,0x401000先用0x451583结果调用seed setter 0x45155B；随后0x401109生成0..3随机字段，0x40113D在ESI=1..30循环中生成RNG%0x55+1。0x401000的直接调用位于窗口消息分派message==1分支0x401A23。,,这里只把它归入窗口创建/启动初始化，不擅自命名DataCenter-like对象+0xBC或+0x90子结构的作者业务字段名。
+随机遭遇阈值_2点,0x0040352E,0x403510在启用时先写base=150，再以2*base为除数并+base，形成基础RNG%300+150；0x4035A0运行更新满足门条件后在0x403718续订同型阈值。0x4093C2与0x40B158分别提供Map/SCI装载链和world update caller。,既有SCI字段规格与世界特殊物品动作证据已把该状态闭合为encounter trigger threshold；持续态13/14可进一步缩放该阈值。,
+随机遭遇阈值_2点,0x00403718,0x403510在启用时先写base=150，再以2*base为除数并+base，形成基础RNG%300+150；0x4035A0运行更新满足门条件后在0x403718续订同型阈值。0x4093C2与0x40B158分别提供Map/SCI装载链和world update caller。,既有SCI字段规格与世界特殊物品动作证据已把该状态闭合为encounter trigger threshold；持续态13/14可进一步缩放该阈值。,
+Entity_NPC漫游行为_4点,0x0040AB72,0x40AAF0要求serialized entity record+0x76==3。0x40AB72/86分别以record+0xEF..+0xF7和+0xF3..+0xFB形成两个随机坐标区间并写运行态+0x2C/+0x30；0x40AB9A生成0/1写+0x34；0x40ABD3生成RNG%30+30写等待阈值+0x64。,,+0x34只冻结为运行态0/1随机，不擅自命名方向/朝向；坐标X/Y命名来自既有SCI实体范围字段交叉证据。
+Entity_NPC漫游行为_4点,0x0040AB86,0x40AAF0要求serialized entity record+0x76==3。0x40AB72/86分别以record+0xEF..+0xF7和+0xF3..+0xFB形成两个随机坐标区间并写运行态+0x2C/+0x30；0x40AB9A生成0/1写+0x34；0x40ABD3生成RNG%30+30写等待阈值+0x64。,,+0x34只冻结为运行态0/1随机，不擅自命名方向/朝向；坐标X/Y命名来自既有SCI实体范围字段交叉证据。
+Entity_NPC漫游行为_4点,0x0040AB9A,0x40AAF0要求serialized entity record+0x76==3。0x40AB72/86分别以record+0xEF..+0xF7和+0xF3..+0xFB形成两个随机坐标区间并写运行态+0x2C/+0x30；0x40AB9A生成0/1写+0x34；0x40ABD3生成RNG%30+30写等待阈值+0x64。,,+0x34只冻结为运行态0/1随机，不擅自命名方向/朝向；坐标X/Y命名来自既有SCI实体范围字段交叉证据。
+Entity_NPC漫游行为_4点,0x0040ABD3,0x40AAF0要求serialized entity record+0x76==3。0x40AB72/86分别以record+0xEF..+0xF7和+0xF3..+0xFB形成两个随机坐标区间并写运行态+0x2C/+0x30；0x40AB9A生成0/1写+0x34；0x40ABD3生成RNG%30+30写等待阈值+0x64。,,+0x34只冻结为运行态0/1随机，不擅自命名方向/朝向；坐标X/Y命名来自既有SCI实体范围字段交叉证据。
+EVE_RANDOM_TO_VAR999_1点,0x0040F633,EVE opcode 0x99处理器0x40F620读取命令+4/+8，形成(end-start+1)区间宽度，RNG取余后+start，并以变量索引999(0x3E7)写入。,,
+EVE相机jitter_2点,0x0044B52C,0x44B500在jitter启用且计数门满足时先后生成X/Y随机偏移；两轴核心均为RNG%(2*radius)-radius，再叠加各自bias/origin。0x40B05D为apply caller；EVE opcode 0x58处理器0x40E120经0x40E13D调用配置setter 0x44B4B0。,,
+EVE相机jitter_2点,0x0044B54D,0x44B500在jitter启用且计数门满足时先后生成X/Y随机偏移；两轴核心均为RNG%(2*radius)-radius，再叠加各自bias/origin。0x40B05D为apply caller；EVE opcode 0x58处理器0x40E120经0x40E13D调用配置setter 0x44B4B0。,,

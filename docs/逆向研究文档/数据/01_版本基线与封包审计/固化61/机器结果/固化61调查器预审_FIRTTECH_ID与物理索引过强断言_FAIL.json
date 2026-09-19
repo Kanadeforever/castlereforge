@@ -1,0 +1,10 @@
+{
+  "status": "FAIL",
+  "stage": "调查器第二轮预审",
+  "failure_type": "data_model_assumption_error",
+  "symptom": "canonical Firttech.enc 的物理索引305/306不满足 raw ID == physical index。",
+  "root_cause": "工具错误假设500条记录的raw ID必须与物理顺序完全相同。实际0x131/0x132两条raw ID正好互换。",
+  "research_conclusion_affected": false,
+  "fix": "同时保存 physical record index 与 raw record ID，并只冻结 canonical 已知异常集合 [(0x131,0x132),(0x132,0x131)]。",
+  "preservation_note": "此文件故意永久保留 FAIL，不会被后续 PASS 覆盖。"
+}

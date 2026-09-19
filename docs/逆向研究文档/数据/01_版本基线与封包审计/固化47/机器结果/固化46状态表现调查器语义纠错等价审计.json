@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "purpose": "证明固化46状态表现调查器到固化47纠正版只改变0x46A668相关语义标签/JSON字段名，不改变数值表、机器断言、14路路由或ITF0052资源证据。",
+  "old_tool_version": "0.7D-solid46.0",
+  "new_tool_version": "0.7D-solid47.1",
+  "checks": {
+    "result_same": true,
+    "exe_identity_and_machine_same": {
+      "sha256": true,
+      "size": true,
+      "image_base": true,
+      "itf0052_path_check": true,
+      "route_machine_checks": true,
+      "constructor_and_clamp_checks": true,
+      "status_update_direct_calls_to_0x43E6F0": true,
+      "status_update_direct_call_count": true,
+      "status_update_expected_direct_calls": true,
+      "status_update_direct_call_set_pass": true,
+      "status_update_logical_channel_count": true,
+      "status_update_has_exactly_14_logical_channels": true,
+      "machine_checks_pass": true
+    },
+    "counterpart_table_numeric_same_after_key_normalization": true,
+    "presentation_channels_numeric_same_after_key_normalization": true,
+    "itf0052_asset_evidence_same": true
+  },
+  "renamed_fields": [
+    "raw_id_to_runtime_slot_0x46A668 -> raw_id_to_counterpart_slot_0x46A668",
+    "mapped_index -> counterpart_index",
+    "raw_ids_via_0x46A668 -> raw_ids_whose_counterpart_is_this_slot"
+  ],
+  "conclusion": "数值/机器/资源证据等价；旧“自身runtime slot”标签撤销，现行解释为counterpart/对向抵消槽。"
+}

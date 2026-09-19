@@ -1,0 +1,44 @@
+{
+  "版本": "v0.7D阶段中-固化9",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "状态": "STATIC_SAVED_EVENT_INPUT_INVALIDATION_CHAIN_CLOSED_UX_NAME_PENDING",
+  "保存槽": "0x89F7F8 saved Event ID（0x96 writer）",
+  "上层入口": "0x409580",
+  "gate": {
+    "全局": "0x468BB9",
+    "0x4095AF": "gate!=0才进入输入token采集分支",
+    "Event激活": "0x40B268置0",
+    "常规Event清理": "0x40B358置1（受0x46F677路径条件影响）"
+  },
+  "输入token链": [
+    {
+      "地址": "0x408830",
+      "直接证据": "经IAT 0x460204调用GetCursorPos；调用0x408950；返回0x408950结果token"
+    },
+    {
+      "地址": "0x408950",
+      "直接证据": "经IAT 0x4601A8调用GetKeyState；扫描VK 0x21..0x28；结合位置差分与右键状态生成离散结果"
+    },
+    {
+      "地址": "0x4095C3",
+      "直接证据": "gate!=0时调用0x408830"
+    },
+    {
+      "地址": "0x4095CC",
+      "直接证据": "把0x408830返回值作为0x408C40第一实参；0x408A70返回值作为第二实参"
+    },
+    {
+      "地址": "0x408C45/0x408C49",
+      "直接证据": "第一实参非零→0x89F7F8=0；第一实参为0则不清saved Event"
+    }
+  ],
+  "gate为0路径": "0x4095EF连续push 0,push 0后调用0x408C40，因此该路径不会由第一实参触发saved Event清零。",
+  "PE导入表": {
+    "0x460204": "USER32.GetCursorPos",
+    "0x4601A8": "USER32.GetKeyState",
+    "0x4601A4": "USER32.GetAsyncKeyState",
+    "0x46019C": "USER32.SetCursorPos"
+  },
+  "安全结论": "saved Event存在明确的输入失效机制：在0x468BB9允许的轮询状态下，0x408830生成的非零导航/输入类离散token会使saved Event ID失效。",
+  "仍未命名": "该token在设计层究竟代表“焦点移动、取消、方向导航或其他UI动作”的精确作者语义，仍需继续追0x409580对象/调用者与动态行为。"
+}

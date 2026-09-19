@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "replay1_tool_pass": true,
+  "replay2_tool_pass": true,
+  "masked_input_path_fields": [
+    "输入/原版RPG.exe",
+    "输入/研究版RPG.exe",
+    "输入/Firttech.enc",
+    "输入/Magiccon.enc",
+    "资源证据/输入/Firttech.enc",
+    "资源证据/输入/Magiccon.enc"
+  ],
+  "json_entire_remaining_tree_equal": true,
+  "csv_sha256": [
+    "aba243c78ec74ff95a986998e069629d4ba76cb93a5f3cd1604868c44d6b0612",
+    "aba243c78ec74ff95a986998e069629d4ba76cb93a5f3cd1604868c44d6b0612",
+    "aba243c78ec74ff95a986998e069629d4ba76cb93a5f3cd1604868c44d6b0612"
+  ],
+  "csv_all_byte_identical": true,
+  "inputs_reextracted_independently": true,
+  "notes": [
+    "六个被屏蔽字段经逐字段diff确认全部只是输入绝对路径；文件SHA、机器码哈希、地址集合、class状态路由、资源记录、结论和PASS状态全部参与整树比较。",
+    "两轮输入分别从用户原始RPG.exe.org.zip与multimedia.zip重新提取。",
+    "第一次只屏蔽顶层输入路径的比较FAIL保留为历史。"
+  ]
+}

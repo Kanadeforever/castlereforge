@@ -1,0 +1,89 @@
+{
+  "solidification": 44,
+  "title": "Battle三十九槽序列化零块与后十一槽不可生产正值边界",
+  "status": "CLOSED_WITH_CANONICAL_BOUNDARY",
+  "inputs": {
+    "exe": "/mnt/data/work44/input/rpg/RPG.exe",
+    "exe_size": 462848,
+    "exe_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "multimedia_zip": "/mnt/data/multimedia.zip",
+    "multimedia_zip_sha256": "faa994d6e47b46ce610e75019e8a1da35822560781ba9e8e160814571e952f1f"
+  },
+  "layout": {
+    "fightrole_role_definition_offset": "0x84C",
+    "role_definition_runtime_block_offset": "0x1E8",
+    "fightrole_runtime_block_offset": "0xA34",
+    "fightrole_pending_block_offset": "0xCC",
+    "runtime_slot_count": 39,
+    "direct_effect_slot_indices": "0..27",
+    "tail_slot_indices": "28..38",
+    "tail_fightrole_range": "0xAA4..0xACC"
+  },
+  "machine_assertions": {
+    "pass": 20,
+    "total": 20,
+    "overall": true
+  },
+  "api_enc": {
+    "member": "multimedia/public/Api.enc",
+    "decoded_size": 216240,
+    "decoded_sha256": "b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d",
+    "record_size": 848,
+    "record_count": 255,
+    "all_39_dword_count": 9945,
+    "all_39_zero_count": 9945,
+    "tail_11_dword_count": 2805,
+    "tail_11_zero_count": 2805
+  },
+  "direct_e8_callers": {
+    "0x0041F580_api_role_loader": [
+      "0x0041F30D"
+    ],
+    "0x0041F2B0_role_setup": [
+      "0x0044267C",
+      "0x00443F39"
+    ],
+    "0x004231D0_runtime_first28_clear": [
+      "0x0041F27D",
+      "0x0042329B",
+      "0x00442708",
+      "0x00443F40"
+    ],
+    "0x00420440_runtime_39_decrement": [
+      "0x00442CDB"
+    ]
+  },
+  "confirmed_facts": [
+    "0x41F580固定打开Public\\API.ENC，并按role_id×0x350选择RoleDefinition记录。",
+    "0x41F580用rep movsd count=0xD4复制0x350字节完整RoleDefinition到FightRole+0x84C。",
+    "FightRole+0xA34..+0xACC正好是RoleDefinition/API.ENC+0x1E8..+0x280的39 DWORD原位副本。",
+    "当前canonical API.ENC共255条记录，39×255=9945个DWORD全部为0；后11槽11×255=2805个DWORD也全部为0。",
+    "FightRole reset把pending+0xCC数组39项全部清零；commit循环覆盖39项；runtime decrement循环覆盖39项。",
+    "canonical normal effect writer在写pending前硬限制raw ID<=27，因此已证正值writer只能覆盖索引0..27。",
+    "0x4231D0的专用runtime clear只清前28槽，说明前28 raw-ID槽存在独立专用维护边界。",
+    "综合当前canonical资产与已证writer链，后11槽索引28..38没有正值生产者。"
+  ],
+  "implementation_rule": [
+    "兼容引擎必须保留完整39 DWORD runtime布局与完整39 DWORD pending布局。",
+    "normal raw-effect写入只允许索引0..27；不得为了利用尾部空间而把ID>27塞入28..38。",
+    "当前canonical数据加载后39槽初值应保持0；后11槽默认保持opaque zero。",
+    "commit/decrement仍按原版完整39槽结构实现，因为原版通用循环确实覆盖尾11槽。"
+  ],
+  "not_proven": [
+    "后11槽作者正式业务名称。",
+    "其他版本API.ENC是否会在+0x258..+0x280放入非零初值。",
+    "是否存在当前静态直接证据之外的间接/非canonical写入路径。",
+    "因此不得把后11槽绝对命名为reserved、unused、dead或auxiliary。"
+  ],
+  "checks": {
+    "machine_assertions_all_pass": true,
+    "api_path_string_is_Public_API_ENC": true,
+    "direct_callers_match_expected": true,
+    "api_record_count_is_255": true,
+    "api_all_39_slots_are_zero": true,
+    "api_tail_11_slots_are_zero": true,
+    "all_39_value_count_is_9945": true,
+    "tail_11_value_count_is_2805": true
+  },
+  "overall_pass": true
+}

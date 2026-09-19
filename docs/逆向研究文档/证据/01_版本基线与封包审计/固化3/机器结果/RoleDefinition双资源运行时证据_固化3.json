@@ -1,0 +1,1040 @@
+{
+  "版本": "v0.7D阶段中-固化3",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "结论等级": "A：Battle 与 EVE 两套独立 consumer 交叉证明字段坐标、max/current 成对关系、扣减、恢复、clamp、候选资源检查与主资源零值状态转移；作者原始资源名称仍未证明。",
+  "坐标关系": {
+    "FightRole中的内嵌RoleDefinition": "FightRole+0x84C，大小0x350",
+    "RoleDefinition+0x2C": "FightRole+0x878",
+    "RoleDefinition+0x30": "FightRole+0x87C",
+    "RoleDefinition+0x34": "FightRole+0x880",
+    "RoleDefinition+0x38": "FightRole+0x884"
+  },
+  "安全结构命名": {
+    "RoleDefinition+0x2C / FightRole+0x878": "主生存资源上限值（max；作者资源名未知）",
+    "RoleDefinition+0x30 / FightRole+0x87C": "主生存资源当前值（current；<=0 触发 Battle 失效类状态转移）",
+    "RoleDefinition+0x34 / FightRole+0x880": "次资源上限值（max；作者资源名未知）",
+    "RoleDefinition+0x38 / FightRole+0x884": "次资源当前值（current；作者资源名未知）"
+  },
+  "直接消费者与写入": [
+    {
+      "VA": "0x00421012/0x00421015",
+      "事实": "DamageInfo+0x04 从目标主生存资源当前值扣除并写回 FightRole+0x87C"
+    },
+    {
+      "VA": "0x00421022/0x00421024",
+      "事实": "DamageInfo+0x08 从目标次资源当前值 FightRole+0x884 扣除"
+    },
+    {
+      "VA": "0x0042104A..0x00421069",
+      "事实": "主资源 current 被 clamp 到 [0, FightRole+0x878]"
+    },
+    {
+      "VA": "0x00421076..0x004210B8",
+      "事实": "次资源 current 被 clamp 到 [0, FightRole+0x880]"
+    },
+    {
+      "VA": "0x00421043 -> 0x004231F0",
+      "事实": "主资源 current<=0 且 FightRole+0x72C>0 时进入主资源零值状态转移"
+    },
+    {
+      "VA": "0x004231F3..0x0042323C",
+      "事实": "0x4231F0 再次检查主资源<=0，调用 0x4207B0(1)，设置 +0x72C=-1、+0x87C=0、关闭关联对象 flag 并调用 0x43F210"
+    },
+    {
+      "VA": "0x00421165..0x004211BF",
+      "事实": "FightRole+0x168/+0x16C 的正值分别加回主/次 current，并 clamp 到各自上限；随后聚合值清零"
+    },
+    {
+      "VA": "0x00421249..0x00421273",
+      "事实": "选中 FIRTTECH record 的 +0x38 扣次资源；除 FIRTTECH ID 0x12F 特例外，+0x34 扣主资源"
+    },
+    {
+      "VA": "0x0042129B..0x004212B5",
+      "事实": "Article/Ail2 record 的 +0x118/+0x11C 分别扣主/次资源"
+    },
+    {
+      "VA": "0x004445D4..0x004445F7",
+      "事实": "AI候选检查读取 FIRTTECH+0x38/+0x34，并分别要求次/主 current 足够；不足直接拒绝候选"
+    },
+    {
+      "VA": "0x004206E2..0x0042070E",
+      "事实": "周期路径会更新主 current；若结果<=0，同样调用 0x4231F0"
+    },
+    {
+      "VA": "0x00420744..0x0042078A",
+      "事实": "另一周期路径增加主 current，并 clamp 到主资源上限"
+    }
+  ],
+  "动作资源消耗字段": {
+    "FIRTTECH+0x34": "主生存资源动作消耗量：AI动作前检查 + 动作后实际扣除闭环；ID 0x12F 存在扣除特例。",
+    "FIRTTECH+0x38": "次资源动作消耗量：AI动作前检查 + 动作后实际扣除闭环。",
+    "Ail2+0x118/+0x11C": "Article 动作后分别扣主/次资源；当前静态证据已证明扣除语义，但尚未找到与 FIRTTECH 等价的 AI 前置可用性检查。"
+  },
+  "源表事实": {
+    "Api.enc": {
+      "path": "源样本 multimedia.zip::multimedia/public/Api.enc",
+      "decoded_sha256": "b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d",
+      "record_size": 848,
+      "count": 255,
+      "equalities": {
+        "0x2C==0x30": "255/255",
+        "0x34==0x38": "255/255"
+      },
+      "fields": {
+        "0x2C": {
+          "offset": "0x2C",
+          "min": 0,
+          "max": 100000,
+          "unique": 68,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 104
+            },
+            {
+              "value": 1000,
+              "count": 11
+            },
+            {
+              "value": 1500,
+              "count": 8
+            },
+            {
+              "value": 1200,
+              "count": 7
+            },
+            {
+              "value": 800,
+              "count": 6
+            },
+            {
+              "value": 3000,
+              "count": 6
+            },
+            {
+              "value": 250,
+              "count": 5
+            },
+            {
+              "value": 2000,
+              "count": 5
+            },
+            {
+              "value": 600,
+              "count": 5
+            },
+            {
+              "value": 5000,
+              "count": 5
+            },
+            {
+              "value": 200,
+              "count": 4
+            },
+            {
+              "value": 400,
+              "count": 4
+            }
+          ],
+          "first_20": [
+            1000,
+            200,
+            280,
+            240,
+            250,
+            400,
+            1500,
+            1800,
+            2000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0x30": {
+          "offset": "0x30",
+          "min": 0,
+          "max": 100000,
+          "unique": 68,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 104
+            },
+            {
+              "value": 1000,
+              "count": 11
+            },
+            {
+              "value": 1500,
+              "count": 8
+            },
+            {
+              "value": 1200,
+              "count": 7
+            },
+            {
+              "value": 800,
+              "count": 6
+            },
+            {
+              "value": 3000,
+              "count": 6
+            },
+            {
+              "value": 250,
+              "count": 5
+            },
+            {
+              "value": 2000,
+              "count": 5
+            },
+            {
+              "value": 600,
+              "count": 5
+            },
+            {
+              "value": 5000,
+              "count": 5
+            },
+            {
+              "value": 200,
+              "count": 4
+            },
+            {
+              "value": 400,
+              "count": 4
+            }
+          ],
+          "first_20": [
+            1000,
+            200,
+            280,
+            240,
+            250,
+            400,
+            1500,
+            1800,
+            2000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0x34": {
+          "offset": "0x34",
+          "min": 0,
+          "max": 20000,
+          "unique": 30,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 190
+            },
+            {
+              "value": 1000,
+              "count": 10
+            },
+            {
+              "value": 1200,
+              "count": 4
+            },
+            {
+              "value": 1500,
+              "count": 4
+            },
+            {
+              "value": 300,
+              "count": 3
+            },
+            {
+              "value": 150,
+              "count": 3
+            },
+            {
+              "value": 600,
+              "count": 3
+            },
+            {
+              "value": 800,
+              "count": 3
+            },
+            {
+              "value": 500,
+              "count": 3
+            },
+            {
+              "value": 3000,
+              "count": 3
+            },
+            {
+              "value": 50,
+              "count": 2
+            },
+            {
+              "value": 80,
+              "count": 2
+            }
+          ],
+          "first_20": [
+            1000,
+            50,
+            45,
+            70,
+            140,
+            50,
+            1200,
+            1500,
+            1000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0x38": {
+          "offset": "0x38",
+          "min": 0,
+          "max": 20000,
+          "unique": 30,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 190
+            },
+            {
+              "value": 1000,
+              "count": 10
+            },
+            {
+              "value": 1200,
+              "count": 4
+            },
+            {
+              "value": 1500,
+              "count": 4
+            },
+            {
+              "value": 300,
+              "count": 3
+            },
+            {
+              "value": 150,
+              "count": 3
+            },
+            {
+              "value": 600,
+              "count": 3
+            },
+            {
+              "value": 800,
+              "count": 3
+            },
+            {
+              "value": 500,
+              "count": 3
+            },
+            {
+              "value": 3000,
+              "count": 3
+            },
+            {
+              "value": 50,
+              "count": 2
+            },
+            {
+              "value": 80,
+              "count": 2
+            }
+          ],
+          "first_20": [
+            1000,
+            50,
+            45,
+            70,
+            140,
+            50,
+            1200,
+            1500,
+            1000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0x3C": {
+          "offset": "0x3C",
+          "min": 0,
+          "max": 800,
+          "unique": 36,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 104
+            },
+            {
+              "value": 120,
+              "count": 16
+            },
+            {
+              "value": 80,
+              "count": 15
+            },
+            {
+              "value": 100,
+              "count": 13
+            },
+            {
+              "value": 90,
+              "count": 10
+            },
+            {
+              "value": 200,
+              "count": 10
+            },
+            {
+              "value": 150,
+              "count": 7
+            },
+            {
+              "value": 60,
+              "count": 6
+            },
+            {
+              "value": 300,
+              "count": 6
+            },
+            {
+              "value": 50,
+              "count": 6
+            },
+            {
+              "value": 180,
+              "count": 6
+            },
+            {
+              "value": 400,
+              "count": 5
+            }
+          ],
+          "first_20": [
+            100,
+            60,
+            90,
+            80,
+            30,
+            200,
+            300,
+            450,
+            500,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0x40": {
+          "offset": "0x40",
+          "min": 0,
+          "max": 700,
+          "unique": 34,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 104
+            },
+            {
+              "value": 100,
+              "count": 19
+            },
+            {
+              "value": 120,
+              "count": 11
+            },
+            {
+              "value": 200,
+              "count": 10
+            },
+            {
+              "value": 80,
+              "count": 10
+            },
+            {
+              "value": 50,
+              "count": 9
+            },
+            {
+              "value": 90,
+              "count": 8
+            },
+            {
+              "value": 240,
+              "count": 8
+            },
+            {
+              "value": 400,
+              "count": 6
+            },
+            {
+              "value": 150,
+              "count": 6
+            },
+            {
+              "value": 140,
+              "count": 6
+            },
+            {
+              "value": 180,
+              "count": 6
+            }
+          ],
+          "first_20": [
+            100,
+            40,
+            70,
+            70,
+            20,
+            200,
+            350,
+            400,
+            450,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "解释边界": "源表中 max/base-like 与 current-like 两对字段分别相等；运行时 current 字段独立变化，因此不可据源表相等把两字段合并。"
+    },
+    "Firttech.enc": {
+      "path": "源样本 multimedia.zip::multimedia/public/Firttech.enc",
+      "decoded_sha256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+      "record_size": 560,
+      "count": 500,
+      "fields": {
+        "0x30": {
+          "offset": "0x30",
+          "min": 0,
+          "max": 6,
+          "unique": 7,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 418
+            },
+            {
+              "value": 4,
+              "count": 35
+            },
+            {
+              "value": 6,
+              "count": 21
+            },
+            {
+              "value": 1,
+              "count": 14
+            },
+            {
+              "value": 5,
+              "count": 8
+            },
+            {
+              "value": 3,
+              "count": 2
+            },
+            {
+              "value": 2,
+              "count": 2
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0x34": {
+          "offset": "0x34",
+          "min": 0,
+          "max": 500,
+          "unique": 21,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 427
+            },
+            {
+              "value": 200,
+              "count": 11
+            },
+            {
+              "value": 30,
+              "count": 6
+            },
+            {
+              "value": 150,
+              "count": 6
+            },
+            {
+              "value": 50,
+              "count": 6
+            },
+            {
+              "value": 40,
+              "count": 5
+            },
+            {
+              "value": 60,
+              "count": 5
+            },
+            {
+              "value": 120,
+              "count": 4
+            },
+            {
+              "value": 80,
+              "count": 4
+            },
+            {
+              "value": 100,
+              "count": 4
+            },
+            {
+              "value": 300,
+              "count": 4
+            },
+            {
+              "value": 20,
+              "count": 3
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0x38": {
+          "offset": "0x38",
+          "min": 0,
+          "max": 200,
+          "unique": 19,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 409
+            },
+            {
+              "value": 30,
+              "count": 14
+            },
+            {
+              "value": 40,
+              "count": 14
+            },
+            {
+              "value": 50,
+              "count": 10
+            },
+            {
+              "value": 20,
+              "count": 10
+            },
+            {
+              "value": 60,
+              "count": 9
+            },
+            {
+              "value": 10,
+              "count": 8
+            },
+            {
+              "value": 100,
+              "count": 5
+            },
+            {
+              "value": 15,
+              "count": 3
+            },
+            {
+              "value": 70,
+              "count": 3
+            },
+            {
+              "value": 80,
+              "count": 3
+            },
+            {
+              "value": 90,
+              "count": 2
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0x40": {
+          "offset": "0x40",
+          "min": 0,
+          "max": 20000,
+          "unique": 21,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 406
+            },
+            {
+              "value": 1,
+              "count": 14
+            },
+            {
+              "value": 20,
+              "count": 14
+            },
+            {
+              "value": 15,
+              "count": 10
+            },
+            {
+              "value": 30,
+              "count": 7
+            },
+            {
+              "value": 50,
+              "count": 6
+            },
+            {
+              "value": 12,
+              "count": 5
+            },
+            {
+              "value": 13,
+              "count": 5
+            },
+            {
+              "value": 14,
+              "count": 5
+            },
+            {
+              "value": 20000,
+              "count": 5
+            },
+            {
+              "value": 60,
+              "count": 4
+            },
+            {
+              "value": 18,
+              "count": 4
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "Ail2.ENC": {
+      "path": "源样本 multimedia.zip::multimedia/public/Ail2.ENC",
+      "decoded_sha256": "a85d0904e969700b996ee89134582552bfabb98af76321804af34f9896b051a8",
+      "record_size": 926,
+      "count": 700,
+      "fields": {
+        "0x118": {
+          "offset": "0x118",
+          "min": 0,
+          "max": 0,
+          "unique": 1,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 700
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0x11C": {
+          "offset": "0x11C",
+          "min": 0,
+          "max": 50,
+          "unique": 2,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 699
+            },
+            {
+              "value": 50,
+              "count": 1
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0xB8": {
+          "offset": "0xB8",
+          "min": 0,
+          "max": 3,
+          "unique": 3,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 648
+            },
+            {
+              "value": 1,
+              "count": 49
+            },
+            {
+              "value": 3,
+              "count": 3
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "0xBC": {
+          "offset": "0xBC",
+          "min": 0,
+          "max": 3,
+          "unique": 4,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 677
+            },
+            {
+              "value": 3,
+              "count": 20
+            },
+            {
+              "value": 2,
+              "count": 2
+            },
+            {
+              "value": 1,
+              "count": 1
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    }
+  },
+  "禁止越界": [
+    "不得仅凭上述结构把主/次资源作者名写成 HP/MP/SP/生命/法力；需要字符串/UI/脚本/更多直接 consumer 才能定作者术语。",
+    "0x4231F0 可安全称主资源零值失效/移出战斗类转移，但“死亡”作为作者业务名仍需额外证据。",
+    "FIRTTECH ID 0x12F 的主资源扣除特例原因未知。"
+  ],
+  "下一步验证": [
+    "追 0x4231F0/0x421445 等零值与恢复路径的 UI/动画/状态 consumer，确定作者术语。",
+    "追 FIRTTECH+0x34/+0x38 与 selector/class 的数据分布，判断资源消耗与动作类型的关系。",
+    "追 Article/Ail2 +0x118/+0x11C 的前置可用性检查与显式请求失败路径。"
+  ],
+  "跨子系统EVE交叉证据": {
+    "0x40E6C0": "EVE opcode 0x7C 路径，mode=1 调 0x43B8F0；既有 v0.7A 语义为对当前队伍成员两项 current/max 资源调整。",
+    "0x43B8F0_mode2-like_additive": "直接对 +0x30/+0x38 做有符号增减，随后分别 clamp 到 +0x2C/+0x34；主 current 下限 1，次 current 下限 0。",
+    "0x43B8F0_mode1-like_percentage": "直接用 +0x2C/+0x34 乘百分比生成 +0x30/+0x38，再各自 clamp；主 current 下限 1，次 current 下限 0。",
+    "意义": "Battle 与 EVE 两套独立 consumer 同时证明 +2C/+30、+34/+38 是两对 max/current 资源。"
+  }
+}

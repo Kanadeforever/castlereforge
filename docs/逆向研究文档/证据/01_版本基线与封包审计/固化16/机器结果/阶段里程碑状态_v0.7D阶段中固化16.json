@@ -1,0 +1,27 @@
+{
+  "版本": "v0.7D阶段中-固化16",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "日期": "2026-08-14",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "静态回归": {
+    "SCI": "67/67 PASS（固化14稳定工具，固化16继承）",
+    "EVE": "65/65 PASS",
+    "Battle": "197/197 PASS"
+  },
+  "D7": {
+    "主奖励链": "STATIC_CLOSED",
+    "伏龍A特殊结束": "STATIC_CLOSED_SCRIPT_DISTRIBUTION_PENDING",
+    "结果UI生命周期": "PENDING"
+  },
+  "重大纠错": [
+    "EVE opcode0x37旧场景控制器命名撤销，当前为RUN_BATTLE_AND_WAIT_RESULT",
+    "opcode0x37参数值0x82是LayoutGR[130]伏龍A，不是EVE opcode0x82",
+    "LayoutGR+0x18是LayoutTeam候选数量而非primary ID",
+    "detector return4是伏龍A alternate-success；仍不等于dispatcher参数4因事停戰"
+  ],
+  "下一步": [
+    "D7结果UI完成/销毁条件",
+    "D8胜利与动作RNG draw order/deterministic BattleTrace",
+    "获得更多EVE后验证伏龍A/伏龍B脚本顺序"
+  ]
+}

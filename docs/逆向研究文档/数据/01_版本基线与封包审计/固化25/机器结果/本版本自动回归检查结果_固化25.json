@@ -1,0 +1,22 @@
+{
+  "版本": "v0.7D阶段中-固化25",
+  "RPG.exe_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "继承回归": {
+    "DDDES显示定时配置": "19/19 PASS",
+    "Entity双事件绑定": "12/12 PASS",
+    "Entity行为": "27/27 PASS",
+    "Map背景模式": "11/11 PASS",
+    "Entity尾部未知字段固化24": "Oracle匹配；直接访问负证据继承"
+  },
+  "固化25新增": {
+    "Map后半三未知块关键字节": "16/16 PASS",
+    "Map样本记录数": 2,
+    "三段非零记录数": [0, 0, 0],
+    "全text原始四字节窗口": 1009,
+    "全text_ModRM_SIB_disp32候选": 423,
+    "Map主构造器内候选": 0,
+    "selected访问器direct_callers": 26,
+    "first访问器direct_callers": 2
+  },
+  "结论": "PASS；新增结果只闭合已知Map主链直接访问负证据，不升级字段语义。"
+}

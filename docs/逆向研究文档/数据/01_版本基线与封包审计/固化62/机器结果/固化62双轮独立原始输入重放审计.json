@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "replay1_tool_status": "PASS",
+  "replay2_tool_status": "PASS",
+  "json_comparison": "屏蔽inputs下4个绝对路径字段后，正式/重放1/重放2整个其余JSON树完全一致",
+  "formal_vs_replay1_normalized_equal": true,
+  "formal_vs_replay2_normalized_equal": true,
+  "replay1_vs_replay2_normalized_equal": true,
+  "csv_three_way_byte_equal": true,
+  "csv_sha256": "98444a5164874f63df81d989f990600b4f829e75f9261dd465cb5fab109845c1",
+  "replay_inputs": {
+    "replay1": {
+      "original_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+      "original_expected_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+      "research_sha256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+      "research_expected_sha256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+      "layoutgr_raw_sha256": "00cb1508508644f20c5e94c7f1e721953d76da72a8266e05289ac461bb7e12dd",
+      "layoutgr_decoded_sha256": "71ab7931f5489d1bd053243d707089373636f43684f85ce802c54dfecd2bf392",
+      "firttech_raw_sha256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d"
+    },
+    "replay2": {
+      "original_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+      "original_expected_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+      "research_sha256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+      "research_expected_sha256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+      "layoutgr_raw_sha256": "00cb1508508644f20c5e94c7f1e721953d76da72a8266e05289ac461bb7e12dd",
+      "layoutgr_decoded_sha256": "71ab7931f5489d1bd053243d707089373636f43684f85ce802c54dfecd2bf392",
+      "firttech_raw_sha256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d"
+    }
+  },
+  "boundary": "仅重放固化62新调查器；固化18～61历史节点通过固化61正式ZIP继承审计继续继承，不冒充本轮重跑。"
+}

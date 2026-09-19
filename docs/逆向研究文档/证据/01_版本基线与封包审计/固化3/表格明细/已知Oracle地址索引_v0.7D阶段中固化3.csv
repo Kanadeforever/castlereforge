@@ -1,0 +1,60 @@
+﻿地址,当前定义,等级,证据
+0x0040B2D0,EVE VM事件执行循环,A,v0.7C与当前Oracle复核
+0x0040B3B0,EVE Command工厂,A,读取0x40BF2C映射并跳0x40BDC8
+0x0040BF2C,EVE 155-byte opcode→CommandIndex表,A,88合法+67默认
+0x0040BDC8,EVE 89-entry工厂跳转表,A,88合法分支+1默认
+0x004284D0,ENC period-255 XOR,A,当前Oracle直接反汇编
+0x0041F2B0,FightRole 槽对象初始化/登记函数,A,0x44267C与0x443F39 caller；真实对象=manager+0x3E4+slot*0xDE4
+0x0041F47A,真实FightRole*写入0x89FD94[slot],A,"直接mov [eax*4+0x89FD94],esi"
+0x00444240,Enemy_AI 决策入口,A/结构,raw-slot坐标；Enemy_AI*56；rand%100
+0x00444330,candidate ID联合FIRTTECH/MagicCon条件筛选与评分,"A/结构,B/业务枚举名",同ID索引560与64字节记录并结合RNG评分
+0x00444590,candidate viability helper,"A/结构,B/业务名",读取FIRTTECH+34/+38、MagicCon+2C/+30并扫描单位/formation
+0x00422F00,FIRTTECH 动作准备,A/结构,写FightRole+7A8/+848；调用422CB0与422850
+0x00422A70,formation key→有效FightRole slot反查,A/结构,扫描0x89FD94[16]，+B9C匹配且+72C>=0
+0x00422850,目标集合构造器,"A/结构,B/业务枚举名",构造1/2间隔4/4连续/8块/全16活动目标集合
+0x00422CB0,目标种子选择,"A/结构,B/业务枚举名",FIRTTECH+20/+24/+28或Ail2+B8/+BC/+C0；按+850分双池
+0x00423A00,显式动作/request packet载入,A/结构,复制0xE4到FightRole+CFC；按mode建立FIRTTECH或Ail2指针
+0x00423BA0,Article/Ail2动作准备,A,mode7；Ail2*926→+CF4；目标选择+固定timing
+0x00423CB0,显式目标列表主目标解析,A/结构,按目标FightRole+B9C最大值选primary；作者方向语义未知
+0x00422AB0,每目标Action processor分派,A/结构,按FIRTTECH+18或definition class；DamageInfo从+170按0x50步进
+0x0042A7A0,FIRTTECH processor 5参数包装器,A,原样转发到0x42C680
+0x0042C680,FIRTTECH Action/Damage Processor主入口,"A/分类,B/公式业务语义",由422AB0→42A7A0→42C680直接闭合；不是“全局唯一伤害函数”
+0x0042A7D0,Article/Ail2 DamageProcessor,"A/分类,B/字段业务名",第四参数直接来自FightRole+CF4=Ail2 record*
+0x0042B0D0,五槽次级effect/status结构处理,"A/五槽结构,B/业务字段名",循环5次；DamageInfo +10/+24双数组；与Role+1E8映射交互
+0x0042B5F0,FIRTTECH公式helper默认分支,"A/同级helper,B/公式业务语义",由42C680 +30 selector分派
+0x0042B630,FIRTTECH公式helper selector=2,"A/同级helper,B/公式业务语义",由42C680分派
+0x0042B6C0,FIRTTECH公式helper selector=3,"A/同级helper,B/公式业务语义",由42C680分派
+0x0042B750,FIRTTECH公式helper selector=4,"A/同级helper,B/公式业务语义",由42C680分派
+0x0042B7D0,FIRTTECH公式helper selector=5,"A/同级helper,B/公式业务语义",由42C680分派
+0x0042B840,FIRTTECH公式helper selector=6,"A/同级helper,B/公式业务语义",由42C680分派；内部包裹42B5F0再缩放
+0x004321E0,DataCenter battle table base bridge,A,DataCenter+0xB4→0x8A01AC FIRTTECH；+0xAC→0x8A01B0 Ail2
+0x0043B360,TSF Writer,A,v0.7C Writer/Reader/159 corpus
+0x0043B510,TSF Reader,A,v0.7C Writer/Reader/159 corpus
+0x0040A160,Entity SCI reader,A/结构,v0.7B与当前Oracle复核
+0x0040AC00,Map SCI reader,A/结构,v0.7B与当前Oracle复核
+0x0042BA00,RoleDefinition 派生标量A基础值,"A/数学结构,B/业务名",role+3C + 三个 Ail2 引用的 +3C
+0x0042BA80,RoleDefinition 派生标量A运行时修正,"A/数学结构,B/业务名",+1F4/+240 门控 0.7x/1.3x
+0x0042BAD0,RoleDefinition 派生标量B基础值,"A/数学结构,B/业务名",trunc(role+40/2) + 三个 Ail2 引用的 +3C
+0x0042BB50,RoleDefinition 派生标量B运行时修正,"A/数学结构,B/业务名",+224/+24C/+200 门控 0.5x/1.3x/0.7x
+0x0042BCD0,默认公式随机差值组合,"A/数学结构,B/业务名",以 performer+3C 构造 /25..../10 随机差值；Clamp1(A+R-B)
+0x0042CCB0,通用整数随机区间 helper,A,边界排序后 min+0x451565()%diff；相等直接返回
+0x0045155B,全局 RNG 播种入口,A,参数直接写 0x46E29C
+0x00451565,全局 RNG next,A,LCG *0x343FD +0x269EC3；返回 (state>>16)&0x7FFF
+0x00451583,系统时间派生 seed helper,"A/结构,B/作者符号名",直接调用 GetLocalTime/GetSystemTime/GetTimeZoneInformation 后生成32-bit时间值
+0x00442076,Battle 初始化获取时间 seed,A,CALL 0x451583
+0x0044207C,Battle 初始化写入 RNG seed,A,CALL 0x45155B
+0x00420ED0,动作结果计算/应用阶段入口,A,Battle mode 1/2 等结果应用主入口；双资源 consumer 已闭合
+0x00421043,主生存资源零值转移调用点,A,FightRole+0x87C<=0 且 +0x72C>0 时 CALL 0x4231F0
+0x00421249,FIRTTECH 动作资源消耗应用,A,读取 FIRTTECH+0x38 扣次资源；邻近 +0x34 扣主资源
+0x004231F0,主生存资源零值失效类状态转移,A,主 current<=0 后清零并令 +0x72C=-1；作者业务名未定
+0x0042B126,FIRTTECH 五槽源字段读取,A,按 slot 读取 +0x64 数值与 +0x78 ID
+0x0042B313,五槽 ID>27 独立分支,A,保留原ID、value固定8000，并跳过Role映射
+0x0042B53A,五槽 ID→Role 槽映射,A,读取 0x46A668+ID*8 首DWORD
+0x0042B54D,RoleDefinition 五槽映射 runtime 值读取,A,RoleDefinition+0x1E8+mapped*4
+0x0042B57E,五槽循环边界,A,"cmp ebx,5"
+0x0046A000,五槽 ID 0..27 静态参数表,A/结构,28×16-byte；0x42B1B5 等读取；字段业务名未知
+0x0046A668,五槽 ID→Role runtime index 映射表,A/结构,0..27 范围已固化；负值表示该路径不映射 Role槽
+0x0041CD79,RoleDefinition runtime状态槽表现层consumer,A/结构,读取+0x1E8；与+0x23C形成同一表现位一级/二级选择并向0x43E6F0传selector code
+0x0042CC5D,RoleDefinition+0x1E8传播到DamageInfo,A/结构,读取+0x1E8并在0x42CC64写DamageInfo+0x44
+0x00421518,DamageInfo+0x44后处理条件读取,A/结构,读取+0x44低字节并在0x421521调用0x420E20
+0x00420E20,关联单位/状态条件后处理判定,A/结构,参数非零时按BattleUnit+0xB9C查关联单位并检查存活与关联对象byte+0x358；业务名未知

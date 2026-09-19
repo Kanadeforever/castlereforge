@@ -1,0 +1,66 @@
+{
+  "版本": "v0.7D阶段中-固化11",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "状态": "STATIC_MAP_SCI_SAVE_ENTRY_GATE_CLOSED",
+  "结构链": [
+    {
+      "地址": "0x40AE70",
+      "作用": "取得Map SCI runtime entry数组首项"
+    },
+    {
+      "地址": "0x40A0C0",
+      "作用": "读取首条源Map SCI record+0x380 u32"
+    },
+    {
+      "地址": "0x40CC5A/0x40CCCD/0x40CCD6",
+      "作用": "EBX=1；DataCenter+0x108 = 1 - MapSCI[first]+0x380"
+    },
+    {
+      "地址": "0x435C66/0x435C6E/0x435C70",
+      "作用": "控件进入state2后，仅DataCenter+0x108==0时选择Interface state7"
+    },
+    {
+      "地址": "0x435DB3",
+      "作用": "state7取得Interface+0x654子系统"
+    },
+    {
+      "地址": "0x434E93/0x434E9C",
+      "作用": "Interface+0x654由0x4245B0构造并保存"
+    },
+    {
+      "地址": "0x4245B0",
+      "作用": "该子系统引用Menus\\MEN8004.SF2、Menus\\MEN8005.SF2"
+    },
+    {
+      "地址": "0x425760..0x4257A2",
+      "作用": "组合%s%03d%s、Save\\Save与.TSF形成Save\\Save%03d.TSF文件名"
+    }
+  ],
+  "DataCenter+0x108语义": {
+    "结构名": "runtime_save_entry_disabled_state",
+    "0": "允许Interface state7存档入口",
+    "非0": "阻止state7；Interface初始化时额外加载Menus\\MEN0009.SF2",
+    "独立清零writer": "0x40D510入口0x40D530 xor edi,edi；0x40D715写DataCenter+0x108=0"
+  },
+  "MapSCI+0x380安全语义": {
+    "结构名": "scene_save_entry_allowed_raw",
+    "启用值": 1,
+    "推导": "场景建立时+0x108=1-value；仅value==1得到+0x108==0并允许state7 Save子系统",
+    "作者原字段名": "未证明"
+  },
+  "作者/资源直接证据": [
+    "DataCenter Initial Fail.(Interface)",
+    "Menus\\MEN0009.SF2",
+    "Menus\\MEN8004.SF2",
+    "Menus\\MEN8005.SF2",
+    "Save\\Save",
+    "%s%03d%s",
+    ".TSF"
+  ],
+  "仍未证明": [
+    "MEN0009.SF2具体视觉/提示含义",
+    "MapSCI+0x380合法值域除启用值1之外的业务定义",
+    "为何使用first Map SCI record而不是selected record",
+    "0x40D510清零发生的完整业务生命周期名称"
+  ]
+}

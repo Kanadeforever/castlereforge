@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "replay1_tool_pass": true,
+  "replay2_tool_pass": true,
+  "masked_input_path_fields": [
+    "原版RPG",
+    "研究版RPG",
+    "Firttech"
+  ],
+  "json_entire_remaining_tree_equal": true,
+  "csv_sha256": [
+    "108922b4462fff7a4bafa7e248af0235b2053538fea136c88133505f37a3c4a8",
+    "108922b4462fff7a4bafa7e248af0235b2053538fea136c88133505f37a3c4a8",
+    "108922b4462fff7a4bafa7e248af0235b2053538fea136c88133505f37a3c4a8"
+  ],
+  "csv_all_byte_identical": true,
+  "inputs_reextracted_independently": true,
+  "notes": [
+    "两轮分别重新解压用户原始RPG.exe.org.zip，并分别从multimedia.zip重新提取canonical Firttech.enc；研究版RPG.exe分别复制。",
+    "只屏蔽主题JSON“输入”对象中的三个绝对路径字符串；输入文件SHA、caller集合、对象范围候选、双版本区间、slot记录、结论边界和PASS状态全部参与整个树比较。",
+    "历史固化18～62机器输出不冒充本轮重新研究。"
+  ]
+}

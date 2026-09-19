@@ -1,0 +1,33 @@
+{
+  "版本": "v0.7D阶段中-固化15",
+  "阶段": "Battle D7",
+  "状态": "OUTCOME_AND_VICTORY_REWARD_MAIN_CHAIN_STATIC_CLOSED_REMAINING_UI_AND_DRAW_ORDER",
+  "直接前代": "v0.7D阶段中-固化14",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "已闭合": [
+    "0x443590 16-slot胜负判定：FightRole+0x850=0敌方侧、=1我方侧；+0xA74!=0的幽冥返召操偶单位不计入正常存活数",
+    "detector return1=敌方侧计数清零；return2=我方侧计数清零；高层外部flag可强制 outcome3",
+    "0x443660 参数1完整胜利奖励；参数2/3分别显示敗陣之戰/全隊脫逃；参数4代码分支显示因事停戰，但当前高层不会把detector return4原样传4",
+    "LayoutTeam整508-byte record复制到manager+0xE331；+0x00/+0x04=EXP奖励源ID数量/列表；+0x74/+0x78=銀兩base/range；+0x7C/+0x80/+0x90=最多4项掉落ID/阈值",
+    "胜利EXP=sum(source API RoleDefinition+0x24)，再加到每个合格我方 RoleDefinition+0x24；0x443B60用LevelUp.ENC阈值升级",
+    "勝利銀兩=base+(range?RNG%range:0)，通过0x439820写Bank+0x5DD8；原版UI单位“兩”",
+    "掉落严格为RNG%100 <= threshold；物品ID经Ail2主表校验后调用0x439120数量1加入库存",
+    "结果UI/倒计时结束后0x4329F7→0x441F60，将FightRole+0x84C完整0x350 RoleDefinition回写API主表",
+    "FIRTTECH 0x1D0“幽冥返召”原文+特殊writer闭合FightRole+0xA74为操偶特殊状态字段；胜负计数排除该状态单位"
+  ],
+  "否定证据/纠错": [
+    "BattleGB.ENC是66×94 BattleBackgroundDefinitionTable，不是奖励表；D7早期路线卡将其与reward并列仅是待办误导。",
+    "detector return4不能直接叫“因事停戰”：当前0x4328A0把return4翻译成dispatcher参数1；0x443660参数4文本分支当前无E8直接caller传4。",
+    "LevelUp.ENC 101 DWORD不能写成全表严格单调；有效累计阈值0..98单调，99/100为0。",
+    "掉落比较有<=等号，不能擅自改成常见的 RNG%100 < threshold。"
+  ],
+  "未闭合": [
+    "DataCenter+0xF4特殊结束倒计时的完整业务来源/为何高层把detector4翻译为dispatcher1；当前已知初始化可写800..1199并逐步递减到1。",
+    "0x443660结果UI各阶段的精确时序/动画状态机。",
+    "升级后RoleDefinition+0x3C/+0x40/+0x44/+0x48/+0x4C等字段的作者属性名。",
+    "D7奖励与升级随机数的全局RNG draw顺序，需纳入D8 deterministic BattleTrace。"
+  ],
+  "下一步": [
+    "先补D7特殊结束return4/DataCenter+0xF4来源与结果UI时序；随后D8重建BattleTrace RNG draw order。"
+  ]
+}

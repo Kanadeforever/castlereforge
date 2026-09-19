@@ -1,0 +1,69 @@
+{
+  "工具版本": "0.7D-固化1",
+  "结果": [
+    {
+      "key": "api",
+      "file": "Api.enc",
+      "record_size": 848,
+      "count": 255,
+      "decoded_sha256": "b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d",
+      "status": "PASS"
+    },
+    {
+      "key": "article",
+      "file": "Ail2.ENC",
+      "record_size": 926,
+      "count": 700,
+      "decoded_sha256": "a85d0904e969700b996ee89134582552bfabb98af76321804af34f9896b051a8",
+      "status": "PASS"
+    },
+    {
+      "key": "enemy_ai",
+      "file": "Enemy_ai.enc",
+      "record_size": 56,
+      "count": 283,
+      "decoded_sha256": "bbe09efa3a6b969d4cc2a9a3b4e5a7a41e62b5a3c489f34922f747389e235439",
+      "status": "PASS"
+    },
+    {
+      "key": "magiccon",
+      "file": "Magiccon.enc",
+      "record_size": 64,
+      "count": 500,
+      "decoded_sha256": "a8fb1cb7479cd3db4fafbb68c73bef574f33bf50df65dc49ea81ee96e1118c29",
+      "status": "PASS"
+    },
+    {
+      "key": "firttech",
+      "file": "Firttech.enc",
+      "record_size": 560,
+      "count": 500,
+      "decoded_sha256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+      "status": "PASS"
+    },
+    {
+      "key": "battlegb",
+      "file": "Battlegb.enc",
+      "record_size": 94,
+      "count": 66,
+      "decoded_sha256": "46d4bca425789f0514eb5610219b7136584b50233421f8b7db1b3af94685b56e",
+      "status": "PASS"
+    },
+    {
+      "key": "layoutgr",
+      "file": "Layoutgr.enc",
+      "record_size": 508,
+      "count": 250,
+      "decoded_sha256": "71ab7931f5489d1bd053243d707089373636f43684f85ce802c54dfecd2bf392",
+      "status": "PASS"
+    },
+    {
+      "key": "layoutteam",
+      "file": "LayoutTeam.ENC",
+      "record_size": 508,
+      "count": 334,
+      "decoded_sha256": "2812b0a29f1aca8604cd7044bfcb48c7a3cce90233189a764b4f9f6f014e8c7d",
+      "status": "PASS"
+    }
+  ]
+}

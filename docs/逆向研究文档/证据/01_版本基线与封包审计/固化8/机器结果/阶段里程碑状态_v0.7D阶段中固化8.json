@@ -1,0 +1,24 @@
+{
+  "版本": "v0.7D阶段中-固化8",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "直接前序": "v0.7D阶段中-固化7",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "新增闭合": [
+    "0x89F7D0收窄为world-item异步结果/物品ID通道；当前Oracle唯一非零writer=0x40D03A",
+    "opcode0x94/0x95围绕0x89F7D0的结果分支协议",
+    "opcode0x96三元组拆为saved Event + resume key A/B；code11消费keyB==当前物品ID；code12消费keyA==12",
+    "0x40B230=Event按ID激活/装载；0x40B340=active Event VM上下文清理/复位",
+    "code12 resume gate失败时可静态确认predicate==1会fallback启动Event ID3；Event3业务语义未闭合",
+    "当前multimedia只含1个原始EVE且0x96零命中，确认为样本覆盖缺口"
+  ],
+  "仍未闭合": [
+    "全游戏EVE中0x96 keyA/keyB真实分布",
+    "code12 fallback Event ID3的业务/场景含义",
+    "0x408C40条件清saved Event的上层业务时机",
+    "属性作者术语/ID43",
+    "Battle后11 runtime槽",
+    "D7 result/reward",
+    "D8 draw order/BattleTrace"
+  ],
+  "恢复入口": "优先追0x408C40的两个caller与Event ID3来源；若获得更多EVE则立即运行eve96批量并统计keyA/keyB。"
+}

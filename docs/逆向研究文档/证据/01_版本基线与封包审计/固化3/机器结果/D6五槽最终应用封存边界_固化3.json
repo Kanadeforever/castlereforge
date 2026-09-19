@@ -1,0 +1,26 @@
+{
+  "版本": "v0.7D阶段中-固化3",
+  "日期": "2026-08-13",
+  "主题": "D6五槽最终application封存边界",
+  "直接证据": {
+    "0x420ED0_mode1": "每目标循环明确使用DamageInfo+0x04/+0x08；同时读取+0x30/+0x34。后两项与五槽value区尾部重叠。",
+    "0x420ED0_mode1_否定边界": "未观察到对五组ID/value的循环式遍历，也未读取五槽ID区+0x10..+0x20；故不能认定为五槽最终application。",
+    "0x4212CE_mode2": "消费结果分量、+0x40/+0x44等后处理字段；未形成五组ID/value完整application循环。",
+    "0x421A00": "当前检查未发现对五组ID/value的直接完整消费。"
+  },
+  "当前可冻结": "effect-like ID -> static mapping -> Role runtime state slot -> presentation selector -> DamageInfo postprocess 已静态闭合。",
+  "仍未闭合": [
+    "五槽remaining value最终application/writer",
+    "Role runtime槽完整writer/clear/decrement/timing",
+    "effect/status/timer作者业务语义"
+  ],
+  "恢复入口": [
+    "0x42B0D0输出后的direct/indirect consumer",
+    "DamageInfo+0x10..+0x34 xref",
+    "RoleDefinition runtime slot writer/clear/decrement路径"
+  ],
+  "证据文件": [
+    "结果应用模式1与双资源处理_0x420ED0_0x421165.asm",
+    "结果应用模式2与状态后处理_0x4212CE_0x421682.asm"
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "版本": "v0.7D阶段中-固化3",
+  "日期": "2026-08-13",
+  "OracleEXE_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "证据原则": "当前层只保留由同 SHA Oracle、冻结数据或可复现工具直接闭合的事实。业务名不明时只使用结构名；动态行为未抓到时明确标记动态待验。",
+  "关键纠错": {
+    "BattleManager槽坐标与FightRole对象坐标": {
+      "level": "A",
+      "formula": "FightRole(slot) = BattleManager + 0x3E4 + slot*0xDE4",
+      "evidence": [
+        "0x44267C call 0x41F2B0：首槽对象由 manager+0x3E4 构造",
+        "0x443F39 call 0x41F2B0：另一初始化链重复证明 +0x3E4",
+        "0x41F47A：真实 FightRole* 写入 0x89FD94[slot]"
+      ],
+      "supersedes": "固化2将 AI raw-slot +0xC30/+0xCD8/+0xCDC 直接当 FightRole 字段的坐标混淆。"
+    }
+  },
+  "BattleManagerRawSlot": {
+    "stride": {
+      "value": "0xDE4",
+      "level": "A"
+    },
+    "raw_to_FightRole_examples": {
+      "+0xC30": "FightRole+0x84C",
+      "+0xCD8": "FightRole+0x8F4",
+      "+0xCDC": "FightRole+0x8F8",
+      "+0xE20": "FightRole+0xA3C",
+      "+0xE54": "FightRole+0xA70",
+      "+0x10C8": "FightRole+0xCE4",
+      "+0x10CC": "FightRole+0xCE8",
+      "+0x10D4": "FightRole+0xCF0"
+    }
+  },
+  "FightRole": {
+    "embedded_api_role_definition": {
+      "offset": "0x84C",
+      "size": "0x350",
+      "level": "A",
+      "note": "0x41F070附近清0xD4 DWORD；0x41F4A4/0x43BC20 填充。该块首 DWORD 在已观测路径同时被用作 Enemy_AI record index 与 fallback FIRTTECH ID，作者业务名未定。"
+    },
+    "candidate_count": {
+      "offset": "0x8F4",
+      "level": "A/结构",
+      "raw_slot_offset": "0xCD8"
+    },
+    "candidate_ids": {
+      "offset": "0x8F8",
+      "level": "A/结构",
+      "raw_slot_offset": "0xCDC"
+    },
+    "selected_firttech_id": {
+      "offset": "0x7A8",
+      "level": "A",
+      "evidence": "0x422F41 / 0x423A7B / 0x423AD1"
+    },
+    "selected_firttech_record": {
+      "offset": "0x848",
+      "level": "A",
+      "evidence": "0x422F4F / 0x423A91 / 0x423AED"
+    },
+    "target_seed_or_primary": {
+      "offset": "0x7A0",
+      "level": "A/结构"
+    },
+    "target_list": {
+      "offset": "0x88",
+      "level": "A/结构"
+    },
+    "target_count": {
+      "offset": "0xC8",
+      "level": "A/结构"
+    },
+    "formation_position_key": {
+      "offset": "0xB9C",
+      "level": "A/结构",
+      "note": "0x422A70 用于从 16 个 FightRole 中按位置键反查；禁止未证据地命名“前排/后排”。"
+    },
+    "active_valid_gate": {
+      "offset": "0x72C",
+      "level": "A/结构",
+      "note": "<0 时从目标池排除；作者业务名未知。"
+    },
+    "side_or_pool_key": {
+      "offset": "0x850",
+      "level": "A/结构",
+      "note": "0/1 用于 0x422CB0 分成两个活动目标池；最终阵营业务名待证。"
+    },
+    "action_mode": {
+      "offset": "0xCF0",
+      "level": "A/结构",
+      "known": {
+        "7": "Article/Ail2 路径（A）",
+        "1": "FIRTTECH 准备路径（结构A，业务名未知）",
+        "4": "FIRTTECH 准备路径+固定 timing（结构A，业务名未知）"
+      }
+    },
+    "article_record": {
+      "offset": "0xCF4",
+      "level": "A",
+      "meaning": "Ail2 record* for Article path"
+    },
+    "explicit_request_copy": {
+      "offset": "0xCFC",
+      "size": "0xE4",
+      "level": "A/结构",
+      "evidence": "0x423A0A + rep movsd 0x39"
+    },
+    "damage_info_array": {
+      "offset": "0x170",
+      "stride": "0x50",
+      "level": "A",
+      "evidence": "0x422B27 起点；0x422C8D 每目标 add ebx,0x50"
+    }
+  },
+  "D3_AI到动作准备": {
+    "status": "STATIC_CLOSED_DYNAMIC_TRACE_PENDING",
+    "enemy_ai_decision": "0x444240",
+    "candidate_filter_scorer": "0x444330",
+    "conclusion": "同一 candidate ID 联合索引 FIRTTECH(560) 与 MagicCon(64)，经条件/RNG评分后返回；正 candidate 在 0x442E58 后原样传入 0x422F00。",
+    "firttech_prepare": "0x422F00",
+    "target_seed": "0x422CB0",
+    "target_set": "0x422850",
+    "target_lookup": "0x422A70",
+    "article_prepare": "0x423BA0"
+  },
+  "TargetSelection": {
+    "level": "A/结构,B/业务枚举名",
+    "0x422A70": "扫描 0x89FD94[16]，匹配 +0xB9C 且 +0x72C>=0，返回 slot index。",
+    "0x422850": "由 seed target 的 formation key 与 selector tuple 构造 1、2(间隔4)、4连续、8块或全16活动单位的目标集合。",
+    "0x422CB0": "先按 +0x850=0/1 建两个活动池；普通 FIRTTECH 从 +0x20/+0x24/+0x28 取 target tuple，Article mode7 从 Ail2 +0xB8/+0xBC/+0xC0 取对应 tuple。关系 mode=2/4 时直接返回 self slot；其他模式在两个池中选取并可能按 formation key 重定向。",
+    "dynamic_pending": "作者枚举名、阵营名、实际战斗中的抽样分布需运行时 trace。"
+  },
+  "D4_ActionDispatch": {
+    "status": "FIRST_STATIC_SKELETON_CLOSED",
+    "explicit_request_loader": "0x423A00",
+    "explicit_primary_target_resolver": "0x423CB0",
+    "action_processor_dispatch": "0x422AB0",
+    "firttech_wrapper": "0x42A7A0",
+    "article_processor": "0x42A7D0",
+    "class_dispatch": {
+      "0": "0x42A7A0/FIRTTECH",
+      "1": "0x42A7A0/FIRTTECH",
+      "2": "0x42A7A0/FIRTTECH",
+      "4": "0x42A7A0/FIRTTECH；另有反向角色参数第二次调用",
+      "5": "0x42A7A0/FIRTTECH",
+      "6": "0x42A7A0/FIRTTECH",
+      "0xA": "0x42A7D0/Article-Ail2"
+    },
+    "caution": "不是完整业务枚举；未列出的 class 不得自动解释。"
+  },
+  "D5_FIRTTECHProcessor": {
+    "entry": "0x42C680",
+    "level": "A/处理器身份，B/具体业务语义",
+    "proof": "0x42A7A0 只做 5 参数原样转发并在 0x42A7B9 CALL 0x42C680；0x422AB0 的 FIRTTECH class 分支直接调用 0x42A7A0。",
+    "damage_info_stride": "0x50 exact",
+    "firttech_class_field": "+0x18",
+    "formula_selector_field": "+0x30",
+    "formula_helpers": {
+      "default": "0x42B5F0",
+      "2": "0x42B630",
+      "3": "0x42B6C0",
+      "4": "0x42B750",
+      "5": "0x42B7D0",
+      "6": "0x42B840"
+    },
+    "business_labels_pending": "数学关系已 A 级闭合；仍禁止把 A/B/K、selector 2..6 自动命名成攻击/防御/HP/魔法/治疗等。",
+    "status": "FORMULA_MATH_CLOSED_SEMANTICS_PENDING",
+    "formula_argument_model": "helpers this=processor, arg1=performer RoleDefinition*, arg2=target RoleDefinition*, arg3=FIRTTECH*",
+    "derived_A": "0x42BA00 -> 0x42BA80；基础 role+0x3C 加 +0x90/+0x94/+0x98 所指 Ail2+0x3C，再受 runtime-only +0x1F4/+0x240 比例门控",
+    "derived_B": "0x42BAD0 -> 0x42BB50；基础 trunc(role+0x40/2) 加同组 Ail2+0x3C，再受 runtime-only +0x224/+0x24C/+0x200 比例门控",
+    "formula_math": {
+      "default_0x42B5F0": "Clamp1(A + Rand[trunc(S/25),trunc(S/10)) - B)",
+      "selector2_0x42B630": "Clamp0(A + trunc((role+0x2C-role+0x30)*K/10) + Rand[trunc(S/50),trunc(S/10)) - B)",
+      "selector3_0x42B6C0": "Clamp0(A + trunc((role+0x2C)*K/100) + Rand[trunc(S/50),trunc(S/10)) - B)",
+      "selector4_0x42B750": "Clamp0(trunc(A*K/10) + Rand[trunc(S/50),trunc(S/10)) - B)",
+      "selector5_0x42B7D0": "base=A+Rand[trunc(S/50),trunc(S/10)); Clamp0(base - trunc(B/base)*K)；base==0边界待验",
+      "selector6_0x42B840": "Clamp0(trunc(default_formula*K/10))"
+    },
+    "common_symbols": "A=0x42BA80(performer), B=0x42BB50(target), S=performer+0x3C, K=FIRTTECH+0x40；0x42CCB0 自动排序边界并做 min+RNG()%diff。",
+    "sample_boundary": "Api.enc 255/255 中 +0x2C==+0x30；公式却把二者作为独立 runtime 输入，必须继续找 writer。+0x1F4/+0x200/+0x224/+0x240/+0x24C 等当前 source records 均为0。"
+  },
+  "D6_FiveSlotSecondaryEffect": {
+    "entry": "0x42B0D0",
+    "level": "A/五槽结构，B/业务字段名",
+    "loop": "i=0..4 exactly",
+    "DamageInfo_arrays": {
+      "+0x10..+0x20": "5×DWORD slot A（effect/status-like ID）",
+      "+0x24..+0x34": "5×DWORD slot B（amount/duration/strength-like value）"
+    },
+    "role_runtime_mapping": "ID 0..27 可经 0x46A668 映射到 RoleDefinition+0x1E8+mapped_index*4；多组映射槽又被 0x41CD79..0x41D114 成对用于表现 selector。",
+    "rng": "0x451565 用于逐槽概率路径。",
+    "pending": "effect-like ID/字段的作者名称、完整 writer/解除/递减/计时规则未闭合。",
+    "status": "EFFECT_ID_RUNTIME_SLOT_PRESENTATION_AND_DAMAGEINFO_FLOW_CLOSED_BUSINESS_SEMANTICS_WRITER_TIMING_PENDING",
+    "presentation_crosslink": "ID 21/0、24/5、22/3、23/4、25/6、26/7、10/15 分别映射到 7 组一级/二级表现字段对。",
+    "damageinfo_propagation": "RoleDefinition+0x1E8 在 0x42CC5D/0x42CC83 复制到 DamageInfo+0x44；0x421518 读取其低字节进入 0x420E20 条件后处理。",
+    "source_initialization": "Api.enc 所核对 21 个相关 runtime 状态字段 255/255 初值均为0。"
+  },
+  "仍未闭合": [
+    "mode 1/4 的最终作者业务名称与完整 class/mode 枚举",
+    "FIRTTECH +0x20/+0x24/+0x28 与 Ail2 +0xB8/+0xBC/+0xC0 的作者 target enum 名称",
+    "六个 formula helper 的数学关系已闭合，但 selector 2..6 与 Role/FIRTTECH 字段的作者业务语义仍未知",
+    "selector5 base==0 边界与其他 RoleDefinition 字段作者业务语义",
+    "0x42B0D0 effect-like ID/Role runtime 槽的作者业务名、完整 writer/解除/计时语义",
+    "Role 最终 HP/第二资源作者名（可有结构 consumer，不强命名）",
+    "battle result / victory / reward 边界",
+    "RNG 算法/state/时间播种已闭合；仍缺每条 action draw 顺序与 deterministic BattleTrace",
+    "动态实机 action trace；D3/D4当前为静态闭合，不等同动态验证"
+  ],
+  "D8_RNG": {
+    "status": "RNG_CORE_AND_TIME_RESEED_CLOSED_DRAW_ORDER_PENDING",
+    "level": "A/算法与播种边界；B/完整消费顺序",
+    "state_address": "0x46E29C",
+    "seed_function": "0x45155B",
+    "next_function": "0x451565",
+    "algorithm": "state=(state*0x343FD+0x269EC3) mod 2^32；return=(signed state>>16)&0x7FFF (0..32767)",
+    "range_helper": "0x42CCB0：两边界相等直接返回；否则排序后 min + RNG()%diff",
+    "battle_reseed": "0x442076 -> 0x451583 取得系统时间转换值；0x44207C -> 0x45155B 写 seed",
+    "seed_direct_callers": [
+      "0x4010C0",
+      "0x44207C"
+    ],
+    "seed_source": "0x451583 直接调用 GetLocalTime/GetSystemTime/GetTimeZoneInformation 后生成 32-bit 时间值",
+    "pending": "逐 action/candidate/status 的 draw 顺序、可重放 BattleTrace、同 state/input 输出一致性。"
+  },
+  "RoleDefinition双资源运行时结构": {
+    "内嵌基址": "FightRole+0x84C",
+    "+0x2C / FightRole+0x878": "主生存资源 max；Battle与EVE双 consumer 交叉证明",
+    "+0x30 / FightRole+0x87C": "主生存资源 current；<=0进入0x4231F0失效类转移",
+    "+0x34 / FightRole+0x880": "次资源 max；Battle与EVE双 consumer 交叉证明",
+    "+0x38 / FightRole+0x884": "次资源 current",
+    "DamageInfo": "+0x04扣主资源current；+0x08扣次资源current",
+    "FIRTTECH": "+0x34/+0x38分别为主/次动作资源消耗量；0x444590前检与0x421249后扣闭环",
+    "Article/Ail2": "+0x118/+0x11C分别扣主/次资源",
+    "语义边界": "作者资源名未证明，不写HP/MP/SP。",
+    "跨系统验证": "EVE 0x40E6C0 -> 0x43B8F0 对两对字段执行 current 调整/百分比设置并分别 clamp 到 max。"
+  },
+  "固化3_D6五槽闭合": {
+    "函数": "0x42B0D0；固定5槽",
+    "FIRTTECH来源": "+0x64+slot*4 数值；+0x78+slot*4 ID",
+    "Article_Ail2来源": "+0xE8+slot*4 数值；+0xFC+slot*4 ID",
+    "DamageInfo": "ID -> +0x10+slot*4；计算值 -> +0x24+slot*4",
+    "ID_0_27": "0x46A000 16-byte静态项；0x46A668 8-byte映射首DWORD>=0时访问 RoleDefinition+0x1E8+mapped*4",
+    "ID_大于27": "原ID写回，value=8000，跳过Role映射",
+    "边界": "effect-like/state-like 结构与数据流已闭合；作者具体状态名及 writer/解除/时序未闭合。",
+    "Role_runtime到表现层": "0x46A668 映射出的多组 runtime 槽与 0x41CD79..0x41D114 的表现 selector 字段对精确重合。",
+    "DamageInfo传播": "RoleDefinition+0x1E8 -> DamageInfo+0x44 -> 0x420E20 条件后处理；成立时两个结果分量有符号/2。",
+    "Api源值": "相关 21 个 runtime 字段在 Api.enc 255/255 源记录中均为0。"
+  }
+}

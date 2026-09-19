@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "audit_kind": "固化62第二轮全包只读审计（文档冻结前）",
+  "baseline": "固化61最终ZIP独立解压",
+  "checks": {
+    "baseline_non_markdown_count": 1021,
+    "inherited_non_markdown_unchanged": 1019,
+    "intentional_modified_count": 2,
+    "intentional_modified_contract_exact": true,
+    "unexpected_modified_count": 0,
+    "missing_inherited_count": 0,
+    "markdown_count": 105,
+    "markdown_banner_bad_count": 0,
+    "stale_live_solid61_count": 0,
+    "stale_0x424560_unknown_count": 0,
+    "odd_code_fence_count": 0,
+    "python_tool_count": 38,
+    "python_ast_compile_bad_count": 0,
+    "help_all_pass": true,
+    "tool_doc_count": 38,
+    "new_tool_doc_present": true,
+    "json_count_before_audit_write": 538,
+    "json_bad_count": 0,
+    "csv_count": 59,
+    "csv_bad_count": 0,
+    "required_statuses_all_pass": true,
+    "cache_count": 0
+  },
+  "intentional_modified_inherited_non_markdown": [
+    {
+      "path": "工具/youcheng_battle_core_inspector.py",
+      "baseline_sha256": "b8530ba84041f52535e8a6e5c75129aafc0f7f8e37a92ef7a72f80e92d2cf790",
+      "current_sha256": "ab2b56f5904d96eda9f6785af891debaa8e773102dc75555a1f4c8720aeacc75",
+      "changed": true
+    },
+    {
+      "path": "工具/youcheng_enc_inspector.py",
+      "baseline_sha256": "cf46349b59847a81d5aaed4451fad46510c7b150cd899b3ea002b166d2c0d527",
+      "current_sha256": "1114df21992e2f779fbbe25498a15d89f754adee2edda422082e06dc8d95de95",
+      "changed": true
+    }
+  ],
+  "unexpected_modified_inherited_non_markdown": [],
+  "missing_inherited_files": [],
+  "markdown": {
+    "count": 105,
+    "banner_bad": [],
+    "stale_live_solid61_assignments": [],
+    "stale_0x424560_unknown": [],
+    "odd_code_fences": []
+  },
+  "python_tools": {
+    "count": 38,
+    "ast_compile_bad": [],
+    "help_checks": [
+      {
+        "path": "工具/youcheng_battle_escape_threshold_inspector.py",
+        "returncode": 0,
+        "pass": true,
+        "stdout_head": "usage: youcheng_battle_escape_threshold_inspector.py [-h]\n                                                     --original-exe ORIGINAL_EXE\n                                                     --research-exe RESEARCH_EXE\n                                                     --layoutgr LAYOUTGR\n                                                     --firttech FIRTTECH\n                                                     --json JSON --csv CSV\n\n固化62：核对Battle「戰場脫逃」成功阈值、LayoutGR+0x9C分布与精确RNG比较规则\n\noptions:\n  -h, --help            show this help message and exit\n  --original-exe ORIGINAL_EXE\n                        完全未修改的RPG.exe.org解压后EXE\n  --research-exe RESEARCH_EXE\n                        历史研究版RPG.exe，仅用于关键区间等价比较\n  --layoutgr LAYOUTGR   canonical multimedia/public/Layoutgr.enc\n  --firttech FIRTTECH   canonical multimedia/public/Firttech.enc\n  --json JSON           完整JSON机器结果输出路径\n  --csv CSV             250条LayoutGR字段分布CSV输出路径\n",
+        "stderr_head": ""
+      },
+      {
+        "path": "工具/youcheng_enc_inspector.py",
+        "returncode": 0,
+        "pass": true,
+        "stdout_head": "usage: youcheng_enc_inspector.py [-h] {解码,编码,校验样本,规格,检查,导出记录} ...\n\n《幽城幻剑录》ENC调查器 v0.7A（默认只读，输出必须显式指定）\n\npositional arguments:\n  {解码,编码,校验样本,规格,检查,导出记录}\n    解码                  解码ENC到新文件\n    编码                  用同一XOR算法编码为新文件\n    校验样本                13张现有ENC与参考解码做字节级校验\n    规格                  输出当前ENC算法和表结构规格\n    检查                  检查一个已知ENC/bin的几何\n    导出记录                按已知固定记录结构导出字段\n\noptions:\n  -h, --help            show this help message and exit\n",
+        "stderr_head": ""
+      },
+      {
+        "path": "工具/youcheng_battle_core_inspector.py",
+        "returncode": 0,
+        "pass": true,
+        "stdout_head": "usage: youcheng_battle_core_inspector.py [-h]\n                                         {验证,记录,验证RPG,调用引用,分析Ail2大ID,分析特殊物品,分析D7奖励,分析D7特殊结束,分析D8随机顺序,快照} ...\n\n幽城战斗核心调查器（只读、证据优先）\n\npositional arguments:\n  {验证,记录,验证RPG,调用引用,分析Ail2大ID,分析特殊物品,分析D7奖励,分析D7特殊结束,分析D8随机顺序,快照}\n    验证                  验证 Battle 相关 ENC 表几何并输出解码 SHA256\n    记录                  导出指定 Battle ENC record 的原始结构视图\n    验证RPG               对当前 Oracle RPG.exe 重放关键静态证据检查\n    调用引用                扫描对目标 VA 的 x86 E8 rel32 直接 CALL 引用\n    分析Ail2大ID           从 public 目录或 multimedia.zip 分析 Ail2+0x20 与五槽 ID>27 记录\n    分析特殊物品              分析0x10F..0x111复苏、0x12D..0x133永久能力与0x170..0x172世界特殊物品字段\n    分析D7奖励              从 public 目录或 multimedia.zip 重放\n                        LayoutTeam/LevelUp/FIRTTECH 的 D7 奖励数据证据\n    分析D7特殊结束            重放伏龍A/伏龍B、LayoutGR候选字段与特殊结束数据证据\n    分析D8随机顺序            重放D8已闭合随机协议、固化22非Battle 11点静态语义细分与全EXE RNG直接调用清单\n    快照                  输出固化22阶段中当前结构导航索引（不是独立证据生成器）\n\noptions:\n  -h, --help            show this help message and exit\n",
+        "stderr_head": ""
+      }
+    ],
+    "tool_docs": 38,
+    "new_tool_lines": 803,
+    "new_tool_chinese_pure_hash_comments": 147
+  },
+  "structured_files_before_this_audit_write": {
+    "json_count": 538,
+    "json_bad": [],
+    "csv_count": 59,
+    "csv_bad": []
+  },
+  "required_statuses": {
+    "战场脱逃成功阈值调查_固化62.json": "PASS",
+    "固化62第一轮正式封包审计.json": "PASS",
+    "固化62双轮独立原始输入重放审计.json": "PASS"
+  },
+  "cache_files": [],
+  "notes": [
+    "固化62继承审计继续以固化61最终ZIP为唯一基线。",
+    "固化62在文档冻结前有意更新两个既有工具；除这两个工具外，固化61继承的其它非Markdown文件此轮必须逐字节不变。",
+    "滚动全文件SHA索引尚未在本审计阶段重建；最终封包阶段会按设计更新该索引，并单独记录这一预期变化。",
+    "历史固化18～22的56个direct RNG caller静态分类没有在本轮冒充重新研究；固化62只闭合戰場脫逃阈值链。"
+  ]
+}

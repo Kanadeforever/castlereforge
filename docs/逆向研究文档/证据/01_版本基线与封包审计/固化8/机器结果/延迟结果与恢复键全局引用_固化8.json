@@ -1,0 +1,53 @@
+{
+  "版本": "v0.7D阶段中-固化8",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "0x89F7D0": {
+    "结构名": "world-item异步结果/物品ID通道",
+    "非零writer": [
+      {
+        "地址": "0x0040D03A",
+        "行为": "写入ECX；ECX来自DataCenter+0xEC当前物品ID"
+      }
+    ],
+    "清零writer": [
+      "0x00409B07",
+      "0x0040CC20",
+      "0x0040F30E"
+    ],
+    "读取": [
+      "0x004088C4",
+      "0x00408911",
+      "0x004099C5",
+      "0x0040B280",
+      "0x0040CBFE",
+      "0x0040F2F9",
+      "0x0040F396"
+    ],
+    "核心consumer": {
+      "opcode0x94": "0x0040F2F0：与record+4比较；相等PC=record+8并清零",
+      "opcode0x95": "0x0040F390：非零时PC=record+4；零时顺序前进"
+    },
+    "边界": "当前Oracle中唯一非零writer是0x40D03A，因此本通道可收窄为world-item结果/物品ID，不再泛称任意UI结果。"
+  },
+  "0x89F7F8": {
+    "结构名": "saved Event ID",
+    "writer": "0x0040F3EF <- current Event ID 0x89F808",
+    "clear": "0x00408C49（条件清零）",
+    "consumers": [
+      "0x0040CE57 code11",
+      "0x0040CE97 code12"
+    ]
+  },
+  "0x89F7FC": {
+    "结构名": "resume key A / opcode0x96 record+4",
+    "writer": "0x0040F3FB",
+    "consumer": "0x0040CEA0：code12比较==12",
+    "其他当前Oracle直接引用": 0
+  },
+  "0x89F800": {
+    "结构名": "resume key B / opcode0x96 record+8",
+    "writer": "0x0040F406",
+    "consumer": "0x0040CE60：code11比较当前world-item ID",
+    "其他当前Oracle直接引用": 0
+  }
+}

@@ -1,0 +1,10 @@
+﻿地址,当前结构名,固化16结论
+0x40D200,EVE opcode0x37 Execute,Battle命令状态机
+0x40D412,比较record+0x04==0x82,伏龍A特殊初始化门
+0x40D433,写DataCenter+0xF4,RNG%400+800
+0x40D450,record+0x04→DataCenter+0xD8,LayoutGR索引
+0x424430,LayoutGR→LayoutTeam选择,+18 count/+1C IDs
+0x442920,Battle主虚函数更新,F4递减
+0x443590,Battle outcome detector,F4==1特殊return4
+0x4328A0,高层Battle结束状态机,detector4→dispatcher1
+0x443660,结果分派/奖励,参数1胜利主链

@@ -1,0 +1,156 @@
+{
+  "工具版本": "0.1.0-固化43",
+  "输入": {
+    "RPG.exe": "/mnt/data/work43/input/RPG.exe",
+    "SHA256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "当前RPG.org期望SHA256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "整文件SHA匹配当前org": true,
+    "ImageBase": "0x00400000"
+  },
+  "对象与调用面": {
+    "Battle结果容器vtable": "0x00460DC4",
+    "vtable[0]实际值": "0x004328A0",
+    "vtable[0]是0x4328A0": true,
+    "outcome detector": "0x00443590",
+    "detector direct E8 callers": [
+      "0x004328B2"
+    ],
+    "detector caller集合符合预期": true,
+    "result dispatcher": "0x00443660",
+    "dispatcher direct E8 callers": [
+      "0x00432908",
+      "0x00432929",
+      "0x00432948"
+    ],
+    "dispatcher caller集合符合预期": true,
+    "dispatcher地址静态绝对指针命中": [],
+    "dispatcher地址静态绝对指针命中数": 0
+  },
+  "参数4文本": {
+    "地址": "0x0046C4DC",
+    "CP950解码": "      因  事  停  戰      ",
+    "包含因事停戰四字": true
+  },
+  "detector到dispatcher精确语义": {
+    "detector=1": "dispatcher(1)，DataCenter+0x118=1，随后可进入普通结果UI启动路径",
+    "detector=2": "dispatcher(2)，DataCenter+0x118=2，随后进入普通结果UI启动路径",
+    "detector=3": "dispatcher(3)，DataCenter+0x118=3，随后进入普通结果UI启动路径",
+    "detector=4": "dispatcher(1)，DataCenter+0x118=1；之后cmp edi,4命中，跳过普通结果UI启动调用0x412440",
+    "dispatcher参数4": "函数内部存在并显示“因事停戰”标题，但当前已证canonical结果update没有任何路径传入4"
+  },
+  "机器码断言": [
+    {
+      "地址": "0x004320C6",
+      "含义": "Battle结果容器构造器把vtable写为0x460DC4",
+      "期望机器码": "c7 06 c4 0d 46 00",
+      "实际机器码": "c7 06 c4 0d 46 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x004328B2",
+      "含义": "canonical结果update调用outcome detector 0x443590",
+      "期望机器码": "e8 d9 0c 01 00",
+      "实际机器码": "e8 d9 0c 01 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x004328DB",
+      "含义": "结果update只把detector 1/2/4/3视为结束分支",
+      "期望机器码": "83 ff 01 74 0f 83 ff 02 74 0a 83 ff 04 74 05 83 ff 03 75 7b",
+      "实际机器码": "83 ff 01 74 0f 83 ff 02 74 0a 83 ff 04 74 05 83 ff 03 75 7b",
+      "PASS": true
+    },
+    {
+      "地址": "0x004328FB",
+      "含义": "detector为1或4都会汇合到同一dispatcher参数1路径",
+      "期望机器码": "83 ff 04 75 1d",
+      "实际机器码": "83 ff 04 75 1d",
+      "PASS": true
+    },
+    {
+      "地址": "0x00432906",
+      "含义": "detector1/4路径固定push 1后调用result dispatcher",
+      "期望机器码": "6a 01 e8 53 0d 01 00",
+      "实际机器码": "6a 01 e8 53 0d 01 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x00432913",
+      "含义": "detector1/4路径把DataCenter+0x118固定写1",
+      "期望机器码": "c7 81 18 01 00 00 01 00 00 00",
+      "实际机器码": "c7 81 18 01 00 00 01 00 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x00432922",
+      "含义": "detector2路径push edi=2后调用result dispatcher",
+      "期望机器码": "8b 8e 18 02 00 00 57 e8 32 0d 01 00",
+      "实际机器码": "8b 8e 18 02 00 00 57 e8 32 0d 01 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0043293C",
+      "含义": "detector3拥有独立dispatcher分支",
+      "期望机器码": "83 ff 03 75 19",
+      "实际机器码": "83 ff 03 75 19",
+      "PASS": true
+    },
+    {
+      "地址": "0x00432941",
+      "含义": "detector3路径push edi=3后调用result dispatcher",
+      "期望机器码": "8b 8e 18 02 00 00 57 e8 13 0d 01 00",
+      "实际机器码": "8b 8e 18 02 00 00 57 e8 13 0d 01 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0043295A",
+      "含义": "detector4在dispatcher1处理后跳过普通结果UI启动调用0x412440",
+      "期望机器码": "83 ff 04 74 0b",
+      "实际机器码": "83 ff 04 74 0b",
+      "PASS": true
+    },
+    {
+      "地址": "0x0044369B",
+      "含义": "result dispatcher先识别参数1并进入胜利奖励主链",
+      "期望机器码": "83 f8 01",
+      "实际机器码": "83 f8 01",
+      "PASS": true
+    },
+    {
+      "地址": "0x00443ACB",
+      "含义": "result dispatcher保留参数2标题分支",
+      "期望机器码": "83 f8 02 75 12",
+      "实际机器码": "83 f8 02 75 12",
+      "PASS": true
+    },
+    {
+      "地址": "0x00443AE2",
+      "含义": "result dispatcher保留参数3标题分支",
+      "期望机器码": "83 f8 03 75 12",
+      "实际机器码": "83 f8 03 75 12",
+      "PASS": true
+    },
+    {
+      "地址": "0x00443AF9",
+      "含义": "result dispatcher确实保留参数4标题分支",
+      "期望机器码": "83 f8 04 75 3b",
+      "实际机器码": "83 f8 04 75 3b",
+      "PASS": true
+    },
+    {
+      "地址": "0x00443B09",
+      "含义": "dispatcher参数4把0x46C4DC结果标题送入UI",
+      "期望机器码": "68 dc c4 46 00",
+      "实际机器码": "68 dc c4 46 00",
+      "PASS": true
+    }
+  ],
+  "机器码PASS": 15,
+  "机器码总数": 15,
+  "结论": {
+    "canonical参数4生产者": "未发现；当前0x443660三个direct E8 caller只形成参数1/2/3，detector4明确改写成参数1",
+    "实现要求": "兼容引擎的canonical Battle结果状态机按原版detector4→dispatcher1处理并跳过普通结果UI；参数4分支作为可保留的legacy/latent结果标题分支，不得擅自绑定detector4",
+    "证据边界": "不形式化排除运行时计算函数地址、自修改/外部补丁、其他版本或尚未证明的非canonical间接调用"
+  },
+  "PASS": true
+}

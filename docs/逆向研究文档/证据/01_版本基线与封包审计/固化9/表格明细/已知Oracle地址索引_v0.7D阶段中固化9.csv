@@ -1,0 +1,49 @@
+﻿地址,当前语义,证据等级
+0x439D70,DataCenter/Public ENC 初始化总入口,A
+0x439E52,打开 Public\API.ENC,A
+0x439E9A,DataCenter+0xA0 API record count,A
+0x439EAA,DataCenter+0xA4 API table pointer,A
+0x439F2B,DataCenter+0xAC Ail2 table pointer,A
+0x437E40,实际物品使用调用链，调用0x43AEC0,A
+0x43AEC0,非战斗物品应用/特殊动作准备,A
+0x43AF05,读取 Ail2+0x28 special action code,A
+0x43AFE3,读取 DataCenter+0xA4 API table,A
+0x43B000,effect ID43..60 writer dispatch,A
+0x43B019,ID43: +0x9C=1; fallthrough +0x3C += D0,A
+0x43B028,ID55: +0x40 += D0,A
+0x43B02D,ID56: +0x48 += D0,A
+0x43B032,ID57: +0x4C += D0,A
+0x43B037,ID58: +0x44 += D0,A
+0x43B03C,ID59: +0x2C += D0,A
+0x43B041,ID60: +0x34 += D0,A
+0x441FD0,Battle RoleDefinition→API主表同步,A
+0x441FEA,rep movsd 0xD4 DWORD = 0x350 bytes,A
+0x40CE23,world special item action dispatcher,A
+0x40CE97,action code12 handler（场景/流程迁移，精确目标待证）,B
+0x40CF5B,"action code13 handler：duration1500, mode=1",A
+0x40CF28,"action code14 handler：duration1500, mode=0",A
+0x4034C0,duration elapsed updater,A
+0x403510,encounter threshold generator/scale,A
+0x4036DE,encounter trigger threshold consumer,A
+0x0040F3E0,EVE opcode 0x96：保存 deferred event continuation 三元组,A/直接,event id→0x89F7F8；cmd+4→0x89F7FC；cmd+8→0x89F800；随后清当前事件并yield
+0x0040CE97,world-action code12：优先恢复 param1=12 的 deferred event,A/直接,gate: 0x89F7F8>0 && 0x89F7FC==12；match时0x40B340→0x40B230(saved event)
+0x0089F7F8,deferred saved Event ID,A/直接,writer 0x40F3E0；consumer 0x40CE97
+0x0089F7FC,opcode0x96 resume key A,A/直接,writer record+4；world-action code12唯一直接consumer比较==12
+0x0089F800,opcode0x96 resume key B,A/直接,writer record+8；world-action code11唯一直接consumer比较当前DataCenter+0xEC物品ID
+0x0089F7D0,world-item异步结果/物品ID通道,A/直接,唯一非零writer 0x40D03A；0x94/0x95消费
+0x0040D03A,world-item结果写入点,A/直接,ECX=DataCenter+0xEC当前物品ID → 0x89F7D0
+0x0040F2F0,EVE opcode0x94：比较world-item结果ID并条件跳转,A/直接,record+4 expected item ID；record+8 target；record+0xC failure policy
+0x0040F390,EVE opcode0x95：按world-item结果是否非零跳转,A/直接,非零PC=record+4；零则顺序前进
+0x0040CE57,world-action code11：按resume key B==当前物品ID恢复saved Event,A/直接,当前code11 Ail2记录为ID411/421，但0x96真实keyB分布缺样本
+0x0040B230,Event按ID激活/装载入口,A/直接,要求无active Event且VM未阻塞；写0x89F808并从Event表建立当前执行指针
+0x0040B340,active Event VM上下文清理/复位,A/直接,清0x89F808/0x89F810并处理Event buffer/backing store；不清0x89F7F8/FC/800
+0x408830,输入/导航离散token合成上层：GetCursorPos并调用0x408950,A
+0x408950,导航输入合成：GetKeyState扫描VK 0x21..0x28,A
+0x408C40,输入token提交；第一实参非零时清saved Event ID 0x89F7F8,A
+0x409580,输入轮询上层；0x468BB9 gate控制是否把token交给0x408C40,A
+0x40CC5A,world-item状态机固定EBX=1；用于code12 fallback predicate复核,A
+0x40CEEE,比较0x40A0D0 predicate与1；==1进入Event ID3 fallback,A
+0x40B26F,Event ID乘16形成当前EVE descriptor步长,A
+0x40B272,Event ID n读取当前EVE slot(n-1) descriptor+4,A
+0x40B286,Event ID n读取当前EVE slot(n-1) descriptor+0,A
+0x468BB9,输入/轮询gate：Event激活置0；常规清理路径可置1,A

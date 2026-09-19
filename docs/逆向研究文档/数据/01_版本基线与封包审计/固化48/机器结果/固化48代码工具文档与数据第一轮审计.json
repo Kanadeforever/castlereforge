@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "audit_round": "first",
+  "counts": {
+    "files_before_first_audit_json": 889,
+    "markdown": 76,
+    "python_tools": 24,
+    "tool_docs": 24,
+    "json_before_first_audit_json": 425,
+    "csv": 45
+  },
+  "inheritance": {
+    "solid47_non_markdown_total": 802,
+    "byte_identical": 802,
+    "mismatch": []
+  },
+  "document_checks": {
+    "first_line_solid48": 76,
+    "filename_stem_no_latin": 76,
+    "fence_even": 76
+  },
+  "tool_checks": {
+    "ast_compile_help_pass": 24,
+    "all_tools_referenced_in_tool_docs": true,
+    "missing_tool_refs": [],
+    "new_tool_comment_profile": {
+      "file": "youcheng_battle_single_status_inspector.py",
+      "comment_lines": 79,
+      "chinese_comment_lines": 77
+    }
+  },
+  "data_checks": {
+    "json_parse_pass": 425,
+    "csv_parse_pass": 45
+  },
+  "cache": {
+    "count": 0,
+    "files": []
+  },
+  "solid48_formal_output_exact_match": {
+    "json": true,
+    "csv": true
+  },
+  "core_regression": "PASS",
+  "errors": []
+}

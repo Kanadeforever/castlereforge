@@ -1,0 +1,113 @@
+{
+  "版本": "v0.7D阶段中-固化22",
+  "日期": "2026-08-14",
+  "主题": "D8非Battle随机语义与SCI实体行为/背景模式静态闭合",
+  "正式基线": "v0.7D阶段中-固化21_D8剩余随机调用分类静态闭合版_封包同步修正版1",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL_PURE_STATIC_REVERSE_ENGINEERING",
+  "范围纪律": "当前只进行RPG.exe与multimedia格式/字段/状态机/业务逻辑的静态逆向；不进行DLL、Hook、运行时探针、兼容引擎实现或其他分析外开发。",
+  "错误旧固化22处理": {
+    "状态": "REJECTED_AS_BASELINE",
+    "说明": "旧同号固化22因错误进入ddraw.dll/BattleTrace运行时方向，不属于正式继承链。只把11个non-Battle caller的静态分类线索取回，并使用当前Oracle重新生成机器证据；运行时内容全部排除。"
+  },
+  "Oracle": {
+    "RPG.exe_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "multimedia.zip_SHA256": "faa994d6e47b46ce610e75019e8a1da35822560781ba9e8e160814571e952f1f"
+  },
+  "核心回归": {
+    "Battle": "413/413 PASS",
+    "EVE": "65/65 PASS",
+    "SCI_MapTail": "67/67 PASS",
+    "SCI_EntityBehavior": "27/27 PASS",
+    "SCI_MapBackground": "11/11 PASS",
+    "Interface天書资源A_B": "PASS",
+    "RNG直接E8调用点": 56
+  },
+  "D8_11点静态语义": {
+    "窗口创建初始化": [
+      "0x401109",
+      "0x40113D"
+    ],
+    "随机遭遇阈值": [
+      "0x40352E",
+      "0x403718"
+    ],
+    "Entity_type3自主漫游": [
+      "0x40AB72",
+      "0x40AB86",
+      "0x40AB9A",
+      "0x40ABD3"
+    ],
+    "EVE_RANDOM_TO_VAR999": [
+      "0x40F633"
+    ],
+    "相机随机抖动": [
+      "0x44B52C",
+      "0x44B54D"
+    ]
+  },
+  "SCI新增闭合": {
+    "Entity_0x76": {
+      "0": "passive/static结构类",
+      "1": "externally-directed movable结构类",
+      "2": "one-shot/non-loop action override",
+      "3": "autonomous random roaming",
+      "边界": "中性结构名，不声称作者原枚举名"
+    },
+    "Entity_0x77_0x7A": {
+      "profile0_cardinal": "+0x77 signed * 6",
+      "profile0_diagonal": "+0x78 signed * 4",
+      "profile1_cardinal": "+0x79 signed * 9",
+      "profile1_diagonal": "+0x7A signed * 6",
+      "selector": "(runtime+0x0C & 0xFF00) != 0",
+      "边界": "不得命名walk/run"
+    },
+    "Type3漫游": {
+      "target_x": "lower_x + RNG%(upper_x-lower_x)",
+      "target_y": "lower_y + RNG%(upper_y-lower_y)",
+      "state": "RNG%2",
+      "wait": "RNG%30+30",
+      "区间": "upper exclusive"
+    },
+    "Map_0x65": {
+      "mode<=0": "不重算camera-relative base",
+      "mode1": "delta/5 signed truncation",
+      "mode2": "7*delta/5 signed truncation + special render",
+      "mode10": "skip base recompute + special render",
+      "other>0": "1:1 delta"
+    },
+    "Map_0x6E": "signed byte；普通render只消费(value>0)布尔值；mode2/10特殊render绕过该bool"
+  },
+  "当前资源样本": {
+    "Entity记录数": 22,
+    "behavior_type分布": {
+      "0": 19,
+      "1": 3,
+      "2": 0,
+      "3": 0
+    },
+    "movement_0x77_0x7A非零记录": 0,
+    "Map记录数": 2,
+    "Map_0x65非零": 0,
+    "Map_0x6E非零": 0,
+    "说明": "零值只表示样本覆盖不足，不否定EXE direct consumer"
+  },
+  "仍未闭合": [
+    "Entity +0x71/+0x72",
+    "Entity +0xE0/+0xEC/+0xED",
+    "Entity +0xEA/+0xEB作者级业务术语与完整触发协议",
+    "Map +0x269 block",
+    "Map +0x332 block",
+    "Map +0x388..+0x472 tail",
+    "DDDES.SCI 70-byte subtype reader/consumer",
+    "SF2剩余property slots/render mode参数数学关系",
+    "Battle generic runtime后续槽/未命名字段/特殊clear语义",
+    "更多type2/type3、非零movement profile、Map+0x65正值原始资源样本"
+  ],
+  "下一步": [
+    "继续静态xref与别名追踪上述UNKNOWN字段",
+    "证明serialized→runtime copy/transform→consumer/write-back链",
+    "扩大multimedia原始正例corpus并与CP950文本/资源结构交叉",
+    "把新硬证据加入只读调查器和机器回归",
+    "每次固化全量同步全部文档"
+  ]
+}

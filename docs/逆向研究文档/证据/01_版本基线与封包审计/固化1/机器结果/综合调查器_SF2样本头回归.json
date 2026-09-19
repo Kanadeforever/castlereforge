@@ -1,0 +1,32 @@
+{
+  "文件": "/mnt/data/ucheng_freeze_test/assets/样本.SF2",
+  "tile_width": 64,
+  "tile_height": 48,
+  "compression": 0,
+  "canvas": [
+    464,
+    368
+  ],
+  "sections": [
+    {
+      "count": 51,
+      "offset": 17084,
+      "size": 6448
+    },
+    {
+      "count": 50,
+      "offset": 23532,
+      "size": 7508
+    },
+    {
+      "count": 2488,
+      "offset": 31040,
+      "size": 4619387
+    },
+    {
+      "count": 1,
+      "offset": 4650427,
+      "size": 34834
+    }
+  ]
+}

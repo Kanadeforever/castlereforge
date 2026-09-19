@@ -1,0 +1,43 @@
+{
+  "版本": "v0.7D阶段中-固化3",
+  "日期": "2026-08-13",
+  "阶段": {
+    "v0.7A EVE+ENC": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7B SF2+SCI": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7C TSF+规范化游戏状态": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7D Battle Core": "ACTIVE_CHECKPOINT_NOT_FINAL",
+    "D1 RoleDefinition字段字典": "ACTIVE_PRIMARY_SURVIVAL_AND_SECONDARY_MAX_CURRENT_PAIRS_CLOSED_MORE_FIELDS_PENDING",
+    "D2 FightRole完整字段图": "ACTIVE_COORDINATE_SYSTEM_CORRECTED",
+    "D3 AI动作生成": "STATIC_CLOSED_DYNAMIC_TRACE_PENDING",
+    "D4 Action分发": "FIRST_STATIC_SKELETON_CLOSED",
+    "D5 Damage/Effect分类与公式": "FORMULA_MATH_AND_ACTION_RESOURCE_COSTS_CLOSED_BUSINESS_SEMANTICS_PENDING",
+    "D6 Status/Effect/Timer": "ACTIVE_EFFECT_ID_RUNTIME_SLOT_PRESENTATION_AND_DAMAGEINFO_FLOW_CLOSED_FINAL_APPLICATION_WRITER_TIMING_PENDING",
+    "D7 Result/Reward": "PENDING",
+    "D8 RNG/Deterministic Trace": "RNG_CORE_AND_TIME_RESEED_CLOSED_DRAW_ORDER_PENDING"
+  },
+  "Oracle": {
+    "RPG.exe SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "multimedia.zip SHA256": "faa994d6e47b46ce610e75019e8a1da35822560781ba9e8e160814571e952f1f"
+  },
+  "固化3原因": "发现并直接证明 BattleManager raw-slot 与真实 FightRole 对象基址相差 +0x3E4；D3 静态动作链、D4 第一版 processor dispatch、D5 六条 FIRTTECH 整数公式与双资源动作消耗、D6 五槽两条来源/ID分区/Role runtime槽映射、D8 全局 RNG LCG/state/时间播种链均已闭合到当前 Oracle 直接证据。",
+  "当前阻塞": "D6 已闭合五槽来源/ID分区/Role runtime槽/表现selector/DamageInfo传播，但 0x420ED0 mode1 只确认读取 +0x30/+0x34（与五槽value尾部重叠），未遍历五组ID/value或读取ID区+0x10..+0x20；mode2也未形成五槽完整应用循环。因此五槽最终 application、runtime writer/解除/递减/计时、作者业务名仍未闭合。另有剩余 Action class/mode 与 side effect、BattleResult/Reward、RNG draw order 与 dynamic deterministic trace。",
+  "固化3追加里程碑_双资源": {
+    "D1": "PRIMARY_SURVIVAL_AND_SECONDARY_MAX_CURRENT_PAIRS_CLOSED_AUTHOR_NAMES_PENDING",
+    "D5": "FORMULA_MATH_CLOSED_AND_ACTION_RESOURCE_COSTS_CLOSED_SEMANTICS_PENDING",
+    "D6": "ACTIVE",
+    "证据": "Battle 0x420ED0/0x4231F0/0x444590 与 EVE 0x40E6C0->0x43B8F0 两套独立 consumer 交叉证明 RoleDefinition+2C/+30、+34/+38 分别为两对 max/current；DamageInfo+4/+8、FIRTTECH+34/+38、Article/Ail2+118/+11C 与主资源零值状态转移闭环。"
+  },
+  "固化3追加里程碑_D6": {
+    "状态": "EFFECT_ID_RUNTIME_SLOT_PRESENTATION_AND_DAMAGEINFO_FLOW_CLOSED_FINAL_APPLICATION_WRITER_TIMING_PENDING",
+    "FIRTTECH": "五槽来源 +0x64..+0x74 数值 / +0x78..+0x88 ID；当前样本 ID 最大26。",
+    "Article_Ail2": "五槽来源 +0xE8..+0xF8 数值 / +0xFC..+0x10C ID；允许 >27。",
+    "ID_0_27": "读取 0x46A000 16-byte 静态项，并可经 0x46A668 映射到 RoleDefinition+0x1E8+index*4 参与抵消。",
+    "ID_大于27": "直接写原 ID 与固定值8000，跳过 0x46A668/Role 槽映射。",
+    "边界": "effect/status 类结构已闭合到数据流；具体 ID 名称、writer/解除/递减/计时语义仍未证明。",
+    "Role_runtime独立consumer": "0x41CD79..0x41D114：多组 RoleDefinition runtime 槽>0 时驱动表现对象 selector code；0x46A668 映射出的多组 ID 恰好落在这些一级/二级成对字段。",
+    "DamageInfo传播": "RoleDefinition+0x1E8 在 0x42CC5D/0x42CC83 复制到 DamageInfo+0x44；0x421518 将其低字节送入 0x420E20 后处理判定，返回真时两个结果分量做有符号/2。",
+    "Api源值": "所核对的 21 个 runtime 状态字段在 Api.enc 255/255 源记录中均为0；非零值来自运行时路径。",
+    "最终应用边界": "0x420ED0 mode1 读取 DamageInfo+0x04/+0x08 以及 +0x30/+0x34；+0x30/+0x34 与五槽value尾部重叠，但未遍历五组ID/value且未读ID区+0x10..+0x20。mode2亦未形成五组完整应用循环。不能据此宣布五槽最终application闭合。"
+  },
+  "固化3封存原因追加": "为防止长对话被系统中断而丢失当前研究状态，在 D6 未完时主动形成可独立接档固化点；未完成项明确写为阻塞，不等待整条路线完成后才封包。"
+}

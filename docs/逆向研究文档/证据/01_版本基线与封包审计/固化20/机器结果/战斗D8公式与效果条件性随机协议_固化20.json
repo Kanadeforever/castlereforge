@@ -1,0 +1,83 @@
+{
+  "版本": "v0.7D阶段中-固化20",
+  "主题": "D8公式与效果条件性随机顺序静态闭合",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "公式与效果区静态draw顺序": {
+    "通用半开区间随机_0x42CCB0": {
+      "规则": "先排序两个整数边界；相等时直接返回且0 draw；不等时1 draw，返回 min + RNG%(max-min)，严格区间[min,max)。",
+      "直接caller": [
+        "0x0042B68D",
+        "0x0042B71D",
+        "0x0042B7A5",
+        "0x0042B80A",
+        "0x0042BCAC",
+        "0x0042BCFC"
+      ],
+      "同步陷阱": "上下界相等时不得仍推进RNG；上界严格不包含。"
+    },
+    "Article_Ail2_0x42A7D0": {
+      "前置概率门": "只有0x42BF40与RoleDefinition+0x220/+0x224等前置状态均不能直接决定时，0x42A942才1 draw%100，与Ail2+0xCC阈值比较。",
+      "Ail2+0xC8==0": {
+        "通过门后固定draw数": 4,
+        "模数顺序": [
+          9,
+          19,
+          9,
+          19
+        ],
+        "调用点": [
+          "0x0042AAD3",
+          "0x0042AAEE",
+          "0x0042AB14",
+          "0x0042AB33"
+        ]
+      },
+      "Ail2+0xC8==1": {
+        "通过门后固定draw数": 4,
+        "模数顺序": [
+          9,
+          19,
+          99,
+          19
+        ],
+        "调用点": [
+          "0x0042AC95",
+          "0x0042ACB0",
+          "0x0042ACCC",
+          "0x0042ACEB"
+        ]
+      },
+      "边界": "这里只冻结draw条件/模数与record字段偏移；+0xC8的作者业务枚举名仍未证明。"
+    },
+    "五槽effect_0x42B0D0": {
+      "slot数": 5,
+      "slot_value<=0": "0 draw，直接跳过该槽",
+      "effect_ID>27": "0 draw，走ID原样+value=8000特殊输出分支",
+      "effect_ID_0到27_第一draw": "固定1 draw%100；ID21..27虽阈值强制100、概率门必过，但这次draw仍发生。",
+      "第二draw": "仅概率门通过且派生range=trunc(RoleDefinition+0x4C/5)-trunc(RoleDefinition+0x4C/10) >=1时发生；RNG%range后加low=trunc(+0x4C/10)，形成[low,high)随机量。range<1时直接0且不draw。",
+      "每槽显式draw数": "0 / 1 / 2，取决于value、ID分支、概率门和派生range。"
+    },
+    "FIRTTECH主处理_0x42C680": {
+      "record+0x18==0": "第一门固定1 draw%100；失败立即结束。通过后第二门再固定1 draw%100；随后0x42CD50按派生模数决定是否额外1 draw。",
+      "record+0x18非0且非4": "先由record+0x30选择公式helper；当前selector路径最终均可触及0x42CCB0半开区间helper，但边界相等时该helper不draw；随后0x42CD50仍为条件0/1 draw。",
+      "后处理概率门_0x42C8B7": "前置helper/状态能直接决定时0 draw；否则1 draw%100比较派生阈值。",
+      "record+0x44==0且后处理门成立": "调用0x42BF90，固定2 draw：先RNG%19+1作除数，再RNG%9+1作除数。",
+      "record+0x44==1且后处理门成立": "调用0x42C260，固定2 draw；第1除数=floor(raw_rng/99)+1，第2除数=floor(raw_rng/19)+1，注意不是取模。",
+      "record+0x44==2或3": "0x42C460本体无0x451565直接call；当前只冻结本体显式draw为0，不外推未知间接路径。"
+    },
+    "记录派生条件随机_0x42CD50": {
+      "条件": "输入record+0x90>0，并由全局记录字段/20得到的派生模数>0。",
+      "draw": "条件成立1 draw，返回RNG%derived_modulus；否则返回0且不draw。",
+      "直接caller": [
+        "0x0042C79B",
+        "0x0042C845"
+      ],
+      "边界": "全局记录类型/作者字段名仍待独立闭合，因此保持结构命名。"
+    }
+  },
+  "严格边界": [
+    "本固化只冻结当前已证明公式/效果处理路径的显式0x451565 draw条件与数学变换；不宣称56个全EXE直接call-site已全部分类。",
+    "静态call/draw规则不能替代运行时BattleTrace；实现必须记录真实global_draw_index与条件分支。",
+    "未有独立consumer闭环的RoleDefinition/FIRTTECH/Ail2字段继续保留结构名，不擅自命名。"
+  ]
+}

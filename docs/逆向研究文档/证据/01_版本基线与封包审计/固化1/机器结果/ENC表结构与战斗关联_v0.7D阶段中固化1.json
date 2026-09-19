@@ -1,0 +1,83 @@
+{
+  "解码算法": "decoded[i] = encoded[i] XOR (i mod 255)",
+  "表": {
+    "Ail2.ENC": {
+      "size": 648200,
+      "record_size": 926,
+      "count": 700,
+      "identity": "物品/Article 定义表；当前 Battle 阶段又确认 DamageProcessor 会访问 Article record +0x37A"
+    },
+    "Api.enc": {
+      "size": 216240,
+      "record_size": 848,
+      "count": 255,
+      "identity": "角色基础定义表；0x350 record；战斗单位 +0x84C 内嵌完整副本"
+    },
+    "Battlegb.enc": {
+      "size": 6204,
+      "record_size": 94,
+      "count": 66,
+      "identity": "战斗背景/环境定义"
+    },
+    "Enemy_ai.enc": {
+      "size": 15848,
+      "record_size": 56,
+      "count": 283,
+      "identity": "敌方 AI 状态/决策定义；0x444240 以当前 AI index 取 +0x1C/+0x20 阈值"
+    },
+    "Firttech.enc": {
+      "size": 280000,
+      "record_size": 560,
+      "count": 500,
+      "identity": "技法/动作定义表；Battle AI 技选择链最终进入该 ID 空间"
+    },
+    "Layoutgr.enc": {
+      "size": 127000,
+      "record_size": 508,
+      "count": 250,
+      "identity": "布局组定义"
+    },
+    "LayoutTeam.ENC": {
+      "size": 169672,
+      "record_size": 508,
+      "count": 334,
+      "identity": "队伍/布局定义"
+    },
+    "Levelup.enc": {
+      "size": 404,
+      "record_size": 4,
+      "count": 101,
+      "identity": "升级经验阈值表"
+    },
+    "Magiccon.enc": {
+      "size": 32000,
+      "record_size": 64,
+      "count": 500,
+      "identity": "技能/技法候选条件表；Enemy AI 中间分支用于候选过滤"
+    },
+    "Magictb.enc": {
+      "size": 3672,
+      "record_size": 36,
+      "count": 102,
+      "identity": "技法习得条件表"
+    },
+    "Miscinfo.enc": {
+      "size": 1054,
+      "record_size": null,
+      "count": null,
+      "identity": "固定 1054-byte 杂项/战斗资源 Blob"
+    },
+    "Refinek.enc": {
+      "size": 1156,
+      "record_size": 4,
+      "count": 289,
+      "identity": "17×17 int32 炼化矩阵"
+    },
+    "Refinet.enc": {
+      "size": 504,
+      "record_size": 12,
+      "count": 42,
+      "identity": "炼化配方表"
+    }
+  }
+}

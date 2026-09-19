@@ -1,0 +1,34 @@
+{
+  "status": "FAIL",
+  "solidification": 61,
+  "inherited_non_markdown": {
+    "total": 1001,
+    "passed": 1001
+  },
+  "markdown": 103,
+  "python_tools": 37,
+  "tool_manuals": 37,
+  "json_before_second_audit": {
+    "total": 530,
+    "parsed": 530
+  },
+  "csv": {
+    "total": 58,
+    "parsed": 58
+  },
+  "required_pass_results": [
+    "theme",
+    "first_audit",
+    "replay"
+  ],
+  "fail_history_count": 3,
+  "cache_count": 0,
+  "issues": [
+    "stale /mnt/data/solid61_work/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化61_BattleFIRTTECH结果模式零至三与双资源恢复权重边界闭合版/文档/截至当前版本的完整接档说明.md:67"
+  ],
+  "failure_class": "audit_regex_false_positive",
+  "root_cause": "旧规则在“当前正式节点为固化61。固化60及更早继承”同一行里使用贪婪 .*，错误把后半段历史继承号当成当前节点值。",
+  "document_was_correct": true,
+  "fix": "不修改正确正文；将扫描收紧为明确赋值短语，例如“当前正式节点为固化60”。",
+  "preservation_note": "此FAIL历史永久保留，不由后续PASS覆盖。"
+}

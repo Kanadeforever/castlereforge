@@ -1,0 +1,39 @@
+{
+  "版本": "v0.7D阶段中-固化19",
+  "日期": "2026-08-14",
+  "阶段": "D8 RNG draw order / deterministic BattleTrace（阶段中）",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "直接前代": "v0.7D阶段中-固化18",
+  "Oracle": {
+    "RPG.exe_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf"
+  },
+  "当前回归": {
+    "SCI": "67/67 PASS",
+    "EVE": "65/65 PASS",
+    "Battle": "298/298 PASS",
+    "MEN0003_MEN0009_AB": "PASS"
+  },
+  "D8已闭合新增": [
+    "AI 0x444240 固定首draw + 条件逐候选draw协议",
+    "0x444330逐FightRole+0x8F4候选无条件各draw一次；无效候选仍消耗draw",
+    "0x422CB0 target selector两条互斥候选列表随机选择路径",
+    "0x422F00 action mode1无显式ID时从+0x8F8候选池随机抽取",
+    "FIRTTECH 0x1EA「戰場脫逃」RNG%100专用成功判定"
+  ],
+  "继承闭合": [
+    "Battle启动/reseed/初始化显式draw协议",
+    "胜利銀兩/升级/掉落draw顺序",
+    "RNG LCG/state/seed入口"
+  ],
+  "未闭合": [
+    "56个直接RNG call-site仍未全部业务分类",
+    "0x42A/B/C伤害/效果公式区完整draw顺序待分类",
+    "0x421AB6/0x421B20与0x423395等后处理随机点待分类",
+    "动态deterministic BattleTrace待建立"
+  ],
+  "下一恢复入口": [
+    "从0x42A942/0x42AAD3/0x42AAEE/0x42AB14等Article/FIRTTECH公式RNG开始分类",
+    "再拆0x42B32D/0x42B4DE五槽效果RNG与0x42Cxxx通用公式RNG",
+    "形成56 call-site业务分类表"
+  ]
+}

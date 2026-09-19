@@ -1,0 +1,40 @@
+{
+  "节点": "固化60",
+  "审计": "双轮独立原始输入重放第一次比较（预审失败）",
+  "输入说明": "每轮独立重新从用户RPG.exe.org.zip和multimedia.zip提取原版EXE与Firttech.enc，并单独复制研究版RPG.exe。",
+  "检查": {
+    "正式主题PASS": true,
+    "重放1_PASS": true,
+    "重放2_PASS": true,
+    "正式JSON_重放1归一化一致": false,
+    "正式JSON_重放2归一化一致": false,
+    "两轮JSON归一化一致": true,
+    "三份CSV逐字节一致": true,
+    "正式CSV_SHA256": "a4e35f0c38b2838d16c8e0f61f5908599afc1a630dd20aca232f014ab9d40143",
+    "重放1_CSV_SHA256": "a4e35f0c38b2838d16c8e0f61f5908599afc1a630dd20aca232f014ab9d40143",
+    "重放2_CSV_SHA256": "a4e35f0c38b2838d16c8e0f61f5908599afc1a630dd20aca232f014ab9d40143"
+  },
+  "全部通过": false,
+  "状态": "FAIL",
+  "失败说明": "两轮机器运行与CSV均一致；比较器仅把绝对路径缩成basename，正式输入RPG.exe与重放输入RPG_original.exe仍不同，导致正式JSON比较假失败。需只屏蔽明确的输入路径字段后比较其余完整JSON树。",
+  "实际差异清单": [
+    [
+      "/输入哈希/Firttech.enc/路径",
+      "VALUE",
+      "/mnt/data/solid60_inputs/mm/multimedia/public/Firttech.enc",
+      "/mnt/data/solid60_replay1/Firttech.enc"
+    ],
+    [
+      "/输入哈希/原版RPG.exe/路径",
+      "VALUE",
+      "/mnt/data/solid60_inputs/original/RPG.exe",
+      "/mnt/data/solid60_replay1/RPG_original.exe"
+    ],
+    [
+      "/输入哈希/研究版RPG.exe/路径",
+      "VALUE",
+      "/mnt/data/RPG.exe",
+      "/mnt/data/solid60_replay1/RPG_research.exe"
+    ]
+  ]
+}

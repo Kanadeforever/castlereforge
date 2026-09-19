@@ -1,0 +1,8 @@
+当前 Oracle RPG.exe SHA256: b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf
+Api.enc 解码 SHA256: b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d
+
+已验证：RoleDefinition+0x1E8..+0x280 共39 DWORD，在当前255条 Api 源记录中全部为0。
+已验证：FightRole runtime +0xA34..+0xACC 共39 DWORD由generic循环更新；前28槽有raw effect-like ID 0..27 producer/clear证据。
+负向扫描：当前 Oracle 完整反汇编中，对 +0xAA4,+0xAA8,...,+0xACC 作为直接内存操作数 displacement 的搜索均为0命中。
+踩坑：原始字节搜索对 +0xAA8 曾得到1个假阳性，实际来自 E8 rel32 位移，不是字段访问；固化5不采用该粗糙方法。
+严格边界：这不能排除变量索引、循环、别名指针或其他间接访问，因此后11槽不得写成“未使用/保留”事实。

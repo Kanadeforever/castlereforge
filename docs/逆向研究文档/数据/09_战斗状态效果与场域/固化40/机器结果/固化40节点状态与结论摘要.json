@@ -1,0 +1,41 @@
+{
+  "节点": "v0.7D阶段中-固化40",
+  "主题": "Battle状态39槽二十赫兹递减量子与门控边界闭合",
+  "研究内容冻结": true,
+  "封包后动作": "立即待机，不自动推进固化41",
+  "现行结论": [
+    "Battle vtable[0] 0x442920 每个Legacy逻辑步最多调用一次0x442A80。",
+    "只有BattleObject+0xE224==-1、全局0x4696DC!=0且FightRole有效时，该role每个合格Legacy Tick最多调用一次0x420440。",
+    "0x420440扫描FightRole+0xA34起39个DWORD；每个正值固定减10并夹零。",
+    "当前DDDES.SCI+0x11=20，所以名义20Hz/50ms，等价200 raw units/eligible logical second。",
+    "5ms/raw-unit仅为比例换算，不是5ms调度器；实际墙钟持续时间受Battle gate、主线程与pending合并影响。"
+  ],
+  "机器证据": {
+    "机器断言": "10/10",
+    "全部PASS": true,
+    "0x420440_direct_callers": [
+      "0x00442CDB"
+    ],
+    "0x442A80_direct_callers": [
+      "0x004429A5"
+    ],
+    "频率Hz": 20,
+    "raw每合格逻辑秒": 200
+  },
+  "仍未知": [
+    "39槽作者业务名",
+    "后11槽业务语义",
+    "ID>27 consumer",
+    "特殊clear业务解释",
+    "既有SF2/SAF/EVE/DDDES阻塞项"
+  ],
+  "包内审计当前状态": {
+    "继承哈希": true,
+    "Markdown": true,
+    "Python工具": true,
+    "JSON": true,
+    "CSV": true,
+    "核心回归": true,
+    "缓存为0": true
+  }
+}

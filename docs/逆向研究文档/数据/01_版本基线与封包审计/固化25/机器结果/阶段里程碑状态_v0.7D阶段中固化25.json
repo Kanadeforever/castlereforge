@@ -1,0 +1,23 @@
+{
+  "版本": "v0.7D阶段中-固化25",
+  "日期": "2026-08-15",
+  "活动阶段": "纯静态逆向与格式证据闭合，禁止转入实现",
+  "本轮完成": [
+    "Map +0x269..+0x2CC、+0x332..+0x372、+0x388..+0x472 两条真实记录逐字节统计：三段均全零。",
+    "Map主构造器及runtime-entry直接出口复核：16/16关键字节PASS。",
+    "全.text原始四字节窗口与ModRM/SIB disp32候选分流；纠正跨指令窗口0x27C假阳性。",
+    "主构造器三段ModRM/SIB disp32候选0；0x40AE50的26个与0x40AE70的2个direct caller已枚举，已知源record出口只落在+0x2CD/+0x331/+0x380/+0x384；三段继续UNKNOWN/RAW-PRESERVE。"
+  ],
+  "仍未知": [
+    "Map三段作者业务语义；计算后基址、整体复制、别名和间接调用未排除。",
+    "更多非零Map原始记录，尤其+0x380/+0x384与三未知段正例。",
+    "Entity +0xE0/+0xEC/+0xED业务语义与type2/type3 serialized正例。",
+    "DDDES 52-byte record作者业务语义；当前只保留未知间接复制/间接调用边界。",
+    "Music列表record+0x00作者语义。",
+    "SF2剩余property/mode作者语义。",
+    "Battle未命名runtime slots。"
+  ],
+  "下一步": "优先扩大非零Map/Entity type2/type3原始语料并追Map source/runtime entry别名传播；若现有样本无法继续闭合，则推进SF2剩余property/mode，随后Battle未命名runtime字段。不要重复简单字面位移扫描。",
+  "证据边界": "当前两条Map样本全零与主构造器direct disp32零命中都属于负证据；不得升级为unused、padding、保留区或确定路径字段。",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf"
+}

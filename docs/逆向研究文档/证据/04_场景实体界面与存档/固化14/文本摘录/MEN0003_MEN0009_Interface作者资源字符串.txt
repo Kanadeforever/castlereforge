@@ -1,0 +1,9 @@
+
+/mnt/data/RPG.exe:     file format pei-i386
+
+Contents of section .data:
+ 46b080 32000000 4d656e75 735c4d45 4e303030  2...Menus\MEN000
+ 46b090 392e5346 32000000 44617461 43656e74  9.SF2...DataCent
+ 46b0a0 65722049 6e697469 616c2046 61696c2e  er Initial Fail.
+ 46b0b0 28496e74 65726661 63652900 4d656e75  (Interface).Menu
+ 46b0c0 735c4d45 4e303030 332e5346 32000000  s\MEN0003.SF2...

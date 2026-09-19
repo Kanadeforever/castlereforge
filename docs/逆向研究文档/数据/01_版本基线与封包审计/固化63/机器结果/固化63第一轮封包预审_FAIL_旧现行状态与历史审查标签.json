@@ -1,0 +1,85 @@
+{
+  "status": "FAIL",
+  "baseline": "固化62最终ZIP独立解压",
+  "baseline_total_files": 1137,
+  "baseline_markdown": 105,
+  "baseline_non_markdown": 1032,
+  "inherited_non_markdown_unchanged": 1031,
+  "intentional_modified_inherited_non_markdown": [
+    {
+      "path": "工具/youcheng_battle_field_effect_consumer_inspector.py",
+      "baseline_sha256": "5c15c60acdddf557d6258109aa4d83bc6249fc7c44e077b281ebd55aed15f57c",
+      "current_sha256": "8b07c67795678f4028535fb837b1f8afad14567904bf3c86ee7a91af05d52a48",
+      "changed": true
+    }
+  ],
+  "unexpected_modified_inherited_non_markdown": [],
+  "missing_inherited_files": [],
+  "new_files_count": 9,
+  "new_files": [
+    "工具/youcheng_battle_field_effect_direct_surface_inspector.py",
+    "数据/固化63/战斗九槽完整静态直接引用面核对_固化63.json",
+    "数据/固化63/战斗九槽静态consumer边界_固化63.csv",
+    "文档/工具详细说明_战斗九槽完整静态直接引用面调查器.md",
+    "文档/战斗九槽完整静态直接引用面与槽零一五额外数值消费边界说明.md",
+    "证据/阶段D/固化63/manager对象范围三个跨指令假候选核对_原版_节选.asm",
+    "证据/阶段D/固化63/九槽manager完整方法主体_原版_0043DA00_0043DCBF.asm",
+    "证据/阶段D/固化63/九槽完整静态直接引用面结论_固化63.json",
+    "证据/阶段D/固化63/双manager绑定查询重置生命周期与已知consumer引用面_原版_多区间.asm"
+  ],
+  "markdown": {
+    "count": 107,
+    "all_have_solid63_banner": true,
+    "bad_utf8": [],
+    "stale_live_assignments": [
+      {
+        "path": "文档/战斗阶段证据分级与恢复记录.md",
+        "line": 82,
+        "text": "> **当前包版本：v0.7D阶段中-固化57（Battle动作类一二四共享招式名显示与战斗地板表现边界闭合版，2026-08-20）。**  "
+      },
+      {
+        "path": "文档/文档全面审查与修订记录.md",
+        "line": 2025,
+        "text": "固化56开始时继承固化55的91份Markdown，并新增《战斗动作类五六假计算分支与类六结果表现抑制边界说明》《工具详细说明_战斗动作类五六可达路径调查器》，当前总数93。全部93份重新遍历：统一加入固化56现行横幅，固化55三条封包横幅统一历史化；修复旧专题中仍把固化55称为“当前正式节点/当前停止点”的活跃措辞；核心累计文档追加固化56章节；历史研究过程、旧机器产物与当时停止规则继续保留但不得冒充现行状态。"
+      }
+    ],
+    "odd_code_fences": []
+  },
+  "python_tools": {
+    "count": 39,
+    "ast_compile_pass": 39,
+    "ast_compile_bad": [],
+    "tool_docs": 39,
+    "new_tool_lines": 861,
+    "new_tool_chinese_pure_hash_comments": 106,
+    "help_checks": [
+      {
+        "path": "工具/youcheng_battle_field_effect_direct_surface_inspector.py",
+        "returncode": 0,
+        "pass": true,
+        "stdout_head": "usage: youcheng_battle_field_effect_direct_surface_inspector.py\n       [-h] --original-rpg ORIGINAL_RPG --research-rpg RESEARCH_RPG\n       --firttech FIRTTECH --json JSON --csv CSV\n\n静态核对《幽城幻剑录》Battle九项持续场域manager的完整direct引用面，关闭slot0/1/5当前canonical额外数值consumer边\n界。\n\noptions:\n  -h, --help            show this help message and exit\n  --original-rpg ORIGINAL_RPG\n                        完全未修改原版 RPG.exe.org 解压后的RPG.exe\n  --research-rpg RESEARCH_RPG\n                        历史研究版 RPG.exe\n  --firttech FIRTTECH   canonical Public/Firttech.enc\n  --json JSON           输出机器审计JSON\n  --csv CSV             输出九项场域CSV\n",
+        "stderr_head": ""
+      },
+      {
+        "path": "工具/youcheng_battle_field_effect_consumer_inspector.py",
+        "returncode": 0,
+        "pass": true,
+        "stdout_head": "usage: youcheng_battle_field_effect_consumer_inspector.py [-h]\n                                                          --original-exe ORIGINAL_EXE\n                                                          --research-exe RESEARCH_EXE\n                                                          --firttech FIRTTECH\n                                                          --json-out JSON_OUT\n                                                          --csv-out CSV_OUT\n\n核对《幽城幻剑录》Battle九项场域有效性查询与高层consumer。\n\noptions:\n  -h, --help            show this help message and exit\n  --original-exe ORIGINAL_EXE\n                        完全未修改的原版 RPG.exe\n  --research-exe RESEARCH_EXE\n                        历史研究版 RPG.exe\n  --firttech FIRTTECH   canonical Firttech.enc\n  --json-out JSON_OUT   输出 JSON 路径\n  --csv-out CSV_OUT     输出 CSV 路径\n",
+        "stderr_head": ""
+      }
+    ]
+  },
+  "structured_files_before_this_audit_write": {
+    "json_count": 542,
+    "json_bad": [],
+    "csv_count": 60,
+    "csv_bad": []
+  },
+  "theme_status": "PASS",
+  "cache_files": [],
+  "notes": [
+    "固化63有意同步更新继承旧工具 youcheng_battle_field_effect_consumer_inspector.py，使固化59工具单独接档时能指向固化63 companion 静态direct面结论；固化59冻结caller算法未改变。",
+    "除上述1个继承旧工具外，固化62继承的其它非Markdown文件在第一轮正式审计时必须逐字节不变。",
+    "新工具与新数据/证据/文档属于固化63新增路径，不计为继承漂移。"
+  ]
+}

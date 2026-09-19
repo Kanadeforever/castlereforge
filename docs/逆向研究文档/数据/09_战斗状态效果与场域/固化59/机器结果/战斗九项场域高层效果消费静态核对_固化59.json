@@ -1,0 +1,882 @@
+{
+  "工具": "youcheng_battle_field_effect_consumer_inspector.py",
+  "工具版本": "0.7D-solid59.0",
+  "节点": "固化59",
+  "研究主题": "Battle九项场域有效性查询与高层效果消费边界",
+  "输入": {
+    "原版EXE": "/mnt/data/solid58_inputs/original/RPG.exe",
+    "研究版EXE": "/mnt/data/RPG.exe",
+    "Firttech": "/mnt/data/solid58_inputs/mm/Firttech.enc"
+  },
+  "输入哈希": {
+    "原版RPG.exe": {
+      "实际": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+      "预期": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+      "PASS": true
+    },
+    "研究版RPG.exe": {
+      "实际": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+      "预期": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+      "PASS": true
+    }
+  },
+  "Firttech哈希": {
+    "encoded_sha256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+    "encoded_expected": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+    "encoded_PASS": true,
+    "decoded_sha256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+    "decoded_expected": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+    "decoded_PASS": true,
+    "PASS": true
+  },
+  "direct_CALL穷举": [
+    {
+      "目标": "0x0043DA50",
+      "意义": "九槽有效性谓词",
+      "实际数量": 12,
+      "预期数量": 12,
+      "实际caller": [
+        "0x0041A761",
+        "0x0041A772",
+        "0x004204DD",
+        "0x004204F7",
+        "0x00420515",
+        "0x0042052F",
+        "0x00423087",
+        "0x004230A3",
+        "0x0042BF56",
+        "0x0042BF75",
+        "0x004442C9",
+        "0x004442D9"
+      ],
+      "预期caller": [
+        "0x0041A761",
+        "0x0041A772",
+        "0x004204DD",
+        "0x004204F7",
+        "0x00420515",
+        "0x0042052F",
+        "0x00423087",
+        "0x004230A3",
+        "0x0042BF56",
+        "0x0042BF75",
+        "0x004442C9",
+        "0x004442D9"
+      ],
+      "PASS": true
+    },
+    {
+      "目标": "0x0043DC10",
+      "意义": "按owner查active slot",
+      "实际数量": 2,
+      "预期数量": 2,
+      "实际caller": [
+        "0x00442D2C",
+        "0x00442D3C"
+      ],
+      "预期caller": [
+        "0x00442D2C",
+        "0x00442D3C"
+      ],
+      "PASS": true
+    },
+    {
+      "目标": "0x0043DC40",
+      "意义": "按slot查owner",
+      "实际数量": 2,
+      "预期数量": 2,
+      "实际caller": [
+        "0x004230DB",
+        "0x004230ED"
+      ],
+      "预期caller": [
+        "0x004230DB",
+        "0x004230ED"
+      ],
+      "PASS": true
+    },
+    {
+      "目标": "0x0043DC60",
+      "意义": "按owner清理全部slot",
+      "实际数量": 4,
+      "预期数量": 4,
+      "实际caller": [
+        "0x00421226",
+        "0x00421231",
+        "0x004232A8",
+        "0x004232B5"
+      ],
+      "预期caller": [
+        "0x00421226",
+        "0x00421231",
+        "0x004232A8",
+        "0x004232B5"
+      ],
+      "PASS": true
+    },
+    {
+      "目标": "0x0042BF40",
+      "意义": "公式侧manager/slot查询wrapper",
+      "实际数量": 9,
+      "预期数量": 9,
+      "实际caller": [
+        "0x0042A919",
+        "0x0042A9FB",
+        "0x0042AE50",
+        "0x0042AF31",
+        "0x0042C0D0",
+        "0x0042C4A9",
+        "0x0042C88A",
+        "0x0042CA13",
+        "0x0042CA3E"
+      ],
+      "预期caller": [
+        "0x0042A919",
+        "0x0042A9FB",
+        "0x0042AE50",
+        "0x0042AF31",
+        "0x0042C0D0",
+        "0x0042C4A9",
+        "0x0042C88A",
+        "0x0042CA13",
+        "0x0042CA3E"
+      ],
+      "PASS": true
+    },
+    {
+      "目标": "0x00423070",
+      "意义": "按目标role组查slot有效性wrapper",
+      "实际数量": 1,
+      "预期数量": 1,
+      "实际caller": [
+        "0x0042133D"
+      ],
+      "预期caller": [
+        "0x0042133D"
+      ],
+      "PASS": true
+    },
+    {
+      "目标": "0x004230B0",
+      "意义": "按当前role和方向flag查slot owner wrapper",
+      "实际数量": 1,
+      "预期数量": 1,
+      "实际caller": [
+        "0x004211D2"
+      ],
+      "预期caller": [
+        "0x004211D2"
+      ],
+      "PASS": true
+    },
+    {
+      "目标": "0x0042A760",
+      "意义": "Battle到公式层全局manager指针绑定",
+      "实际数量": 1,
+      "预期数量": 1,
+      "实际caller": [
+        "0x0041F306"
+      ],
+      "预期caller": [
+        "0x0041F306"
+      ],
+      "PASS": true
+    }
+  ],
+  "短机器码断言": [
+    {
+      "地址": "0x004204D6",
+      "意义": "角色group=1时查询0x89FE08的slot7",
+      "长度": 12,
+      "实际": "6a 07 b9 08 fe 89 00 e8 6e d5 01 00",
+      "预期": "6a 07 b9 08 fe 89 00 e8 6e d5 01 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x004204F0",
+      "意义": "角色group=0时查询0x89FFD0的slot7",
+      "长度": 12,
+      "实际": "6a 07 b9 d0 ff 89 00 e8 54 d5 01 00",
+      "预期": "6a 07 b9 d0 ff 89 00 e8 54 d5 01 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0042050E",
+      "意义": "角色group=1时查询0x89FE08的slot8",
+      "长度": 12,
+      "实际": "6a 08 b9 08 fe 89 00 e8 36 d5 01 00",
+      "预期": "6a 08 b9 08 fe 89 00 e8 36 d5 01 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x00420528",
+      "意义": "角色group=0时查询0x89FFD0的slot8",
+      "长度": 12,
+      "实际": "6a 08 b9 d0 ff 89 00 e8 1c d5 01 00",
+      "预期": "6a 08 b9 d0 ff 89 00 e8 1c d5 01 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x00420500",
+      "意义": "slot7有效时百分比参数从100改成200",
+      "长度": 5,
+      "实际": "bf c8 00 00 00",
+      "预期": "bf c8 00 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x00420538",
+      "意义": "slot8有效时执行当前百分比参数/2的整数公式",
+      "长度": 27,
+      "实际": "8d 04 bf 8d 0c 80 b8 1f 85 eb 51 d1 e1 f7 e9 c1 fa 05 8b ca c1 e9 1f 03 d1 8b fa",
+      "预期": "8d 04 bf 8d 0c 80 b8 1f 85 eb 51 d1 e1 f7 e9 c1 fa 05 8b ca c1 e9 1f 03 d1 8b fa",
+      "PASS": true
+    },
+    {
+      "地址": "0x00424090",
+      "意义": "0x424090按mode 1/2/3分派百分比字段",
+      "长度": 13,
+      "实际": "8b 44 24 08 48 74 1a 48 74 0d 48 75 1b",
+      "预期": "8b 44 24 08 48 74 1a 48 74 0d 48 75 1b",
+      "PASS": true
+    },
+    {
+      "地址": "0x00423F1A",
+      "意义": "计时mode1使用+0x2C百分比乘+0x08后/100",
+      "长度": 17,
+      "实际": "8b 51 2c b8 1f 85 eb 51 0f af 51 08 f7 ea c1 fa 05",
+      "预期": "8b 51 2c b8 1f 85 eb 51 0f af 51 08 f7 ea c1 fa 05",
+      "PASS": true
+    },
+    {
+      "地址": "0x00423EEC",
+      "意义": "计时mode2使用+0x30百分比乘+0x14后/100",
+      "长度": 17,
+      "实际": "8b 51 30 b8 1f 85 eb 51 0f af 51 14 f7 ea c1 fa 05",
+      "预期": "8b 51 30 b8 1f 85 eb 51 0f af 51 14 f7 ea c1 fa 05",
+      "PASS": true
+    },
+    {
+      "地址": "0x0042CA0B",
+      "意义": "主DamageInfo路径查询slot2",
+      "长度": 13,
+      "实际": "6a 02 8b cd 8b 42 04 50 e8 28 f5 ff ff",
+      "预期": "6a 02 8b cd 8b 42 04 50 e8 28 f5 ff ff",
+      "PASS": true
+    },
+    {
+      "地址": "0x0042CA1C",
+      "意义": "slot2有效且machine class2时清局部值和DamageInfo两个DWORD",
+      "长度": 22,
+      "实际": "83 7f 18 02 75 10 33 c0 89 44 24 20 89 44 24 14 89 46 04 89 46 08",
+      "预期": "83 7f 18 02 75 10 33 c0 89 44 24 20 89 44 24 14 89 46 04 89 46 08",
+      "PASS": true
+    },
+    {
+      "地址": "0x0042CA36",
+      "意义": "主DamageInfo路径查询slot6",
+      "长度": 13,
+      "实际": "6a 06 8b 51 04 8b cd 52 e8 fd f4 ff ff",
+      "预期": "6a 06 8b 51 04 8b cd 52 e8 fd f4 ff ff",
+      "PASS": true
+    },
+    {
+      "地址": "0x0042CA47",
+      "意义": "slot6有效且machine class0/1时清主要结果和DamageInfo两个DWORD",
+      "长度": 24,
+      "实际": "8b 4f 18 33 c0 3b c8 74 05 83 f9 01 75 0c 89 44 24 14 89 46 04 89 46 08",
+      "预期": "8b 4f 18 33 c0 3b c8 74 05 83 f9 01 75 0c 89 44 24 14 89 46 04 89 46 08",
+      "PASS": true
+    },
+    {
+      "地址": "0x004442C2",
+      "意义": "Enemy AI先查询0x89FFD0 slot2",
+      "长度": 12,
+      "实际": "6a 02 b9 d0 ff 89 00 e8 82 97 ff ff",
+      "预期": "6a 02 b9 d0 ff 89 00 e8 82 97 ff ff",
+      "PASS": true
+    },
+    {
+      "地址": "0x004442D2",
+      "意义": "Enemy AI再查询0x89FE08 slot2",
+      "长度": 12,
+      "实际": "6a 02 b9 08 fe 89 00 e8 72 97 ff ff",
+      "预期": "6a 02 b9 08 fe 89 00 e8 72 97 ff ff",
+      "PASS": true
+    },
+    {
+      "地址": "0x004443AD",
+      "意义": "AI传入布尔为0时进入class过滤分支",
+      "长度": 4,
+      "实际": "84 c0 75 26",
+      "预期": "84 c0 75 26",
+      "PASS": true
+    },
+    {
+      "地址": "0x004443C6",
+      "意义": "AI布尔为0且候选FIRTTECH class2时把候选可用flag清0",
+      "长度": 12,
+      "实际": "83 7c 38 18 02 75 0a c6 44 24 13 00",
+      "预期": "83 7c 38 18 02 75 0a c6 44 24 13 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x00421338",
+      "意义": "result阶段按目标role slot查询slot3有效性",
+      "长度": 10,
+      "实际": "56 6a 03 8b cf e8 2e 1d 00 00",
+      "预期": "56 6a 03 8b cf e8 2e 1d 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x00421346",
+      "意义": "slot3有效时把两个结果DWORD累加进0x89FD84",
+      "长度": 24,
+      "实际": "a1 84 fd 89 00 8b 13 03 c2 a3 84 fd 89 00 8b 4b 04 03 c1 a3 84 fd 89 00",
+      "预期": "a1 84 fd 89 00 8b 13 03 c2 a3 84 fd 89 00 8b 4b 04 03 c1 a3 84 fd 89 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0042136F",
+      "意义": "slot3有效后把刚累计的两个结果DWORD清零",
+      "长度": 5,
+      "实际": "89 2b 89 6b 04",
+      "预期": "89 2b 89 6b 04",
+      "PASS": true
+    },
+    {
+      "地址": "0x004211CD",
+      "意义": "消费阶段按当前角色反向选择manager并查询slot3 owner",
+      "长度": 10,
+      "实际": "55 6a 03 8b cf e8 d9 1e 00 00",
+      "预期": "55 6a 03 8b cf e8 d9 1e 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x004211E3",
+      "意义": "slot3 owner代价使用0x77777777 magic除法序列",
+      "长度": 19,
+      "实际": "b8 77 77 77 77 f7 eb 8b 0c b5 94 fd 89 00 2b d3 c1 fa 03",
+      "预期": "b8 77 77 77 77 f7 eb 8b 0c b5 94 fd 89 00 2b d3 c1 fa 03",
+      "PASS": true
+    },
+    {
+      "地址": "0x00442D26",
+      "意义": "角色状态转换前先查0x89FE08是否仍有该owner的active slot",
+      "长度": 16,
+      "实际": "57 b9 08 fe 89 00 e8 df ae ff ff 83 f8 ff 75 74",
+      "预期": "57 b9 08 fe 89 00 e8 df ae ff ff 83 f8 ff 75 74",
+      "PASS": true
+    },
+    {
+      "地址": "0x00442D36",
+      "意义": "再查0x89FFD0；任一找到owner都跳过转换",
+      "长度": 16,
+      "实际": "57 b9 d0 ff 89 00 e8 cf ae ff ff 83 f8 ff 75 64",
+      "预期": "57 b9 d0 ff 89 00 e8 cf ae ff ff 83 f8 ff 75 64",
+      "PASS": true
+    }
+  ],
+  "关键区间原版冻结与研究版等价": [
+    {
+      "起始": "0x0043DA50",
+      "结束_不含": "0x0043DAA9",
+      "意义": "0x43DA50九槽有效性谓词完整主体",
+      "长度": 89,
+      "原版SHA256": "4cfa9bad3273b1c5238b317f9b683b1ba7526076b4158321e507926d0b1a041e",
+      "冻结SHA256": "4cfa9bad3273b1c5238b317f9b683b1ba7526076b4158321e507926d0b1a041e",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0041A6D0",
+      "结束_不含": "0x0041A78F",
+      "意义": "slot2对Battle菜单class2状态表现flag的消费",
+      "长度": 191,
+      "原版SHA256": "a8bf5bfc111d04b6022e18ac78512b01662b25cdf16b33aa5203083ef4b90bff",
+      "冻结SHA256": "a8bf5bfc111d04b6022e18ac78512b01662b25cdf16b33aa5203083ef4b90bff",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0041A3A8",
+      "结束_不含": "0x0041A3CC",
+      "意义": "class2条目读取0x78C flag并改变条目属性",
+      "长度": 36,
+      "原版SHA256": "7fa31d2bb6148777daac4c489c29ae6ff8d50f3380fc9d5676138ef8faa862e5",
+      "冻结SHA256": "7fa31d2bb6148777daac4c489c29ae6ff8d50f3380fc9d5676138ef8faa862e5",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x004204C6",
+      "结束_不含": "0x00420619",
+      "意义": "slot7/8对角色计时结构两个百分比步进参数的消费",
+      "长度": 339,
+      "原版SHA256": "e5452bd151b362a6c276304577793a02f599f78a950292800485850b4732491f",
+      "冻结SHA256": "e5452bd151b362a6c276304577793a02f599f78a950292800485850b4732491f",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x00423070",
+      "结束_不含": "0x004230F3",
+      "意义": "按角色槽组选manager的slot有效性与slot-owner包装器",
+      "长度": 131,
+      "原版SHA256": "df4c16b6208503b85ef09fbb0102883024a8c505b58f777593271baa9caf11cc",
+      "冻结SHA256": "df4c16b6208503b85ef09fbb0102883024a8c505b58f777593271baa9caf11cc",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0042BF40",
+      "结束_不含": "0x0042BF84",
+      "意义": "公式层manager-selector到0x43DA50的包装器",
+      "长度": 68,
+      "原版SHA256": "dd4884cecb81cc8401b3f94fb32a4a9b3d27687de788f76ca0931ae8effe82b5",
+      "冻结SHA256": "dd4884cecb81cc8401b3f94fb32a4a9b3d27687de788f76ca0931ae8effe82b5",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x004442A9",
+      "结束_不含": "0x004443D7",
+      "意义": "slot2影响Enemy AI class2候选过滤的控制流",
+      "长度": 302,
+      "原版SHA256": "148f206f2d4fd7ec010fd68318c2eb59239e19b29afbd661ae710bd1bab5fd3e",
+      "冻结SHA256": "148f206f2d4fd7ec010fd68318c2eb59239e19b29afbd661ae710bd1bab5fd3e",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0042A760",
+      "结束_不含": "0x0042A791",
+      "意义": "公式层三全局指针绑定函数",
+      "长度": 49,
+      "原版SHA256": "8c98b8aa9f1cc69ea7802f689c2f4a8f35c8666fcc3723fad6631b57251b3957",
+      "冻结SHA256": "8c98b8aa9f1cc69ea7802f689c2f4a8f35c8666fcc3723fad6631b57251b3957",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0041F2B0",
+      "结束_不含": "0x0041F30B",
+      "意义": "Battle构造调用0x42A760并传入两个既有九槽实例",
+      "长度": 91,
+      "原版SHA256": "d122f23598b4478ef4ed557f5f950a58be4237b26f6d0f4f2bbe544c3a2a69d2",
+      "冻结SHA256": "d122f23598b4478ef4ed557f5f950a58be4237b26f6d0f4f2bbe544c3a2a69d2",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x00442783",
+      "结束_不含": "0x004427A7",
+      "意义": "Battle初始化把0x89FD54/58别名到两个九槽实例",
+      "长度": 36,
+      "原版SHA256": "e386fc893e502f585c693815e24c0e800b2327f74697cbfb334f1b7cd03528f6",
+      "冻结SHA256": "e386fc893e502f585c693815e24c0e800b2327f74697cbfb334f1b7cd03528f6",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x004211C5",
+      "结束_不含": "0x00421236",
+      "意义": "slot3 owner次资源扣除与归零后双实例owner清理",
+      "长度": 113,
+      "原版SHA256": "0993cbb03de8c308de530f7cb462800f1486dc0ccb3d035b2bd77a084fe7fd3b",
+      "冻结SHA256": "0993cbb03de8c308de530f7cb462800f1486dc0ccb3d035b2bd77a084fe7fd3b",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x004212CE",
+      "结束_不含": "0x00421374",
+      "意义": "slot3在result阶段累计两个结果通道并清零",
+      "长度": 166,
+      "原版SHA256": "421e3308f470629167c8ce8472dc0614d652593206784111a2106f58f2cdf585",
+      "冻结SHA256": "421e3308f470629167c8ce8472dc0614d652593206784111a2106f58f2cdf585",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0042CA07",
+      "结束_不含": "0x0042CA65",
+      "意义": "slot2对class2、slot6对class0/1的结果清零门",
+      "长度": 94,
+      "原版SHA256": "1769b325762d4348bc8f1ae67906c84e833480cbdffa008b5b369a809205cd8c",
+      "冻结SHA256": "1769b325762d4348bc8f1ae67906c84e833480cbdffa008b5b369a809205cd8c",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x00442D01",
+      "结束_不含": "0x00442D5D",
+      "意义": "owner仍持有任一九槽效果时阻止0x7D6到0x7D1状态转换",
+      "长度": 92,
+      "原版SHA256": "a201d733555ee3f5a787948f622deec29b7e1c8b018f10d14082b9398e62a107",
+      "冻结SHA256": "a201d733555ee3f5a787948f622deec29b7e1c8b018f10d14082b9398e62a107",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x00423DA0",
+      "结束_不含": "0x00423F3E",
+      "意义": "角色三通道计时结构初始化与按百分比推进",
+      "长度": 414,
+      "原版SHA256": "cdc90a205189ba64d9a562df3fb04562635372753e9497b2e8fab3dbc5d3ba50",
+      "冻结SHA256": "cdc90a205189ba64d9a562df3fb04562635372753e9497b2e8fab3dbc5d3ba50",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x00424090",
+      "结束_不含": "0x004240B9",
+      "意义": "0x424090把mode1/2/3百分比写入+0x2C/+0x30/+0x34",
+      "长度": 41,
+      "原版SHA256": "b21f950089378094cf47c663f1f636cd7dd1ed9bd60591dad05edb5c9b1a2502",
+      "冻结SHA256": "b21f950089378094cf47c663f1f636cd7dd1ed9bd60591dad05edb5c9b1a2502",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0042A8FF",
+      "结束_不含": "0x0042AA11",
+      "意义": "slot3/4在第一组公式路径中的布尔/零值消费",
+      "长度": 274,
+      "原版SHA256": "132c68fa5fe2d9bf436b32c0e3100fc3aa31ab7041bd2c95cd11607f5e54bdd7",
+      "冻结SHA256": "132c68fa5fe2d9bf436b32c0e3100fc3aa31ab7041bd2c95cd11607f5e54bdd7",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0042AE43",
+      "结束_不含": "0x0042AF56",
+      "意义": "slot4在两条公式路径把两个结果DWORD清零",
+      "长度": 275,
+      "原版SHA256": "44d592d8a3322f9587bc916c214ab534e9122ac26c25c5067496c7b52230c90e",
+      "冻结SHA256": "44d592d8a3322f9587bc916c214ab534e9122ac26c25c5067496c7b52230c90e",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0042C0C4",
+      "结束_不含": "0x0042C0E6",
+      "意义": "slot4在另一公式分支的条件清零",
+      "长度": 34,
+      "原版SHA256": "2ec6b7e53506a3fa3e6a8dcdc877dc8c929a1a4b0aecdc1b697df4936f6693f2",
+      "冻结SHA256": "2ec6b7e53506a3fa3e6a8dcdc877dc8c929a1a4b0aecdc1b697df4936f6693f2",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0042C48B",
+      "结束_不含": "0x0042C4BC",
+      "意义": "slot4把该helper计算结果直接压成0",
+      "长度": 49,
+      "原版SHA256": "43eccca3b648a93f1ffd70d6751721d5a069ebcaee9143c08162965b63a29d6f",
+      "冻结SHA256": "43eccca3b648a93f1ffd70d6751721d5a069ebcaee9143c08162965b63a29d6f",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    },
+    {
+      "起始": "0x0042C884",
+      "结束_不含": "0x0042C8CB",
+      "意义": "slot3在主DamageInfo计算路径强制局部布尔门为1",
+      "长度": 71,
+      "原版SHA256": "7bb52d310b82bd78bdfb7f73b40ff9ceb75e39b4cfc2d269a66875461d7740ad",
+      "冻结SHA256": "7bb52d310b82bd78bdfb7f73b40ff9ceb75e39b4cfc2d269a66875461d7740ad",
+      "原版哈希PASS": true,
+      "研究版逐字节等同原版": true,
+      "PASS": true
+    }
+  ],
+  "九项canonical记录": [
+    {
+      "slot": 0,
+      "record_id": 346,
+      "name": "非天死潭",
+      "action_class": 1,
+      "route_20": 0,
+      "counter_90": 900000,
+      "description": "",
+      "queried_by_validity_family": false
+    },
+    {
+      "slot": 1,
+      "record_id": 380,
+      "name": "封炎滅陣",
+      "action_class": 2,
+      "route_20": 0,
+      "counter_90": 420000,
+      "description": "炎獸封豨的絕技之一，能將敵方全體封入焚炎離火之陣中，以高熱將其焚炙致死。",
+      "queried_by_validity_family": false
+    },
+    {
+      "slot": 2,
+      "record_id": 450,
+      "name": "反咒禁制",
+      "action_class": 4,
+      "route_20": 2,
+      "counter_90": 350000,
+      "description": "能為己方辟禦所有咒術的神妙禁制，在承受一定程度的術法之力或時限已至時便會消失。",
+      "queried_by_validity_family": true
+    },
+    {
+      "slot": 3,
+      "record_id": 457,
+      "name": "閾迦封界",
+      "action_class": 4,
+      "route_20": 1,
+      "counter_90": 1000000,
+      "description": "幽神羅鍭的至高秘法，能張開難摧不破的「閾迦封界」，保護所有伙伴不受兵刃咒法之害。",
+      "queried_by_validity_family": true
+    },
+    {
+      "slot": 4,
+      "record_id": 458,
+      "name": "鬼唳天幕",
+      "action_class": 4,
+      "route_20": 0,
+      "counter_90": 800000,
+      "description": "在敵陣中引聚幽魄為界，這幽魄之界會蔽光蝕靈，使敵人施展的神光和治癒咒術全都失效。",
+      "queried_by_validity_family": true
+    },
+    {
+      "slot": 5,
+      "record_id": 461,
+      "name": "幽魄厲界",
+      "action_class": 4,
+      "route_20": 0,
+      "counter_90": 500000,
+      "description": "在敵陣中引聚幽魄為界，這幽魄之界會蔽光蝕靈，使敵人施展的神光和治癒咒術全都失效。",
+      "queried_by_validity_family": false
+    },
+    {
+      "slot": 6,
+      "record_id": 462,
+      "name": "六甲神儀",
+      "action_class": 4,
+      "route_20": 1,
+      "counter_90": 800000,
+      "description": "能為己方辟禦所有兵刃武技之擊的神妙護界，在承受一定程度的攻擊或時限已至時便會消失。",
+      "queried_by_validity_family": true
+    },
+    {
+      "slot": 7,
+      "record_id": 463,
+      "name": "時輪返陣",
+      "action_class": 4,
+      "route_20": 1,
+      "counter_90": 900000,
+      "description": "此咒能以玄機妙法操動時輪之律，在其時效內使己方全員蓄勁行動的速度增為原有的三倍。",
+      "queried_by_validity_family": true
+    },
+    {
+      "slot": 8,
+      "record_id": 465,
+      "name": "鬼縛之陣",
+      "action_class": 4,
+      "route_20": 0,
+      "counter_90": 750000,
+      "description": "此咒可在敵陣之下引來怨厲鬼氣纏縛敵人，使其動作減慢並無法使用技法之外的一般攻擊。",
+      "queried_by_validity_family": true
+    }
+  ],
+  "高层consumer": [
+    {
+      "slot": 2,
+      "record_id_hex": "0x1C2",
+      "name": "反咒禁制",
+      "consumer": "Battle菜单class2条目状态表现",
+      "machine_effect": "任一九槽实例slot2有效 -> 对象+0x78C=0；遍历FIRTTECH class2条目时据此改写条目+0x38属性。",
+      "evidence_addresses": "0x41A6D0..0x41A781; 0x41A3A8..0x41A3CC",
+      "boundary": "已证明是class2条目状态表现门；+0x38的作者UI属性名仍UNKNOWN，不把它擅自命名成‘灰色/禁用颜色’。"
+    },
+    {
+      "slot": 2,
+      "record_id_hex": "0x1C2",
+      "name": "反咒禁制",
+      "consumer": "Enemy AI候选过滤",
+      "machine_effect": "任一九槽实例slot2有效 -> 传给0x444330的布尔=0；候选FIRTTECH machine class2被拒绝。",
+      "evidence_addresses": "0x4442C2..0x4442E7; 0x4443AD..0x4443D2",
+      "boundary": "只冻结machine class2过滤；class2作者源码枚举名仍UNKNOWN。"
+    },
+    {
+      "slot": 2,
+      "record_id_hex": "0x1C2",
+      "name": "反咒禁制",
+      "consumer": "DamageInfo结果保护门",
+      "machine_effect": "选定manager的slot2有效且当前FIRTTECH machine class2 -> local+0x20/local+0x14以及DamageInfo+0x04/+0x08清0。",
+      "evidence_addresses": "0x42CA07..0x42CA32 via 0x42BF40",
+      "boundary": "字段作者名仍UNKNOWN；可冻结为class2结果归零，不扩大为所有class2副作用都被取消。"
+    },
+    {
+      "slot": 3,
+      "record_id_hex": "0x1C9",
+      "name": "閾迦封界",
+      "consumer": "Battle result phase2拦截",
+      "machine_effect": "目标所属manager的slot3有效 -> 把结果结构两个DWORD累加进0x89FD84，然后把这两个DWORD清0。",
+      "evidence_addresses": "0x4212CE..0x421374 via 0x423070",
+      "boundary": "这两DWORD对应result结构的两个数值通道；作者字段正式名仍UNKNOWN。"
+    },
+    {
+      "slot": 3,
+      "record_id_hex": "0x1C9",
+      "name": "閾迦封界",
+      "consumer": "被拦截结果转为owner次资源代价",
+      "machine_effect": "若0x89FD84>0且能找到对向manager的slot3 owner -> owner FightRole+0x884 减 floor(0x89FD84/15)；若降到<=0则夹0并清该owner在两个manager的全部九槽效果。",
+      "evidence_addresses": "0x4211C5..0x421236 via 0x4230B0/0x43DC40",
+      "boundary": "FightRole+0x884已冻结为次资源current；次资源作者正式属性名仍UNKNOWN。"
+    },
+    {
+      "slot": 3,
+      "record_id_hex": "0x1C9",
+      "name": "閾迦封界",
+      "consumer": "公式局部布尔门",
+      "machine_effect": "slot3有效可直接把两个不同公式路径里的局部判定门设为1/true，绕过各自后续随机/状态判定。",
+      "evidence_addresses": "0x42A902..0x42A957; 0x42C884..0x42C8CB",
+      "boundary": "只冻结局部布尔结果；未给这两个局部变量猜作者业务名。"
+    },
+    {
+      "slot": 4,
+      "record_id_hex": "0x1CA",
+      "name": "鬼唳天幕",
+      "consumer": "多条公式结果抑制",
+      "machine_effect": "slot4有效会在多条公式路径把局部计算量或两个结果DWORD清0；部分路径还要求局部mode/subtype==4。",
+      "evidence_addresses": "0x42A9F1..0x42AA11; 0x42AE46..0x42AE63; 0x42AF27..0x42AF44; 0x42C0C4..0x42C0E6; 0x42C48B..0x42C4B4",
+      "boundary": "作者说明支持‘神光/治愈失效’业务族，但内部mode/subtype正式字段名仍UNKNOWN。"
+    },
+    {
+      "slot": 6,
+      "record_id_hex": "0x1CE",
+      "name": "六甲神儀",
+      "consumer": "DamageInfo结果保护门",
+      "machine_effect": "选定manager的slot6有效且当前FIRTTECH machine class0或class1 -> local+0x14以及DamageInfo+0x04/+0x08清0。",
+      "evidence_addresses": "0x42CA32..0x42CA61 via 0x42BF40",
+      "boundary": "只冻结machine class0/1结果归零；class1作者源码枚举名仍UNKNOWN。"
+    },
+    {
+      "slot": 7,
+      "record_id_hex": "0x1CF",
+      "name": "時輪返陣",
+      "consumer": "角色行动计时百分比",
+      "machine_effect": "默认100；角色所属manager的slot7有效时直接改为200，并写入计时结构mode1/mode2的+0x2C/+0x30百分比。",
+      "evidence_addresses": "0x4204C6..0x42050A; 0x4205FE..0x420614; 0x424090; 0x423EEC/0x423F1A",
+      "boundary": "机器只证明这两个计时通道按200%推进；不要仅凭作者‘三倍’文字把底层参数改写成300。"
+    },
+    {
+      "slot": 8,
+      "record_id_hex": "0x1D1",
+      "name": "鬼縛之陣",
+      "consumer": "角色行动计时百分比",
+      "machine_effect": "角色所属manager的slot8有效时把当前百分比整数除2；故仅slot8=50，仅slot7=200，两者同时=100。",
+      "evidence_addresses": "0x420505..0x420553; 0x4205FE..0x420614; 0x424090; 0x423EEC/0x423F1A",
+      "boundary": "冻结的是计时结构两个百分比通道的机器参数，不把它直接等同为墙钟速度。"
+    },
+    {
+      "slot": -1,
+      "record_id_hex": "ALL",
+      "name": "九槽共有owner门",
+      "consumer": "Battle角色状态转换",
+      "machine_effect": "当角色状态满足该分支前置条件时，若任一manager的0x43DC10(owner)返回非-1，则跳过0x7D6 -> 0x7D1转换；只有两个manager都无该owner active slot才转换。",
+      "evidence_addresses": "0x442D01..0x442D5D",
+      "boundary": "0x7D6/0x7D1作者状态枚举名未闭合，因此只冻结数值状态转换门。"
+    }
+  ],
+  "机器结论": {
+    "0x43DA50通用机器谓词": {
+      "非法slot": "false",
+      "active==0": "false",
+      "step<0": "current>=0 -> true；current<0 -> active清0并false",
+      "step==0": "false",
+      "step>0": "current<0 -> false；current>=0 -> 返回true并立即active清0",
+      "canonical简化": "九条canonical均positive start + step=-1100；在正常0x43DAB0 tick管理下可作为‘该slot仍在有效窗口’谓词使用。",
+      "重要边界": "generic非canonical输入不能把0x43DA50简化成单纯active!=0。"
+    },
+    "manager别名": {
+      "0x8B01CC": "0x89FFD0",
+      "0x8B01D0": "0x89FE08",
+      "0x89FD58": "0x89FFD0",
+      "0x89FD54": "0x89FE08",
+      "结论": "固化59全部高层consumer仍只访问固化58的两个九槽实例，不存在第三套同布局manager。"
+    },
+    "按role槽组选manager": {
+      "0x423070": "role 0..7 -> 0x89FFD0；role 8..15 -> 0x89FE08；其它 -> false",
+      "0x4230B0 flag0": "当前role 0..7 -> 查0x89FE08 owner；role 8..15 -> 查0x89FFD0 owner，即对向manager",
+      "0x4230B0 flag1": "当前role 0..7 -> 查0x89FFD0 owner；role 8..15 -> 查0x89FE08 owner，即同组manager"
+    },
+    "被有效性查询家族消费的slot": [
+      2,
+      3,
+      4,
+      6,
+      7,
+      8
+    ],
+    "未发现0x43DA50_43DC40有效性消费的slot": [
+      0,
+      1,
+      5
+    ],
+    "slot7_slot8计时百分比组合": {
+      "slot7=0,slot8=0": 100,
+      "slot7=1,slot8=0": 200,
+      "slot7=0,slot8=1": 50,
+      "slot7=1,slot8=1": 100
+    },
+    "slot3_owner次资源代价样本_floor_sum_div15": {
+      "1": 0,
+      "14": 0,
+      "15": 1,
+      "16": 1,
+      "29": 1,
+      "30": 2,
+      "31": 2,
+      "150": 10,
+      "151": 10,
+      "1500": 100
+    },
+    "Godot实现要点": [
+      "必须保留两个九槽manager，而不是把查询折叠成一张全局9-bit表。",
+      "slot2同时影响UI状态表现、Enemy AI class2候选和class2结果归零。",
+      "slot3 result拦截要跨phase保存0x89FD84累计值，并向对向slot3 owner收取floor(sum/15)次资源。",
+      "slot4有多条公式零值consumer；不要只播放持续EFF而忽略数值抑制。",
+      "slot6对machine class0/1结果做硬清零。",
+      "slot7/8修改的是计时结构mode1/mode2百分比：200/50，二者同时回到100。",
+      "角色拥有任一active九槽效果时，特定0x7D6->0x7D1状态转换必须暂缓。"
+    ],
+    "明确不能外推": [
+      "slot0/1/5没有本查询家族consumer，不等于它们绝无其它机器副作用。",
+      "slot7底层写200，不得仅凭作者‘三倍’说明把此字段强写300。",
+      "0x7D6/0x7D1没有作者枚举名，不得擅自命名。",
+      "class1/class2作者源码枚举名仍UNKNOWN。",
+      "slot4内部mode/subtype==4字段正式名仍UNKNOWN。"
+    ]
+  },
+  "纠错记录": {
+    "此前进度口头误报": "曾把0x43DA50 direct CALL口头写成14处。",
+    "正式静态结果": "严格12处；已用rel32扫描和冻结地址集合双重断言。",
+    "是否影响先前固化节点": false
+  },
+  "全部通过": true
+}

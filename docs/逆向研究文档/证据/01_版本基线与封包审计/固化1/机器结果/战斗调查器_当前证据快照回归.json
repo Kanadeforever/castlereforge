@@ -1,0 +1,15 @@
+{
+  "工具版本": "0.7D-固化1",
+  "固定证据": {
+    "BattleUnitStride": "0xDE4 @ 0x0044424D..0x00444259",
+    "EmbeddedRoleDefinition": "BattleUnit+0x84C, size 0x350 @ 0x0041F643..0x0041F666",
+    "EnemyAI": "record 56; current index BattleUnit+0xC30; thresholds +0x1C/+0x20 @ 0x00444240",
+    "ArticleDamage": "0x0042A7D0 accesses Article +0x37A; Ail2 record 0x39E, FIRTTECH only 0x230"
+  },
+  "继续入口": [
+    "0x00444330 candidate selection",
+    "0x0042A7D0 helpers",
+    "0x00422Bxx action dispatch",
+    "0x350 RoleDefinition consumer map"
+  ]
+}

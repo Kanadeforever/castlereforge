@@ -1,0 +1,31 @@
+{
+  "版本": "v0.7D阶段中-固化23修正版2",
+  "完整版本名": "DDDES显示定时配置与实体双事件触发协议静态闭合版_文档语义全量校正版",
+  "日期": "2026-08-14",
+  "直接基线": "v0.7D阶段中-固化22_D8非Battle随机语义与SCI实体行为静态闭合版",
+  "研究性质": "纯静态逆向分析；不含DLL/Hook/运行时探针/引擎实现。",
+  "本轮闭合": [
+    "原固化23核心：DDDES为18-byte header + N×52-byte records；头字段闭合到显示/缓冲/MMTimer/WM_TIMER；Entity +EA/+EB双事件协议静态闭合。",
+    "修正版2纠错：Entity +0x77/+0x78/+0x79/+0x7A 为signed byte后ADD 6/4/9/6，不是乘法/倍率；32份Markdown最终全量同步。",
+    "Sys.dat 39-byte目录表恢复CURSOR/DDDES/MAINNPC/SUBNPC；CURSOR/MAINNPC/SUBNPC均有独立551-byte Entity Loader证据。",
+    "Entity语料扩大到38条；MAINNPC“小夏侯儀”移动原值-3/-2/-6/-4，经ADD得到3/2/3/2，形成原始资源正证据。",
+    "Music.DAT恢复MP3LIST/WAVLIST；51-byte记录，+1..+50为NUL结尾资源基名；MP3LIST→.MP3、WAVLIST→.WAV完整数据流闭合。",
+    "DDDES mode=2 Loader别名与0x46F380四处直接绝对引用审计完成：静态可达直接路径未见52-byte record consumer，保留未知间接边界。",
+    "Entity +0x71/+0x72有CURSOR 255/255正样本但未发现Entity直接字面consumer；音乐列表+0x00同样仅有样本分布、无已知直接consumer，两者继续UNKNOWN。"
+  ],
+  "仍未知": [
+    "Entity +0xE0/+0xEC/+0xED业务语义；+0x71/+0x72保持UNKNOWN但direct consumer负证据已完成。",
+    "Map +0x269..+0x2CC、+0x332..+0x372、+0x388..+0x472及更多非零Map正例。",
+    "Entity type2/type3 serialized正例。",
+    "DDDES 52-byte record作者业务语义；当前只保留未知间接复制/间接调用边界。",
+    "Music列表record+0x00作者语义。",
+    "SF2剩余property/mode作者语义。",
+    "Battle未命名runtime slots。"
+  ],
+  "下一步": "继续纯静态优先追Entity +0xE0/+0xEC/+0xED、Map后半块与更多type2/type3/非零Map资源正例；随后推进SF2/Battle未知项。DDDES direct alias/xref与Entity +0x71/+0x72、Music +0x00的首轮direct consumer审计已完成，不重复列为首要任务。禁止转入实现。",
+  "校正说明": {
+    "Entity_0x77_0x7A": "signed byte分别+6/+4/+9/+6；原文档乘法/倍率写法作废；Oracle使用ADD imm8。",
+    "DDDES": "删除旧size==70启发式当前态；严格调查器识别为文件名DDDES.SCI且size>=0x12且(size-0x12)%0x34==0。",
+    "历史输出": "历史原始输出保持来源，不得用其中旧解释覆盖修正版当前机器证据。"
+  }
+}

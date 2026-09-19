@@ -1,0 +1,2245 @@
+{
+  "compatibility_protocol": {
+    "FIRTTECH_plus_0x44": {
+      "author_field_name": "UNKNOWN",
+      "canonical_values": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "modes": {
+        "0": {
+          "battle_helper": "0x42BF90",
+          "compatibility_name": "常规直接结果公式族",
+          "direct_rng_draws_when_gate_passes": 2,
+          "generic_aux_0x42C4D0": "used",
+          "resource_note": "canonical named entries are dominated by ordinary techniques and standard elemental/direct attacks",
+          "rng_transform": [
+            "raw%19+1",
+            "raw%9+1"
+          ]
+        },
+        "1": {
+          "battle_helper": "0x42C260",
+          "compatibility_name": "目标主生存资源max比例型结果公式族",
+          "direct_rng_draws_when_gate_passes": 2,
+          "formula_anchor": "target main-resource max * FIRTTECH+0x4C / 100 appears at helper start",
+          "generic_aux_0x42C4D0": "used",
+          "resource_note": "canonical named entries are concentrated in soul/dark/death/drain-like special attacks; this is resource semantics, not an author enum name",
+          "rng_transform": [
+            "floor(raw/99)+1",
+            "floor(raw/19)+1"
+          ]
+        },
+        "2": {
+          "battle_helper": "0x42C460",
+          "compatibility_name": "双资源恢复业务族",
+          "direct_rng_draws_in_helper": 0,
+          "generic_aux_0x42C4D0": "skipped",
+          "machine_business_boundary": "dual-resource recovery family",
+          "out_of_battle_0x43B170": "only this mode enters direct main/secondary current restoration loop"
+        },
+        "3": {
+          "battle_helper": "0x42C460",
+          "compatibility_name": "特殊_状态_动作协议族",
+          "direct_rng_draws_in_helper": 0,
+          "generic_aux_0x42C4D0": "skipped",
+          "machine_business_boundary": "special/state/action protocol family; not guaranteed to be numerically zero because canonical has one weighted exception",
+          "out_of_battle_0x43B170": "explicitly excluded because the gate is ==2"
+        }
+      },
+      "storage_type": "signed int32 raw"
+    },
+    "FIRTTECH_plus_0x54_plus_0x58": {
+      "author_field_names": [
+        "UNKNOWN",
+        "UNKNOWN"
+      ],
+      "canonical_masking_case": "the only mode2 record with both channels enabled is 0x17E 天護靈燁 and it has +0x54/+0x58=100/100, so the quirk is numerically hidden in canonical data.",
+      "compatibility_names": [
+        "main_result_weight_percent",
+        "secondary_result_weight_percent"
+      ],
+      "legacy_battle_mode2_3_quirk": "secondary channel is gated by FIRTTECH+0x58>0, but the actual multiplication at 0x42C9AD reloads FIRTTECH+0x54; preserve this machine behavior.",
+      "proven_paths": [
+        "mode0/1 generic battle output scales DamageInfo+0x04 by +0x54 and DamageInfo+0x08 by +0x58",
+        "0x43B170 mode2 out-of-battle recovery scales main current restore by +0x54 and secondary restore by +0x58"
+      ]
+    },
+    "mode2_0x42C460_signed_restore": {
+      "DamageInfo_application_context": "DamageInfo+0x04/+0x08 are later subtracted from target main/secondary current; therefore negative values restore resources",
+      "flag_0_base": "trunc(target_secondary_max * FIRTTECH+0x40 / 100) + FIRTTECH+0x4C",
+      "flag_1_base": "trunc(target_main_max * FIRTTECH+0x40 / 100) + FIRTTECH+0x4C",
+      "status_gate_note": "helper contains an inherited status/effect check and a target runtime sign inversion; this node freezes the resource-direction behavior, not the author's formal status-field names"
+    }
+  },
+  "executable_evidence": {
+    "critical_slices": [
+      {
+        "end_va_exclusive": "0x0042C254",
+        "label": "mode0_0x42BF90常规随机结果helper",
+        "original_equals_research": true,
+        "sha256": "99ddd41d0e576740f7f178ce8f4e90b57e421ea30497673d125963c6055c453f",
+        "size": 708,
+        "start_va": "0x0042BF90"
+      },
+      {
+        "end_va_exclusive": "0x0042C454",
+        "label": "mode1_0x42C260目标max比例随机结果helper",
+        "original_equals_research": true,
+        "sha256": "94bc28527888779cb87685e04c4e01936903813034ce2b4bd9a0079028bcf9b2",
+        "size": 500,
+        "start_va": "0x0042C260"
+      },
+      {
+        "end_va_exclusive": "0x0042C4CC",
+        "label": "mode2_3_0x42C460双资源有符号结果helper",
+        "original_equals_research": true,
+        "sha256": "e55096912460d5adf5fa11e84fcb3aa5b6733dee55bf7199e78c0836db15b7db",
+        "size": 108,
+        "start_va": "0x0042C460"
+      },
+      {
+        "end_va_exclusive": "0x0042C60E",
+        "label": "mode0_1通用附加结果helper_2_3会跳过",
+        "original_equals_research": true,
+        "sha256": "a3a56363dbef89a3767eaa66d0aea6a9a66543844ed9c1127e4e6b100a32ebb9",
+        "size": 318,
+        "start_va": "0x0042C4D0"
+      },
+      {
+        "end_va_exclusive": "0x0042CC2B",
+        "label": "FIRTTECH加0x44四模式分派与结果落地",
+        "original_equals_research": true,
+        "sha256": "694e5cd563b9d8ddfdd220c4024afe2c26079dbb76b591873cf6b65e13a2db9b",
+        "size": 852,
+        "start_va": "0x0042C8D7"
+      },
+      {
+        "end_va_exclusive": "0x0043B30F",
+        "label": "Battle外FIRTTECH使用与mode2资源恢复循环",
+        "original_equals_research": true,
+        "sha256": "3ee0a874832472dc1e9822eea6a9b886acd2db609b7d62612b6e2415eea1a452",
+        "size": 415,
+        "start_va": "0x0043B170"
+      }
+    ],
+    "direct_calls": {
+      "0x0042BF90": [
+        "0x0042C8EB"
+      ],
+      "0x0042C260": [
+        "0x0042C90B"
+      ],
+      "0x0042C460": [
+        "0x0042C930",
+        "0x0042C973",
+        "0x0042C9A8"
+      ],
+      "0x0042C4D0": [
+        "0x0042C9FE"
+      ],
+      "0x0043B170": [
+        "0x0043C1DE",
+        "0x0043C333"
+      ]
+    },
+    "exact_byte_anchors": [
+      {
+        "bytes": "8b 47 44 85 c0 75 1b 84 c9 74 17 8b 54 24 24 57 52 53 8b cd e8 a0 f6 ff ff 89 44 24 14 e9 da 00 00 00 83 f8 01 75 1b 84 c9 74 17 8b 44 24 24 57 50 53 8b cd e8 50 f9 ff ff",
+        "meaning": "mode0与mode1分别调用0x42BF90和0x42C260，且都受同一后处理门控制",
+        "size": 57,
+        "va": "0x0042C8D7"
+      },
+      {
+        "bytes": "83 f8 02 75 3e 8b 47 54 85 c0 7e 2e 8b 4c 24 24 6a 01 57 51 53 8b cd e8 2b fb ff ff",
+        "meaning": "mode2主资源通道由加0x54大于0开门并调用0x42C460(flag=1)",
+        "size": 28,
+        "va": "0x0042C919"
+      },
+      {
+        "bytes": "83 f8 03 75 72 8b 47 54 85 c0 7e 2e 8b 4c 24 24 6a 01 57 51 53 8b cd e8 e8 fa ff ff",
+        "meaning": "mode3与mode2共享主资源特殊结果helper",
+        "size": 28,
+        "va": "0x0042C95C"
+      },
+      {
+        "bytes": "8b 47 58 85 c0 7e 2e 8b 4c 24 24 6a 00 57 51 53 8b cd e8 b3 fa ff ff 8b 4f 54",
+        "meaning": "mode2_3次资源通道由加0x58开门但乘法重新读取加0x54",
+        "size": 26,
+        "va": "0x0042C996"
+      },
+      {
+        "bytes": "8b 47 44 83 f8 02 74 16 83 f8 03 74 11 8b 4c 24 24 51 53 8b cd e8 cd fa ff ff 01 44 24 14",
+        "meaning": "mode2与mode3明确跳过0x42C4D0通用附加结果helper",
+        "size": 30,
+        "va": "0x0042C9E9"
+      },
+      {
+        "bytes": "8b 4e 2c 0f af 48 4c b8 1f 85 eb 51 f7 e9 c1 fa 05 8b c2 8b cf c1 e8 1f 03 d0",
+        "meaning": "mode1开头构造target主生存资源max乘FIRTTECH加0x4C再除100",
+        "size": 26,
+        "va": "0x0042C28E"
+      },
+      {
+        "bytes": "8a 44 24 10 53 56 57 84 c0 74 11 8b 7c 24 18 8b 5c 24 14 8b 57 40 0f af 53 2c eb 0f 8b 5c 24 14 8b 7c 24 18 8b 53 34 0f af 57 40",
+        "meaning": "0x42C460按flag在目标主max加0x2C或次max加0x34之间选择",
+        "size": 43,
+        "va": "0x0042C460"
+      },
+      {
+        "bytes": "83 7b 44 02 0f 85 c7 00 00 00",
+        "meaning": "Battle外落地只接受FIRTTECH加0x44等于2进入恢复循环",
+        "size": 10,
+        "va": "0x0043B1FD"
+      },
+      {
+        "bytes": "8b 71 2c 8b d6 0f af 53 40 f7 ea c1 fa 05 8b c2 c1 e8 1f 03 d0 b8 1f 85 eb 51 03 d7",
+        "meaning": "Battle外mode2先按主max乘加0x40除100再加加0x4C形成恢复base",
+        "size": 28,
+        "va": "0x0043B23E"
+      },
+      {
+        "bytes": "8b 53 58 0f af d7 f7 ea c1 fa 05 8b c2 c1 e8 1f 03 d0 b8 1f 85 eb 51 8b ea 8b 53 54 0f af d7",
+        "meaning": "Battle外mode2分别读取加0x58与加0x54形成次和主恢复权重",
+        "size": 31,
+        "va": "0x0043B25C"
+      },
+      {
+        "bytes": "8b 79 30 c1 fa 05 8b c2 c1 e8 1f 03 d0 03 fa 8b c7 89 79 30 3b c6 7e 03 89 71 30 8b 79 38 8b 41 34 03 fd",
+        "meaning": "Battle外mode2直接增加主current加0x30并clamp到max加0x2C，再增加次current加0x38",
+        "size": 35,
+        "va": "0x0043B27D"
+      }
+    ],
+    "original_path": "/mnt/data/solid61_inputs/RPG_original.exe",
+    "original_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "research_path": "/mnt/data/RPG.exe",
+    "research_sha256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf"
+  },
+  "inputs": {
+    "firttech": "/mnt/data/solid61_inputs/Firttech.enc",
+    "firttech_hashes": {
+      "decoded_sha256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+      "encoded_sha256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d"
+    },
+    "original_rpg": "/mnt/data/solid61_inputs/RPG_original.exe",
+    "research_rpg": "/mnt/data/RPG.exe"
+  },
+  "resource_evidence": {
+    "mode2_recovery_family": {
+      "author_name_status": "UNKNOWN",
+      "dual_resource_record": {
+        "id": "0x17E",
+        "name": "天護靈燁",
+        "weights": [
+          100,
+          100
+        ]
+      },
+      "ids": [
+        "0x140",
+        "0x147",
+        "0x17E",
+        "0x181",
+        "0x185",
+        "0x186",
+        "0x191",
+        "0x192",
+        "0x193",
+        "0x194",
+        "0x195",
+        "0x196",
+        "0x197"
+      ],
+      "machine_boundary": "0x43B170 only enters its direct current+=restore and max-clamp loop when FIRTTECH+0x44==2; battle 0x42C680 also routes mode2 through 0x42C460.",
+      "named_count": 13
+    },
+    "mode3_special_family": {
+      "author_name_status": "UNKNOWN",
+      "count": 40,
+      "named_count": 38,
+      "numeric_exception": {
+        "flat_parameter_0x4C": 8000,
+        "id": "0x15D",
+        "name": "邪凜夢魂",
+        "weights": [
+          100,
+          0
+        ]
+      },
+      "zero_weight_count": 39
+    },
+    "mode_counts": {
+      "0": 106,
+      "1": 341,
+      "2": 13,
+      "3": 40
+    },
+    "modes": {
+      "0": {
+        "class_distribution": {
+          "0": 4,
+          "1": 78,
+          "2": 23,
+          "6": 1
+        },
+        "compatibility_name": "常规直接结果公式族",
+        "count": 106,
+        "named_records": [
+          {
+            "class": 1,
+            "description": "「絕劍」之一，以心中殺意引發劍魔「煌熇」凶號共鳴，其威力能一擊而令敵魂體半損。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 3,
+            "id": "0x12F",
+            "main_weight_0x54": 100,
+            "name": "絕劍凶號",
+            "parameter_k": 60,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "以劍魔「煌熇」的厲氣化為逆命血氣，使用此技者的傷勢越重，逆命血氣之威便越強。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 2,
+            "id": "0x130",
+            "main_weight_0x54": 100,
+            "name": "滅劍血朧",
+            "parameter_k": 30,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "引幽冥往的幽劍第二式，能以絕凜殺意看穿敵人弱點、發而破之，令敵之重甲如同無形。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x132",
+            "main_weight_0x54": 100,
+            "name": "絕劍喪魂",
+            "parameter_k": 30,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "冰璃的劍技，以劍風引帶無數戾魄鬼氣，令敵中招後喪魄失神，因而完全忘卻先前的行動。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 5,
+            "id": "0x131",
+            "main_weight_0x54": 100,
+            "name": "幽劍冥引",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "「滅劍」中最威猛的一式，能藉劍魔的煞力引動羅淵厲界，並以劍氣罡風將敵群噬殺吞滅。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x133",
+            "main_weight_0x54": 100,
+            "name": "滅劍羅淵",
+            "parameter_k": 40,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "據說是自天女的舞姿演變而來，此技能以曼妙舞姿舞動索帶，以眩目之姿盡擊陣中諸敵。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x134",
+            "main_weight_0x54": 100,
+            "name": "神華天舞",
+            "parameter_k": 11,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "將罡氣灌注於索帶之內，不獨可揮擊一直排敵人，並能以罡氣反激敵內脈氣蘊而使之麻痺。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x135",
+            "main_weight_0x54": 100,
+            "name": "罡風盈索",
+            "parameter_k": 15,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "操擁「宿玉」者所專擅的絕技，以真元內氣封注玉內之後發而擊之，有倍於平時的破壞力。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x136",
+            "main_weight_0x54": 100,
+            "name": "紫琰飛煌",
+            "parameter_k": 13,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "古倫德的槍技之一，以剛力疾舞手中長槍潑風揚塵，斬擊眼前一橫排敵人並令其不能視物。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x137",
+            "main_weight_0x54": 100,
+            "name": "潑風槍",
+            "parameter_k": 15,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "古倫德的槍技之一，將帶有火炎之力的長槍全力打擊一個敵人。",
+            "flat_parameter_0x4C": 200,
+            "formula_selector": 4,
+            "id": "0x138",
+            "main_weight_0x54": 100,
+            "name": "炎殺戟",
+            "parameter_k": 14,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "古倫德的槍技之一，無視敵人的防禦，有如惡鬼般突入敵陣中斬殺敵人。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 5,
+            "id": "0x139",
+            "main_weight_0x54": 100,
+            "name": "猛鬼破衝",
+            "parameter_k": 15,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "古倫德的槍技之一，以自己為中心劃出一記回馬槍，威力相當強大。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x13A",
+            "main_weight_0x54": 100,
+            "name": "迴光華斬",
+            "parameter_k": 40,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "古倫德的最強槍技，能以心中極意瞬間予敵無數攻擊，其威勢有如神將降臨，故得其名。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x13B",
+            "main_weight_0x54": 100,
+            "name": "天將奔烈",
+            "parameter_k": 50,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "操擁「宿玉」者所專擅的絕技，以真元內氣封注玉內之後發而擊之，有倍於平時的破壞力。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x13C",
+            "main_weight_0x54": 100,
+            "name": "紫琰飛煌",
+            "parameter_k": 13,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x141",
+            "main_weight_0x54": 100,
+            "name": "連珠箭雨",
+            "parameter_k": 12,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x142",
+            "main_weight_0x54": 100,
+            "name": "無方飛劍",
+            "parameter_k": 13,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 2,
+            "id": "0x143",
+            "main_weight_0x54": 100,
+            "name": "離魂喚喪",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x145",
+            "main_weight_0x54": 100,
+            "name": "奪魄鬼眼",
+            "parameter_k": 14,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x146",
+            "main_weight_0x54": 100,
+            "name": "鬼顱彈",
+            "parameter_k": 17,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x148",
+            "main_weight_0x54": 100,
+            "name": "妖光邪眼",
+            "parameter_k": 12,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x149",
+            "main_weight_0x54": 0,
+            "name": "化血毒沫",
+            "parameter_k": 12,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x14A",
+            "main_weight_0x54": 100,
+            "name": "蛇軀毒鑽",
+            "parameter_k": 16,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 3,
+            "id": "0x14B",
+            "main_weight_0x54": 100,
+            "name": "禁血蝕殺",
+            "parameter_k": 50,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 4000,
+            "formula_selector": 0,
+            "id": "0x14C",
+            "main_weight_0x54": 0,
+            "name": "鋼皮鐵罩",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x14D",
+            "main_weight_0x54": 100,
+            "name": "剛破崩擊",
+            "parameter_k": 15,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x14E",
+            "main_weight_0x54": 100,
+            "name": "血凅之觸",
+            "parameter_k": 15,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 400,
+            "formula_selector": 1,
+            "id": "0x14F",
+            "main_weight_0x54": 100,
+            "name": "魔獄鬼炎",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 300,
+            "formula_selector": 1,
+            "id": "0x150",
+            "main_weight_0x54": 100,
+            "name": "魔獄冰嵐",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 5,
+            "id": "0x151",
+            "main_weight_0x54": 100,
+            "name": "死灼妖光",
+            "parameter_k": 12,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 300,
+            "formula_selector": 1,
+            "id": "0x152",
+            "main_weight_0x54": 100,
+            "name": "鬼炎彈",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 500,
+            "formula_selector": 1,
+            "id": "0x153",
+            "main_weight_0x54": 100,
+            "name": "炎殺彈",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 400,
+            "formula_selector": 1,
+            "id": "0x154",
+            "main_weight_0x54": 100,
+            "name": "冰破飛錐",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x155",
+            "main_weight_0x54": 100,
+            "name": "鬼叉刃",
+            "parameter_k": 15,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x156",
+            "main_weight_0x54": 100,
+            "name": "無方鬼影",
+            "parameter_k": 18,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x157",
+            "main_weight_0x54": 100,
+            "name": "絕煞劍",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 450,
+            "formula_selector": 1,
+            "id": "0x158",
+            "main_weight_0x54": 100,
+            "name": "火蓮子",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 6,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x159",
+            "main_weight_0x54": 0,
+            "name": "鐵藤纏護",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 5,
+            "id": "0x15B",
+            "main_weight_0x54": 100,
+            "name": "鬼角馳衝",
+            "parameter_k": 15,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x15C",
+            "main_weight_0x54": 0,
+            "name": "倀魂血咒",
+            "parameter_k": 15,
+            "secondary_weight_0x58": 100
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x15E",
+            "main_weight_0x54": 100,
+            "name": "幻煞羅斬",
+            "parameter_k": 22,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 5,
+            "id": "0x15F",
+            "main_weight_0x54": 100,
+            "name": "死琰烈光",
+            "parameter_k": 10,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 10000,
+            "formula_selector": 4,
+            "id": "0x160",
+            "main_weight_0x54": 100,
+            "name": "封獄壞界",
+            "parameter_k": 20000,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x163",
+            "main_weight_0x54": 100,
+            "name": "開山剛勁",
+            "parameter_k": 18,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x165",
+            "main_weight_0x54": 100,
+            "name": "八裂旋刃",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x166",
+            "main_weight_0x54": 100,
+            "name": "飛星神劍",
+            "parameter_k": 25,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 900,
+            "formula_selector": 1,
+            "id": "0x167",
+            "main_weight_0x54": 100,
+            "name": "無極天光",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x16A",
+            "main_weight_0x54": 100,
+            "name": "雲橫華山",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x16B",
+            "main_weight_0x54": 100,
+            "name": "猛氣破衝",
+            "parameter_k": 13,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 500,
+            "formula_selector": 1,
+            "id": "0x16C",
+            "main_weight_0x54": 100,
+            "name": "焦灼炎舞",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 10000,
+            "formula_selector": 4,
+            "id": "0x16D",
+            "main_weight_0x54": 100,
+            "name": "千闇之淵",
+            "parameter_k": 20000,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 600,
+            "formula_selector": 6,
+            "id": "0x16E",
+            "main_weight_0x54": 100,
+            "name": "朱色魔霧",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 600,
+            "formula_selector": 6,
+            "id": "0x16F",
+            "main_weight_0x54": 100,
+            "name": "紫色魔霧",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 600,
+            "formula_selector": 6,
+            "id": "0x170",
+            "main_weight_0x54": 100,
+            "name": "青色魔霧",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 600,
+            "formula_selector": 6,
+            "id": "0x171",
+            "main_weight_0x54": 100,
+            "name": "白色魔霧",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 60,
+            "formula_selector": 6,
+            "id": "0x172",
+            "main_weight_0x54": 100,
+            "name": "黑色魔霧",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x173",
+            "main_weight_0x54": 100,
+            "name": "九儀崩亂",
+            "parameter_k": 18,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 100,
+            "formula_selector": 1,
+            "id": "0x174",
+            "main_weight_0x54": 50,
+            "name": "滅朔死焰",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 50
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 5,
+            "id": "0x175",
+            "main_weight_0x54": 100,
+            "name": "諸殺滅陣",
+            "parameter_k": 25,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 1000,
+            "formula_selector": 4,
+            "id": "0x176",
+            "main_weight_0x54": 100,
+            "name": "羅鍭煌舞",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 10000,
+            "formula_selector": 4,
+            "id": "0x177",
+            "main_weight_0x54": 100,
+            "name": "幽寰玄壑",
+            "parameter_k": 20000,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 10000,
+            "formula_selector": 4,
+            "id": "0x178",
+            "main_weight_0x54": 100,
+            "name": "滅元斬",
+            "parameter_k": 20000,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 1200,
+            "formula_selector": 4,
+            "id": "0x179",
+            "main_weight_0x54": 100,
+            "name": "羅鍭光舞",
+            "parameter_k": 30,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "炎獸封豨的絕技之一，能將敵方全體封入焚炎離火之陣中，以高熱將其焚炙致死。",
+            "flat_parameter_0x4C": 1200,
+            "formula_selector": 0,
+            "id": "0x17C",
+            "main_weight_0x54": 100,
+            "name": "封炎滅陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "雷獸昂昴的絕技之一，能盡引四周紫電之氣集而轟擊一敵，其威震撼天地，故名絕號。",
+            "flat_parameter_0x4C": 1000,
+            "formula_selector": 0,
+            "id": "0x17D",
+            "main_weight_0x54": 100,
+            "name": "紫電絕號",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "冰獸冱蚑的絕技之一，製造一面絕對零度的永凍冰壁，能在一定時間防護各種攻擊。",
+            "flat_parameter_0x4C": 1100,
+            "formula_selector": 0,
+            "id": "0x17F",
+            "main_weight_0x54": 100,
+            "name": "冰魄晶壁",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x182",
+            "main_weight_0x54": 100,
+            "name": "連珠箭雨",
+            "parameter_k": 14,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x183",
+            "main_weight_0x54": 100,
+            "name": "無方飛劍",
+            "parameter_k": 15,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x184",
+            "main_weight_0x54": 100,
+            "name": "鬼顱彈",
+            "parameter_k": 15,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x187",
+            "main_weight_0x54": 100,
+            "name": "妖光邪眼",
+            "parameter_k": 14,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x188",
+            "main_weight_0x54": 100,
+            "name": "化血毒沫",
+            "parameter_k": 13,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x189",
+            "main_weight_0x54": 100,
+            "name": "化血毒沫",
+            "parameter_k": 14,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x18A",
+            "main_weight_0x54": 100,
+            "name": "剛破崩擊",
+            "parameter_k": 17,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x18B",
+            "main_weight_0x54": 100,
+            "name": "剛破崩擊",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x18C",
+            "main_weight_0x54": 100,
+            "name": "血凅之觸",
+            "parameter_k": 18,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x18D",
+            "main_weight_0x54": 100,
+            "name": "血凅之觸",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 6,
+            "id": "0x18E",
+            "main_weight_0x54": 100,
+            "name": "八裂旋刃",
+            "parameter_k": 25,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 10000,
+            "formula_selector": 4,
+            "id": "0x190",
+            "main_weight_0x54": 100,
+            "name": "幽寰玄壑",
+            "parameter_k": 20000,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "引離火之氣應地脈之向而發，可憑空造出烈焰焚燒一名敵人。",
+            "flat_parameter_0x4C": 140,
+            "formula_selector": 0,
+            "id": "0x198",
+            "main_weight_0x54": 100,
+            "name": "離火神訣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "引離火之氣循運四方地象，能自敵陣地面引出烈焰，焚燒所有陣中敵人。 ",
+            "flat_parameter_0x4C": 240,
+            "formula_selector": 0,
+            "id": "0x199",
+            "main_weight_0x54": 100,
+            "name": "焚炎之陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "引離火之氣懸罡風之位而發，可自空中引天火捲焚一橫排敵人，威力極強。 ",
+            "flat_parameter_0x4C": 440,
+            "formula_selector": 0,
+            "id": "0x19A",
+            "main_weight_0x54": 100,
+            "name": "七燁真火",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "以秘儀請召焰尊火獸封豨之力，在空中懸熾聚焰而發，其神火天焰能將敵群一舉焚滅。",
+            "flat_parameter_0x4C": 640,
+            "formula_selector": 0,
+            "id": "0x19B",
+            "main_weight_0x54": 100,
+            "name": "天火之術",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此術能交織天地兩氣而成至熾至熱的真火，並化為烈焰旋風席捲敵陣，將之燒殺殆盡。",
+            "flat_parameter_0x4C": 840,
+            "formula_selector": 0,
+            "id": "0x19C",
+            "main_weight_0x54": 100,
+            "name": "九俱焚滅",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "初級的冥儀冰咒，引冥凜凍氣圍繞一直列敵人身上，令其遭受凜凍之創。",
+            "flat_parameter_0x4C": 120,
+            "formula_selector": 0,
+            "id": "0x19D",
+            "main_weight_0x54": 100,
+            "name": "天霜雪舞",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "以玄凜凍氣循地脈陰象而發，可生結冰刃於敵人腳下造成凍創之傷。",
+            "flat_parameter_0x4C": 220,
+            "formula_selector": 0,
+            "id": "0x19E",
+            "main_weight_0x54": 100,
+            "name": "冰華之陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "將玄凜寒氣乘罡風迸發，令一橫排敵人所在之處盡遭冰刃割裂凍凜，威力極強。 ",
+            "flat_parameter_0x4C": 420,
+            "formula_selector": 0,
+            "id": "0x19F",
+            "main_weight_0x54": 100,
+            "name": "玄凜冰煞",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "極強的的冥儀冰咒，所引絕凜凍氣能瞬間結水為冰，瞬間予所有敵人致死的傷害。",
+            "flat_parameter_0x4C": 620,
+            "formula_selector": 0,
+            "id": "0x1A0",
+            "main_weight_0x54": 100,
+            "name": "冰獄寒嵐",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "最強的冥儀冰咒，能引四周寒慄絕凜之氣聚敵群之中，並型化為巨大冰刃凍戮所有敵人。",
+            "flat_parameter_0x4C": 820,
+            "formula_selector": 0,
+            "id": "0x1A1",
+            "main_weight_0x54": 100,
+            "name": "魂凍冰魄",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "最初階的雷咒，發聚金氣自四周引雷御電，可擊打一橫排上的所有敵人。",
+            "flat_parameter_0x4C": 100,
+            "formula_selector": 0,
+            "id": "0x1A2",
+            "main_weight_0x54": 100,
+            "name": "雷引之術",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "最常用的雷咒，威力中等而領域極廣，能降下大片轟然雷光劈打所有的對手。",
+            "flat_parameter_0x4C": 200,
+            "formula_selector": 0,
+            "id": "0x1A3",
+            "main_weight_0x54": 100,
+            "name": "五雷正法",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "威力極強的雷電法咒，所引雷光會對一直列敵人狂劈電射如刀，故得其名。",
+            "flat_parameter_0x4C": 400,
+            "formula_selector": 0,
+            "id": "0x1A4",
+            "main_weight_0x54": 100,
+            "name": "狂雷電刃",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "以陽儀聚發雷象之氣，自九天引下急雷轟擊劈打一橫排敵人，極具威勢與效用。 ",
+            "flat_parameter_0x4C": 600,
+            "formula_selector": 0,
+            "id": "0x1A5",
+            "main_weight_0x54": 100,
+            "name": "九天神雷",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "請召雷獸昂昴之靈憑降，由牠身上雷煌熒發的焦雷狂電威力無比，令所有敵人盡成焦炭。",
+            "flat_parameter_0x4C": 800,
+            "formula_selector": 0,
+            "id": "0x1A6",
+            "main_weight_0x54": 100,
+            "name": "千煌雷烈",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "以神氣集引星華之光於一排妖魔之屬的敵人身上，令其遭受神光炙焚之傷。",
+            "flat_parameter_0x4C": 400,
+            "formula_selector": 0,
+            "id": "0x1A7",
+            "main_weight_0x54": 100,
+            "name": "群星聚華",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "以神氣集引天穹華光於敵群頂上，共兩儀之象而發之，可焚炙所有敵人。",
+            "flat_parameter_0x4C": 600,
+            "formula_selector": 0,
+            "id": "0x1A8",
+            "main_weight_0x54": 100,
+            "name": "神威天光",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "以神氣祈行天象之陣，可引下如烈日般煌耀的光幕聖燁，一舉燒殺一直列的敵人。",
+            "flat_parameter_0x4C": 800,
+            "formula_selector": 0,
+            "id": "0x1A9",
+            "main_weight_0x54": 100,
+            "name": "輝日聖燁",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "最高段的光破咒術，以神氣引動天際華光傾洩而下，其威能燒滅諸邪眾惡，故曰七光。",
+            "flat_parameter_0x4C": 1000,
+            "formula_selector": 0,
+            "id": "0x1AA",
+            "main_weight_0x54": 100,
+            "name": "七光御陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此術以五方神感靈探地脈走向，並循之移遁前行，可瞬離過度深入的幽淵闇所而重見天日。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1D4",
+            "main_weight_0x54": 0,
+            "name": "移形化法",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 5,
+            "id": "0x1D7",
+            "main_weight_0x54": 100,
+            "name": "幽劍冥引",
+            "parameter_k": 20,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x1D8",
+            "main_weight_0x54": 100,
+            "name": "絕劍喪魂",
+            "parameter_k": 30,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 4,
+            "id": "0x1D9",
+            "main_weight_0x54": 100,
+            "name": "浮光掠影",
+            "parameter_k": 50,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 5,
+            "id": "0x1DA",
+            "main_weight_0x54": 100,
+            "name": "兩佰雄兵",
+            "parameter_k": 30,
+            "secondary_weight_0x58": 0
+          }
+        ],
+        "weight_pair_distribution": {
+          "0/0": 4,
+          "0/100": 1,
+          "100/0": 100,
+          "50/50": 1
+        }
+      },
+      "1": {
+        "class_distribution": {
+          "0": 326,
+          "1": 8,
+          "2": 7
+        },
+        "compatibility_name": "目标主生存资源max比例型结果公式族",
+        "count": 341,
+        "named_records": [
+          {
+            "class": 0,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x000",
+            "main_weight_0x54": 100,
+            "name": "--禁用--",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 0,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x0FB",
+            "main_weight_0x54": 100,
+            "name": "測試攻擊(敵)",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 0,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x0FC",
+            "main_weight_0x54": 100,
+            "name": "測試攻擊(我)",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 100,
+            "formula_selector": 0,
+            "id": "0x0FD",
+            "main_weight_0x54": 100,
+            "name": "測試魔法(敵)",
+            "parameter_k": 50,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 100,
+            "formula_selector": 0,
+            "id": "0x0FE",
+            "main_weight_0x54": 100,
+            "name": "測試魔法(我)",
+            "parameter_k": 50,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "夏侯儀的獨門絕技，以自己魂中的幽凜之氣化為手刀攻敵，傷敵之外兼能吸取敵方魂氣。",
+            "flat_parameter_0x4C": 1,
+            "formula_selector": 4,
+            "id": "0x12D",
+            "main_weight_0x54": 0,
+            "name": "攝魂鬼爪",
+            "parameter_k": 12,
+            "secondary_weight_0x58": 100
+          },
+          {
+            "class": 1,
+            "description": "冰璃的劍技，以真力引動劍魔「煌熇」的幽垠魄力共劍而出，使敵中招時兼受闇力所傷。",
+            "flat_parameter_0x4C": 10,
+            "formula_selector": 1,
+            "id": "0x12E",
+            "main_weight_0x54": 100,
+            "name": "幽劍鬼獄",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 50,
+            "formula_selector": 1,
+            "id": "0x15A",
+            "main_weight_0x54": 100,
+            "name": "非天死潭",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 80,
+            "formula_selector": 1,
+            "id": "0x17A",
+            "main_weight_0x54": 100,
+            "name": "羅鍭光舞",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 60,
+            "formula_selector": 1,
+            "id": "0x17B",
+            "main_weight_0x54": 100,
+            "name": "羅鍭煌舞",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "闇獸冥獨的絕技之一，打開冥界與現世的通道，以亡者的絕對死亡力量葬送敵人。",
+            "flat_parameter_0x4C": 90,
+            "formula_selector": 0,
+            "id": "0x180",
+            "main_weight_0x54": 100,
+            "name": "冥殺獄陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 80,
+            "formula_selector": 1,
+            "id": "0x18F",
+            "main_weight_0x54": 100,
+            "name": "羅鍭光舞",
+            "parameter_k": 1,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "魔道的初段咒術，化玄凜闇氣為黑色火焰焚炙整群敵人，令其盡皆受到魂蝕肉碎之害。",
+            "flat_parameter_0x4C": 10,
+            "formula_selector": 0,
+            "id": "0x1AB",
+            "main_weight_0x54": 100,
+            "name": "無天黑炎",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "魔道密法之一，布玄陰闇氣於敵陣四方，從而蝕噬敵方魂魄，使其皆受魔氣侵體之傷。",
+            "flat_parameter_0x4C": 30,
+            "formula_selector": 0,
+            "id": "0x1AC",
+            "main_weight_0x54": 100,
+            "name": "滅魂大法",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "極強的魔道咒法，自冥界請借黃泉死霧渦卷敵群，使其立刻命竭氣盡而死，故曰死滅。",
+            "flat_parameter_0x4C": 50,
+            "formula_selector": 0,
+            "id": "0x1AD",
+            "main_weight_0x54": 100,
+            "name": "死滅之咒",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "魔道的最邪之咒，以禁言釋放封於異界的戾靈命其聚噬一敵，若無神法護身則當之即死。",
+            "flat_parameter_0x4C": 70,
+            "formula_selector": 0,
+            "id": "0x1AE",
+            "main_weight_0x54": 100,
+            "name": "千慄鬼噬",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "降下黑霧陰靄籠罩敵人，侵其諸氣百骸，可吸奪其命氣轉為己用，從而療愈己之傷勢。",
+            "flat_parameter_0x4C": 5,
+            "formula_selector": 0,
+            "id": "0x1AF",
+            "main_weight_0x54": 100,
+            "name": "魔天降臨",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1EA",
+            "main_weight_0x54": 0,
+            "name": "戰場脫逃",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          }
+        ],
+        "weight_pair_distribution": {
+          "0/0": 2,
+          "0/100": 1,
+          "100/0": 338
+        }
+      },
+      "2": {
+        "class_distribution": {
+          "1": 3,
+          "2": 9,
+          "5": 1
+        },
+        "compatibility_name": "双资源恢复业务族",
+        "count": 13,
+        "named_records": [
+          {
+            "class": 5,
+            "description": "",
+            "flat_parameter_0x4C": 100,
+            "formula_selector": 0,
+            "id": "0x140",
+            "main_weight_0x54": 100,
+            "name": "潛地蟄伏",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x147",
+            "main_weight_0x54": 100,
+            "name": "黑血陣",
+            "parameter_k": 40,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "光獸靈鼩的絕技之一，能以其靈力全癒伙伴的生命力，同時治癒所有毒封麻癱的症狀。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x17E",
+            "main_weight_0x54": 100,
+            "name": "天護靈燁",
+            "parameter_k": 100,
+            "secondary_weight_0x58": 100
+          },
+          {
+            "class": 2,
+            "description": "",
+            "flat_parameter_0x4C": 300,
+            "formula_selector": 0,
+            "id": "0x181",
+            "main_weight_0x54": 100,
+            "name": "潛地蟄伏",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x185",
+            "main_weight_0x54": 100,
+            "name": "黑血陣",
+            "parameter_k": 80,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x186",
+            "main_weight_0x54": 100,
+            "name": "黑血陣",
+            "parameter_k": 60,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "最初級的療癒法術，集聚體內之氣於一處，可治癒較輕微的傷勢。",
+            "flat_parameter_0x4C": 150,
+            "formula_selector": 0,
+            "id": "0x191",
+            "main_weight_0x54": 100,
+            "name": "氣癒之術",
+            "parameter_k": 30,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "應地靈之象發生癒之氣，與氣癒之術類似，但其效力可及己方全員。",
+            "flat_parameter_0x4C": 150,
+            "formula_selector": 0,
+            "id": "0x192",
+            "main_weight_0x54": 100,
+            "name": "神氣流轉",
+            "parameter_k": 30,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "以天法密儀搭配靈象生蘊，能救治受傷較重同伴的傷勢，故得返命之名。",
+            "flat_parameter_0x4C": 300,
+            "formula_selector": 0,
+            "id": "0x193",
+            "main_weight_0x54": 100,
+            "name": "返命之陣",
+            "parameter_k": 60,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "極具功效的療傷法咒，以生癒之氣應合陰陽靈蘊，可一舉救治所有己方伙伴。",
+            "flat_parameter_0x4C": 300,
+            "formula_selector": 0,
+            "id": "0x194",
+            "main_weight_0x54": 100,
+            "name": "神還大法",
+            "parameter_k": 60,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "可療癒所有伙伴的治傷咒法，並可將中毒麻痺全部治癒。",
+            "flat_parameter_0x4C": 450,
+            "formula_selector": 0,
+            "id": "0x195",
+            "main_weight_0x54": 100,
+            "name": "神護之陣",
+            "parameter_k": 80,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此咒能發清卻之氣通氣海靈台，可立即治癒一人的毒傷軟麻等病症。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x196",
+            "main_weight_0x54": 100,
+            "name": "靈淨大法",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "神通密法之一，能以縛靈密咒封返離體紛散的魂魄，使傷重昏暈之人立即清醒。",
+            "flat_parameter_0x4C": 200,
+            "formula_selector": 0,
+            "id": "0x197",
+            "main_weight_0x54": 100,
+            "name": "御召魂返",
+            "parameter_k": 50,
+            "secondary_weight_0x58": 0
+          }
+        ],
+        "weight_pair_distribution": {
+          "100/0": 12,
+          "100/100": 1
+        }
+      },
+      "3": {
+        "class_distribution": {
+          "1": 5,
+          "2": 28,
+          "4": 7
+        },
+        "compatibility_name": "特殊_状态_动作协议族",
+        "count": 40,
+        "named_records": [
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x15D",
+            "main_weight_0x54": 100,
+            "name": "邪凜夢魂",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x161",
+            "main_weight_0x54": 0,
+            "name": "呼叫增援",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 4000,
+            "formula_selector": 0,
+            "id": "0x162",
+            "main_weight_0x54": 0,
+            "name": "激勵士氣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 4000,
+            "formula_selector": 0,
+            "id": "0x164",
+            "main_weight_0x54": 0,
+            "name": "混元氣聚",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 1,
+            "description": "",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x169",
+            "main_weight_0x54": 0,
+            "name": "屍魔召喚",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "以幻術惑亂所有敵人的心神，使其諸魄散紛、百骸喪亂，因陷入麻痺癱軟而無法動彈。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1B0",
+            "main_weight_0x54": 0,
+            "name": "奪魄鬼咒",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "對敵陣噴入無形黑霧，沾附其體後使毒物滲入血肉經脈，因而使所有敵人蒙受中毒之效。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1B1",
+            "main_weight_0x54": 0,
+            "name": "戾血萬毒",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "放出魅影附縛所有敵人，令其心神迷弛而在迎敵時昏沈睡去，但只要受襲便會立即驚醒。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1B2",
+            "main_weight_0x54": 0,
+            "name": "幽夢幻界",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此咒逆五行擾亂敵陣之氣，令受此干擾之敵不能施咒，成功與否視對手個別的修為而定。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1B3",
+            "main_weight_0x54": 0,
+            "name": "封魔神道",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "引發魂魄之底的狂性殺心，使受術者擁有雙倍的攻擊力，但其護禦之能亦會因此而減半。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1B4",
+            "main_weight_0x54": 0,
+            "name": "狂魔大法",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "引繚繞黑氣圍繞敵陣，可使敵群視線受阻，因看不清楚對方而生障眼之效，出手屢屢不中。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1B5",
+            "main_weight_0x54": 0,
+            "name": "黑暗冥獄",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "以靈氣注蘊己陣之間，可使己方諸人凝念於心，因而生迅目之效，出手更易擊中敵人。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1B6",
+            "main_weight_0x54": 0,
+            "name": "妙心神念",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此咒能以邪念戾魄侵封敵陣，使所有中術者心智受擾，因而動作遲緩、如受繩縛。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1B7",
+            "main_weight_0x54": 0,
+            "name": "戾魄封陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此術引逆魂封元的邪力環繞眾敵，使他們盡皆衰神喪力，生疲弱之效而攻擊力大降。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1B8",
+            "main_weight_0x54": 0,
+            "name": "絕魄之陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此術自幽冥之界引諸魂怨厲之氣入敵陣，散化眾敵披甲防禦之能，從而生蝕禦之效。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1B9",
+            "main_weight_0x54": 0,
+            "name": "凶祟之陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此術可在敵陣中化生逆靈惡氣，使敵人心念渾沌、靈智頓失，因而生愚鈍之效。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1BA",
+            "main_weight_0x54": 0,
+            "name": "冥幻之陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此術可引聚風靈之力承托於同伴之下，可使其敏速立增、疾行如風，而生奮馳之效。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1BB",
+            "main_weight_0x54": 0,
+            "name": "攬風神行",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "引聚破殺邪氣附於兵刃之上，在其時效之內可使所有伙伴的武器威力大增，生神力之效。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1BC",
+            "main_weight_0x54": 0,
+            "name": "血刃之咒",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "引地象護禦之氣，圍聚於受法眾人周遭，可在時效內提供護禦之力而生披甲之效",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1BD",
+            "main_weight_0x54": 0,
+            "name": "地禦之陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此術發天徵木象之氣，使受者神清智銳而生聖睿之效，在時效內提增所施術法的威力。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1BE",
+            "main_weight_0x54": 0,
+            "name": "靈智真法",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "玄經秘法之一，此咒能阻隔五行諸氣，一舉消除所有敵人施諸其身的強化咒術之效。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1BF",
+            "main_weight_0x54": 0,
+            "name": "無上滅法",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此咒使術者心竅瞬間上通天聽，能以靈觀看出眼前敵人的內外諸態、眾法辟性等等。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1C0",
+            "main_weight_0x54": 0,
+            "name": "神視幻觀",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此咒合神通與地訣之妙，能將一人暫時移往無現幻界，令他變成似虛如幻的無形之身。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1C1",
+            "main_weight_0x54": 0,
+            "name": "無方變幻",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 4,
+            "description": "能為己方辟禦所有咒術的神妙禁制，在承受一定程度的術法之力或時限已至時便會消失。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1C2",
+            "main_weight_0x54": 0,
+            "name": "反咒禁制",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "玄經秘法之一，能以神念催動時輪，令所有敵人的行動蓄勁減半，拖延其出手時間。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1C5",
+            "main_weight_0x54": 0,
+            "name": "逆時之契",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "玄經秘法之一，能以神念催動時輪，令一名敵人行動的蓄勁前功盡棄，如同從未做過一般。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1C6",
+            "main_weight_0x54": 0,
+            "name": "時儀返召",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "玄經秘法之一，能以幻力干擾敵群，令所有敵人下個行動的蓄勁減少一半到五分之一。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1C7",
+            "main_weight_0x54": 0,
+            "name": "亂神大法",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "玄經秘法之一，能以神念催動不可見的時輪，令一名蓄勁待發的己方伙伴立即功成出手。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1C8",
+            "main_weight_0x54": 0,
+            "name": "瞬霎神儀",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 4,
+            "description": "幽神羅鍭的至高秘法，能張開難摧不破的「閾迦封界」，保護所有伙伴不受兵刃咒法之害。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1C9",
+            "main_weight_0x54": 0,
+            "name": "閾迦封界",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 4,
+            "description": "在敵陣中引聚幽魄為界，這幽魄之界會蔽光蝕靈，使敵人施展的神光和治癒咒術全都失效。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1CA",
+            "main_weight_0x54": 0,
+            "name": "鬼唳天幕",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "以逆元之術反轉一名敵人精魂神魄而生逆闕之效，使其在受療癒之術時卻反為其所傷。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1CC",
+            "main_weight_0x54": 0,
+            "name": "血魂之咒",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 4,
+            "description": "在敵陣中引聚幽魄為界，這幽魄之界會蔽光蝕靈，使敵人施展的神光和治癒咒術全都失效。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1CD",
+            "main_weight_0x54": 0,
+            "name": "幽魄厲界",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 4,
+            "description": "能為己方辟禦所有兵刃武技之擊的神妙護界，在承受一定程度的攻擊或時限已至時便會消失。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1CE",
+            "main_weight_0x54": 0,
+            "name": "六甲神儀",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 4,
+            "description": "此咒能以玄機妙法操動時輪之律，在其時效內使己方全員蓄勁行動的速度增為原有的三倍。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1CF",
+            "main_weight_0x54": 0,
+            "name": "時輪返陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此咒可引無形影魄入附重傷昏迷者，令他在甦醒之前成為無知無覺中戰鬥的「操偶」。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1D0",
+            "main_weight_0x54": 0,
+            "name": "幽冥返召",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 4,
+            "description": "此咒可在敵陣之下引來怨厲鬼氣纏縛敵人，使其動作減慢並無法使用技法之外的一般攻擊。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1D1",
+            "main_weight_0x54": 0,
+            "name": "鬼縛之陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "此術乃神通中的秘術，能引聚四周靈氣於受術者周身，令其傷勢不斷生發自癒，故名生聚。",
+            "flat_parameter_0x4C": 8000,
+            "formula_selector": 0,
+            "id": "0x1D2",
+            "main_weight_0x54": 0,
+            "name": "生聚靈陣",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          },
+          {
+            "class": 2,
+            "description": "玄經秘法之一，此咒能化散五行諸氣，一舉消除所有敵人施諸於己的弱化咒術之效。",
+            "flat_parameter_0x4C": 0,
+            "formula_selector": 0,
+            "id": "0x1D3",
+            "main_weight_0x54": 0,
+            "name": "神氛化法",
+            "parameter_k": 0,
+            "secondary_weight_0x58": 0
+          }
+        ],
+        "weight_pair_distribution": {
+          "0/0": 39,
+          "100/0": 1
+        }
+      }
+    },
+    "record_id_index_mismatches": [
+      {
+        "physical_index": 305,
+        "physical_index_hex": "0x131",
+        "raw_record_id": 306,
+        "raw_record_id_hex": "0x132"
+      },
+      {
+        "physical_index": 306,
+        "physical_index_hex": "0x132",
+        "raw_record_id": 305,
+        "raw_record_id_hex": "0x131"
+      }
+    ]
+  },
+  "strict_boundaries": [
+    "FIRTTECH+0x44 author/source enum name remains UNKNOWN.",
+    "mode0/mode1 compatibility names describe proven machine formula families, not author terminology.",
+    "mode2 is a proven recovery business family because 0x43B170 exclusively checks ==2 before directly increasing and clamping both resource currents.",
+    "mode3 is a special/state/action protocol family in canonical resource semantics, but not an absolute zero-damage promise; 0x15D is a weighted numeric exception.",
+    "FIRTTECH+0x54/+0x58 compatibility names are proven result-weight semantics on the listed paths; author database column names remain UNKNOWN.",
+    "Do not repair the battle mode2/3 secondary-channel +0x58 gate / +0x54 multiply quirk unless intentionally implementing a non-original behavior option."
+  ],
+  "tool": {
+    "name": "youcheng_battle_firttech_result_mode_inspector.py",
+    "solidification": 61,
+    "status": "PASS",
+    "version": "0.7D-solid61.0"
+  }
+}

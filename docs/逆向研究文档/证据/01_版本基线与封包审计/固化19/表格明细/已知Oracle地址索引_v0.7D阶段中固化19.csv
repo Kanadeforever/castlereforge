@@ -1,0 +1,9 @@
+﻿地址,结构语义,证据级,固化19备注
+0x444267,AI决策固定首draw,A,每次0x444240调用固定1 draw，RNG%100
+0x4444E1,AI逐候选评分draw,A,FightRole+0x8F4个候选，每个无条件1 draw
+0x444330,AI候选评分函数,A,使用+0x8F4/+0x8F8候选池；有效候选对MagicCon+0x24取模
+0x422DF2,target随机列表A,A,列表非空1 draw%count
+0x422E6C,target随机列表B,A,与A互斥；列表非空1 draw%count
+0x422F1F,action候选随机抽取,A,mode1且无显式ID时1 draw%+0x8F4
+0x4222A2,「戰場脫逃」概率draw,A,FIRTTECH ID0x1EA，RNG%100 vs 0x424560阈值
+0x451565,RNG next,A,56个E8直接caller，尚未全分类

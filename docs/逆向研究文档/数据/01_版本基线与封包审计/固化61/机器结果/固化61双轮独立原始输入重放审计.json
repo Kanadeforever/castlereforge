@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "solidification": 61,
+  "replay_inputs": "Each replay independently extracts RPG.exe.org.zip and multimedia.zip/Firttech.enc and copies the user-supplied research RPG.exe.",
+  "runs": [
+    {
+      "run": 1,
+      "tool_status": "PASS"
+    },
+    {
+      "run": 2,
+      "tool_status": "PASS"
+    }
+  ],
+  "comparison": {
+    "json_equal_after_masking_only_five_input_path_fields": true,
+    "masked_fields": [
+      "inputs.original_rpg",
+      "inputs.research_rpg",
+      "inputs.firttech",
+      "executable_evidence.original_path",
+      "executable_evidence.research_path"
+    ],
+    "csv_three_way_byte_identical": true,
+    "formal_csv_sha256": "f09299d4ab6e34e58d8bb3e413303b80953dd47ad5220e872decebd77449b378",
+    "replay1_csv_sha256": "f09299d4ab6e34e58d8bb3e413303b80953dd47ad5220e872decebd77449b378",
+    "replay2_csv_sha256": "f09299d4ab6e34e58d8bb3e413303b80953dd47ad5220e872decebd77449b378"
+  }
+}

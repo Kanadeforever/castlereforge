@@ -1,0 +1,493 @@
+{
+  "tool": {
+    "name": "幽城TSF与GameState调查器",
+    "version": "0.7C.0"
+  },
+  "source": {
+    "path": "/mnt/data/v07c_saves/Save050.TSF",
+    "size": 104657,
+    "sha256": "50b848d7d28f6b98e09cd1912bda724be9010c1361febf7204e4aa1ab7dee9f1",
+    "legacy_core_xor255_decoded": false
+  },
+  "container": {
+    "fixed_core_size": 57521,
+    "world_block_length": 10200,
+    "shop_block_length": 36936,
+    "expected_total_size": 104657,
+    "length_matches": true
+  },
+  "legacy_save_metadata": {
+    "description": "地下層 宿曜之陣",
+    "description_raw20_hex": "a661a455bc6820b14ac260a4a7b07d000c214500",
+    "protagonist_role1_field_0x20_preview": 25,
+    "legacy_timestamp": {
+      "day": 29,
+      "month": 3,
+      "year_2digit": 15,
+      "hour_after_legacy_plus8_wrap": 14,
+      "minute": 9
+    }
+  },
+  "canonical_game_state": {
+    "world": {
+      "scene_load_descriptor": {
+        "raw_hex": "6d70313031335c4d506d70313031332e53434900f809b90000000000dce68d000c00000000000000ffffffbf200000001407",
+        "decoded_first_string": "mp1013\\MPmp1013.SCI"
+      },
+      "controlled_actor": {
+        "x": 1843,
+        "y": 908,
+        "orientation_or_state": 6,
+        "controlled_actor_index": 4
+      },
+      "game_variables": {
+        "count": 5000,
+        "说明": "使用 --包含全部变量 输出5000项；批量/差分命令可直接分析。"
+      }
+    },
+    "party": {
+      "count": 2,
+      "entries": [
+        {
+          "role_id": 7,
+          "formation_slot": 0
+        },
+        {
+          "role_id": 8,
+          "formation_slot": 1
+        }
+      ]
+    },
+    "roles": [
+      {
+        "slot": 0,
+        "load_authoritative": true,
+        "record_id": 0,
+        "name": "--禁用--",
+        "field_0x20": 1,
+        "raw_sha256": "4e01f8bfef4fc053e372940c10df662762881fff6d83970814b2631bf6429501"
+      },
+      {
+        "slot": 1,
+        "load_authoritative": true,
+        "record_id": 1,
+        "name": "夏侯儀",
+        "field_0x20": 25,
+        "raw_sha256": "375f8074a12fe00835a3174de6c59cb7c9b4e0bca865af2926bf287ade8ae4a8"
+      },
+      {
+        "slot": 2,
+        "load_authoritative": true,
+        "record_id": 2,
+        "name": "冰璃",
+        "field_0x20": 25,
+        "raw_sha256": "419e333ea1ec4fb95ef35cf2f28734ab8e945c353da2564dc3955ef91feb8566"
+      },
+      {
+        "slot": 3,
+        "load_authoritative": true,
+        "record_id": 3,
+        "name": "封玲笙",
+        "field_0x20": 23,
+        "raw_sha256": "120710e6188bc77e3c9bbc35808d6e3873dfa3613ed503d816483803cfff0911"
+      },
+      {
+        "slot": 4,
+        "load_authoritative": true,
+        "record_id": 4,
+        "name": "慕容璇璣",
+        "field_0x20": 25,
+        "raw_sha256": "60095ada39dfd9f0c22d69cf721e2cab42031d0e2d90d923af3fc8156bb9ac91"
+      },
+      {
+        "slot": 5,
+        "load_authoritative": true,
+        "record_id": 5,
+        "name": " 古倫德",
+        "field_0x20": 25,
+        "raw_sha256": "1939bb2fe3f2ddbe5490aca4e3221d486cd5f41a398d6ace57ff7d17ee63fdf7"
+      },
+      {
+        "slot": 6,
+        "load_authoritative": true,
+        "record_id": 6,
+        "name": "葛雲衣",
+        "field_0x20": 60,
+        "raw_sha256": "8b53545a7c05f83f0b67996c60e00f0fd81dc8321effd0b45f9507b6d75feaaa"
+      },
+      {
+        "slot": 7,
+        "load_authoritative": true,
+        "record_id": 7,
+        "name": "霍雍",
+        "field_0x20": 60,
+        "raw_sha256": "d168add36ab1e2503226570943d11e78bbb7e483da6b923a66d9adc0650c8fdd"
+      }
+    ],
+    "inventory": {
+      "active_bank": 1,
+      "banks": [
+        {
+          "bank_index": 0,
+          "categories": [
+            {
+              "category": 0,
+              "count": 17,
+              "entries": [
+                {
+                  "item_id": 255,
+                  "quantity": 35
+                },
+                {
+                  "item_id": 252,
+                  "quantity": 29
+                },
+                {
+                  "item_id": 251,
+                  "quantity": 34
+                },
+                {
+                  "item_id": 351,
+                  "quantity": 5
+                },
+                {
+                  "item_id": 281,
+                  "quantity": 10
+                },
+                {
+                  "item_id": 261,
+                  "quantity": 41
+                },
+                {
+                  "item_id": 352,
+                  "quantity": 7
+                },
+                {
+                  "item_id": 284,
+                  "quantity": 12
+                },
+                {
+                  "item_id": 282,
+                  "quantity": 4
+                },
+                {
+                  "item_id": 283,
+                  "quantity": 11
+                },
+                {
+                  "item_id": 353,
+                  "quantity": 5
+                },
+                {
+                  "item_id": 368,
+                  "quantity": 10
+                },
+                {
+                  "item_id": 370,
+                  "quantity": 8
+                },
+                {
+                  "item_id": 360,
+                  "quantity": 5
+                },
+                {
+                  "item_id": 359,
+                  "quantity": 10
+                },
+                {
+                  "item_id": 358,
+                  "quantity": 10
+                },
+                {
+                  "item_id": 256,
+                  "quantity": 25
+                }
+              ],
+              "raw_sha256": "a189b19cfc04607b8ab9b7586adbb1c40414bc71e0905efe90a90f7629f6c0af"
+            },
+            {
+              "category": 1,
+              "count": 15,
+              "entries": [
+                {
+                  "item_id": 61,
+                  "quantity": 2
+                },
+                {
+                  "item_id": 21,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 22,
+                  "quantity": 8
+                },
+                {
+                  "item_id": 1,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 2,
+                  "quantity": 2
+                },
+                {
+                  "item_id": 82,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 62,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 41,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 23,
+                  "quantity": 15
+                },
+                {
+                  "item_id": 63,
+                  "quantity": 12
+                },
+                {
+                  "item_id": 24,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 3,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 83,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 5,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 65,
+                  "quantity": 1
+                }
+              ],
+              "raw_sha256": "af82d95c0de6cb304b4ab8dce16d2884f4d51b4e6f7ccf4c42ef67a938845725"
+            },
+            {
+              "category": 2,
+              "count": 9,
+              "entries": [
+                {
+                  "item_id": 131,
+                  "quantity": 6
+                },
+                {
+                  "item_id": 101,
+                  "quantity": 2
+                },
+                {
+                  "item_id": 102,
+                  "quantity": 5
+                },
+                {
+                  "item_id": 105,
+                  "quantity": 4
+                },
+                {
+                  "item_id": 132,
+                  "quantity": 2
+                },
+                {
+                  "item_id": 133,
+                  "quantity": 4
+                },
+                {
+                  "item_id": 103,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 107,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 110,
+                  "quantity": 1
+                }
+              ],
+              "raw_sha256": "b27717207017047397cec7069d8b75f216f62ad6f9ca80c79acfed13aed74ac6"
+            },
+            {
+              "category": 3,
+              "count": 6,
+              "entries": [
+                {
+                  "item_id": 162,
+                  "quantity": 3
+                },
+                {
+                  "item_id": 168,
+                  "quantity": 3
+                },
+                {
+                  "item_id": 166,
+                  "quantity": 5
+                },
+                {
+                  "item_id": 161,
+                  "quantity": 2
+                },
+                {
+                  "item_id": 165,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 187,
+                  "quantity": 1
+                }
+              ],
+              "raw_sha256": "27858763e0fb69a2c3043c8da2a94e4e7b7aaf6948ac098ab5f245769520bd8e"
+            },
+            {
+              "category": 4,
+              "count": 5,
+              "entries": [
+                {
+                  "item_id": 252,
+                  "quantity": 2
+                },
+                {
+                  "item_id": 261,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 215,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 409,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 413,
+                  "quantity": 1
+                }
+              ],
+              "raw_sha256": "d01afa370e7bb4ea6d7e870dc658efe4ac429262de8ee5f6baa20c0402423eca"
+            },
+            {
+              "category": 5,
+              "count": 4,
+              "entries": [
+                {
+                  "item_id": 423,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 407,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 426,
+                  "quantity": 1
+                },
+                {
+                  "item_id": 453,
+                  "quantity": 1
+                }
+              ],
+              "raw_sha256": "60a1253098062e398bded8c7384827deea378b42f78d5c4f4746a0bbc5935f4a"
+            }
+          ],
+          "money": 831231,
+          "raw_sha256": "2dc75b3eaa65d82193a413ecb5a10d524bb8e8f2acde3e54dbf35513ce205d9c"
+        },
+        {
+          "bank_index": 1,
+          "categories": [
+            {
+              "category": 0,
+              "count": 0,
+              "entries": [],
+              "raw_sha256": "411ce3ddb1438ddef2b3e6448393c6747dd70dc5fb5984ed165683a4896b8eea"
+            },
+            {
+              "category": 1,
+              "count": 1,
+              "entries": [
+                {
+                  "item_id": 71,
+                  "quantity": 1
+                }
+              ],
+              "raw_sha256": "3ff5ec6eda115e018296b77b4fb4dd0cc40c15a6a9542a650464bf652eb37832"
+            },
+            {
+              "category": 2,
+              "count": 0,
+              "entries": [],
+              "raw_sha256": "411ce3ddb1438ddef2b3e6448393c6747dd70dc5fb5984ed165683a4896b8eea"
+            },
+            {
+              "category": 3,
+              "count": 1,
+              "entries": [
+                {
+                  "item_id": 188,
+                  "quantity": 1
+                }
+              ],
+              "raw_sha256": "23f3b4d8345c136eb91a33013238d84610179e51cd33c5a54ef6f868922d68bf"
+            },
+            {
+              "category": 4,
+              "count": 0,
+              "entries": [],
+              "raw_sha256": "8e6af4079bc1ffbeeb3a23af329e5f5373bad812423868f500afc6565670e154"
+            },
+            {
+              "category": 5,
+              "count": 0,
+              "entries": [],
+              "raw_sha256": "411ce3ddb1438ddef2b3e6448393c6747dd70dc5fb5984ed165683a4896b8eea"
+            }
+          ],
+          "money": 22523,
+          "raw_sha256": "1fd4937dd1ef8704579f9e09c3329e892cd6e50ff35393cbe71d105d3a36ef2f"
+        }
+      ]
+    },
+    "shop": {
+      "present": true,
+      "length": 36936,
+      "record_size": 648,
+      "record_count": 57,
+      "raw_sha256": "872363bc796a6fcc9a0e2b14d4514f7a87091fbfbfcae34327fa5d2a1e75854c"
+    }
+  },
+  "legacy_compatibility": {
+    "audio_preferences": {
+      "mp3_music_volume_level_0_to_9": 4,
+      "wav_sfx_volume_level_0_to_9": 4
+    },
+    "role_record_8_save_only_non_authoritative": {
+      "slot": 8,
+      "load_authoritative": false,
+      "legacy_auxiliary": true,
+      "record_id": 8,
+      "name": "冰璃",
+      "field_0x20": 60,
+      "raw_sha256": "f62cdcf7b28178ee825e27e9e5a2e8e5bba9840fe7ce6e6a286c41cd8cf9e8fb"
+    },
+    "party_mapping_save_only_slot_8": {
+      "slot": 8,
+      "role_id": 132,
+      "formation_slot": 1833379104,
+      "load_authoritative": false
+    },
+    "core_noisy_uninitialized_gap_D9D0_DD1F": {
+      "canonicalize": false,
+      "size": 848,
+      "sha256": "424ed4cc581797c26b0493ed1874b06e9212510e7f8b2aa30b4d4de6dd9a5968"
+    }
+  },
+  "warnings": []
+}

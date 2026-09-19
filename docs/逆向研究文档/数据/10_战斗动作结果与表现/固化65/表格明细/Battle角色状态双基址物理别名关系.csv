@@ -1,0 +1,9 @@
+类别,项目,值或表达式,证据结论
+结构,角色槽数量,0x10,16个角色槽
+结构,角色槽步长,0xDE4,角色锚点、FightRole和状态DWORD同步步进
+别名,FightRole基址,role_anchor+0x3E4,0x44332B、0x443498、0x443509
+别名,锚点视图状态,role_anchor+0x10C8,Battle侧直接读写口径
+别名,FightRole视图状态,FightRole+0xCE4,FightRole方法与全局指针表口径
+恒等式,正向,0x3E4+0xCE4=0x10C8,同一物理DWORD
+恒等式,反向,state_pointer-0xCE4=FightRole_pointer,0x442CD3机器指令直接实现
+边界,作者正式字段名,UNKNOWN,role_action_state_code仅为兼容层中性名称

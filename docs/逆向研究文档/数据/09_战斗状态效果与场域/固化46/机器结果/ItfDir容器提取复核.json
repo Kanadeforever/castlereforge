@@ -1,0 +1,717 @@
+{
+  "工具版本": "0.1.0",
+  "输入": "/mnt/data/work46/mmraw/multimedia/fight/ItfDir.DAT",
+  "输出目录": "/mnt/data/work46/itf46_extract",
+  "允许覆盖": false,
+  "提取文件数": 101,
+  "全部字节与目录记录一致": true,
+  "逐文件": [
+    {
+      "容器内路径": "tdg/ITF/ITF000.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF000.SF2",
+      "字节数": 32976,
+      "SHA256": "b3f8cc93900a7ac0033861d6a06a425706a62d367354947a29744fe5a456ab7f",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0002.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0002.SF2",
+      "字节数": 54378,
+      "SHA256": "7b908d7dbb14b94f63b31d03dbff8d82f07a7d5427f7b586b6b00418ecce8690",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0003.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0003.SF2",
+      "字节数": 17803,
+      "SHA256": "229b4c0e811a86fdabe0764016a8fbe7f4e11e7389fe112db22275528c32530d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0004.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0004.SF2",
+      "字节数": 19245,
+      "SHA256": "eb82c03d1b3783ebfbadaac09d24c635da3ef37a6d591d69706f062d05bf76d6",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0005.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0005.SF2",
+      "字节数": 19245,
+      "SHA256": "7fb28c0fb48dbfadea400e3d3bec22af158e4ae6d1281e3fa68b0aa7b80acd40",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0006.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0006.SF2",
+      "字节数": 18984,
+      "SHA256": "33a4eb43187c78ba0acf090b3d877312d14ff4d1824ba65191206c79db4cc0c7",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0007.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0007.SF2",
+      "字节数": 32514,
+      "SHA256": "5abcb7294c6b5c7c29b39c80d4ada73e92e9d0f335cf6fcbb7d2e7807d191e2b",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0008.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0008.SF2",
+      "字节数": 20395,
+      "SHA256": "8e6544ffb1e9bfae1d29361c0cd7b83604de959ecbba29e290b679d27e98d51d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0009.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0009.SF2",
+      "字节数": 21023,
+      "SHA256": "c3dca915745a8a2b5ca687135d84465addf0af15a1aa0387d21803074210e0c4",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF001.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF001.SF2",
+      "字节数": 29670,
+      "SHA256": "534c860e4fd476037cfcb6885afa7890ed73bfec773bc501814808c7b9b825d7",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0010.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0010.SF2",
+      "字节数": 21022,
+      "SHA256": "2fa5803d9630edbd1b70ccd6e87e514162850af569b210001896ef27611d3f8b",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0011.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0011.SF2",
+      "字节数": 18092,
+      "SHA256": "dcad6f8ab9b5cbeb365df2c4893d5b1d25d86dc0f84a002e15ef9466c788bc44",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0012.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0012.SF2",
+      "字节数": 17590,
+      "SHA256": "56f29d3944207954281a86fc9cad4b9ad7a3d1054c3fb8c372523efe805bec5f",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0013.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0013.SF2",
+      "字节数": 29886,
+      "SHA256": "743c70d255e0bbb555500a65b9eb7f817e5948f5a13acbf8c5a7877f659d86ac",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF002.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF002.SF2",
+      "字节数": 43658,
+      "SHA256": "0e792aaf1741c1de61a19580cac2619cb65356f8580be0b0144f6f7e03e1e065",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0020.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0020.SF2",
+      "字节数": 19421,
+      "SHA256": "35c34cbfa5c8666a851f0d06b7b1a4cebc05df608848478e5757790707e6c8a7",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0021.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0021.SF2",
+      "字节数": 19451,
+      "SHA256": "c7d4ddfbf2769ebeaf126ee678cf4517c9254ad05a4b574363671ec96926fd2d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0022.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0022.SF2",
+      "字节数": 19626,
+      "SHA256": "71e5abb366ecb4ea6d06347379133d959aef395c867205e94c512ae74dafa039",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0023.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0023.SF2",
+      "字节数": 19682,
+      "SHA256": "4a4ca6f53233b8bf4fa86459319dee33a016551c8e682840303a29708df186c0",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0024.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0024.SF2",
+      "字节数": 19571,
+      "SHA256": "2f54af1c67736bf9af5762332193c449ea65769c394a400a4d521a254be0babf",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0025.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0025.SF2",
+      "字节数": 56084,
+      "SHA256": "f6d2e54bbd75107f28ce53868f29b6c5d7cf2928a606a2e729813fbbc1ccdf51",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0026.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0026.SF2",
+      "字节数": 18131,
+      "SHA256": "e073ad14bb599c4c64864aba986df75d62f2be1b8b118d6a617ce4366ba495f9",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0027.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0027.SF2",
+      "字节数": 18703,
+      "SHA256": "01cdf4a8d87ac0a500cbc4d87978d9c3637d5521bafa65104c8b3898af778e6e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0028.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0028.SF2",
+      "字节数": 58086,
+      "SHA256": "8f1612d059fa8fa9a6d4201adaaa045d5705debbfcace45c3131086bdb674ae2",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF003.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF003.SF2",
+      "字节数": 17803,
+      "SHA256": "229b4c0e811a86fdabe0764016a8fbe7f4e11e7389fe112db22275528c32530d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0030.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0030.SF2",
+      "字节数": 41322,
+      "SHA256": "18938c19540e248a32fcc4d1316c48372770a7acdc871884962f5540c038f03f",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0031.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0031.SF2",
+      "字节数": 80977,
+      "SHA256": "7b6d81d8a822584479f47e15ef3551295537cee659a6915da286cb0f06d99296",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0032.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0032.SF2",
+      "字节数": 17455,
+      "SHA256": "45d518089d7b3e5827558ae256e411e330866020fad347f017122870d1c1816e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0033.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0033.SF2",
+      "字节数": 17475,
+      "SHA256": "27c356b27029c5b1197519b6e24f4aa698f6a5e4a9dc0853405e6382229fe27d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0034.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0034.SF2",
+      "字节数": 17952,
+      "SHA256": "571e0c47c91cc7751e76ac251bc307177264894dadb6d11457fe838717030c79",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF004.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF004.SF2",
+      "字节数": 19217,
+      "SHA256": "4e58243fefeb539417f39f9847a92a6e962470de41dd62bd50126eaff8d7ffc9",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF005.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF005.SF2",
+      "字节数": 18972,
+      "SHA256": "f3e33fcfc741c2b37da3a7c4955ce52f0c2d4cc1425d8d8b2ee6346173007a26",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0050.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0050.SF2",
+      "字节数": 212823,
+      "SHA256": "0c61201e5a318721439f45712f76f962481062d0b95702204778e357f7f3d2ff",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0051.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0051.SF2",
+      "字节数": 62056,
+      "SHA256": "a07f480042556af8a443d8b5397a77d97fafc9785d7c034d5d8944b721783ddf",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0052.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0052.SF2",
+      "字节数": 38290,
+      "SHA256": "ed43a3f863127417e5d08e8ab6e4355f141f40214b44fca2bde22aa363ea3d33",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0053.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0053.SF2",
+      "字节数": 22786,
+      "SHA256": "9f5efd4679a3095aebbefb299d1b3e65017e49446e4d5c446649a017072c7f05",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF006.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF006.SF2",
+      "字节数": 19229,
+      "SHA256": "3790204e6e42996258c8fe44cffdaf34f53ac7c32a2e9003cdf390608901267d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF007.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF007.SF2",
+      "字节数": 19002,
+      "SHA256": "5ef520c226756c7a7e55d0f3d7fa318af8d37fbe37c70317624de35af6a8d061",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF008.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF008.SF2",
+      "字节数": 20237,
+      "SHA256": "9be8d201ba26fdd0d6397dd9881d211362327a264d591cef163002cc44bc26df",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF009.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF009.SF2",
+      "字节数": 20697,
+      "SHA256": "d90ac4c41b9c3803eaa079fd4041aeb2a185f6c0ff15d65685736c9941e2cdcc",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF010.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF010.SF2",
+      "字节数": 20696,
+      "SHA256": "eabd5b58d73e402e2906c1a3f34cabfbaa2e5ef385bfd0dbefd89552e2b3d6e6",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF011.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF011.SF2",
+      "字节数": 18060,
+      "SHA256": "34367f5bb8e2bcefec113ee062d86d1fa90e310d96ffc338f3e56903a1e2c430",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF012.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF012.SF2",
+      "字节数": 17565,
+      "SHA256": "18d84116fad200a9f568aa80e05edcf66702e06e1b16950dfc5968fce1e92ef3",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF020.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF020.SF2",
+      "字节数": 19423,
+      "SHA256": "48273427f135dd829d38609b69235931f4456dd8e7d3a66241042a26c4f83d09",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF021.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF021.SF2",
+      "字节数": 19444,
+      "SHA256": "47e209514d84eca572fc609f9aec47b8f2d7a7a5d5be15222844a3625fd3220b",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0210.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0210.SF2",
+      "字节数": 778419,
+      "SHA256": "3d2d3c2cfd3e3bd10d5b2d7289e47703607b4b5ee2f0c218134c9db8467d5132",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF022.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF022.SF2",
+      "字节数": 19620,
+      "SHA256": "864d75bb6daa893e43477ec1da0ec185f8b1d6054eeb94f5b1a8e8245667f67d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF023.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF023.SF2",
+      "字节数": 19684,
+      "SHA256": "722dee95ef17bdc5bef2223efd5b696ff59efacef895904737846dcfe452329b",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF024.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF024.SF2",
+      "字节数": 19565,
+      "SHA256": "6e5a76aebab6ed349f30b1399880f13e42f3a2248985a295e049009dcb8fd632",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF025.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF025.SF2",
+      "字节数": 19422,
+      "SHA256": "7a94e8e7ea50ed448f90b626a5b171fd9303a272d42a66e5a5f5b91fb42ae954",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF030.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF030.SF2",
+      "字节数": 26428,
+      "SHA256": "90fec6e536df7c53bdf729da75159ee97632d5ddfda850f943b9b9003f9b3f4e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF031.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF031.SF2",
+      "字节数": 17620,
+      "SHA256": "b12e8c9d13b47c8dda5f8ecf5be6eddaed09ab7f9d4ffd014954662943f08b61",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF032.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF032.SF2",
+      "字节数": 17715,
+      "SHA256": "a43af0535dac9639a902d584e5de2a1e7c3d89f93239e0c095118fd1807aa568",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF033.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF033.SF2",
+      "字节数": 17963,
+      "SHA256": "bc486617f696b198e0be0712785b6b708f7fefdb3d4caada17eb9386b2c86ac9",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF034.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF034.SF2",
+      "字节数": 17694,
+      "SHA256": "896bda7d2393e56263a98fd8729fe1f2f90bbd02c057eb54b6f1d6d747b01196",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF035.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF035.SF2",
+      "字节数": 17616,
+      "SHA256": "99e208906f064c600ba5ef17dd9912644c472edd3a473f3847a3d2eb1f474bb1",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF036.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF036.SF2",
+      "字节数": 20919,
+      "SHA256": "b0af539b5b708ba62006f54a9820d9570ab3abe34a05e2e2a2b00aa8ce2479e2",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF040.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF040.SF2",
+      "字节数": 22527,
+      "SHA256": "71fe6d8c734b4a4dc7c28ab20c591e51f8e59370545b3c78be0c641b60eae07a",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF0400.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF0400.SF2",
+      "字节数": 208880,
+      "SHA256": "8ff79e90e16d2e6674b6ab79ed41c453ce643bdbf2a47c980d8fb3d1404e94bf",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF041.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF041.SF2",
+      "字节数": 22941,
+      "SHA256": "5433c7e995cbf06af729a90d99d5dac7de73e8b767cb6b17874c39548df58ea6",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF042.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF042.SF2",
+      "字节数": 17437,
+      "SHA256": "04c3809df8e293136c981e07ba4c52706c83793484837aae31704096967b78cd",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF043.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF043.SF2",
+      "字节数": 18422,
+      "SHA256": "6023a91427d722c26dbb53f329cc320a6032c5953f12badaa1e399e676029862",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF044.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF044.SF2",
+      "字节数": 18410,
+      "SHA256": "40381cd02e098e54cc1cfae9ca442721aa7fb5f0c54344302206e0228ad47419",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF050.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF050.SF2",
+      "字节数": 22714,
+      "SHA256": "147cf2372dd967a498c3bdab9a110a8dc0ce77b74b47a46ebe98dc4c07cb9db3",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF051.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF051.SF2",
+      "字节数": 62067,
+      "SHA256": "c8491702e5ed37b09b8b8198d43d729cd3f604a1fb1070b43f63573d0a10edd6",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF052.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF052.SF2",
+      "字节数": 23650,
+      "SHA256": "6a85e9dea0c5a581f2b1e2987aa8cbe89b5b1f9b36ae7c29c08ccfef496daf71",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF053.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF053.SF2",
+      "字节数": 22792,
+      "SHA256": "d6eead870a884c4694ffe8993c1b1815d96858360826c90677f51c59ae9217e0",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF054.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF054.SF2",
+      "字节数": 18780,
+      "SHA256": "ac6a922ce66cda32f53b1cd98a63b7dcc5e34d9174b0c5b0d10ea34119d2fdbb",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF055.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF055.SF2",
+      "字节数": 18798,
+      "SHA256": "86dd19111508e578876c89ff77ffdf60f1df6e8c155cb5c13bb4592407123e7e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF100.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF100.SF2",
+      "字节数": 17682,
+      "SHA256": "4adad4c7277b5d0d9438cb7a11cf2ffef7026a1190c68f1945c91c811fa3486a",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF101.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF101.SF2",
+      "字节数": 119751,
+      "SHA256": "5663374aa20719d987b0bca1ea0d86df63debccd79fc317a0e550e419bd25991",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF1016.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF1016.SF2",
+      "字节数": 18322,
+      "SHA256": "5aa19f0ab92e92c5e0089919f84c426a0ec3f839262d0866efd7e975db12f39e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF1017.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF1017.SF2",
+      "字节数": 18679,
+      "SHA256": "c7b11689800d9fb0813aa459084a378aecb1ffc40f13c99b435761b42013d704",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF1018.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF1018.SF2",
+      "字节数": 18786,
+      "SHA256": "2e8368c889762f391c3a7c5c977934d5e5b657e34ebc686ada377b07f7f038df",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF1019.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF1019.SF2",
+      "字节数": 18852,
+      "SHA256": "6dd788ac576e793e453e27925bc76ba2771dc86fad5ed7455cca6190d3f1c5f5",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF1026.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF1026.SF2",
+      "字节数": 18380,
+      "SHA256": "fdcf0e051026ff1dcda1c06e651f576e0307b1649d5a807df75cc85dc71f206a",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF1027.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF1027.SF2",
+      "字节数": 18727,
+      "SHA256": "93fd6c2f4a66e37e85c1935d2ecebdf920b6fdd1788a2fb68071bb265671738d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF1028.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF1028.SF2",
+      "字节数": 18609,
+      "SHA256": "1639bc6a54e13e13c07151cd7773e55f5ea92f1a1d43266943ece0c13669a284",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF200.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF200.SF2",
+      "字节数": 134909,
+      "SHA256": "6189288d9765def256ddcf9c17f29a4755a8279e334bc6051964d382b4fedcd1",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF201.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF201.SF2",
+      "字节数": 995249,
+      "SHA256": "1d5402b7bc4c9b3963eeb663b2160449ed4dda5458a8e496ee1a8579dee93591",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF210.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF210.SF2",
+      "字节数": 2847981,
+      "SHA256": "a9e6cb8480a1b735321398a905aa0eaf6bd81dec716d950f379b40b1e5c42796",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF300.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF300.SF2",
+      "字节数": 69496,
+      "SHA256": "08392bd3cf3530e41fe15e73093b82662c96f1fc1ab6bf9a9b6353f034ae1230",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF3004.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF3004.SF2",
+      "字节数": 87134,
+      "SHA256": "d990e5754a497947f3dcb01d0e2d7bb067ca10e1d636b7054f58ff578b4d34e3",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF3005.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF3005.SF2",
+      "字节数": 17952,
+      "SHA256": "571e0c47c91cc7751e76ac251bc307177264894dadb6d11457fe838717030c79",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF3006.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF3006.SF2",
+      "字节数": 17455,
+      "SHA256": "45d518089d7b3e5827558ae256e411e330866020fad347f017122870d1c1816e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF3007.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF3007.SF2",
+      "字节数": 17475,
+      "SHA256": "27c356b27029c5b1197519b6e24f4aa698f6a5e4a9dc0853405e6382229fe27d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF302.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF302.SF2",
+      "字节数": 20174,
+      "SHA256": "0d104c3bf068638cf1d6e1e4cc50bea0176d4ac6d1a905886b4893a41792dedc",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF304.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF304.SF2",
+      "字节数": 17595,
+      "SHA256": "53161a9078bc753ffa11b5c35a7ee067782ae67ae3f072e476106ba0c66d0363",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF305.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF305.SF2",
+      "字节数": 20205,
+      "SHA256": "0f8eeedf14369c598eff47a80d9f1dceebd255b9f34249ab88041592c90e320d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF306.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF306.SF2",
+      "字节数": 22675,
+      "SHA256": "c7074d796adf61a7630622a011146aa01ffc34f50ecfe716b646ac096099ec42",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF307.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF307.SF2",
+      "字节数": 22002,
+      "SHA256": "cab83874e0b78842a33ef215040f946ae4fccb675eacf76ab42ca9ef68ac12e6",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF308.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF308.SF2",
+      "字节数": 17886,
+      "SHA256": "e3c31d3a3a667edb7afa658660a94dc67afd4a4b56f5da4f26238a1c4f26c8ae",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF310.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF310.SF2",
+      "字节数": 20614,
+      "SHA256": "0282cb1eee589d8a204805fbe41de857954c0225e8d7f3e7249a20e35bfa3109",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF311.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF311.SF2",
+      "字节数": 20205,
+      "SHA256": "2e9c1ff5a6c91a8122898ae950f80bd332f818c6afc24c6d13818723227b74a4",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF312.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF312.SF2",
+      "字节数": 17585,
+      "SHA256": "e7102a1a1aa3e2bebe168e3e37d7fdddae5cfcbbab7051227b7b568bc7427c87",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF314.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF314.SF2",
+      "字节数": 23120,
+      "SHA256": "670c7da7f54e45e1d35c868ba11c4de52ab2a965f3f75c6a34a2493e1b350407",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF315.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF315.SF2",
+      "字节数": 22062,
+      "SHA256": "a981b8fc048f45a55a293c6bfe840d62042ce98959ba53ea93e072a7acd776d3",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF500.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF500.SF2",
+      "字节数": 17806,
+      "SHA256": "cca777de572f1c272c100b32dcafc2ece37b3597e873f3fed001d71d2d443d8a",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF501.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF501.SF2",
+      "字节数": 87101,
+      "SHA256": "27bfdf716f664a5df46de37b5b060c79e3b7d0059432e168a4212467c099f81e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF502.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF502.SF2",
+      "字节数": 27655,
+      "SHA256": "f373e8797aa0426c0e25f45a6e9b282ebc182d6b6ab2512da60679456ecd9efe",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/ITF/ITF503.SF2",
+      "输出": "/mnt/data/work46/itf46_extract/tdg/ITF/ITF503.SF2",
+      "字节数": 18752,
+      "SHA256": "bda1b06b6d298acfd64249eb78f50c83b0d29dc98cee8f51cf9b68cfd89d236f",
+      "与目录记录一致": true
+    }
+  ]
+}

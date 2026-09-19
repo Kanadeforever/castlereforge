@@ -1,0 +1,16 @@
+{
+  "审计": "固化58双轮独立原始输入重放",
+  "轮次1全部通过": true,
+  "轮次2全部通过": true,
+  "轮次1与轮次2_JSON归一化后完全一致": true,
+  "轮次1与正式结果_JSON归一化后完全一致": true,
+  "轮次2与正式结果_JSON归一化后完全一致": true,
+  "两轮CSV逐字节一致": true,
+  "轮次1CSV与正式CSV逐字节一致": true,
+  "轮次2CSV与正式CSV逐字节一致": true,
+  "轮次1JSON_SHA256": "77c60eed803dbfee596aa5423fcb8caf73063ef9ef5b2ca0aede670572687a5d",
+  "轮次2JSON_SHA256": "d947845eb78a4dfb5019667d2acda6d7b5fa859a5c39e47c86e2f70445afb5b1",
+  "CSV_SHA256": "f782dc2de2bc9a371f2cb6b16207d2b0ed0a51e4be14e34f3fb9b53723209162",
+  "历史节点说明": "固化37～57的机器输出不冒充本轮重放；仅由固化57最终ZIP继承非Markdown SHA审计证明保持不变。",
+  "状态": "PASS"
+}

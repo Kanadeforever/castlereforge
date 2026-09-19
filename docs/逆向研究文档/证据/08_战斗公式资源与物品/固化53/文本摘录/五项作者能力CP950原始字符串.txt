@@ -1,0 +1,21 @@
+固化53 RPG.exe 五项作者能力 CP950 原始字符串核对
+
+VA 0x00469418 / file 0x69418: 機運 %d > %d
+raw: be f7 b9 42 20 25 64 20 3e 20 25 64
+decoded: 機運 %d > %d
+
+VA 0x00469428 / file 0x69428: 迅捷 %d > %d
+raw: a8 b3 b1 b6 20 25 64 20 3e 20 25 64
+decoded: 迅捷 %d > %d
+
+VA 0x00469438 / file 0x69438: 體魄 %d > %d
+raw: c5 e9 be 7a 20 25 64 20 3e 20 25 64
+decoded: 體魄 %d > %d
+
+VA 0x00469448 / file 0x69448: 靈力 %d > %d
+raw: c6 46 a4 4f 20 25 64 20 3e 20 25 64
+decoded: 靈力 %d > %d
+
+VA 0x00469458 / file 0x69458: 膂力 %d > %d
+raw: bb 4d a4 4f 20 25 64 20 3e 20 25 64
+decoded: 膂力 %d > %d

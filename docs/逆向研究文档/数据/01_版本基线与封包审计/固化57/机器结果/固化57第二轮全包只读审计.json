@@ -1,0 +1,333 @@
+{
+  "节点": "固化57",
+  "阶段": "第二轮全包只读审计（文档冻结前，修正历史文字误报规则后）",
+  "日期": "2026-08-20",
+  "研究结论冻结": true,
+  "继承非Markdown": {
+    "基线": "固化56最终ZIP",
+    "基线ZIP_SHA256": "4a9f8d620326f5a7e11fdbb67e79c1beff535079b6974544045aac10eaa09200",
+    "总数": 923,
+    "缺失": [],
+    "变化": [],
+    "PASS": true
+  },
+  "Markdown": {
+    "总数": 95,
+    "同步问题": [],
+    "围栏问题": [],
+    "非中文文档文件名": [],
+    "第一轮全正文活跃旧节点扫描仍为PASS": true,
+    "本轮扫描规则说明": "第一轮后正文未改，只统一插入两条固化57状态行；本轮验证首三行与第一轮全正文扫描连续性，不再用会误伤历史审查语句的宽正则重新解释历史正文。",
+    "PASS": true
+  },
+  "Python工具": {
+    "总数": 33,
+    "通过": 33,
+    "详细": [
+      {
+        "文件": "organize_data_evidence.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "旧式单位置参数；仅AST/compile，避免把--help误解释为目录",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "package_file_indexer.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_12f_resource_cost_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_big_effect_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_class124_presentation_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_class4_dispatch_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_class56_dispatch_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_core_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_core_stat_names_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_effect_lifecycle_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_effect_pair_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_formula_selector_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_item_power_defense_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_one_way_counterpart_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_result_dispatch_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_runtime_clock_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_selector15_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_single_status_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_status_presentation_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_battle_tail_slots_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_compatibility_engine_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_enc_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_eve_sf2_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_legacy_clock_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_resource_container_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_saf_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_saf_runtime_surface_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_sample_structure_validator.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_sci_sf2_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_sf2_audio_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_sf2_layer_metadata_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_tsf_gamestate_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      },
+      {
+        "文件": "youcheng_world_encounter_duration_inspector.py",
+        "AST": true,
+        "compile": true,
+        "命令行协议": "argparse --help",
+        "PASS": true,
+        "错误": ""
+      }
+    ],
+    "PASS": true
+  },
+  "工具详细说明": {
+    "总数": 33,
+    "第一轮已确认一一对应且本轮文件计数保持": true,
+    "PASS": true
+  },
+  "数据解析_写入本审计前": {
+    "JSON总数": 494,
+    "JSON错误": [],
+    "CSV总数": 54,
+    "CSV错误": [],
+    "PASS": true
+  },
+  "前序正式状态": {
+    "第一轮正式封包审计PASS": true,
+    "固化57双轮独立原始输入重放PASS": true,
+    "固化57主题正式输出PASS": true
+  },
+  "失败历史保留": {
+    "记录": [
+      {
+        "文件": "数据/固化57/固化57预审失败记录_旧节点残留与扫描规则过宽.json",
+        "整体PASS": false
+      },
+      {
+        "文件": "数据/固化57/固化57预审失败记录_第二次扫描未覆盖历史审查标签.json",
+        "整体PASS": false
+      },
+      {
+        "文件": "数据/固化57/固化57第二轮全包只读审计_失败记录_历史审查文字误报为活跃状态.json",
+        "整体PASS": false
+      }
+    ],
+    "三份失败记录均保持FAIL": true
+  },
+  "缓存污染": {
+    "项目": [],
+    "PASS": true
+  },
+  "整体PASS": true
+}

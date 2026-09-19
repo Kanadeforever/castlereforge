@@ -1,0 +1,24 @@
+{
+  "版本": "v0.7D阶段中-固化9",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "直接前序": "v0.7D阶段中-固化8",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "新增闭合": [
+    "Event ID n在0x40B230中结构化映射到当前已加载EVE的0-based slot(n-1)；Event ID3=当前EVE slot2",
+    "saved Event输入失效链：0x468BB9 gate允许时，0x408830非零导航/输入token经0x408C40使0x89F7F8失效",
+    "0x408830/0x408950输入来源：GetCursorPos + GetKeyState(VK 0x21..0x28)等直接静态证据",
+    "code12 fallback条件再次逐指令复核：predicate==1才激活Event ID3；此前对话中predicate==0的短暂误判已撤销",
+    "code12 fallback不再理解为全局固定Event3，而是当前EVE slot2"
+  ],
+  "仍未闭合": [
+    "当前EVE slot2在每张地图/事件中的具体业务语义（当前真实EVE样本不足）",
+    "0x40A0D0 predicate的作者业务含义",
+    "0x409580对象/上层caller与导航token的精确UX语义",
+    "全游戏EVE中0x96 keyA/keyB真实分布",
+    "属性作者术语/ID43",
+    "Battle后11 runtime槽",
+    "D7 result/reward",
+    "D8 draw order/BattleTrace"
+  ],
+  "恢复入口": "优先继续追0x409580 caller与0x40A0D0 predicate；若获得更多EVE则立即扫描0x96并逐EVE解析slot2。"
+}

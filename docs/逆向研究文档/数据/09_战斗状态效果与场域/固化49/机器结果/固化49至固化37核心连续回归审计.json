@@ -1,0 +1,117 @@
+{
+  "status": "PASS",
+  "audit_round": "first",
+  "input_rpg_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+  "input_dddes_sha256": "1c8e3a6e0dfc314bcdc34aeae57388539da95d6443ee0441032452a7d76b2972",
+  "input_itf0052_sha256": "ed43a3f863127417e5d08e8ab6e4355f141f40214b44fca2bde22aa363ea3d33",
+  "formal_solid49_output_exact_match": {
+    "json": true,
+    "csv": true
+  },
+  "nodes": [
+    {
+      "solidification": 48,
+      "pass": true,
+      "detail": {
+        "RPG_org_SHA身份匹配": true,
+        "机器码断言": true,
+        "作者施加文本锚点": true,
+        "专用解除链锚点": true
+      }
+    },
+    {
+      "solidification": 47,
+      "pass": true,
+      "detail": {
+        "machine": "31/31",
+        "reciprocal_pairs_exact": true,
+        "author_anchors": "16/16"
+      }
+    },
+    {
+      "solidification": 46,
+      "pass": true,
+      "detail": {
+        "route": "21/21",
+        "constructor_clamp": "11/11"
+      }
+    },
+    {
+      "solidification": 45,
+      "pass": true,
+      "detail": {
+        "machine": "23/23",
+        "direct_calls": "6/6"
+      }
+    },
+    {
+      "solidification": 44,
+      "pass": true,
+      "detail": {
+        "machine": "20/20",
+        "all39_zero": "9945/9945",
+        "tail11_zero": "2805/2805"
+      }
+    },
+    {
+      "solidification": 43,
+      "pass": true,
+      "detail": {
+        "machine": "15/15"
+      }
+    },
+    {
+      "solidification": 42,
+      "pass": true,
+      "detail": {
+        "通过": 11,
+        "总数": 11,
+        "PASS": true
+      }
+    },
+    {
+      "solidification": 41,
+      "pass": true,
+      "detail": {
+        "通过": 13,
+        "总数": 13,
+        "PASS": true
+      }
+    },
+    {
+      "solidification": 40,
+      "pass": true,
+      "detail": {
+        "machine": "10/10"
+      }
+    },
+    {
+      "solidification": 39,
+      "pass": true,
+      "detail": {
+        "layers": 11184,
+        "standard_sf2": 505
+      }
+    },
+    {
+      "solidification": 38,
+      "pass": true,
+      "detail": {
+        "machine": "29/29"
+      }
+    },
+    {
+      "solidification": 37,
+      "pass": true,
+      "detail": {
+        "machine": "29/29",
+        "sf2_occurrences": 672,
+        "unique_sha": 506,
+        "standard_sf2": 505,
+        "section3": 132,
+        "audio_refs": "147/147"
+      }
+    }
+  ],
+  "note": "固化49封包第一轮从用户本轮RPG.exe.org、multimedia.zip现场解出的Firttech/Ail2、ITF0052、DDDES及完整multimedia语料重新执行固化49专题与固化48至37十二代核心调查器；所有临时输出位于包外。"
+}

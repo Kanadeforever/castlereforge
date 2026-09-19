@@ -1,0 +1,1400 @@
+{
+  "tool_version": "0.7D-solid46.0",
+  "topic": "Battle十四路状态表现槽与ITF0052二十三序列路由",
+  "result": "PASS",
+  "exe": {
+    "path": "/mnt/data/work46/input/RPG.exe",
+    "sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "size": 462848,
+    "image_base": "0x00400000",
+    "itf0052_path_check": {
+      "VA": "0x004699C4",
+      "expected_ascii": "Fight\\ITF\\ITF0052.SF2",
+      "actual_hex": "46 69 67 68 74 5c 49 54 46 5c 49 54 46 30 30 35 32 2e 53 46 32 00",
+      "PASS": true
+    },
+    "route_machine_checks": [
+      {
+        "field_offset": "+0x1E8",
+        "selector": 1,
+        "field_read": {
+          "VA": "0x0041CD79",
+          "字段": "+0x1E8",
+          "期望": "8b 86 e8 01 00 00",
+          "实际": "8b 86 e8 01 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CD89",
+          "期望": "6a 01",
+          "实际": "6a 01",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x23C",
+        "selector": 12,
+        "field_read": {
+          "VA": "0x0041CD96",
+          "字段": "+0x23C",
+          "期望": "8b 86 3c 02 00 00",
+          "实际": "8b 86 3c 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CDA6",
+          "期望": "6a 0c",
+          "实际": "6a 0c",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x1FC",
+        "selector": 2,
+        "field_read": {
+          "VA": "0x0041CDC9",
+          "字段": "+0x1FC",
+          "期望": "8b 86 fc 01 00 00",
+          "实际": "8b 86 fc 01 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CDD9",
+          "期望": "6a 02",
+          "实际": "6a 02",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x248",
+        "selector": 3,
+        "field_read": {
+          "VA": "0x0041CDE6",
+          "字段": "+0x248",
+          "期望": "8b 86 48 02 00 00",
+          "实际": "8b 86 48 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CDF6",
+          "期望": "6a 03",
+          "实际": "6a 03",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x1F4",
+        "selector": 7,
+        "field_read": {
+          "VA": "0x0041CE19",
+          "字段": "+0x1F4",
+          "期望": "8b 86 f4 01 00 00",
+          "实际": "8b 86 f4 01 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CE29",
+          "期望": "6a 07",
+          "实际": "6a 07",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x240",
+        "selector": 6,
+        "field_read": {
+          "VA": "0x0041CE36",
+          "字段": "+0x240",
+          "期望": "8b 86 40 02 00 00",
+          "实际": "8b 86 40 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CE46",
+          "期望": "6a 06",
+          "实际": "6a 06",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x1F8",
+        "selector": 17,
+        "field_read": {
+          "VA": "0x0041CE69",
+          "字段": "+0x1F8",
+          "期望": "8b 86 f8 01 00 00",
+          "实际": "8b 86 f8 01 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CE79",
+          "期望": "6a 11",
+          "实际": "6a 11",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x244",
+        "selector": 4,
+        "field_read": {
+          "VA": "0x0041CE86",
+          "字段": "+0x244",
+          "期望": "8b 86 44 02 00 00",
+          "实际": "8b 86 44 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CE96",
+          "期望": "6a 04",
+          "实际": "6a 04",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x200",
+        "selector": 14,
+        "field_read": {
+          "VA": "0x0041CEB9",
+          "字段": "+0x200",
+          "期望": "8b 86 00 02 00 00",
+          "实际": "8b 86 00 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CEC9",
+          "期望": "6a 0e",
+          "实际": "6a 0e",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x24C",
+        "selector": 13,
+        "field_read": {
+          "VA": "0x0041CED6",
+          "字段": "+0x24C",
+          "期望": "8b 86 4c 02 00 00",
+          "实际": "8b 86 4c 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CEE6",
+          "期望": "6a 0d",
+          "实际": "6a 0d",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x204",
+        "selector": 10,
+        "field_read": {
+          "VA": "0x0041CF09",
+          "字段": "+0x204",
+          "期望": "8b 86 04 02 00 00",
+          "实际": "8b 86 04 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CF19",
+          "期望": "6a 0a",
+          "实际": "6a 0a",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x250",
+        "selector": 11,
+        "field_read": {
+          "VA": "0x0041CF26",
+          "字段": "+0x250",
+          "期望": "8b 86 50 02 00 00",
+          "实际": "8b 86 50 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CF36",
+          "期望": "6a 0b",
+          "实际": "6a 0b",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x1EC",
+        "selector": 5,
+        "field_read": {
+          "VA": "0x0041CF59",
+          "字段": "+0x1EC",
+          "期望": "8b 86 ec 01 00 00",
+          "实际": "8b 86 ec 01 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CF69",
+          "期望": "6a 05",
+          "实际": "6a 05",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x1F0",
+        "selector": 18,
+        "field_read": {
+          "VA": "0x0041CF8C",
+          "字段": "+0x1F0",
+          "期望": "8b 86 f0 01 00 00",
+          "实际": "8b 86 f0 01 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CF9C",
+          "期望": "6a 12",
+          "实际": "6a 12",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x224",
+        "selector": 8,
+        "field_read": {
+          "VA": "0x0041CFBF",
+          "字段": "+0x224",
+          "期望": "8b 86 24 02 00 00",
+          "实际": "8b 86 24 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CFCF",
+          "期望": "6a 08",
+          "实际": "6a 08",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x210",
+        "selector": 19,
+        "field_read": {
+          "VA": "0x0041CFDC",
+          "字段": "+0x210",
+          "期望": "8b 86 10 02 00 00",
+          "实际": "8b 86 10 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041CFEC",
+          "期望": "6a 13",
+          "实际": "6a 13",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x214",
+        "selector": 20,
+        "field_read": {
+          "VA": "0x0041D00F",
+          "字段": "+0x214",
+          "期望": "8b 86 14 02 00 00",
+          "实际": "8b 86 14 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041D01F",
+          "期望": "6a 14",
+          "实际": "6a 14",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x21C",
+        "selector": 21,
+        "field_read": {
+          "VA": "0x0041D042",
+          "字段": "+0x21C",
+          "期望": "8b 86 1c 02 00 00",
+          "实际": "8b 86 1c 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041D052",
+          "期望": "6a 15",
+          "实际": "6a 15",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x220",
+        "selector": 9,
+        "field_read": {
+          "VA": "0x0041D075",
+          "字段": "+0x220",
+          "期望": "8b 86 20 02 00 00",
+          "实际": "8b 86 20 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041D085",
+          "期望": "6a 09",
+          "实际": "6a 09",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x228",
+        "selector": 16,
+        "field_read": {
+          "VA": "0x0041D0A8",
+          "字段": "+0x228",
+          "期望": "8b 86 28 02 00 00",
+          "实际": "8b 86 28 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041D0B8",
+          "期望": "6a 10",
+          "实际": "6a 10",
+          "PASS": true
+        },
+        "PASS": true
+      },
+      {
+        "field_offset": "+0x20C",
+        "selector": 22,
+        "field_read": {
+          "VA": "0x0041D0DB",
+          "字段": "+0x20C",
+          "期望": "8b 86 0c 02 00 00",
+          "实际": "8b 86 0c 02 00 00",
+          "PASS": true
+        },
+        "selector_push": {
+          "VA": "0x0041D0EB",
+          "期望": "6a 16",
+          "实际": "6a 16",
+          "PASS": true
+        },
+        "PASS": true
+      }
+    ],
+    "constructor_and_clamp_checks": [
+      {
+        "VA": "0x0041D2F3",
+        "期望": "33 ff c7 44 24 10 10 00 00 00 8d ae 98 05 00 00",
+        "实际": "33 ff c7 44 24 10 10 00 00 00 8d ae 98 05 00 00",
+        "PASS": true
+      },
+      {
+        "VA": "0x0041D32A",
+        "期望": "8b 4c 24 10 53 68 c4 99 46 00 68 f9 00 00 00 51",
+        "实际": "8b 4c 24 10 53 68 c4 99 46 00 68 f9 00 00 00 51",
+        "PASS": true
+      },
+      {
+        "VA": "0x0041D348",
+        "期望": "8b 55 00 47 57 8b 4a 1c e8 9b 13 02 00",
+        "实际": "8b 55 00 47 57 8b 4a 1c e8 9b 13 02 00",
+        "PASS": true
+      },
+      {
+        "VA": "0x0041D355",
+        "期望": "8b 44 24 10 83 c5 04 83 c0 1e 3d e2 00 00 00",
+        "实际": "8b 44 24 10 83 c5 04 83 c0 1e 3d e2 00 00 00",
+        "PASS": true
+      },
+      {
+        "VA": "0x0041D36A",
+        "期望": "8d 47 01 bd 10 00 00 00 89 44 24 10 8d bc be 98 05 00 00",
+        "实际": "8d 47 01 bd 10 00 00 00 89 44 24 10 8d bc be 98 05 00 00",
+        "PASS": true
+      },
+      {
+        "VA": "0x0041D3A4",
+        "期望": "53 68 c4 99 46 00 68 16 01 00 00 55",
+        "实际": "53 68 c4 99 46 00 68 16 01 00 00 55",
+        "PASS": true
+      },
+      {
+        "VA": "0x0041D3BD",
+        "期望": "8b 07 8b 54 24 10 52 8b 48 1c e8 24 13 02 00",
+        "实际": "8b 07 8b 54 24 10 52 8b 48 1c e8 24 13 02 00",
+        "PASS": true
+      },
+      {
+        "VA": "0x0041D3CC",
+        "期望": "8b 54 24 10 83 c7 04 83 c5 1e 42 81 fd e2 00 00 00",
+        "实际": "8b 54 24 10 83 c7 04 83 c5 1e 42 81 fd e2 00 00 00",
+        "PASS": true
+      },
+      {
+        "VA": "0x0043E6FA",
+        "期望": "8b 4c 24 08 85 c9 7c 0d 8d 46 10 50 89 08 8b ce e8 11 00 00 00",
+        "实际": "8b 4c 24 08 85 c9 7c 0d 8d 46 10 50 89 08 8b ce e8 11 00 00 00",
+        "PASS": true
+      },
+      {
+        "VA": "0x0043E720",
+        "期望": "8b 44 24 04 8b 51 30 56 8b 30 3b f2 5e 7c 03 4a 89 10",
+        "实际": "8b 44 24 04 8b 51 30 56 8b 30 3b f2 5e 7c 03 4a 89 10",
+        "PASS": true
+      },
+      {
+        "VA": "0x0043E732",
+        "期望": "8b 49 2c 8b 10 3b d1 7d 02 89 08",
+        "实际": "8b 49 2c 8b 10 3b d1 7d 02 89 08",
+        "PASS": true
+      }
+    ],
+    "status_update_direct_calls_to_0x43E6F0": [
+      "0x0041CDC4",
+      "0x0041CE14",
+      "0x0041CE64",
+      "0x0041CEB4",
+      "0x0041CF04",
+      "0x0041CF54",
+      "0x0041CF87",
+      "0x0041CFBA",
+      "0x0041D00A",
+      "0x0041D03D",
+      "0x0041D070",
+      "0x0041D0A3",
+      "0x0041D0D6",
+      "0x0041D0F6",
+      "0x0041D114"
+    ],
+    "status_update_direct_call_count": 15,
+    "status_update_expected_direct_calls": [
+      "0x0041CDC4",
+      "0x0041CE14",
+      "0x0041CE64",
+      "0x0041CEB4",
+      "0x0041CF04",
+      "0x0041CF54",
+      "0x0041CF87",
+      "0x0041CFBA",
+      "0x0041D00A",
+      "0x0041D03D",
+      "0x0041D070",
+      "0x0041D0A3",
+      "0x0041D0D6",
+      "0x0041D0F6",
+      "0x0041D114"
+    ],
+    "status_update_direct_call_set_pass": true,
+    "status_update_logical_channel_count": 14,
+    "status_update_has_exactly_14_logical_channels": true,
+    "raw_id_to_runtime_slot_0x46A668": [
+      {
+        "raw_id": 0,
+        "mapped_index": 21,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 1,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 2,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 3,
+        "mapped_index": 22,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 4,
+        "mapped_index": 23,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 5,
+        "mapped_index": 24,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 6,
+        "mapped_index": 25,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 7,
+        "mapped_index": 26,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 8,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 9,
+        "mapped_index": 8,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 10,
+        "mapped_index": 15,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 11,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 12,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 13,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 14,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 15,
+        "mapped_index": 10,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 16,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 17,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 18,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 19,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 20,
+        "mapped_index": -1,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 21,
+        "mapped_index": 0,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 22,
+        "mapped_index": 3,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 23,
+        "mapped_index": 4,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 24,
+        "mapped_index": 5,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 25,
+        "mapped_index": 6,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 26,
+        "mapped_index": 7,
+        "second_dword": 0
+      },
+      {
+        "raw_id": 27,
+        "mapped_index": -1,
+        "second_dword": 0
+      }
+    ],
+    "presentation_channels": [
+      {
+        "channel": 0,
+        "child_offset": "+0x598",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 488,
+            "field_offset_hex": "+0x1E8",
+            "selector": 1,
+            "runtime_index": 0,
+            "raw_ids_via_0x46A668": [
+              21
+            ]
+          },
+          {
+            "field_offset": 572,
+            "field_offset_hex": "+0x23C",
+            "selector": 12,
+            "runtime_index": 21,
+            "raw_ids_via_0x46A668": [
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "channel": 1,
+        "child_offset": "+0x59C",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 508,
+            "field_offset_hex": "+0x1FC",
+            "selector": 2,
+            "runtime_index": 5,
+            "raw_ids_via_0x46A668": [
+              24
+            ]
+          },
+          {
+            "field_offset": 584,
+            "field_offset_hex": "+0x248",
+            "selector": 3,
+            "runtime_index": 24,
+            "raw_ids_via_0x46A668": [
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "channel": 2,
+        "child_offset": "+0x5A0",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 500,
+            "field_offset_hex": "+0x1F4",
+            "selector": 7,
+            "runtime_index": 3,
+            "raw_ids_via_0x46A668": [
+              22
+            ]
+          },
+          {
+            "field_offset": 576,
+            "field_offset_hex": "+0x240",
+            "selector": 6,
+            "runtime_index": 22,
+            "raw_ids_via_0x46A668": [
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "channel": 3,
+        "child_offset": "+0x5A4",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 504,
+            "field_offset_hex": "+0x1F8",
+            "selector": 17,
+            "runtime_index": 4,
+            "raw_ids_via_0x46A668": [
+              23
+            ]
+          },
+          {
+            "field_offset": 580,
+            "field_offset_hex": "+0x244",
+            "selector": 4,
+            "runtime_index": 23,
+            "raw_ids_via_0x46A668": [
+              4
+            ]
+          }
+        ]
+      },
+      {
+        "channel": 4,
+        "child_offset": "+0x5A8",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 512,
+            "field_offset_hex": "+0x200",
+            "selector": 14,
+            "runtime_index": 6,
+            "raw_ids_via_0x46A668": [
+              25
+            ]
+          },
+          {
+            "field_offset": 588,
+            "field_offset_hex": "+0x24C",
+            "selector": 13,
+            "runtime_index": 25,
+            "raw_ids_via_0x46A668": [
+              6
+            ]
+          }
+        ]
+      },
+      {
+        "channel": 5,
+        "child_offset": "+0x5AC",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 516,
+            "field_offset_hex": "+0x204",
+            "selector": 10,
+            "runtime_index": 7,
+            "raw_ids_via_0x46A668": [
+              26
+            ]
+          },
+          {
+            "field_offset": 592,
+            "field_offset_hex": "+0x250",
+            "selector": 11,
+            "runtime_index": 26,
+            "raw_ids_via_0x46A668": [
+              7
+            ]
+          }
+        ]
+      },
+      {
+        "channel": 6,
+        "child_offset": "+0x5B0",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 492,
+            "field_offset_hex": "+0x1EC",
+            "selector": 5,
+            "runtime_index": 1,
+            "raw_ids_via_0x46A668": []
+          }
+        ]
+      },
+      {
+        "channel": 7,
+        "child_offset": "+0x5B4",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 496,
+            "field_offset_hex": "+0x1F0",
+            "selector": 18,
+            "runtime_index": 2,
+            "raw_ids_via_0x46A668": []
+          }
+        ]
+      },
+      {
+        "channel": 8,
+        "child_offset": "+0x5B8",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 548,
+            "field_offset_hex": "+0x224",
+            "selector": 8,
+            "runtime_index": 15,
+            "raw_ids_via_0x46A668": [
+              10
+            ]
+          },
+          {
+            "field_offset": 528,
+            "field_offset_hex": "+0x210",
+            "selector": 19,
+            "runtime_index": 10,
+            "raw_ids_via_0x46A668": [
+              15
+            ]
+          }
+        ]
+      },
+      {
+        "channel": 9,
+        "child_offset": "+0x5BC",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 532,
+            "field_offset_hex": "+0x214",
+            "selector": 20,
+            "runtime_index": 11,
+            "raw_ids_via_0x46A668": []
+          }
+        ]
+      },
+      {
+        "channel": 10,
+        "child_offset": "+0x5C0",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 540,
+            "field_offset_hex": "+0x21C",
+            "selector": 21,
+            "runtime_index": 13,
+            "raw_ids_via_0x46A668": []
+          }
+        ]
+      },
+      {
+        "channel": 11,
+        "child_offset": "+0x5C4",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 544,
+            "field_offset_hex": "+0x220",
+            "selector": 9,
+            "runtime_index": 14,
+            "raw_ids_via_0x46A668": []
+          }
+        ]
+      },
+      {
+        "channel": 12,
+        "child_offset": "+0x5C8",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 552,
+            "field_offset_hex": "+0x228",
+            "selector": 16,
+            "runtime_index": 16,
+            "raw_ids_via_0x46A668": []
+          }
+        ]
+      },
+      {
+        "channel": 13,
+        "child_offset": "+0x5CC",
+        "zero_fallback_selector": 0,
+        "routes": [
+          {
+            "field_offset": 524,
+            "field_offset_hex": "+0x20C",
+            "selector": 22,
+            "runtime_index": 9,
+            "raw_ids_via_0x46A668": []
+          }
+        ]
+      }
+    ],
+    "machine_checks_pass": true
+  },
+  "itf0052": {
+    "path": "/mnt/data/work46/itf_extract/tdg/ITF/ITF0052.SF2",
+    "raw_sha256": "ed43a3f863127417e5d08e8ab6e4355f141f40214b44fca2bde22aa363ea3d33",
+    "raw_size": 38290,
+    "compression": {
+      "raw_size": 38290,
+      "compression_flag_0x0B": 0,
+      "compressed_wrapper": false
+    },
+    "tile_width": 64,
+    "tile_height": 48,
+    "section_counts": [
+      23,
+      23,
+      23,
+      0
+    ],
+    "count_shape_23_23_23_0": true,
+    "selector_valid_range_from_asset": [
+      0,
+      22
+    ],
+    "section0_section1_section2_one_to_one": true,
+    "section0": [
+      {
+        "selector": 0,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 0,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 1,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 1,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 2,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 2,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 3,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 3,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 4,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 4,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 5,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 5,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 6,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 6,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 7,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 7,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 8,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 8,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 9,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 9,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 10,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 10,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 11,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 11,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 12,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 12,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 13,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 13,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 14,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 14,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 15,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 15,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 16,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 16,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 17,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 17,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 18,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 18,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 19,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 19,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 20,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 20,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 21,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 21,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": 0,
+        "render_mode": 0
+      },
+      {
+        "selector": 22,
+        "record_size": 123,
+        "layer_count": 1,
+        "section1_index": 22,
+        "layer_x": 0,
+        "layer_y": 0,
+        "serialized_metadata_i32_06": -1,
+        "render_mode": 0
+      }
+    ],
+    "section1": [
+      {
+        "selector": 0,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 0
+      },
+      {
+        "selector": 1,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 1
+      },
+      {
+        "selector": 2,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 2
+      },
+      {
+        "selector": 3,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 3
+      },
+      {
+        "selector": 4,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 4
+      },
+      {
+        "selector": 5,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 5
+      },
+      {
+        "selector": 6,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 6
+      },
+      {
+        "selector": 7,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 7
+      },
+      {
+        "selector": 8,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 8
+      },
+      {
+        "selector": 9,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 9
+      },
+      {
+        "selector": 10,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 10
+      },
+      {
+        "selector": 11,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 11
+      },
+      {
+        "selector": 12,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 12
+      },
+      {
+        "selector": 13,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 13
+      },
+      {
+        "selector": 14,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 14
+      },
+      {
+        "selector": 15,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 15
+      },
+      {
+        "selector": 16,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 16
+      },
+      {
+        "selector": 17,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 17
+      },
+      {
+        "selector": 18,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 18
+      },
+      {
+        "selector": 19,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 19
+      },
+      {
+        "selector": 20,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 20
+      },
+      {
+        "selector": 21,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 21
+      },
+      {
+        "selector": 22,
+        "record_size": 26,
+        "cols": 1,
+        "rows": 1,
+        "field_u32_04": 25,
+        "field_u32_08": 25,
+        "section2_tile_index": 22
+      }
+    ]
+  },
+  "frozen_boundary": [
+    "Battle状态UI构造器创建14个独立表现child：两排各7个。",
+    "14个child全部加载Fight\\ITF\\ITF0052.SF2；第一排坐标x=16+30*n,y=249，第二排x=16+30*n,y=278。",
+    "状态更新函数有14个逻辑child槽；机器码共有15条0x43E6F0 direct call，因为最后一个+0x5CC槽的真/假分支各自直接call后return，其余13槽在分支汇聚点call；每路无条件命中时回退selector 0。",
+    "ITF0052.SF2严格包含23个Section0/Section1/Section2记录、0个Section3；selector合法资产索引为0..22。",
+    "ITF0052的23个Section0均只有1个Layer，并严格一一引用同编号Section1；23个Section1均为1x1并严格一一引用同编号Section2。",
+    "21个非零selector分支的RoleDefinition字段与selector常量均由机器码逐项复核；selector 15不在0x41CD79..0x41D114这14路update mux中出现，但不得据此宣称全程序未使用。",
+    "raw ID仅在0x46A668存在非负映射时才能安全反链到这些runtime slot；没有映射的runtime字段保持作者业务名UNKNOWN。"
+  ],
+  "forbidden_overreach": [
+    "不得只凭联系表图标外观把selector或runtime slot命名为中毒、睡眠、麻痹、石化等作者状态名。",
+    "不得把selector code直接叫frame；这里证明的是ITF0052 Section0 action/state entry索引。",
+    "不得把selector 15写成unused/dead；本节点只证明它不由这一段14路update mux选择。"
+  ]
+}

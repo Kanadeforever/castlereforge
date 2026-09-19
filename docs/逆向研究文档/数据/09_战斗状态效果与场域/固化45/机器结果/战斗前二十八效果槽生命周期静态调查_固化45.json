@@ -1,0 +1,315 @@
+{
+  "工具版本": "0.1.0-固化45",
+  "固化节点": 45,
+  "输入": {
+    "RPG.exe": "/mnt/data/work45/input/RPG.exe",
+    "RPG.exe大小": 462848,
+    "RPG.exe_SHA256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "当前org_SHA256参考": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "RPG.exe_SHA256_matches_current_org": true,
+    "multimedia.zip": "/mnt/data/multimedia.zip",
+    "multimedia.zip大小": 168438144,
+    "multimedia.zip_SHA256": "faa994d6e47b46ce610e75019e8a1da35822560781ba9e8e160814571e952f1f"
+  },
+  "结构边界": {
+    "RoleDefinition大小": 848,
+    "RoleDefinition复制DWORD数": 212,
+    "FightRole.RoleDefinition偏移": 2124,
+    "RoleDefinition内39槽起点": 488,
+    "FightRole内39槽起点": 2612,
+    "完整序列化槽数": 39,
+    "0x4231D0清零槽数": 28,
+    "0x4231D0清零字节数": 112,
+    "后11槽起点": 2724,
+    "后11槽数量": 11,
+    "pending起点": 204,
+    "pending槽数": 39
+  },
+  "机器码断言": [
+    {
+      "地址": "0x004231D1",
+      "含义": "0x4231D0 清零目标起点 FightRole+0xA34",
+      "期望机器码": "8d b9 34 0a 00 00",
+      "实际机器码": "8d b9 34 0a 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x004231D7",
+      "含义": "0x4231D0 清零计数固定为28 DWORD",
+      "期望机器码": "b9 1c 00 00 00",
+      "实际机器码": "b9 1c 00 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x004231DE",
+      "含义": "0x4231D0 执行28项 rep stosd",
+      "期望机器码": "f3 ab",
+      "实际机器码": "f3 ab",
+      "PASS": true
+    },
+    {
+      "地址": "0x0041F27D",
+      "含义": "FightRole复位helper调用0x4231D0",
+      "期望机器码": "e8 4e 3f 00 00",
+      "实际机器码": "e8 4e 3f 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0041F284",
+      "含义": "FightRole复位helper的pending数组起点+0xCC",
+      "期望机器码": "8d 8e cc 00 00 00",
+      "实际机器码": "8d 8e cc 00 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0041F297",
+      "含义": "FightRole复位helper独立清39项pending",
+      "期望机器码": "83 f8 27",
+      "实际机器码": "83 f8 27",
+      "PASS": true
+    },
+    {
+      "地址": "0x004231F3",
+      "含义": "失效路径读取FightRole+0x87C主生存资源",
+      "期望机器码": "8b 86 7c 08 00 00",
+      "实际机器码": "8b 86 7c 08 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0042320E",
+      "含义": "失效路径把FightRole+0x72C设为-1",
+      "期望机器码": "c7 86 2c 07 00 00 ff ff ff ff",
+      "实际机器码": "c7 86 2c 07 00 00 ff ff ff ff",
+      "PASS": true
+    },
+    {
+      "地址": "0x00423218",
+      "含义": "失效路径把FightRole+0x87C清零",
+      "期望机器码": "c7 86 7c 08 00 00 00 00 00 00",
+      "实际机器码": "c7 86 7c 08 00 00 00 00 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0042329B",
+      "含义": "主生存资源归零失效路径调用0x4231D0",
+      "期望机器码": "e8 30 ff ff ff",
+      "实际机器码": "e8 30 ff ff ff",
+      "PASS": true
+    },
+    {
+      "地址": "0x0041F166",
+      "含义": "FightRole构造时RoleDefinition尺寸=0x350",
+      "期望机器码": "b9 d4 00 00 00",
+      "实际机器码": "b9 d4 00 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0041F171",
+      "含义": "FightRole构造时RoleDefinition目标+0x84C",
+      "期望机器码": "8d be 4c 08 00 00",
+      "实际机器码": "8d be 4c 08 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0041F184",
+      "含义": "FightRole构造时整条RoleDefinition rep stosd",
+      "期望机器码": "f3 ab",
+      "实际机器码": "f3 ab",
+      "PASS": true
+    },
+    {
+      "地址": "0x0041F661",
+      "含义": "API加载器复制完整0x350 RoleDefinition",
+      "期望机器码": "b9 d4 00 00 00",
+      "实际机器码": "b9 d4 00 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x0041F666",
+      "含义": "API加载器执行RoleDefinition rep movsd",
+      "期望机器码": "f3 a5",
+      "实际机器码": "f3 a5",
+      "PASS": true
+    },
+    {
+      "地址": "0x004426E7",
+      "含义": "战斗角色装载复制完整0x350 RoleDefinition",
+      "期望机器码": "b9 d4 00 00 00",
+      "实际机器码": "b9 d4 00 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x004426F6",
+      "含义": "战斗角色装载执行RoleDefinition rep movsd",
+      "期望机器码": "f3 a5",
+      "实际机器码": "f3 a5",
+      "PASS": true
+    },
+    {
+      "地址": "0x004426F8",
+      "含义": "战斗角色装载恢复FightRole this指针",
+      "期望机器码": "8d 88 04 73 00 00",
+      "实际机器码": "8d 88 04 73 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x00442708",
+      "含义": "战斗角色装载完整复制后调用0x4231D0",
+      "期望机器码": "e8 c3 0a fe ff",
+      "实际机器码": "e8 c3 0a fe ff",
+      "PASS": true
+    },
+    {
+      "地址": "0x00443D9B",
+      "含义": "动态创建链识别Firttech 0x161 呼叫增援",
+      "期望机器码": "3d 61 01 00 00",
+      "实际机器码": "3d 61 01 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x00443DA8",
+      "含义": "动态创建链识别Firttech 0x169 屍魔召喚",
+      "期望机器码": "3d 69 01 00 00",
+      "实际机器码": "3d 69 01 00 00",
+      "PASS": true
+    },
+    {
+      "地址": "0x00443F39",
+      "含义": "特殊召唤动态角色先调用0x41F2B0",
+      "期望机器码": "e8 72 b3 fd ff",
+      "实际机器码": "e8 72 b3 fd ff",
+      "PASS": true
+    },
+    {
+      "地址": "0x00443F40",
+      "含义": "特殊召唤动态角色紧接调用0x4231D0",
+      "期望机器码": "e8 8b f2 fd ff",
+      "实际机器码": "e8 8b f2 fd ff",
+      "PASS": true
+    }
+  ],
+  "机器码断言通过数": 23,
+  "机器码断言总数": 23,
+  "机器码断言_PASS": true,
+  "direct_E8_caller断言": [
+    {
+      "目标函数": "0x004231D0",
+      "含义": "前28 runtime效果槽 lifecycle reset primitive 的全部direct callers",
+      "期望callers": [
+        "0x0041F27D",
+        "0x0042329B",
+        "0x00442708",
+        "0x00443F40"
+      ],
+      "实际callers": [
+        "0x0041F27D",
+        "0x0042329B",
+        "0x00442708",
+        "0x00443F40"
+      ],
+      "PASS": true
+    },
+    {
+      "目标函数": "0x0041F230",
+      "含义": "FightRole复位helper只被构造/析构复位两处直接调用",
+      "期望callers": [
+        "0x0041F106",
+        "0x0041F1DD"
+      ],
+      "实际callers": [
+        "0x0041F106",
+        "0x0041F1DD"
+      ],
+      "PASS": true
+    },
+    {
+      "目标函数": "0x004231F0",
+      "含义": "主生存资源归零失效helper的全部direct callers",
+      "期望callers": [
+        "0x0042070E",
+        "0x00421043"
+      ],
+      "实际callers": [
+        "0x0042070E",
+        "0x00421043"
+      ],
+      "PASS": true
+    },
+    {
+      "目标函数": "0x0041F2B0",
+      "含义": "角色/API装载helper分别用于战斗编队装载与特殊召唤动态创建",
+      "期望callers": [
+        "0x0044267C",
+        "0x00443F39"
+      ],
+      "实际callers": [
+        "0x0044267C",
+        "0x00443F39"
+      ],
+      "PASS": true
+    },
+    {
+      "目标函数": "0x0041F580",
+      "含义": "Public/API.ENC RoleDefinition加载器的唯一direct caller",
+      "期望callers": [
+        "0x0041F30D"
+      ],
+      "实际callers": [
+        "0x0041F30D"
+      ],
+      "PASS": true
+    },
+    {
+      "目标函数": "0x00443D90",
+      "含义": "呼叫增援/屍魔召喚动态角色创建入口的唯一direct caller",
+      "期望callers": [
+        "0x0042040A"
+      ],
+      "实际callers": [
+        "0x0042040A"
+      ],
+      "PASS": true
+    }
+  ],
+  "direct_E8_caller断言通过数": 6,
+  "direct_E8_caller断言总数": 6,
+  "direct_E8_caller断言_PASS": true,
+  "Firttech资源证据": {
+    "zip_member": "multimedia/public/Firttech.enc",
+    "encrypted_size": 280000,
+    "decoded_size": 280000,
+    "decoded_sha256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+    "expected_decoded_sha256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+    "sha256_PASS": true,
+    "record_size": 560,
+    "record_count": 500,
+    "records": [
+      {
+        "action_id": "0x161",
+        "record_index": 353,
+        "expected_name": "呼叫增援",
+        "actual_name": "呼叫增援",
+        "PASS": true
+      },
+      {
+        "action_id": "0x169",
+        "record_index": 361,
+        "expected_name": "屍魔召喚",
+        "actual_name": "屍魔召喚",
+        "PASS": true
+      }
+    ],
+    "records_PASS": true
+  },
+  "Firttech资源证据_PASS": true,
+  "结论": [
+    "0x4231D0 是 raw effect 0..27 的28槽生命周期重置 primitive：从 FightRole+0xA34 起仅清28个DWORD。",
+    "FightRole构造/析构复位helper会调用0x4231D0，同时另行把FightRole+0xCC的39项pending全部清零。",
+    "主生存资源 FightRole+0x87C 归零/失效时会调用0x4231D0，因此死亡/失效也只重置前28 runtime槽。",
+    "战斗角色装载会先复制完整0x350 RoleDefinition（包含39槽），随后只调用0x4231D0清前28槽。",
+    "Firttech 0x161=呼叫增援、0x169=屍魔召喚；其动态FightRole创建链在角色/API装载后立即调用0x4231D0。",
+    "因此后11槽不是0x4231D0的目标；若其他版本/资产在后11槽存在非零序列化值，当前原版这条Battle生命周期初始化会保留它们。",
+    "这里仍不能把后11槽命名为reserved/unused/dead；只能证明它们不属于当前已证raw effect 0..27生命周期reset primitive。"
+  ],
+  "overall_pass": true
+}

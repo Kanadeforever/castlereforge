@@ -1,0 +1,11 @@
+Oracle: RPG.exe SHA-256 b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf
+
+0x0046A7A0  ArticleNO Pointer is NULL! file:
+0x0046A7C4  DamageInfo Pointer is NULL! file:
+0x0046A7E8  DesPerformer Pointer is NULL! file:
+0x0046A80C  AttPerformer Pointer is NULL! file:
+0x0046A830  D:\...\APManager\FightMode\Fight\DamageProcessor.CPP
+0x0046C5D8  public\Enemy_AI.ENC
+0x0046C5C4  public\MagicCon.ENC
+
+注：源码路径前缀含 Big5/CP950 字节，本文只保留可确定的 ASCII 尾部，不臆测损坏字节。

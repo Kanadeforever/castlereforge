@@ -1,0 +1,611 @@
+{
+  "工具": "youcheng_battle_class56_action_state_inspector.py",
+  "工具版本": "0.7D-solid64.0",
+  "固化节点": 64,
+  "目标": "在固化56基础上闭合class5/class6第三处角色动作状态路由、BC0/BC6结束门，以及class6跳过的来源依赖元数据生命周期。",
+  "输入": {
+    "原版RPG.exe": "/mnt/data/solid64_inputs/RPG.exe",
+    "研究版RPG.exe": "/mnt/data/RPG.exe",
+    "Firttech.enc": "/mnt/data/solid64_inputs/Firttech.enc",
+    "Magiccon.enc": "/mnt/data/solid64_inputs/Magiccon.enc"
+  },
+  "EXE哈希检查": [
+    {
+      "名称": "完全未修改原版RPG.exe",
+      "实际SHA256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+      "预期SHA256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+      "PASS": true
+    },
+    {
+      "名称": "历史研究版RPG.exe",
+      "实际SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+      "预期SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+      "PASS": true
+    }
+  ],
+  "机器码证据": {
+    "关键片段哈希": [
+      {
+        "名称": "每目标class分派与类四第二次调用门",
+        "范围": "0x00422B86..0x00422C20",
+        "长度": 155,
+        "实际SHA256": "ddfdb21432852e91ec21b2ee852c502713b793e3ff48bdd1e2be5140987a1662",
+        "预期SHA256": "ddfdb21432852e91ec21b2ee852c502713b793e3ff48bdd1e2be5140987a1662",
+        "PASS": true
+      },
+      {
+        "名称": "主计算器class0前置门与类五六表面比较",
+        "范围": "0x0042C6ED..0x0042C7C7",
+        "长度": 219,
+        "实际SHA256": "f9524167d9dfe7b6d36843eb370c4eca270ace7e4ec128d24f2479e128fcdd82",
+        "预期SHA256": "f9524167d9dfe7b6d36843eb370c4eca270ace7e4ec128d24f2479e128fcdd82",
+        "PASS": true
+      },
+      {
+        "名称": "结果应用阶段类六运行时元数据抑制",
+        "范围": "0x00420F1D..0x00420F77",
+        "长度": 91,
+        "实际SHA256": "2c746646d32e4f27c6a7c83526d2af4f79b31273177dbcd1bb494f67e7c45cc8",
+        "预期SHA256": "2c746646d32e4f27c6a7c83526d2af4f79b31273177dbcd1bb494f67e7c45cc8",
+        "PASS": true
+      },
+      {
+        "名称": "结果阶段类六显示请求抑制",
+        "范围": "0x0042159D..0x0042160C",
+        "长度": 112,
+        "实际SHA256": "cabd9daafc3af7d5165bf38e11df98094dbad01b9f54a3173fe0f01abc434665",
+        "预期SHA256": "cabd9daafc3af7d5165bf38e11df98094dbad01b9f54a3173fe0f01abc434665",
+        "PASS": true
+      },
+      {
+        "名称": "五十槽结果显示请求队列写入器",
+        "范围": "0x00446DF0..0x00446E56",
+        "长度": 103,
+        "实际SHA256": "4d77c50160de39222df5fc26ae3e3765d17fe2423408b7d6bc412157b4d95bf4",
+        "预期SHA256": "4d77c50160de39222df5fc26ae3e3765d17fe2423408b7d6bc412157b4d95bf4",
+        "PASS": true
+      }
+    ],
+    "原版与研究版关键范围等价": [
+      {
+        "名称": "结果应用主范围",
+        "范围": "0x00420ED0..0x00421689",
+        "长度": 1978,
+        "原版SHA256": "68844a8e51d7d86547fd233d60e0a32c53881fa27eea30b0c89eea7503a0dc90",
+        "研究版SHA256": "68844a8e51d7d86547fd233d60e0a32c53881fa27eea30b0c89eea7503a0dc90",
+        "逐字节完全一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "每目标动作分派范围",
+        "范围": "0x00422AB0..0x00422CAE",
+        "长度": 511,
+        "原版SHA256": "66cfd56bebf05c61fb0e49c9018a48a82405516bec6ef279020cb6db3371bfba",
+        "研究版SHA256": "66cfd56bebf05c61fb0e49c9018a48a82405516bec6ef279020cb6db3371bfba",
+        "逐字节完全一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "FIRTTECH主计算器范围",
+        "范围": "0x0042C680..0x0042CC93",
+        "长度": 1556,
+        "原版SHA256": "93ecb73e835cef8079ab5d5843f40e0f4eeb157a753c6b8d5c52d96115ec0f2d",
+        "研究版SHA256": "93ecb73e835cef8079ab5d5843f40e0f4eeb157a753c6b8d5c52d96115ec0f2d",
+        "逐字节完全一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "结果显示请求队列写入范围",
+        "范围": "0x00446DF0..0x00446E56",
+        "长度": 103,
+        "原版SHA256": "4d77c50160de39222df5fc26ae3e3765d17fe2423408b7d6bc412157b4d95bf4",
+        "研究版SHA256": "4d77c50160de39222df5fc26ae3e3765d17fe2423408b7d6bc412157b4d95bf4",
+        "逐字节完全一致": true,
+        "PASS": true
+      }
+    ],
+    "控制流关键机器码": [
+      {
+        "VA": "0x00422B9D",
+        "含义": "每目标分派明确把 class5 与 class6 都送到 0x422BD0 的普通 FIRTTECH 调用入口。",
+        "预期机器码": "83 F9 05 74 2E 83 F9 06 74 29",
+        "实际机器码": "83 F9 05 74 2E 83 F9 06 74 29",
+        "PASS": true
+      },
+      {
+        "VA": "0x00422BF4",
+        "含义": "第一次 0x42A7A0 返回后只有 class4 才进入第二次调用；class5/6直接离开该双调用门。",
+        "预期机器码": "83 F9 04 75 28",
+        "实际机器码": "83 F9 04 75 28",
+        "PASS": true
+      },
+      {
+        "VA": "0x0042C6ED",
+        "含义": "主计算器先读取 class；只要 class!=0 就在 0x42C6F9 跳到 0x42C7A9。",
+        "预期机器码": "8B 47 18 3B C1 89 44 24 28 89 46 4C 0F 85 AA 00 00 00",
+        "实际机器码": "8B 47 18 3B C1 89 44 24 28 89 46 4C 0F 85 AA 00 00 00",
+        "PASS": true
+      },
+      {
+        "VA": "0x0042C770",
+        "含义": "字面存在 class5/6 比较，但它位于前述 class==0 才能自然落入的代码块内部。",
+        "预期机器码": "8B 47 18 83 F8 05 74 05 83 F8 06 75 04 C6 46 0C 00",
+        "实际机器码": "8B 47 18 83 F8 05 74 05 83 F8 06 75 04 C6 46 0C 00",
+        "PASS": true
+      },
+      {
+        "VA": "0x0042C7A9",
+        "含义": "非零 class 到达 0x42C7A9 后只先特判 class4，然后读取 FIRTTECH+0x30 selector。",
+        "预期机器码": "83 F8 04 0F 84 BE 04 00 00 8B 47 30",
+        "实际机器码": "83 F8 04 0F 84 BE 04 00 00 8B 47 30",
+        "PASS": true
+      },
+      {
+        "VA": "0x0042C82C",
+        "含义": "selector 不在2..6跳表时走默认 helper 0x42B5F0；canonical class5/6 的 selector 都是0。",
+        "预期机器码": "8B 54 24 24 8B 5C 24 20 57 52 53 8B CD E8 B2 ED FF FF",
+        "实际机器码": "8B 54 24 24 8B 5C 24 20 57 52 53 8B CD E8 B2 ED FF FF",
+        "PASS": true
+      },
+      {
+        "VA": "0x00420F52",
+        "含义": "普通 FIRTTECH 结果应用路径读取 class，并在 class6 时跳过后面的两项目标运行时元数据写入。",
+        "预期机器码": "8B 97 48 08 00 00 85 D2 74 1C 39 6A 18 74 17",
+        "实际机器码": "8B 97 48 08 00 00 85 D2 74 1C 39 6A 18 74 17",
+        "PASS": true
+      },
+      {
+        "VA": "0x00420F61",
+        "含义": "未被 class6 门跳过时写 target+0xCE8 与 target+0xDE0；这里只保留中性字段描述。",
+        "预期机器码": "89 99 E8 0C 00 00 8B 08 8B 14 8D 94 FD 89 00 8B 0F 89 8A E0 0D 00 00",
+        "实际机器码": "89 99 E8 0C 00 00 8B 08 8B 14 8D 94 FD 89 00 8B 0F 89 8A E0 0D 00 00",
+        "PASS": true
+      },
+      {
+        "VA": "0x0042159D",
+        "含义": "结果阶段再次检查当前 FIRTTECH class；class6 直接跳到 0x42160D。",
+        "预期机器码": "8B 81 48 08 00 00 85 C0 74 06 83 78 18 06 74 60",
+        "实际机器码": "8B 81 48 08 00 00 85 C0 74 06 83 78 18 06 74 60",
+        "PASS": true
+      },
+      {
+        "VA": "0x00421602",
+        "含义": "未被 class6 门跳过且其他条件满足时调用 0x446DF0 提交一条结果显示请求。",
+        "预期机器码": "8B 0D 14 24 8E 00 E8 E3 57 02 00",
+        "实际机器码": "8B 0D 14 24 8E 00 E8 E3 57 02 00",
+        "PASS": true
+      }
+    ],
+    "PASS": true
+  },
+  "固化64新增机器与状态证据": {
+    "关键切片": [
+      {
+        "名称": "class5/6角色动作状态路由",
+        "范围": "0x00443310..0x00443461",
+        "原版SHA256": "a94fa0e2c0ed150a0fe3dabda1aa5d9c9b90d3dd58ce74c59c223943cda418cb",
+        "预期SHA256": "a94fa0e2c0ed150a0fe3dabda1aa5d9c9b90d3dd58ce74c59c223943cda418cb",
+        "原版与研究版逐字节一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "BC0/BC6阻挡通用7D6到7D1结束门",
+        "范围": "0x00442CC3..0x00442D5E",
+        "原版SHA256": "bcb8661c00c403c6defee0ffa39bbb44230414fb3ab7522e0b5a8a5b968c83f6",
+        "预期SHA256": "bcb8661c00c403c6defee0ffa39bbb44230414fb3ab7522e0b5a8a5b968c83f6",
+        "原版与研究版逐字节一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "来源依赖字段初始化",
+        "范围": "0x0041F10D..0x0041F160",
+        "原版SHA256": "f44696d9fc987124c04c271d68dbdb0e982443cac23fbb6251d6019ab94b2e19",
+        "预期SHA256": "f44696d9fc987124c04c271d68dbdb0e982443cac23fbb6251d6019ab94b2e19",
+        "原版与研究版逐字节一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "普通结果应用来源依赖写入与class6跳过门",
+        "范围": "0x00420F1D..0x00420F78",
+        "原版SHA256": "2c746646d32e4f27c6a7c83526d2af4f79b31273177dbcd1bb494f67e7c45cc8",
+        "预期SHA256": "2c746646d32e4f27c6a7c83526d2af4f79b31273177dbcd1bb494f67e7c45cc8",
+        "原版与研究版逐字节一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "来源依赖首个可行动消费者",
+        "范围": "0x00422530..0x004225A7",
+        "原版SHA256": "fc702ac90c06a702f922851d208e136ee14e532ec2b75a6af49466c7b551be8b",
+        "预期SHA256": "fc702ac90c06a702f922851d208e136ee14e532ec2b75a6af49466c7b551be8b",
+        "原版与研究版逐字节一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "来源依赖队伍级状态判定消费者",
+        "范围": "0x004226F1..0x0042282B",
+        "原版SHA256": "6f840d8e81a5132924bb024cf8108856138afcce666125b50a037b6f4b746510",
+        "预期SHA256": "6f840d8e81a5132924bb024cf8108856138afcce666125b50a037b6f4b746510",
+        "原版与研究版逐字节一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "BC0当前角色状态在候选缓存构建中被排除",
+        "范围": "0x00445FB0..0x0044601F",
+        "原版SHA256": "d2f3e6eee2ff96a62e4248a20715ffbfb59799cbff9bfec2a71dffffe90d1473",
+        "预期SHA256": "d2f3e6eee2ff96a62e4248a20715ffbfb59799cbff9bfec2a71dffffe90d1473",
+        "原版与研究版逐字节一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "BC6当前角色状态归零第一结果DWORD",
+        "范围": "0x004214D3..0x00421560",
+        "原版SHA256": "40040f14c3465712eb35467a9cff1cbcb2259a82d46e8c78d63814219d84fedc",
+        "预期SHA256": "40040f14c3465712eb35467a9cff1cbcb2259a82d46e8c78d63814219d84fedc",
+        "原版与研究版逐字节一致": true,
+        "PASS": true
+      },
+      {
+        "名称": "BC6当前角色状态选择独立0x72动作请求",
+        "范围": "0x00423738..0x00423786",
+        "原版SHA256": "e7ba3697cc60321fa9f25899ed605641d62a8689073d7bc60fc6a90264439406",
+        "预期SHA256": "e7ba3697cc60321fa9f25899ed605641d62a8689073d7bc60fc6a90264439406",
+        "原版与研究版逐字节一致": true,
+        "PASS": true
+      }
+    ],
+    "完整直接位移引用面": {
+      "+0xCE8完整位移字面命中": {
+        "实际": [
+          "0x0041F123",
+          "0x0041F259",
+          "0x00420F3B",
+          "0x00420F63",
+          "0x00420FE8",
+          "0x004214BA",
+          "0x0042253F",
+          "0x004226FC",
+          "0x004227A8",
+          "0x00444EEA"
+        ],
+        "预期": [
+          "0x0041F123",
+          "0x0041F259",
+          "0x00420F3B",
+          "0x00420F63",
+          "0x00420FE8",
+          "0x004214BA",
+          "0x0042253F",
+          "0x004226FC",
+          "0x004227A8",
+          "0x00444EEA"
+        ],
+        "PASS": true
+      },
+      "+0xDE0完整位移字面命中": {
+        "实际": [
+          "0x0041F150",
+          "0x00420F4C",
+          "0x00420F74",
+          "0x00420FF9",
+          "0x0042255F",
+          "0x00422735",
+          "0x004227F2"
+        ],
+        "预期": [
+          "0x0041F150",
+          "0x00420F4C",
+          "0x00420F74",
+          "0x00420FF9",
+          "0x0042255F",
+          "0x00422735",
+          "0x004227F2"
+        ],
+        "PASS": true
+      },
+      "+0x10C8完整位移字面命中": {
+        "实际": [
+          "0x00442B78",
+          "0x00442BED",
+          "0x00442EA0",
+          "0x00442EFF",
+          "0x00442F31",
+          "0x00442F53",
+          "0x00442F96",
+          "0x004430E8",
+          "0x00443396",
+          "0x004433A7",
+          "0x004433B8",
+          "0x004433C4",
+          "0x00443429",
+          "0x004434A0",
+          "0x0044354E"
+        ],
+        "预期": [
+          "0x00442B78",
+          "0x00442BED",
+          "0x00442EA0",
+          "0x00442EFF",
+          "0x00442F31",
+          "0x00442F53",
+          "0x00442F96",
+          "0x004430E8",
+          "0x00443396",
+          "0x004433A7",
+          "0x004433B8",
+          "0x004433C4",
+          "0x00443429",
+          "0x004434A0",
+          "0x0044354E"
+        ],
+        "PASS": true
+      }
+    },
+    "短控制流断言": {
+      "class1_2_4提前跳共享分支": {
+        "实际HEX": "83f8020f848200000083f801747d83f804747851",
+        "预期HEX": "83f8020f848200000083f801747d83f804747851",
+        "PASS": true
+      },
+      "class1_2_4共享分支写BBC": {
+        "实际HEX": "6a038d8f8c100000c787c8100000bc0b0000e84a0bfeffc787c410",
+        "预期HEX": "6a038d8f8c100000c787c8100000bc0b0000e84a0bfeffc787c410",
+        "PASS": true
+      },
+      "BC7字面分支存在但入口class4不可达": {
+        "实际HEX": "83f804750cc787c8100000c70b0000eb0ac787c8100000bb0b0000",
+        "预期HEX": "83f804750cc787c8100000c70b0000eb0ac787c8100000bb0b0000",
+        "PASS": true
+      },
+      "class5写BC0": {
+        "实际HEX": "83f805750cc787c8100000c00b0000eb2c",
+        "预期HEX": "83f805750cc787c8100000c00b0000eb2c",
+        "PASS": true
+      },
+      "class6写BC6": {
+        "实际HEX": "83f806750cc787c8100000c60b0000eb1b",
+        "预期HEX": "83f806750cc787c8100000c60b0000eb1b",
+        "PASS": true
+      },
+      "BC6与BC0阻挡通用结束门": {
+        "实际HEX": "3dc60b00000f848f0000003dc00b00000f8484000000",
+        "预期HEX": "3dc60b00000f848f0000003dc00b00000f8484000000",
+        "PASS": true
+      }
+    },
+    "兼容实现结论": {
+      "第三处class5_6专属分派": "0x443310角色动作启动链先把class1/2/4提前分流到共享分支，并在0x443427把+0x10C8写为0xBBC；class5写0xBC0，class6写0xBC6，其它普通非1/2/4/5/6路径写0xBBB。后段虽字面存在class4->0xBC7分支，但入口class4已在0x443370提前跳走，因此该分支在当前入口路径不可达。",
+      "BC0_BC6结束门": "Battle主循环到达通用动作收尾条件时，+0x10C8为0xBC6或0xBC0都会在0x442D10/0x442D1B直接跳过通常的0x7D6->0x7D1转换。兼容实现必须保留这两个状态的特殊驻留/收尾语义。",
+      "来源依赖字段协议": "FightRole+0xCE8默认0xFA0，+0xDE0默认-1。普通FIRTTECH结果应用会把目标+0xCE8置0xFA1，+0xDE0记录来源角色槽；后续0x422530与0x4226F1..0x42282B用二者反查来源角色的状态与资源，形成目标对来源角色的运行时依赖/联动判定。class6在固化56已知门0x420F5C跳过这一绑定。",
+      "class6当前状态消费者": "独立的FightRole当前状态+0xCE4若为0xBC6，0x421503会把当前目标第一结果DWORD归零；0x423747还会选择独立的0x72动作请求，而不是该分支通常的0x6C/0x6D请求。本节点没有证明+0x10C8到+0xCE4的具体转移函数，因此只冻结两层状态码共同存在的事实。",
+      "class5当前状态消费者": "独立的FightRole当前状态+0xCE4若为0xBC0，0x445FB0的一条角色候选/缓存构建链会跳过该角色。由于0x445FB0的最高层业务名称尚未闭合，不把它扩大命名为绝对不可选中/不可攻击。",
+      "作者术语边界": "0xBC0/0xBC6、+0x10C8、+0xCE8、+0xDE0的作者正式枚举/字段名仍UNKNOWN。兼容层可中性命名为action_state_code、source_dependency_marker、source_role_slot，但文档必须保留这是兼容命名。"
+    },
+    "范围限制": [
+      "完整位移引用面是对当前同版原版.exe .text内4字节位移字面量的穷举，并由独立objdump指令边界证据交叉核对。",
+      "没有证明运行时计算地址、间接函数指针或其它游戏版本不存在额外访问。",
+      "+0x10C8与FightRole+0xCE4共享0xBC0/0xBC6码值，但本节点尚未闭合二者之间的具体转移函数。",
+      "0x445FB0只中性称为角色候选/缓存构建链，不越界命名为正式目标选择器。"
+    ],
+    "PASS": true
+  },
+  "资源证据": {
+    "输入": {
+      "Firttech.enc": "/mnt/data/solid64_inputs/Firttech.enc",
+      "Magiccon.enc": "/mnt/data/solid64_inputs/Magiccon.enc"
+    },
+    "哈希检查": [
+      {
+        "名称": "Firttech.enc加密文件",
+        "实际SHA256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+        "预期SHA256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+        "PASS": true
+      },
+      {
+        "名称": "Firttech.enc解密明文",
+        "实际SHA256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+        "预期SHA256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+        "PASS": true
+      },
+      {
+        "名称": "Magiccon.enc加密文件",
+        "实际SHA256": "f7e20cf1ceb9f62434401bc15d57b9b561ad3622623d7b664b82c5368e9fb01e",
+        "预期SHA256": "f7e20cf1ceb9f62434401bc15d57b9b561ad3622623d7b664b82c5368e9fb01e",
+        "PASS": true
+      },
+      {
+        "名称": "Magiccon.enc解密明文",
+        "实际SHA256": "a8fb1cb7479cd3db4fafbb68c73bef574f33bf50df65dc49ea81ee96e1118c29",
+        "预期SHA256": "a8fb1cb7479cd3db4fafbb68c73bef574f33bf50df65dc49ea81ee96e1118c29",
+        "PASS": true
+      }
+    ],
+    "FIRTTECH_class分布": {
+      "0": 330,
+      "1": 94,
+      "2": 67,
+      "4": 7,
+      "5": 1,
+      "6": 1
+    },
+    "class5与class6记录检查": [
+      {
+        "class": 5,
+        "预期索引": 320,
+        "预期ID": "0x140",
+        "预期名称": "潛地蟄伏",
+        "命中数量": 1,
+        "分项": {
+          "仅一条该class": true,
+          "FIRTTECH索引正确": true,
+          "FIRTTECH_ID正确": true,
+          "FIRTTECH名称正确": true,
+          "FIRTTECH作者说明为空": true,
+          "FIRTTECH_selector为0": true,
+          "Magiccon同索引ID正确": true,
+          "Magiccon同索引名称正确": true
+        },
+        "PASS": true
+      },
+      {
+        "class": 6,
+        "预期索引": 345,
+        "预期ID": "0x159",
+        "预期名称": "鐵藤纏護",
+        "命中数量": 1,
+        "分项": {
+          "仅一条该class": true,
+          "FIRTTECH索引正确": true,
+          "FIRTTECH_ID正确": true,
+          "FIRTTECH名称正确": true,
+          "FIRTTECH作者说明为空": true,
+          "FIRTTECH_selector为0": true,
+          "Magiccon同索引ID正确": true,
+          "Magiccon同索引名称正确": true
+        },
+        "PASS": true
+      }
+    ],
+    "稀有记录字段": [
+      {
+        "class": 5,
+        "FIRTTECH索引": 320,
+        "FIRTTECH_ID": "0x140",
+        "FIRTTECH名称": "潛地蟄伏",
+        "FIRTTECH作者说明": "",
+        "FIRTTECH_+0x30_selector": 0,
+        "Magiccon索引": 320,
+        "Magiccon_ID": "0x140",
+        "Magiccon名称": "潛地蟄伏",
+        "FIRTTECH_+0x020": 4,
+        "FIRTTECH_+0x024": 0,
+        "FIRTTECH_+0x028": 1,
+        "FIRTTECH_+0x02C": 0,
+        "FIRTTECH_+0x030": 0,
+        "FIRTTECH_+0x034": 0,
+        "FIRTTECH_+0x038": 10,
+        "FIRTTECH_+0x03C": 10,
+        "FIRTTECH_+0x040": 0,
+        "FIRTTECH_+0x044": 2,
+        "FIRTTECH_+0x048": 100,
+        "FIRTTECH_+0x04C": 100,
+        "FIRTTECH_+0x050": 100,
+        "FIRTTECH_+0x054": 100,
+        "FIRTTECH_+0x058": 0,
+        "FIRTTECH_+0x05C": 0,
+        "FIRTTECH_+0x060": 0,
+        "FIRTTECH_+0x064": 0,
+        "FIRTTECH_+0x068": 0,
+        "FIRTTECH_+0x06C": 0,
+        "FIRTTECH_+0x070": 0,
+        "FIRTTECH_+0x074": 0,
+        "FIRTTECH_+0x078": 0,
+        "FIRTTECH_+0x07C": 0,
+        "FIRTTECH_+0x080": 0,
+        "FIRTTECH_+0x084": 0,
+        "FIRTTECH_+0x088": 0,
+        "FIRTTECH_+0x08C": 10000,
+        "FIRTTECH_+0x090": 160000,
+        "FIRTTECH_+0x094": 1,
+        "FIRTTECH_+0x098": 1,
+        "FIRTTECH_+0x1E8": 1,
+        "FIRTTECH_+0x1EC": 0,
+        "Magiccon_+0x18": 70,
+        "Magiccon_+0x1C": 100,
+        "Magiccon_+0x20": 100,
+        "Magiccon_+0x24": 90,
+        "Magiccon_+0x28": 1,
+        "Magiccon_+0x2C": 1,
+        "Magiccon_+0x30": 28,
+        "Magiccon_+0x34": -1,
+        "Magiccon_+0x38": -1,
+        "Magiccon_+0x3C": -1
+      },
+      {
+        "class": 6,
+        "FIRTTECH索引": 345,
+        "FIRTTECH_ID": "0x159",
+        "FIRTTECH名称": "鐵藤纏護",
+        "FIRTTECH作者说明": "",
+        "FIRTTECH_+0x30_selector": 0,
+        "Magiccon索引": 345,
+        "Magiccon_ID": "0x159",
+        "Magiccon名称": "鐵藤纏護",
+        "FIRTTECH_+0x020": 4,
+        "FIRTTECH_+0x024": 0,
+        "FIRTTECH_+0x028": 1,
+        "FIRTTECH_+0x02C": 0,
+        "FIRTTECH_+0x030": 0,
+        "FIRTTECH_+0x034": 100,
+        "FIRTTECH_+0x038": 0,
+        "FIRTTECH_+0x03C": 0,
+        "FIRTTECH_+0x040": 0,
+        "FIRTTECH_+0x044": 0,
+        "FIRTTECH_+0x048": 100,
+        "FIRTTECH_+0x04C": 0,
+        "FIRTTECH_+0x050": 100,
+        "FIRTTECH_+0x054": 0,
+        "FIRTTECH_+0x058": 0,
+        "FIRTTECH_+0x05C": 0,
+        "FIRTTECH_+0x060": 0,
+        "FIRTTECH_+0x064": 0,
+        "FIRTTECH_+0x068": 0,
+        "FIRTTECH_+0x06C": 0,
+        "FIRTTECH_+0x070": 0,
+        "FIRTTECH_+0x074": 0,
+        "FIRTTECH_+0x078": 0,
+        "FIRTTECH_+0x07C": 0,
+        "FIRTTECH_+0x080": 0,
+        "FIRTTECH_+0x084": 0,
+        "FIRTTECH_+0x088": 0,
+        "FIRTTECH_+0x08C": 50000,
+        "FIRTTECH_+0x090": 350000,
+        "FIRTTECH_+0x094": 1,
+        "FIRTTECH_+0x098": 1,
+        "FIRTTECH_+0x1E8": 0,
+        "FIRTTECH_+0x1EC": 0,
+        "Magiccon_+0x18": 50,
+        "Magiccon_+0x1C": 100,
+        "Magiccon_+0x20": 100,
+        "Magiccon_+0x24": 80,
+        "Magiccon_+0x28": 0,
+        "Magiccon_+0x2C": -1,
+        "Magiccon_+0x30": -1,
+        "Magiccon_+0x34": -1,
+        "Magiccon_+0x38": -1,
+        "Magiccon_+0x3C": -1
+      }
+    ],
+    "PASS": true
+  },
+  "静态闭合结论": {
+    "结论": {
+      "入口分派": "0x422AB0 每目标分派对 class5 与 class6 都只执行一次 0x42A7A0；第二次 0x42A7A0 的专用门只属于 class4。",
+      "0x42C770假专用分支边界": "对入口 class5/class6 而言，0x42C773/0x42C778 的 class5/class6 比较不可达：0x42C6F9 已在 class!=0 时跳到 0x42C7A9。不能把这两条比较解释成入口类五/六专用计算。",
+      "实际计算路径": "canonical class5『潛地蟄伏』与 class6『鐵藤纏護』的 FIRTTECH+0x30 都为0；它们绕过 class4 固定返回后进入 selector 默认 helper 0x42B5F0，随后继续通用后处理。",
+      "class6下游特判一": "在 0x420F52 所在普通 FIRTTECH 结果应用分支中，class6 于 0x420F5C 被排除，从而跳过 target+0xCE8 与 target+0xDE0 两项运行时元数据写入。注意 action+0xDD0>0 的另一条上游分支不受这个 class6 门控制，因此不能泛化为『任何场景永不写』。",
+      "class6下游特判二": "结果阶段 0x4215A7 对 class6 直接跳到 0x42160D，因此跳过该段原本可能调用的 0x446DF0。0x446DF0 可静态证明是固定50槽请求队列写入器；这里中性称为『战斗结果显示请求队列』，不擅自扩大成『class6没有任何视觉/动画』。",
+      "class5下游": "在本轮已闭合的两个可达特判点中没有 class5 排除；class5 沿通用下游条件执行。这不等于已经证明作者把 class5 定义成某个正式业务枚举。",
+      "作者术语边界": "两条 canonical 稀有记录的作者说明字段均为空；因此 class5/class6 的作者正式枚举名继续记 UNKNOWN，不得仅依据『潛地蟄伏』『鐵藤纏護』名称自行命名。",
+      "Godot兼容规则": "canonical class5/class6 计算应复现非零、非class4、selector0的通用计算路径；class6 还必须按原版门控抑制上述两项特定下游副作用。只抑制已证明的元数据写入与该结果显示请求，不要未经证据关闭其他动画、音频或状态效果。"
+    },
+    "0x446DF0直接CALL地址": [
+      "0x0042113E",
+      "0x00421160",
+      "0x00421608"
+    ],
+    "0x446DF0预期直接CALL地址": [
+      "0x0042113E",
+      "0x00421160",
+      "0x00421608"
+    ],
+    "0x446DF0调用面检查PASS": true,
+    "范围限制": [
+      "本节点闭合的是 canonical class5/class6 的可达计算分派与两个已定位的 class6 下游特判。",
+      "没有闭合 class4 场域建立/容器/消失完整链，也没有闭合 class5/class6 作者正式枚举名。",
+      "没有证明 class6 不产生任何视觉、动画或音频；只证明它跳过 0x4215AD..0x421608 这一结果显示请求块。",
+      "0x420F5C 的元数据抑制结论限定于到达 0x420F52 的普通 FIRTTECH 分支；action+0xDD0>0 另有写入路径。"
+    ],
+    "PASS": true
+  },
+  "总体PASS": true
+}

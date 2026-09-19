@@ -1,0 +1,7895 @@
+{
+  "save_count": 159,
+  "distinct_changed_variables": 535,
+  "change_frequency": [
+    {
+      "index": 1,
+      "count": 57
+    },
+    {
+      "index": 999,
+      "count": 20
+    },
+    {
+      "index": 3,
+      "count": 14
+    },
+    {
+      "index": 4501,
+      "count": 12
+    },
+    {
+      "index": 627,
+      "count": 10
+    },
+    {
+      "index": 25,
+      "count": 8
+    },
+    {
+      "index": 31,
+      "count": 7
+    },
+    {
+      "index": 9,
+      "count": 7
+    },
+    {
+      "index": 551,
+      "count": 6
+    },
+    {
+      "index": 606,
+      "count": 6
+    },
+    {
+      "index": 5,
+      "count": 6
+    },
+    {
+      "index": 0,
+      "count": 5
+    },
+    {
+      "index": 4402,
+      "count": 5
+    },
+    {
+      "index": 4405,
+      "count": 5
+    },
+    {
+      "index": 518,
+      "count": 5
+    },
+    {
+      "index": 4403,
+      "count": 4
+    },
+    {
+      "index": 4406,
+      "count": 4
+    },
+    {
+      "index": 4407,
+      "count": 4
+    },
+    {
+      "index": 4408,
+      "count": 4
+    },
+    {
+      "index": 20,
+      "count": 4
+    },
+    {
+      "index": 4502,
+      "count": 4
+    },
+    {
+      "index": 522,
+      "count": 4
+    },
+    {
+      "index": 3089,
+      "count": 4
+    },
+    {
+      "index": 13,
+      "count": 4
+    },
+    {
+      "index": 544,
+      "count": 4
+    },
+    {
+      "index": 1141,
+      "count": 4
+    },
+    {
+      "index": 3054,
+      "count": 4
+    },
+    {
+      "index": 3057,
+      "count": 4
+    },
+    {
+      "index": 3058,
+      "count": 4
+    },
+    {
+      "index": 3065,
+      "count": 4
+    },
+    {
+      "index": 3066,
+      "count": 4
+    },
+    {
+      "index": 3067,
+      "count": 4
+    },
+    {
+      "index": 3071,
+      "count": 4
+    },
+    {
+      "index": 3072,
+      "count": 4
+    },
+    {
+      "index": 657,
+      "count": 4
+    },
+    {
+      "index": 3209,
+      "count": 4
+    },
+    {
+      "index": 1181,
+      "count": 3
+    },
+    {
+      "index": 10,
+      "count": 3
+    },
+    {
+      "index": 562,
+      "count": 3
+    },
+    {
+      "index": 95,
+      "count": 3
+    },
+    {
+      "index": 651,
+      "count": 3
+    },
+    {
+      "index": 669,
+      "count": 3
+    },
+    {
+      "index": 21,
+      "count": 3
+    },
+    {
+      "index": 1162,
+      "count": 3
+    },
+    {
+      "index": 629,
+      "count": 3
+    },
+    {
+      "index": 4117,
+      "count": 3
+    },
+    {
+      "index": 4118,
+      "count": 3
+    },
+    {
+      "index": 4119,
+      "count": 3
+    },
+    {
+      "index": 4120,
+      "count": 3
+    },
+    {
+      "index": 4121,
+      "count": 3
+    },
+    {
+      "index": 4123,
+      "count": 3
+    },
+    {
+      "index": 4126,
+      "count": 3
+    },
+    {
+      "index": 4087,
+      "count": 3
+    },
+    {
+      "index": 4088,
+      "count": 3
+    },
+    {
+      "index": 4103,
+      "count": 3
+    },
+    {
+      "index": 4107,
+      "count": 3
+    },
+    {
+      "index": 4108,
+      "count": 3
+    },
+    {
+      "index": 4109,
+      "count": 3
+    },
+    {
+      "index": 4110,
+      "count": 3
+    },
+    {
+      "index": 4112,
+      "count": 3
+    },
+    {
+      "index": 4113,
+      "count": 3
+    },
+    {
+      "index": 4115,
+      "count": 3
+    },
+    {
+      "index": 4116,
+      "count": 3
+    },
+    {
+      "index": 32,
+      "count": 3
+    },
+    {
+      "index": 1319,
+      "count": 3
+    },
+    {
+      "index": 1318,
+      "count": 3
+    },
+    {
+      "index": 1335,
+      "count": 3
+    },
+    {
+      "index": 601,
+      "count": 2
+    },
+    {
+      "index": 1051,
+      "count": 2
+    },
+    {
+      "index": 1050,
+      "count": 2
+    },
+    {
+      "index": 3000,
+      "count": 2
+    },
+    {
+      "index": 550,
+      "count": 2
+    },
+    {
+      "index": 4037,
+      "count": 2
+    },
+    {
+      "index": 1103,
+      "count": 2
+    },
+    {
+      "index": 4413,
+      "count": 2
+    },
+    {
+      "index": 1072,
+      "count": 2
+    },
+    {
+      "index": 1217,
+      "count": 2
+    },
+    {
+      "index": 4508,
+      "count": 2
+    },
+    {
+      "index": 515,
+      "count": 2
+    },
+    {
+      "index": 3087,
+      "count": 2
+    },
+    {
+      "index": 4503,
+      "count": 2
+    },
+    {
+      "index": 574,
+      "count": 2
+    },
+    {
+      "index": 575,
+      "count": 2
+    },
+    {
+      "index": 576,
+      "count": 2
+    },
+    {
+      "index": 577,
+      "count": 2
+    },
+    {
+      "index": 578,
+      "count": 2
+    },
+    {
+      "index": 579,
+      "count": 2
+    },
+    {
+      "index": 582,
+      "count": 2
+    },
+    {
+      "index": 3084,
+      "count": 2
+    },
+    {
+      "index": 3082,
+      "count": 2
+    },
+    {
+      "index": 524,
+      "count": 2
+    },
+    {
+      "index": 652,
+      "count": 2
+    },
+    {
+      "index": 24,
+      "count": 2
+    },
+    {
+      "index": 1148,
+      "count": 2
+    },
+    {
+      "index": 3093,
+      "count": 2
+    },
+    {
+      "index": 1175,
+      "count": 2
+    },
+    {
+      "index": 1126,
+      "count": 2
+    },
+    {
+      "index": 1132,
+      "count": 2
+    },
+    {
+      "index": 525,
+      "count": 2
+    },
+    {
+      "index": 1134,
+      "count": 2
+    },
+    {
+      "index": 1139,
+      "count": 2
+    },
+    {
+      "index": 3090,
+      "count": 2
+    },
+    {
+      "index": 642,
+      "count": 2
+    },
+    {
+      "index": 1219,
+      "count": 2
+    },
+    {
+      "index": 100,
+      "count": 2
+    },
+    {
+      "index": 2010,
+      "count": 2
+    },
+    {
+      "index": 1144,
+      "count": 2
+    },
+    {
+      "index": 527,
+      "count": 2
+    },
+    {
+      "index": 528,
+      "count": 2
+    },
+    {
+      "index": 1145,
+      "count": 2
+    },
+    {
+      "index": 1146,
+      "count": 2
+    },
+    {
+      "index": 1147,
+      "count": 2
+    },
+    {
+      "index": 1153,
+      "count": 2
+    },
+    {
+      "index": 4149,
+      "count": 2
+    },
+    {
+      "index": 4150,
+      "count": 2
+    },
+    {
+      "index": 4151,
+      "count": 2
+    },
+    {
+      "index": 4152,
+      "count": 2
+    },
+    {
+      "index": 4153,
+      "count": 2
+    },
+    {
+      "index": 526,
+      "count": 2
+    },
+    {
+      "index": 1155,
+      "count": 2
+    },
+    {
+      "index": 1163,
+      "count": 2
+    },
+    {
+      "index": 4162,
+      "count": 2
+    },
+    {
+      "index": 3059,
+      "count": 2
+    },
+    {
+      "index": 1156,
+      "count": 2
+    },
+    {
+      "index": 529,
+      "count": 2
+    },
+    {
+      "index": 648,
+      "count": 2
+    },
+    {
+      "index": 1157,
+      "count": 2
+    },
+    {
+      "index": 1182,
+      "count": 2
+    },
+    {
+      "index": 653,
+      "count": 2
+    },
+    {
+      "index": 1158,
+      "count": 2
+    },
+    {
+      "index": 1187,
+      "count": 2
+    },
+    {
+      "index": 1232,
+      "count": 2
+    },
+    {
+      "index": 1173,
+      "count": 2
+    },
+    {
+      "index": 4227,
+      "count": 2
+    },
+    {
+      "index": 4228,
+      "count": 2
+    },
+    {
+      "index": 4229,
+      "count": 2
+    },
+    {
+      "index": 4230,
+      "count": 2
+    },
+    {
+      "index": 4231,
+      "count": 2
+    },
+    {
+      "index": 4232,
+      "count": 2
+    },
+    {
+      "index": 4233,
+      "count": 2
+    },
+    {
+      "index": 4234,
+      "count": 2
+    },
+    {
+      "index": 641,
+      "count": 2
+    },
+    {
+      "index": 643,
+      "count": 2
+    },
+    {
+      "index": 1177,
+      "count": 2
+    },
+    {
+      "index": 1178,
+      "count": 2
+    },
+    {
+      "index": 1179,
+      "count": 2
+    },
+    {
+      "index": 4111,
+      "count": 2
+    },
+    {
+      "index": 1188,
+      "count": 2
+    },
+    {
+      "index": 91,
+      "count": 2
+    },
+    {
+      "index": 3033,
+      "count": 2
+    },
+    {
+      "index": 3080,
+      "count": 2
+    },
+    {
+      "index": 4127,
+      "count": 2
+    },
+    {
+      "index": 4128,
+      "count": 2
+    },
+    {
+      "index": 4129,
+      "count": 2
+    },
+    {
+      "index": 4130,
+      "count": 2
+    },
+    {
+      "index": 4131,
+      "count": 2
+    },
+    {
+      "index": 1215,
+      "count": 2
+    },
+    {
+      "index": 668,
+      "count": 2
+    },
+    {
+      "index": 1242,
+      "count": 2
+    },
+    {
+      "index": 3206,
+      "count": 2
+    },
+    {
+      "index": 3207,
+      "count": 2
+    },
+    {
+      "index": 3208,
+      "count": 2
+    },
+    {
+      "index": 3215,
+      "count": 2
+    },
+    {
+      "index": 3217,
+      "count": 2
+    },
+    {
+      "index": 3218,
+      "count": 2
+    },
+    {
+      "index": 3219,
+      "count": 2
+    },
+    {
+      "index": 3231,
+      "count": 2
+    },
+    {
+      "index": 3211,
+      "count": 2
+    },
+    {
+      "index": 3210,
+      "count": 2
+    },
+    {
+      "index": 3212,
+      "count": 2
+    },
+    {
+      "index": 36,
+      "count": 2
+    },
+    {
+      "index": 37,
+      "count": 2
+    },
+    {
+      "index": 1304,
+      "count": 2
+    },
+    {
+      "index": 1309,
+      "count": 2
+    },
+    {
+      "index": 1311,
+      "count": 2
+    },
+    {
+      "index": 1316,
+      "count": 2
+    },
+    {
+      "index": 3213,
+      "count": 2
+    },
+    {
+      "index": 1003,
+      "count": 1
+    },
+    {
+      "index": 501,
+      "count": 1
+    },
+    {
+      "index": 504,
+      "count": 1
+    },
+    {
+      "index": 505,
+      "count": 1
+    },
+    {
+      "index": 1004,
+      "count": 1
+    },
+    {
+      "index": 1005,
+      "count": 1
+    },
+    {
+      "index": 1009,
+      "count": 1
+    },
+    {
+      "index": 1010,
+      "count": 1
+    },
+    {
+      "index": 1013,
+      "count": 1
+    },
+    {
+      "index": 1014,
+      "count": 1
+    },
+    {
+      "index": 1015,
+      "count": 1
+    },
+    {
+      "index": 1016,
+      "count": 1
+    },
+    {
+      "index": 1017,
+      "count": 1
+    },
+    {
+      "index": 539,
+      "count": 1
+    },
+    {
+      "index": 1025,
+      "count": 1
+    },
+    {
+      "index": 1026,
+      "count": 1
+    },
+    {
+      "index": 4025,
+      "count": 1
+    },
+    {
+      "index": 1032,
+      "count": 1
+    },
+    {
+      "index": 1033,
+      "count": 1
+    },
+    {
+      "index": 1034,
+      "count": 1
+    },
+    {
+      "index": 1035,
+      "count": 1
+    },
+    {
+      "index": 506,
+      "count": 1
+    },
+    {
+      "index": 540,
+      "count": 1
+    },
+    {
+      "index": 541,
+      "count": 1
+    },
+    {
+      "index": 1028,
+      "count": 1
+    },
+    {
+      "index": 1029,
+      "count": 1
+    },
+    {
+      "index": 1037,
+      "count": 1
+    },
+    {
+      "index": 1038,
+      "count": 1
+    },
+    {
+      "index": 1039,
+      "count": 1
+    },
+    {
+      "index": 1040,
+      "count": 1
+    },
+    {
+      "index": 1041,
+      "count": 1
+    },
+    {
+      "index": 1042,
+      "count": 1
+    },
+    {
+      "index": 1043,
+      "count": 1
+    },
+    {
+      "index": 1044,
+      "count": 1
+    },
+    {
+      "index": 1045,
+      "count": 1
+    },
+    {
+      "index": 542,
+      "count": 1
+    },
+    {
+      "index": 1031,
+      "count": 1
+    },
+    {
+      "index": 507,
+      "count": 1
+    },
+    {
+      "index": 543,
+      "count": 1
+    },
+    {
+      "index": 565,
+      "count": 1
+    },
+    {
+      "index": 1036,
+      "count": 1
+    },
+    {
+      "index": 509,
+      "count": 1
+    },
+    {
+      "index": 1052,
+      "count": 1
+    },
+    {
+      "index": 1053,
+      "count": 1
+    },
+    {
+      "index": 1054,
+      "count": 1
+    },
+    {
+      "index": 1057,
+      "count": 1
+    },
+    {
+      "index": 1063,
+      "count": 1
+    },
+    {
+      "index": 1064,
+      "count": 1
+    },
+    {
+      "index": 1065,
+      "count": 1
+    },
+    {
+      "index": 1066,
+      "count": 1
+    },
+    {
+      "index": 1070,
+      "count": 1
+    },
+    {
+      "index": 604,
+      "count": 1
+    },
+    {
+      "index": 1071,
+      "count": 1
+    },
+    {
+      "index": 1074,
+      "count": 1
+    },
+    {
+      "index": 1075,
+      "count": 1
+    },
+    {
+      "index": 1077,
+      "count": 1
+    },
+    {
+      "index": 3001,
+      "count": 1
+    },
+    {
+      "index": 1079,
+      "count": 1
+    },
+    {
+      "index": 1085,
+      "count": 1
+    },
+    {
+      "index": 1080,
+      "count": 1
+    },
+    {
+      "index": 1081,
+      "count": 1
+    },
+    {
+      "index": 1082,
+      "count": 1
+    },
+    {
+      "index": 1087,
+      "count": 1
+    },
+    {
+      "index": 1086,
+      "count": 1
+    },
+    {
+      "index": 1093,
+      "count": 1
+    },
+    {
+      "index": 1096,
+      "count": 1
+    },
+    {
+      "index": 1099,
+      "count": 1
+    },
+    {
+      "index": 1102,
+      "count": 1
+    },
+    {
+      "index": 1104,
+      "count": 1
+    },
+    {
+      "index": 1109,
+      "count": 1
+    },
+    {
+      "index": 1111,
+      "count": 1
+    },
+    {
+      "index": 1112,
+      "count": 1
+    },
+    {
+      "index": 1113,
+      "count": 1
+    },
+    {
+      "index": 1114,
+      "count": 1
+    },
+    {
+      "index": 1121,
+      "count": 1
+    },
+    {
+      "index": 1170,
+      "count": 1
+    },
+    {
+      "index": 1105,
+      "count": 1
+    },
+    {
+      "index": 4046,
+      "count": 1
+    },
+    {
+      "index": 4048,
+      "count": 1
+    },
+    {
+      "index": 4049,
+      "count": 1
+    },
+    {
+      "index": 4050,
+      "count": 1
+    },
+    {
+      "index": 4052,
+      "count": 1
+    },
+    {
+      "index": 4054,
+      "count": 1
+    },
+    {
+      "index": 4055,
+      "count": 1
+    },
+    {
+      "index": 4057,
+      "count": 1
+    },
+    {
+      "index": 667,
+      "count": 1
+    },
+    {
+      "index": 1089,
+      "count": 1
+    },
+    {
+      "index": 1221,
+      "count": 1
+    },
+    {
+      "index": 595,
+      "count": 1
+    },
+    {
+      "index": 3034,
+      "count": 1
+    },
+    {
+      "index": 3035,
+      "count": 1
+    },
+    {
+      "index": 1212,
+      "count": 1
+    },
+    {
+      "index": 1233,
+      "count": 1
+    },
+    {
+      "index": 30,
+      "count": 1
+    },
+    {
+      "index": 593,
+      "count": 1
+    },
+    {
+      "index": 610,
+      "count": 1
+    },
+    {
+      "index": 621,
+      "count": 1
+    },
+    {
+      "index": 2009,
+      "count": 1
+    },
+    {
+      "index": 566,
+      "count": 1
+    },
+    {
+      "index": 568,
+      "count": 1
+    },
+    {
+      "index": 569,
+      "count": 1
+    },
+    {
+      "index": 3002,
+      "count": 1
+    },
+    {
+      "index": 3024,
+      "count": 1
+    },
+    {
+      "index": 3025,
+      "count": 1
+    },
+    {
+      "index": 3026,
+      "count": 1
+    },
+    {
+      "index": 3027,
+      "count": 1
+    },
+    {
+      "index": 3028,
+      "count": 1
+    },
+    {
+      "index": 3029,
+      "count": 1
+    },
+    {
+      "index": 3030,
+      "count": 1
+    },
+    {
+      "index": 583,
+      "count": 1
+    },
+    {
+      "index": 590,
+      "count": 1
+    },
+    {
+      "index": 3003,
+      "count": 1
+    },
+    {
+      "index": 3083,
+      "count": 1
+    },
+    {
+      "index": 4170,
+      "count": 1
+    },
+    {
+      "index": 4173,
+      "count": 1
+    },
+    {
+      "index": 4174,
+      "count": 1
+    },
+    {
+      "index": 4184,
+      "count": 1
+    },
+    {
+      "index": 521,
+      "count": 1
+    },
+    {
+      "index": 607,
+      "count": 1
+    },
+    {
+      "index": 3092,
+      "count": 1
+    },
+    {
+      "index": 609,
+      "count": 1
+    },
+    {
+      "index": 3088,
+      "count": 1
+    },
+    {
+      "index": 615,
+      "count": 1
+    },
+    {
+      "index": 611,
+      "count": 1
+    },
+    {
+      "index": 2003,
+      "count": 1
+    },
+    {
+      "index": 2004,
+      "count": 1
+    },
+    {
+      "index": 2005,
+      "count": 1
+    },
+    {
+      "index": 2011,
+      "count": 1
+    },
+    {
+      "index": 616,
+      "count": 1
+    },
+    {
+      "index": 1122,
+      "count": 1
+    },
+    {
+      "index": 1123,
+      "count": 1
+    },
+    {
+      "index": 618,
+      "count": 1
+    },
+    {
+      "index": 1127,
+      "count": 1
+    },
+    {
+      "index": 1128,
+      "count": 1
+    },
+    {
+      "index": 1129,
+      "count": 1
+    },
+    {
+      "index": 1130,
+      "count": 1
+    },
+    {
+      "index": 1131,
+      "count": 1
+    },
+    {
+      "index": 1133,
+      "count": 1
+    },
+    {
+      "index": 4202,
+      "count": 1
+    },
+    {
+      "index": 4206,
+      "count": 1
+    },
+    {
+      "index": 4207,
+      "count": 1
+    },
+    {
+      "index": 4208,
+      "count": 1
+    },
+    {
+      "index": 4209,
+      "count": 1
+    },
+    {
+      "index": 4210,
+      "count": 1
+    },
+    {
+      "index": 4211,
+      "count": 1
+    },
+    {
+      "index": 4212,
+      "count": 1
+    },
+    {
+      "index": 4213,
+      "count": 1
+    },
+    {
+      "index": 4214,
+      "count": 1
+    },
+    {
+      "index": 4404,
+      "count": 1
+    },
+    {
+      "index": 4410,
+      "count": 1
+    },
+    {
+      "index": 4411,
+      "count": 1
+    },
+    {
+      "index": 92,
+      "count": 1
+    },
+    {
+      "index": 619,
+      "count": 1
+    },
+    {
+      "index": 1136,
+      "count": 1
+    },
+    {
+      "index": 1137,
+      "count": 1
+    },
+    {
+      "index": 1138,
+      "count": 1
+    },
+    {
+      "index": 1140,
+      "count": 1
+    },
+    {
+      "index": 4409,
+      "count": 1
+    },
+    {
+      "index": 660,
+      "count": 1
+    },
+    {
+      "index": 1218,
+      "count": 1
+    },
+    {
+      "index": 605,
+      "count": 1
+    },
+    {
+      "index": 649,
+      "count": 1
+    },
+    {
+      "index": 650,
+      "count": 1
+    },
+    {
+      "index": 1110,
+      "count": 1
+    },
+    {
+      "index": 1224,
+      "count": 1
+    },
+    {
+      "index": 1019,
+      "count": 1
+    },
+    {
+      "index": 1020,
+      "count": 1
+    },
+    {
+      "index": 1021,
+      "count": 1
+    },
+    {
+      "index": 1022,
+      "count": 1
+    },
+    {
+      "index": 1023,
+      "count": 1
+    },
+    {
+      "index": 1024,
+      "count": 1
+    },
+    {
+      "index": 1226,
+      "count": 1
+    },
+    {
+      "index": 1228,
+      "count": 1
+    },
+    {
+      "index": 1229,
+      "count": 1
+    },
+    {
+      "index": 1230,
+      "count": 1
+    },
+    {
+      "index": 1166,
+      "count": 1
+    },
+    {
+      "index": 620,
+      "count": 1
+    },
+    {
+      "index": 545,
+      "count": 1
+    },
+    {
+      "index": 546,
+      "count": 1
+    },
+    {
+      "index": 547,
+      "count": 1
+    },
+    {
+      "index": 548,
+      "count": 1
+    },
+    {
+      "index": 549,
+      "count": 1
+    },
+    {
+      "index": 622,
+      "count": 1
+    },
+    {
+      "index": 623,
+      "count": 1
+    },
+    {
+      "index": 1150,
+      "count": 1
+    },
+    {
+      "index": 1151,
+      "count": 1
+    },
+    {
+      "index": 1152,
+      "count": 1
+    },
+    {
+      "index": 625,
+      "count": 1
+    },
+    {
+      "index": 23,
+      "count": 1
+    },
+    {
+      "index": 27,
+      "count": 1
+    },
+    {
+      "index": 1154,
+      "count": 1
+    },
+    {
+      "index": 96,
+      "count": 1
+    },
+    {
+      "index": 97,
+      "count": 1
+    },
+    {
+      "index": 3095,
+      "count": 1
+    },
+    {
+      "index": 626,
+      "count": 1
+    },
+    {
+      "index": 4164,
+      "count": 1
+    },
+    {
+      "index": 4165,
+      "count": 1
+    },
+    {
+      "index": 4166,
+      "count": 1
+    },
+    {
+      "index": 4167,
+      "count": 1
+    },
+    {
+      "index": 4168,
+      "count": 1
+    },
+    {
+      "index": 2012,
+      "count": 1
+    },
+    {
+      "index": 658,
+      "count": 1
+    },
+    {
+      "index": 1165,
+      "count": 1
+    },
+    {
+      "index": 4163,
+      "count": 1
+    },
+    {
+      "index": 1168,
+      "count": 1
+    },
+    {
+      "index": 628,
+      "count": 1
+    },
+    {
+      "index": 1171,
+      "count": 1
+    },
+    {
+      "index": 530,
+      "count": 1
+    },
+    {
+      "index": 1186,
+      "count": 1
+    },
+    {
+      "index": 671,
+      "count": 1
+    },
+    {
+      "index": 672,
+      "count": 1
+    },
+    {
+      "index": 674,
+      "count": 1
+    },
+    {
+      "index": 1231,
+      "count": 1
+    },
+    {
+      "index": 98,
+      "count": 1
+    },
+    {
+      "index": 673,
+      "count": 1
+    },
+    {
+      "index": 699,
+      "count": 1
+    },
+    {
+      "index": 3055,
+      "count": 1
+    },
+    {
+      "index": 3056,
+      "count": 1
+    },
+    {
+      "index": 3060,
+      "count": 1
+    },
+    {
+      "index": 3061,
+      "count": 1
+    },
+    {
+      "index": 3062,
+      "count": 1
+    },
+    {
+      "index": 3063,
+      "count": 1
+    },
+    {
+      "index": 3064,
+      "count": 1
+    },
+    {
+      "index": 3069,
+      "count": 1
+    },
+    {
+      "index": 3070,
+      "count": 1
+    },
+    {
+      "index": 675,
+      "count": 1
+    },
+    {
+      "index": 1172,
+      "count": 1
+    },
+    {
+      "index": 1174,
+      "count": 1
+    },
+    {
+      "index": 639,
+      "count": 1
+    },
+    {
+      "index": 1176,
+      "count": 1
+    },
+    {
+      "index": 640,
+      "count": 1
+    },
+    {
+      "index": 644,
+      "count": 1
+    },
+    {
+      "index": 3031,
+      "count": 1
+    },
+    {
+      "index": 3032,
+      "count": 1
+    },
+    {
+      "index": 647,
+      "count": 1
+    },
+    {
+      "index": 655,
+      "count": 1
+    },
+    {
+      "index": 654,
+      "count": 1
+    },
+    {
+      "index": 1135,
+      "count": 1
+    },
+    {
+      "index": 1204,
+      "count": 1
+    },
+    {
+      "index": 1205,
+      "count": 1
+    },
+    {
+      "index": 4082,
+      "count": 1
+    },
+    {
+      "index": 4083,
+      "count": 1
+    },
+    {
+      "index": 4084,
+      "count": 1
+    },
+    {
+      "index": 4085,
+      "count": 1
+    },
+    {
+      "index": 4089,
+      "count": 1
+    },
+    {
+      "index": 4090,
+      "count": 1
+    },
+    {
+      "index": 1207,
+      "count": 1
+    },
+    {
+      "index": 1209,
+      "count": 1
+    },
+    {
+      "index": 1213,
+      "count": 1
+    },
+    {
+      "index": 2014,
+      "count": 1
+    },
+    {
+      "index": 3073,
+      "count": 1
+    },
+    {
+      "index": 3075,
+      "count": 1
+    },
+    {
+      "index": 3076,
+      "count": 1
+    },
+    {
+      "index": 3078,
+      "count": 1
+    },
+    {
+      "index": 3079,
+      "count": 1
+    },
+    {
+      "index": 661,
+      "count": 1
+    },
+    {
+      "index": 666,
+      "count": 1
+    },
+    {
+      "index": 663,
+      "count": 1
+    },
+    {
+      "index": 662,
+      "count": 1
+    },
+    {
+      "index": 26,
+      "count": 1
+    },
+    {
+      "index": 538,
+      "count": 1
+    },
+    {
+      "index": 1210,
+      "count": 1
+    },
+    {
+      "index": 1216,
+      "count": 1
+    },
+    {
+      "index": 41,
+      "count": 1
+    },
+    {
+      "index": 42,
+      "count": 1
+    },
+    {
+      "index": 4243,
+      "count": 1
+    },
+    {
+      "index": 4244,
+      "count": 1
+    },
+    {
+      "index": 4245,
+      "count": 1
+    },
+    {
+      "index": 4246,
+      "count": 1
+    },
+    {
+      "index": 4247,
+      "count": 1
+    },
+    {
+      "index": 4248,
+      "count": 1
+    },
+    {
+      "index": 4249,
+      "count": 1
+    },
+    {
+      "index": 35,
+      "count": 1
+    },
+    {
+      "index": 676,
+      "count": 1
+    },
+    {
+      "index": 694,
+      "count": 1
+    },
+    {
+      "index": 34,
+      "count": 1
+    },
+    {
+      "index": 45,
+      "count": 1
+    },
+    {
+      "index": 47,
+      "count": 1
+    },
+    {
+      "index": 48,
+      "count": 1
+    },
+    {
+      "index": 51,
+      "count": 1
+    },
+    {
+      "index": 52,
+      "count": 1
+    },
+    {
+      "index": 54,
+      "count": 1
+    },
+    {
+      "index": 55,
+      "count": 1
+    },
+    {
+      "index": 57,
+      "count": 1
+    },
+    {
+      "index": 58,
+      "count": 1
+    },
+    {
+      "index": 61,
+      "count": 1
+    },
+    {
+      "index": 62,
+      "count": 1
+    },
+    {
+      "index": 64,
+      "count": 1
+    },
+    {
+      "index": 67,
+      "count": 1
+    },
+    {
+      "index": 69,
+      "count": 1
+    },
+    {
+      "index": 70,
+      "count": 1
+    },
+    {
+      "index": 71,
+      "count": 1
+    },
+    {
+      "index": 75,
+      "count": 1
+    },
+    {
+      "index": 76,
+      "count": 1
+    },
+    {
+      "index": 79,
+      "count": 1
+    },
+    {
+      "index": 80,
+      "count": 1
+    },
+    {
+      "index": 82,
+      "count": 1
+    },
+    {
+      "index": 1317,
+      "count": 1
+    },
+    {
+      "index": 40,
+      "count": 1
+    },
+    {
+      "index": 49,
+      "count": 1
+    },
+    {
+      "index": 677,
+      "count": 1
+    },
+    {
+      "index": 1241,
+      "count": 1
+    },
+    {
+      "index": 50,
+      "count": 1
+    },
+    {
+      "index": 3234,
+      "count": 1
+    },
+    {
+      "index": 3235,
+      "count": 1
+    },
+    {
+      "index": 3241,
+      "count": 1
+    },
+    {
+      "index": 3242,
+      "count": 1
+    },
+    {
+      "index": 3243,
+      "count": 1
+    },
+    {
+      "index": 3244,
+      "count": 1
+    },
+    {
+      "index": 3245,
+      "count": 1
+    },
+    {
+      "index": 3246,
+      "count": 1
+    },
+    {
+      "index": 3247,
+      "count": 1
+    },
+    {
+      "index": 3250,
+      "count": 1
+    },
+    {
+      "index": 3251,
+      "count": 1
+    },
+    {
+      "index": 3252,
+      "count": 1
+    },
+    {
+      "index": 3253,
+      "count": 1
+    },
+    {
+      "index": 3254,
+      "count": 1
+    },
+    {
+      "index": 3255,
+      "count": 1
+    },
+    {
+      "index": 3256,
+      "count": 1
+    },
+    {
+      "index": 3257,
+      "count": 1
+    },
+    {
+      "index": 3258,
+      "count": 1
+    },
+    {
+      "index": 3259,
+      "count": 1
+    },
+    {
+      "index": 3260,
+      "count": 1
+    },
+    {
+      "index": 3261,
+      "count": 1
+    },
+    {
+      "index": 3262,
+      "count": 1
+    },
+    {
+      "index": 3263,
+      "count": 1
+    },
+    {
+      "index": 56,
+      "count": 1
+    },
+    {
+      "index": 59,
+      "count": 1
+    },
+    {
+      "index": 63,
+      "count": 1
+    },
+    {
+      "index": 65,
+      "count": 1
+    },
+    {
+      "index": 81,
+      "count": 1
+    },
+    {
+      "index": 38,
+      "count": 1
+    },
+    {
+      "index": 1313,
+      "count": 1
+    },
+    {
+      "index": 1314,
+      "count": 1
+    },
+    {
+      "index": 1315,
+      "count": 1
+    },
+    {
+      "index": 39,
+      "count": 1
+    },
+    {
+      "index": 83,
+      "count": 1
+    },
+    {
+      "index": 679,
+      "count": 1
+    },
+    {
+      "index": 680,
+      "count": 1
+    },
+    {
+      "index": 681,
+      "count": 1
+    },
+    {
+      "index": 3216,
+      "count": 1
+    },
+    {
+      "index": 3224,
+      "count": 1
+    },
+    {
+      "index": 3225,
+      "count": 1
+    },
+    {
+      "index": 683,
+      "count": 1
+    },
+    {
+      "index": 1330,
+      "count": 1
+    },
+    {
+      "index": 3223,
+      "count": 1
+    },
+    {
+      "index": 682,
+      "count": 1
+    },
+    {
+      "index": 685,
+      "count": 1
+    },
+    {
+      "index": 686,
+      "count": 1
+    },
+    {
+      "index": 3230,
+      "count": 1
+    },
+    {
+      "index": 3232,
+      "count": 1
+    },
+    {
+      "index": 3233,
+      "count": 1
+    },
+    {
+      "index": 687,
+      "count": 1
+    },
+    {
+      "index": 689,
+      "count": 1
+    },
+    {
+      "index": 691,
+      "count": 1
+    },
+    {
+      "index": 1301,
+      "count": 1
+    },
+    {
+      "index": 1302,
+      "count": 1
+    },
+    {
+      "index": 1303,
+      "count": 1
+    }
+  ],
+  "transitions": [
+    {
+      "from": "NewGame.TSF",
+      "to": "Save001.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1003,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save001.TSF",
+      "to": "Save002.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 1,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "from": "Save002.TSF",
+      "to": "Save003.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 2,
+          "after": 3
+        }
+      ]
+    },
+    {
+      "from": "Save003.TSF",
+      "to": "Save004.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 0,
+          "before": 0,
+          "after": 255
+        },
+        {
+          "index": 1,
+          "before": 3,
+          "after": 6
+        },
+        {
+          "index": 501,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 504,
+          "before": 0,
+          "after": 2
+        },
+        {
+          "index": 505,
+          "before": 1,
+          "after": 3
+        },
+        {
+          "index": 1004,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1005,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1009,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1010,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1013,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1014,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1015,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1016,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1017,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save004.TSF",
+      "to": "Save005.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 6,
+          "after": 7
+        },
+        {
+          "index": 25,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 999,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save005.TSF",
+      "to": "Save006.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 7,
+          "after": 8
+        },
+        {
+          "index": 539,
+          "before": 0,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "from": "Save006.TSF",
+      "to": "Save007.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 8,
+          "after": 9
+        },
+        {
+          "index": 1025,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1026,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4025,
+          "before": 0,
+          "after": 21
+        }
+      ]
+    },
+    {
+      "from": "Save007.TSF",
+      "to": "Save008.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1032,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1033,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1034,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1035,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save008.TSF",
+      "to": "Save009.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 506,
+          "before": 0,
+          "after": 3
+        },
+        {
+          "index": 540,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 541,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 601,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1028,
+          "before": 254,
+          "after": 255
+        },
+        {
+          "index": 1029,
+          "before": 254,
+          "after": 255
+        },
+        {
+          "index": 1037,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1038,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1039,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1040,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1041,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1042,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1043,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1044,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1045,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save009.TSF",
+      "to": "Save010.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 542,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1031,
+          "before": 254,
+          "after": 255
+        }
+      ]
+    },
+    {
+      "from": "Save010.TSF",
+      "to": "Save011.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 9,
+          "after": 10
+        },
+        {
+          "index": 507,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 543,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 551,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 565,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 999,
+          "before": 1,
+          "after": 4
+        },
+        {
+          "index": 4402,
+          "before": 0,
+          "after": 202
+        },
+        {
+          "index": 4405,
+          "before": 0,
+          "after": 205
+        }
+      ]
+    },
+    {
+      "from": "Save011.TSF",
+      "to": "Save012.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 10,
+          "after": 11
+        },
+        {
+          "index": 1036,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1051,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save012.TSF",
+      "to": "Save013.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 509,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 999,
+          "before": 4,
+          "after": 1
+        },
+        {
+          "index": 1052,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save013.TSF",
+      "to": "Save014.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 11,
+          "after": 12
+        },
+        {
+          "index": 1050,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1051,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save014.TSF",
+      "to": "Save015.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 12,
+          "after": 14
+        },
+        {
+          "index": 1050,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1053,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1054,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save015.TSF",
+      "to": "Save016.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 14,
+          "after": 15
+        },
+        {
+          "index": 3000,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save016.TSF",
+      "to": "Save017.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 15,
+          "after": 16
+        },
+        {
+          "index": 1057,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1063,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save017.TSF",
+      "to": "Save018.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 16,
+          "after": 18
+        },
+        {
+          "index": 550,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1064,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1065,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1066,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1070,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4037,
+          "before": 0,
+          "after": 3
+        }
+      ]
+    },
+    {
+      "from": "Save018.TSF",
+      "to": "Save019.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 18,
+          "after": 19
+        },
+        {
+          "index": 604,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1071,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4037,
+          "before": 3,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save019.TSF",
+      "to": "Save020.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 19,
+          "after": 20
+        },
+        {
+          "index": 1074,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3000,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save020.TSF",
+      "to": "Save021.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 20,
+          "after": 21
+        },
+        {
+          "index": 1075,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4501,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save021.TSF",
+      "to": "Save022.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 21,
+          "after": 22
+        },
+        {
+          "index": 1077,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3001,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4501,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save022.TSF",
+      "to": "Save023.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 22,
+          "after": 23
+        },
+        {
+          "index": 1079,
+          "before": 254,
+          "after": 255
+        },
+        {
+          "index": 1085,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save023.TSF",
+      "to": "Save024.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1080,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1081,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1082,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1087,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save024.TSF",
+      "to": "Save025.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 23,
+          "after": 24
+        },
+        {
+          "index": 1086,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save025.TSF",
+      "to": "Save026.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 24,
+          "after": 26
+        },
+        {
+          "index": 601,
+          "before": 1,
+          "after": 3
+        },
+        {
+          "index": 1093,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1096,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1099,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1102,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1103,
+          "before": 254,
+          "after": 255
+        },
+        {
+          "index": 1104,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1109,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1111,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save026.TSF",
+      "to": "Save027.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 26,
+          "after": 28
+        },
+        {
+          "index": 1103,
+          "before": 255,
+          "after": 254
+        },
+        {
+          "index": 1112,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1113,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1114,
+          "before": 0,
+          "after": 255
+        },
+        {
+          "index": 1121,
+          "before": 254,
+          "after": 255
+        },
+        {
+          "index": 1170,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save027.TSF",
+      "to": "Save028.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 28,
+          "after": 29
+        },
+        {
+          "index": 551,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 999,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 1105,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1181,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4046,
+          "before": 4,
+          "after": 0
+        },
+        {
+          "index": 4048,
+          "before": 4,
+          "after": 0
+        },
+        {
+          "index": 4049,
+          "before": 4,
+          "after": 0
+        },
+        {
+          "index": 4050,
+          "before": 4,
+          "after": 0
+        },
+        {
+          "index": 4052,
+          "before": 5,
+          "after": 0
+        },
+        {
+          "index": 4054,
+          "before": 5,
+          "after": 0
+        },
+        {
+          "index": 4055,
+          "before": 5,
+          "after": 0
+        },
+        {
+          "index": 4057,
+          "before": 5,
+          "after": 0
+        },
+        {
+          "index": 4402,
+          "before": 202,
+          "after": 214
+        },
+        {
+          "index": 4403,
+          "before": 203,
+          "after": 215
+        },
+        {
+          "index": 4405,
+          "before": 205,
+          "after": 216
+        },
+        {
+          "index": 4406,
+          "before": 206,
+          "after": 217
+        },
+        {
+          "index": 4407,
+          "before": 207,
+          "after": 218
+        },
+        {
+          "index": 4408,
+          "before": 208,
+          "after": 219
+        },
+        {
+          "index": 4413,
+          "before": 213,
+          "after": 220
+        }
+      ]
+    },
+    {
+      "from": "Save028.TSF",
+      "to": "Save029.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 29,
+          "after": 30
+        },
+        {
+          "index": 999,
+          "before": 2,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save029.TSF",
+      "to": "Save030.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 30,
+          "after": 32
+        },
+        {
+          "index": 667,
+          "before": 0,
+          "after": 3
+        },
+        {
+          "index": 1072,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1089,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1217,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1221,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save030.TSF",
+      "to": "Save031.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 32,
+          "after": 34
+        }
+      ]
+    },
+    {
+      "from": "Save031.TSF",
+      "to": "Save032.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 34,
+          "after": 35
+        },
+        {
+          "index": 4508,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save032.TSF",
+      "to": "Save033.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 515,
+          "before": 0,
+          "after": 2
+        },
+        {
+          "index": 4508,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save033.TSF",
+      "to": "Save034.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 515,
+          "before": 2,
+          "after": 3
+        },
+        {
+          "index": 595,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3034,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3035,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save034.TSF",
+      "to": "Save035.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 35,
+          "after": 39
+        },
+        {
+          "index": 606,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 999,
+          "before": 1,
+          "after": 4
+        },
+        {
+          "index": 1212,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1233,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4402,
+          "before": 214,
+          "after": 221
+        },
+        {
+          "index": 4403,
+          "before": 215,
+          "after": 222
+        },
+        {
+          "index": 4405,
+          "before": 216,
+          "after": 223
+        },
+        {
+          "index": 4406,
+          "before": 217,
+          "after": 224
+        },
+        {
+          "index": 4407,
+          "before": 218,
+          "after": 225
+        },
+        {
+          "index": 4408,
+          "before": 219,
+          "after": 226
+        }
+      ]
+    },
+    {
+      "from": "Save035.TSF",
+      "to": "Save036.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 39,
+          "after": 40
+        }
+      ]
+    },
+    {
+      "from": "Save036.TSF",
+      "to": "Save037.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 40,
+          "after": 41
+        },
+        {
+          "index": 550,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 551,
+          "before": 2,
+          "after": 3
+        },
+        {
+          "index": 606,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 999,
+          "before": 4,
+          "after": 3
+        }
+      ]
+    },
+    {
+      "from": "Save037.TSF",
+      "to": "Save038.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 41,
+          "after": 42
+        }
+      ]
+    },
+    {
+      "from": "Save038.TSF",
+      "to": "Save039.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 20,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 30,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save039.TSF",
+      "to": "Save040.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 20,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 593,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3087,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save040.TSF",
+      "to": "Save041.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 20,
+          "before": 2,
+          "after": 3
+        }
+      ]
+    },
+    {
+      "from": "Save041.TSF",
+      "to": "Save042.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 5,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 20,
+          "before": 3,
+          "after": 4
+        },
+        {
+          "index": 610,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 621,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 999,
+          "before": 3,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save042.TSF",
+      "to": "Save043.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 42,
+          "after": 44
+        },
+        {
+          "index": 4501,
+          "before": 0,
+          "after": 7
+        },
+        {
+          "index": 4502,
+          "before": 0,
+          "after": 7
+        },
+        {
+          "index": 4503,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save043.TSF",
+      "to": "Save044.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 44,
+          "after": 45
+        },
+        {
+          "index": 2009,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4501,
+          "before": 7,
+          "after": 0
+        },
+        {
+          "index": 4502,
+          "before": 7,
+          "after": 0
+        },
+        {
+          "index": 4503,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save044.TSF",
+      "to": "Save045.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 518,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 566,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 568,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 574,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 575,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 576,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 577,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 578,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 579,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 582,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save045.TSF",
+      "to": "Save046.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 569,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3002,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save046.TSF",
+      "to": "Save047.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 518,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 574,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 575,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 576,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 577,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 578,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 579,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 582,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 3024,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3025,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3026,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3027,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3028,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3029,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3030,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3084,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save047.TSF",
+      "to": "Save048.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 583,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4402,
+          "before": 221,
+          "after": 227
+        },
+        {
+          "index": 4403,
+          "before": 222,
+          "after": 228
+        },
+        {
+          "index": 4405,
+          "before": 223,
+          "after": 229
+        },
+        {
+          "index": 4406,
+          "before": 224,
+          "after": 230
+        },
+        {
+          "index": 4407,
+          "before": 225,
+          "after": 231
+        },
+        {
+          "index": 4408,
+          "before": 226,
+          "after": 232
+        },
+        {
+          "index": 4413,
+          "before": 220,
+          "after": 233
+        }
+      ]
+    },
+    {
+      "from": "Save048.TSF",
+      "to": "Save049.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 10,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 31,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 590,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 606,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3003,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3082,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3083,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4170,
+          "before": 8,
+          "after": 0
+        },
+        {
+          "index": 4173,
+          "before": 10,
+          "after": 0
+        },
+        {
+          "index": 4174,
+          "before": 10,
+          "after": 0
+        },
+        {
+          "index": 4184,
+          "before": 10,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save049.TSF",
+      "to": "Save050.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 10,
+          "before": 1,
+          "after": 5
+        }
+      ]
+    },
+    {
+      "from": "Save050.TSF",
+      "to": "Save051.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 45,
+          "after": 46
+        },
+        {
+          "index": 10,
+          "before": 5,
+          "after": 6
+        },
+        {
+          "index": 521,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 524,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 551,
+          "before": 3,
+          "after": 4
+        },
+        {
+          "index": 606,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 607,
+          "before": 0,
+          "after": 2
+        },
+        {
+          "index": 652,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3082,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3087,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3092,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save051.TSF",
+      "to": "Save052.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 518,
+          "before": 2,
+          "after": 3
+        },
+        {
+          "index": 3084,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save052.TSF",
+      "to": "Save053.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 46,
+          "after": 47
+        },
+        {
+          "index": 24,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 522,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3089,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save053.TSF",
+      "to": "Save054.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 13,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 609,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3088,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save054.TSF",
+      "to": "Save055.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 524,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 615,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save055.TSF",
+      "to": "Save056.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 5,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 522,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 562,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 611,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1148,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 2003,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 2004,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save056.TSF",
+      "to": "Save057.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 2,
+          "after": 3
+        },
+        {
+          "index": 3093,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save057.TSF",
+      "to": "Save058.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 3,
+          "after": 4
+        },
+        {
+          "index": 2005,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3093,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save058.TSF",
+      "to": "Save059.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 4,
+          "after": 10
+        },
+        {
+          "index": 1175,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 2011,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save059.TSF",
+      "to": "Save060.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 10,
+          "after": 12
+        },
+        {
+          "index": 616,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1175,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save060.TSF",
+      "to": "Save061.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 12,
+          "after": 15
+        },
+        {
+          "index": 1122,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1123,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4501,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save061.TSF",
+      "to": "Save062.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 15,
+          "after": 16
+        },
+        {
+          "index": 4501,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save062.TSF",
+      "to": "Save063.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 16,
+          "after": 17
+        }
+      ]
+    },
+    {
+      "from": "Save063.TSF",
+      "to": "Save064.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 17,
+          "after": 19
+        },
+        {
+          "index": 618,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save064.TSF",
+      "to": "Save065.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 19,
+          "after": 20
+        },
+        {
+          "index": 999,
+          "before": 1,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "from": "Save065.TSF",
+      "to": "Save066.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 20,
+          "after": 21
+        },
+        {
+          "index": 1126,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1127,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1128,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1129,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1130,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1131,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1132,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1133,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4202,
+          "before": 12,
+          "after": 0
+        },
+        {
+          "index": 4206,
+          "before": 12,
+          "after": 0
+        },
+        {
+          "index": 4207,
+          "before": 12,
+          "after": 0
+        },
+        {
+          "index": 4208,
+          "before": 13,
+          "after": 0
+        },
+        {
+          "index": 4209,
+          "before": 13,
+          "after": 0
+        },
+        {
+          "index": 4210,
+          "before": 13,
+          "after": 0
+        },
+        {
+          "index": 4211,
+          "before": 13,
+          "after": 0
+        },
+        {
+          "index": 4212,
+          "before": 13,
+          "after": 0
+        },
+        {
+          "index": 4213,
+          "before": 13,
+          "after": 0
+        },
+        {
+          "index": 4214,
+          "before": 13,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save066.TSF",
+      "to": "Save067.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 21,
+          "after": 23
+        },
+        {
+          "index": 31,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 525,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1126,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4402,
+          "before": 227,
+          "after": 239
+        },
+        {
+          "index": 4403,
+          "before": 228,
+          "after": 240
+        },
+        {
+          "index": 4404,
+          "before": 204,
+          "after": 241
+        },
+        {
+          "index": 4410,
+          "before": 210,
+          "after": 242
+        },
+        {
+          "index": 4411,
+          "before": 211,
+          "after": 243
+        }
+      ]
+    },
+    {
+      "from": "Save067.TSF",
+      "to": "Save068.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 3,
+          "before": 23,
+          "after": 24
+        },
+        {
+          "index": 92,
+          "before": 4,
+          "after": 16
+        },
+        {
+          "index": 95,
+          "before": 4,
+          "after": 6
+        },
+        {
+          "index": 619,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1132,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1134,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1136,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1137,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1138,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save068.TSF",
+      "to": "Save069.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 24,
+          "before": 1,
+          "after": 255
+        },
+        {
+          "index": 525,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 999,
+          "before": 2,
+          "after": 1
+        },
+        {
+          "index": 3089,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save069.TSF",
+      "to": "Save070.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 47,
+          "after": 48
+        },
+        {
+          "index": 13,
+          "before": 1,
+          "after": 4
+        },
+        {
+          "index": 999,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 1139,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3090,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save070.TSF",
+      "to": "Save071.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 13,
+          "before": 4,
+          "after": 6
+        },
+        {
+          "index": 25,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 999,
+          "before": 2,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save071.TSF",
+      "to": "Save072.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 13,
+          "before": 6,
+          "after": 9
+        },
+        {
+          "index": 642,
+          "before": 0,
+          "after": 2
+        },
+        {
+          "index": 999,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1139,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1140,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save072.TSF",
+      "to": "Save073.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 518,
+          "before": 3,
+          "after": 4
+        },
+        {
+          "index": 3090,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save073.TSF",
+      "to": "Save074.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 518,
+          "before": 4,
+          "after": 6
+        },
+        {
+          "index": 651,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 999,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1219,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4405,
+          "before": 229,
+          "after": 234
+        },
+        {
+          "index": 4406,
+          "before": 230,
+          "after": 235
+        },
+        {
+          "index": 4407,
+          "before": 231,
+          "after": 236
+        },
+        {
+          "index": 4408,
+          "before": 232,
+          "after": 237
+        },
+        {
+          "index": 4409,
+          "before": 209,
+          "after": 238
+        }
+      ]
+    },
+    {
+      "from": "Save074.TSF",
+      "to": "Save075.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 25,
+          "before": 2,
+          "after": 4
+        },
+        {
+          "index": 660,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1217,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1218,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save075.TSF",
+      "to": "Save076.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 100,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 669,
+          "before": 0,
+          "after": 3
+        }
+      ]
+    },
+    {
+      "from": "Save076.TSF",
+      "to": "Save077.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 100,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 605,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 649,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 650,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 651,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 652,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 669,
+          "before": 3,
+          "after": 4
+        },
+        {
+          "index": 1110,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1219,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1224,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save077.TSF",
+      "to": "Save078.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 21,
+          "before": 0,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "from": "Save078.TSF",
+      "to": "Save079.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 21,
+          "before": 2,
+          "after": 3
+        }
+      ]
+    },
+    {
+      "from": "Save079.TSF",
+      "to": "Save080.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 21,
+          "before": 3,
+          "after": 4
+        },
+        {
+          "index": 651,
+          "before": 2,
+          "after": 3
+        },
+        {
+          "index": 1019,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1020,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1021,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1022,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1023,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1024,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1072,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1226,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1228,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1229,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1230,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save080.TSF",
+      "to": "Save081.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 544,
+          "before": 0,
+          "after": 6
+        },
+        {
+          "index": 1141,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 2010,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save081.TSF",
+      "to": "Save082.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 544,
+          "before": 6,
+          "after": 7
+        }
+      ]
+    },
+    {
+      "from": "Save082.TSF",
+      "to": "Save083.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 544,
+          "before": 7,
+          "after": 8
+        },
+        {
+          "index": 1166,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save083.TSF",
+      "to": "Save084.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 48,
+          "after": 49
+        },
+        {
+          "index": 544,
+          "before": 8,
+          "after": 9
+        },
+        {
+          "index": 1144,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save084.TSF",
+      "to": "Save085.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 49,
+          "after": 50
+        },
+        {
+          "index": 5,
+          "before": 2,
+          "after": 3
+        },
+        {
+          "index": 9,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 527,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 528,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1141,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1145,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save085.TSF",
+      "to": "Save086.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 9,
+          "before": 1,
+          "after": 3
+        },
+        {
+          "index": 620,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save086.TSF",
+      "to": "Save087.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 5,
+          "before": 3,
+          "after": 4
+        },
+        {
+          "index": 545,
+          "before": 0,
+          "after": 4
+        },
+        {
+          "index": 546,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 547,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 548,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 549,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 622,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 623,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1146,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1147,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1150,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1151,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1152,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1153,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4149,
+          "before": 0,
+          "after": 17
+        },
+        {
+          "index": 4150,
+          "before": 0,
+          "after": 18
+        },
+        {
+          "index": 4151,
+          "before": 0,
+          "after": 19
+        },
+        {
+          "index": 4152,
+          "before": 0,
+          "after": 20
+        },
+        {
+          "index": 4153,
+          "before": 0,
+          "after": 20
+        }
+      ]
+    },
+    {
+      "from": "Save087.TSF",
+      "to": "Save088.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 5,
+          "before": 4,
+          "after": 5
+        },
+        {
+          "index": 31,
+          "before": 2,
+          "after": 3
+        },
+        {
+          "index": 526,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 625,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1153,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4149,
+          "before": 17,
+          "after": 0
+        },
+        {
+          "index": 4150,
+          "before": 18,
+          "after": 0
+        },
+        {
+          "index": 4151,
+          "before": 19,
+          "after": 0
+        },
+        {
+          "index": 4152,
+          "before": 20,
+          "after": 0
+        },
+        {
+          "index": 4153,
+          "before": 20,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save088.TSF",
+      "to": "Save089.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 5,
+          "before": 5,
+          "after": 6
+        },
+        {
+          "index": 23,
+          "before": 0,
+          "after": 5
+        },
+        {
+          "index": 27,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 522,
+          "before": 2,
+          "after": 3
+        },
+        {
+          "index": 1141,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1146,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1147,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1154,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3089,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save089.TSF",
+      "to": "Save090.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 0,
+          "before": 255,
+          "after": 0
+        },
+        {
+          "index": 96,
+          "before": 0,
+          "after": 3
+        },
+        {
+          "index": 97,
+          "before": 0,
+          "after": 3
+        },
+        {
+          "index": 522,
+          "before": 3,
+          "after": 5
+        },
+        {
+          "index": 3089,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3095,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save090.TSF",
+      "to": "Save091.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 526,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 1162,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save091.TSF",
+      "to": "Save092.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 9,
+          "before": 3,
+          "after": 4
+        },
+        {
+          "index": 1145,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save092.TSF",
+      "to": "Save093.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 9,
+          "before": 4,
+          "after": 5
+        }
+      ]
+    },
+    {
+      "from": "Save093.TSF",
+      "to": "Save094.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 626,
+          "before": 0,
+          "after": 3
+        },
+        {
+          "index": 4164,
+          "before": 0,
+          "after": 15
+        },
+        {
+          "index": 4165,
+          "before": 0,
+          "after": 15
+        },
+        {
+          "index": 4166,
+          "before": 0,
+          "after": 15
+        },
+        {
+          "index": 4167,
+          "before": 0,
+          "after": 16
+        },
+        {
+          "index": 4168,
+          "before": 0,
+          "after": 16
+        }
+      ]
+    },
+    {
+      "from": "Save094.TSF",
+      "to": "Save095.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 669,
+          "before": 4,
+          "after": 5
+        }
+      ]
+    },
+    {
+      "from": "Save095.TSF",
+      "to": "Save096.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 0,
+          "before": 0,
+          "after": 255
+        },
+        {
+          "index": 9,
+          "before": 5,
+          "after": 6
+        }
+      ]
+    },
+    {
+      "from": "Save096.TSF",
+      "to": "Save097.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 9,
+          "before": 6,
+          "after": 7
+        }
+      ]
+    },
+    {
+      "from": "Save097.TSF",
+      "to": "Save098.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 9,
+          "before": 7,
+          "after": 8
+        },
+        {
+          "index": 2012,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save098.TSF",
+      "to": "Save099.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 50,
+          "after": 51
+        },
+        {
+          "index": 627,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 658,
+          "before": 0,
+          "after": 2
+        },
+        {
+          "index": 1155,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1162,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1163,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1165,
+          "before": 0,
+          "after": 255
+        },
+        {
+          "index": 4162,
+          "before": 0,
+          "after": 24
+        },
+        {
+          "index": 4163,
+          "before": 0,
+          "after": 25
+        }
+      ]
+    },
+    {
+      "from": "Save099.TSF",
+      "to": "Save100.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 51,
+          "after": 52
+        },
+        {
+          "index": 31,
+          "before": 3,
+          "after": 4
+        },
+        {
+          "index": 562,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 627,
+          "before": 1,
+          "after": 4
+        },
+        {
+          "index": 1155,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1168,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3054,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3057,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3058,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3059,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3065,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3066,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3067,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3071,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3072,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4162,
+          "before": 24,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save100.TSF",
+      "to": "Save101.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 52,
+          "after": 53
+        },
+        {
+          "index": 562,
+          "before": 2,
+          "after": 4
+        },
+        {
+          "index": 627,
+          "before": 4,
+          "after": 5
+        },
+        {
+          "index": 628,
+          "before": 0,
+          "after": 3
+        },
+        {
+          "index": 629,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1144,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1148,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1163,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1171,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3054,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save101.TSF",
+      "to": "Save102.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 527,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 1156,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save102.TSF",
+      "to": "Save103.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 31,
+          "before": 4,
+          "after": 5
+        },
+        {
+          "index": 529,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1156,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save103.TSF",
+      "to": "Save104.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 528,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 648,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1157,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1181,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1182,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save104.TSF",
+      "to": "Save105.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 31,
+          "before": 5,
+          "after": 6
+        },
+        {
+          "index": 530,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 648,
+          "before": 1,
+          "after": 4
+        },
+        {
+          "index": 1157,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1181,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1182,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save105.TSF",
+      "to": "Save106.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 0,
+          "before": 255,
+          "after": 0
+        },
+        {
+          "index": 529,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 653,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1158,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1162,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1186,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1187,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save106.TSF",
+      "to": "Save107.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 25,
+          "before": 4,
+          "after": 5
+        },
+        {
+          "index": 31,
+          "before": 6,
+          "after": 7
+        },
+        {
+          "index": 653,
+          "before": 1,
+          "after": 5
+        },
+        {
+          "index": 1158,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1187,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save107.TSF",
+      "to": "Save108.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 25,
+          "before": 5,
+          "after": 6
+        },
+        {
+          "index": 671,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 672,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 674,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1231,
+          "before": 254,
+          "after": 255
+        },
+        {
+          "index": 1232,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save108.TSF",
+      "to": "Save109.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 0,
+          "before": 0,
+          "after": 255
+        },
+        {
+          "index": 25,
+          "before": 6,
+          "after": 8
+        },
+        {
+          "index": 98,
+          "before": 14,
+          "after": 7
+        },
+        {
+          "index": 1232,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save109.TSF",
+      "to": "Save110.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 25,
+          "before": 8,
+          "after": 10
+        },
+        {
+          "index": 673,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 699,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save110.TSF",
+      "to": "Save111.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 627,
+          "before": 5,
+          "after": 11
+        },
+        {
+          "index": 3055,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3056,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3057,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3058,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3059,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3060,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3061,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3062,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3063,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3064,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3065,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3066,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3067,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3069,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3070,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3071,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3072,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4117,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4118,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4119,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4120,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4121,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4123,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4126,
+          "before": 0,
+          "after": 25
+        }
+      ]
+    },
+    {
+      "from": "Save111.TSF",
+      "to": "Save112.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 627,
+          "before": 11,
+          "after": 12
+        },
+        {
+          "index": 999,
+          "before": 1,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "from": "Save112.TSF",
+      "to": "Save113.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 627,
+          "before": 12,
+          "after": 13
+        },
+        {
+          "index": 675,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save113.TSF",
+      "to": "Save114.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 627,
+          "before": 13,
+          "after": 14
+        }
+      ]
+    },
+    {
+      "from": "Save114.TSF",
+      "to": "Save115.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 627,
+          "before": 14,
+          "after": 15
+        }
+      ]
+    },
+    {
+      "from": "Save115.TSF",
+      "to": "Save116.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 627,
+          "before": 15,
+          "after": 16
+        }
+      ]
+    },
+    {
+      "from": "Save116.TSF",
+      "to": "Save117.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 53,
+          "after": 54
+        },
+        {
+          "index": 1172,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1173,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save117.TSF",
+      "to": "Save118.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 627,
+          "before": 16,
+          "after": 17
+        },
+        {
+          "index": 999,
+          "before": 2,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save118.TSF",
+      "to": "Save119.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 54,
+          "after": 56
+        },
+        {
+          "index": 1141,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1173,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1174,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save119.TSF",
+      "to": "Save120.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 56,
+          "after": 57
+        }
+      ]
+    },
+    {
+      "from": "Save120.TSF",
+      "to": "Save121.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 57,
+          "after": 59
+        },
+        {
+          "index": 639,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1176,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4227,
+          "before": 0,
+          "after": 46
+        },
+        {
+          "index": 4228,
+          "before": 0,
+          "after": 46
+        },
+        {
+          "index": 4229,
+          "before": 0,
+          "after": 46
+        },
+        {
+          "index": 4230,
+          "before": 0,
+          "after": 46
+        },
+        {
+          "index": 4231,
+          "before": 0,
+          "after": 46
+        },
+        {
+          "index": 4232,
+          "before": 0,
+          "after": 46
+        },
+        {
+          "index": 4233,
+          "before": 0,
+          "after": 46
+        },
+        {
+          "index": 4234,
+          "before": 0,
+          "after": 46
+        }
+      ]
+    },
+    {
+      "from": "Save121.TSF",
+      "to": "Save122.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 640,
+          "before": 0,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "from": "Save122.TSF",
+      "to": "Save123.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 59,
+          "after": 60
+        },
+        {
+          "index": 641,
+          "before": 0,
+          "after": 5
+        },
+        {
+          "index": 643,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 644,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1177,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1178,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1179,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3031,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3032,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4087,
+          "before": 0,
+          "after": 30
+        },
+        {
+          "index": 4088,
+          "before": 0,
+          "after": 30
+        },
+        {
+          "index": 4103,
+          "before": 0,
+          "after": 30
+        },
+        {
+          "index": 4107,
+          "before": 0,
+          "after": 31
+        },
+        {
+          "index": 4108,
+          "before": 0,
+          "after": 31
+        },
+        {
+          "index": 4109,
+          "before": 0,
+          "after": 31
+        },
+        {
+          "index": 4110,
+          "before": 0,
+          "after": 32
+        },
+        {
+          "index": 4111,
+          "before": 0,
+          "after": 32
+        },
+        {
+          "index": 4112,
+          "before": 0,
+          "after": 33
+        },
+        {
+          "index": 4113,
+          "before": 0,
+          "after": 33
+        },
+        {
+          "index": 4115,
+          "before": 0,
+          "after": 33
+        },
+        {
+          "index": 4116,
+          "before": 0,
+          "after": 30
+        },
+        {
+          "index": 4227,
+          "before": 46,
+          "after": 0
+        },
+        {
+          "index": 4228,
+          "before": 46,
+          "after": 0
+        },
+        {
+          "index": 4229,
+          "before": 46,
+          "after": 0
+        },
+        {
+          "index": 4230,
+          "before": 46,
+          "after": 0
+        },
+        {
+          "index": 4231,
+          "before": 46,
+          "after": 0
+        },
+        {
+          "index": 4232,
+          "before": 46,
+          "after": 0
+        },
+        {
+          "index": 4233,
+          "before": 46,
+          "after": 0
+        },
+        {
+          "index": 4234,
+          "before": 46,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save123.TSF",
+      "to": "Save124.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 641,
+          "before": 5,
+          "after": 6
+        },
+        {
+          "index": 1178,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4501,
+          "before": 0,
+          "after": 6
+        },
+        {
+          "index": 4502,
+          "before": 0,
+          "after": 6
+        }
+      ]
+    },
+    {
+      "from": "Save124.TSF",
+      "to": "Save125.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 60,
+          "after": 61
+        },
+        {
+          "index": 643,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "index": 647,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1179,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4501,
+          "before": 6,
+          "after": 0
+        },
+        {
+          "index": 4502,
+          "before": 6,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save125.TSF",
+      "to": "Save126.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 61,
+          "after": 62
+        }
+      ]
+    },
+    {
+      "from": "Save126.TSF",
+      "to": "Save127.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 655,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1188,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save127.TSF",
+      "to": "Save128.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 62,
+          "after": 64
+        },
+        {
+          "index": 95,
+          "before": 6,
+          "after": 13
+        },
+        {
+          "index": 551,
+          "before": 4,
+          "after": 6
+        },
+        {
+          "index": 654,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 999,
+          "before": 1,
+          "after": 3
+        },
+        {
+          "index": 1134,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1135,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1188,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save128.TSF",
+      "to": "Save129.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 64,
+          "after": 65
+        },
+        {
+          "index": 91,
+          "before": 19,
+          "after": 5
+        },
+        {
+          "index": 551,
+          "before": 6,
+          "after": 7
+        },
+        {
+          "index": 606,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 629,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1204,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1205,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3033,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3080,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4082,
+          "before": 0,
+          "after": 34
+        },
+        {
+          "index": 4083,
+          "before": 0,
+          "after": 34
+        },
+        {
+          "index": 4084,
+          "before": 0,
+          "after": 34
+        },
+        {
+          "index": 4085,
+          "before": 0,
+          "after": 34
+        },
+        {
+          "index": 4087,
+          "before": 30,
+          "after": 34
+        },
+        {
+          "index": 4088,
+          "before": 30,
+          "after": 34
+        },
+        {
+          "index": 4089,
+          "before": 0,
+          "after": 34
+        },
+        {
+          "index": 4090,
+          "before": 0,
+          "after": 34
+        },
+        {
+          "index": 4103,
+          "before": 30,
+          "after": 34
+        },
+        {
+          "index": 4107,
+          "before": 31,
+          "after": 34
+        },
+        {
+          "index": 4108,
+          "before": 31,
+          "after": 34
+        },
+        {
+          "index": 4109,
+          "before": 31,
+          "after": 34
+        },
+        {
+          "index": 4110,
+          "before": 32,
+          "after": 34
+        },
+        {
+          "index": 4111,
+          "before": 32,
+          "after": 0
+        },
+        {
+          "index": 4112,
+          "before": 33,
+          "after": 34
+        },
+        {
+          "index": 4113,
+          "before": 33,
+          "after": 34
+        },
+        {
+          "index": 4115,
+          "before": 33,
+          "after": 34
+        },
+        {
+          "index": 4116,
+          "before": 30,
+          "after": 0
+        },
+        {
+          "index": 4117,
+          "before": 25,
+          "after": 0
+        },
+        {
+          "index": 4118,
+          "before": 25,
+          "after": 0
+        },
+        {
+          "index": 4119,
+          "before": 25,
+          "after": 0
+        },
+        {
+          "index": 4120,
+          "before": 25,
+          "after": 0
+        },
+        {
+          "index": 4121,
+          "before": 25,
+          "after": 0
+        },
+        {
+          "index": 4123,
+          "before": 25,
+          "after": 0
+        },
+        {
+          "index": 4126,
+          "before": 25,
+          "after": 0
+        },
+        {
+          "index": 4127,
+          "before": 25,
+          "after": 0
+        },
+        {
+          "index": 4128,
+          "before": 25,
+          "after": 0
+        },
+        {
+          "index": 4129,
+          "before": 26,
+          "after": 0
+        },
+        {
+          "index": 4130,
+          "before": 26,
+          "after": 0
+        },
+        {
+          "index": 4131,
+          "before": 44,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save129.TSF",
+      "to": "Save130.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 657,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save130.TSF",
+      "to": "Save131.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 657,
+          "before": 1,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "from": "Save131.TSF",
+      "to": "Save132.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 657,
+          "before": 2,
+          "after": 4
+        },
+        {
+          "index": 3054,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3057,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3058,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3065,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3066,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3067,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3071,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3072,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save132.TSF",
+      "to": "Save133.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 65,
+          "after": 66
+        },
+        {
+          "index": 606,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 657,
+          "before": 4,
+          "after": 5
+        },
+        {
+          "index": 999,
+          "before": 3,
+          "after": 1
+        },
+        {
+          "index": 1207,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1209,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1213,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 2014,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3033,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3054,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3057,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3058,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3065,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3066,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3067,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3071,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3072,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3073,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3075,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3076,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3078,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3079,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3080,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4087,
+          "before": 34,
+          "after": 0
+        },
+        {
+          "index": 4088,
+          "before": 34,
+          "after": 0
+        },
+        {
+          "index": 4103,
+          "before": 34,
+          "after": 30
+        },
+        {
+          "index": 4107,
+          "before": 34,
+          "after": 31
+        },
+        {
+          "index": 4108,
+          "before": 34,
+          "after": 31
+        },
+        {
+          "index": 4109,
+          "before": 34,
+          "after": 31
+        },
+        {
+          "index": 4110,
+          "before": 34,
+          "after": 32
+        },
+        {
+          "index": 4112,
+          "before": 34,
+          "after": 32
+        },
+        {
+          "index": 4113,
+          "before": 34,
+          "after": 33
+        },
+        {
+          "index": 4115,
+          "before": 34,
+          "after": 33
+        },
+        {
+          "index": 4116,
+          "before": 0,
+          "after": 32
+        },
+        {
+          "index": 4117,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4118,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4119,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4120,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4121,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4123,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4126,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4127,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4128,
+          "before": 0,
+          "after": 25
+        },
+        {
+          "index": 4129,
+          "before": 0,
+          "after": 26
+        },
+        {
+          "index": 4130,
+          "before": 0,
+          "after": 26
+        },
+        {
+          "index": 4131,
+          "before": 0,
+          "after": 44
+        }
+      ]
+    },
+    {
+      "from": "Save133.TSF",
+      "to": "Save134.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 66,
+          "after": 67
+        },
+        {
+          "index": 91,
+          "before": 5,
+          "after": 18
+        },
+        {
+          "index": 629,
+          "before": 0,
+          "after": 2
+        },
+        {
+          "index": 1177,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 2010,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save134.TSF",
+      "to": "Save135.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 661,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save135.TSF",
+      "to": "Save136.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 67,
+          "after": 68
+        },
+        {
+          "index": 1215,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save136.TSF",
+      "to": "Save137.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 666,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save137.TSF",
+      "to": "Save138.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 668,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save138.TSF",
+      "to": "Save139.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 95,
+          "before": 13,
+          "after": 6
+        },
+        {
+          "index": 663,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 668,
+          "before": 1,
+          "after": 4
+        }
+      ]
+    },
+    {
+      "from": "Save139.TSF",
+      "to": "Save140.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 68,
+          "after": 69
+        },
+        {
+          "index": 662,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save140.TSF",
+      "to": "Save141.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 69,
+          "after": 70
+        },
+        {
+          "index": 26,
+          "before": 0,
+          "after": 3
+        },
+        {
+          "index": 1215,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save141.TSF",
+      "to": "Save142.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 70,
+          "after": 71
+        },
+        {
+          "index": 538,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 642,
+          "before": 2,
+          "after": 1
+        },
+        {
+          "index": 999,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1210,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1216,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4501,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save142.TSF",
+      "to": "Save143.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 25,
+          "before": 10,
+          "after": 11
+        },
+        {
+          "index": 4501,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save143.TSF",
+      "to": "Save144.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 1,
+          "before": 71,
+          "after": 73
+        },
+        {
+          "index": 999,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save144.TSF",
+      "to": "Save145.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 32,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 41,
+          "before": 0,
+          "after": 5
+        },
+        {
+          "index": 42,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1242,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3206,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3207,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3208,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3215,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3217,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3218,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3219,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3231,
+          "before": 0,
+          "after": 7
+        },
+        {
+          "index": 4243,
+          "before": 0,
+          "after": 37
+        },
+        {
+          "index": 4244,
+          "before": 0,
+          "after": 48
+        },
+        {
+          "index": 4245,
+          "before": 0,
+          "after": 36
+        },
+        {
+          "index": 4246,
+          "before": 0,
+          "after": 41
+        },
+        {
+          "index": 4247,
+          "before": 0,
+          "after": 42
+        },
+        {
+          "index": 4248,
+          "before": 0,
+          "after": 39
+        },
+        {
+          "index": 4249,
+          "before": 0,
+          "after": 38
+        }
+      ]
+    },
+    {
+      "from": "Save145.TSF",
+      "to": "Save146.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 32,
+          "before": 1,
+          "after": 3
+        },
+        {
+          "index": 3206,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save146.TSF",
+      "to": "Save147.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 32,
+          "before": 3,
+          "after": 4
+        },
+        {
+          "index": 35,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 676,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 694,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1319,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3209,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save147.TSF",
+      "to": "Save148.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 34,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 45,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 47,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3207,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3209,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3211,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save148.TSF",
+      "to": "Save149.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 48,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 51,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 52,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 54,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 55,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 57,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 58,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 61,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 62,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 64,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 67,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 69,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 70,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 71,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 75,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 76,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 79,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 80,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 82,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1317,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1318,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1319,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3210,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3211,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save149.TSF",
+      "to": "Save150.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 40,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 49,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 677,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1241,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1242,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3210,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3212,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save150.TSF",
+      "to": "Save151.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 50,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3234,
+          "before": 0,
+          "after": 21
+        },
+        {
+          "index": 3235,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3241,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3242,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3243,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3244,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3245,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3246,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3247,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3250,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3251,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3252,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3253,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3254,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3255,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3256,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3257,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3258,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3259,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3260,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3261,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3262,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3263,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save151.TSF",
+      "to": "Save152.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 36,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 37,
+          "before": 0,
+          "after": 3
+        },
+        {
+          "index": 56,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 59,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 63,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 65,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 81,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1304,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1309,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1311,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1316,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1319,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1335,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3208,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3212,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "from": "Save152.TSF",
+      "to": "Save153.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 36,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 37,
+          "before": 3,
+          "after": 0
+        },
+        {
+          "index": 38,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1304,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1309,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1311,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1313,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1314,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1315,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1316,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1318,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 1335,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3209,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save153.TSF",
+      "to": "Save154.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 39,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 83,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 679,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 680,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 681,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1335,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3209,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3213,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3215,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3216,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3217,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3218,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3219,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 3224,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3225,
+          "before": 0,
+          "after": 5
+        }
+      ]
+    },
+    {
+      "from": "Save154.TSF",
+      "to": "Save155.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 683,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1330,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3223,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save155.TSF",
+      "to": "Save156.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 682,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 685,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 686,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3230,
+          "before": 0,
+          "after": 7
+        },
+        {
+          "index": 3231,
+          "before": 7,
+          "after": 0
+        },
+        {
+          "index": 3232,
+          "before": 0,
+          "after": 21
+        },
+        {
+          "index": 3233,
+          "before": 0,
+          "after": 21
+        }
+      ]
+    },
+    {
+      "from": "Save156.TSF",
+      "to": "Save157.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 687,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 689,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1318,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 3213,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "index": 4501,
+          "before": 0,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "from": "Save157.TSF",
+      "to": "Save158.TSF",
+      "walkthrough": "",
+      "changes": [
+        {
+          "index": 691,
+          "before": 0,
+          "after": 3
+        },
+        {
+          "index": 1301,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1302,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 1303,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "index": 4501,
+          "before": 1,
+          "after": 0
+        }
+      ]
+    }
+  ],
+  "warning": "相邻流程档并非每一步游戏操作后的快照；changed != 单一剧情事件直接写入。变量业务名必须结合EVE/SCI/动态Oracle再确认。"
+}

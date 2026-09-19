@@ -1,0 +1,111 @@
+{
+  "工具版本": "0.7D-固化1",
+  "目录": "/mnt/data/ucheng_stageD_work/public",
+  "结果": [
+    {
+      "文件": "Ail2.ENC",
+      "大小": 648200,
+      "预期大小": 648200,
+      "record_size": 926,
+      "count": 700,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Api.enc",
+      "大小": 216240,
+      "预期大小": 216240,
+      "record_size": 848,
+      "count": 255,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Battlegb.enc",
+      "大小": 6204,
+      "预期大小": 6204,
+      "record_size": 94,
+      "count": 66,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Enemy_ai.enc",
+      "大小": 15848,
+      "预期大小": 15848,
+      "record_size": 56,
+      "count": 283,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Firttech.enc",
+      "大小": 280000,
+      "预期大小": 280000,
+      "record_size": 560,
+      "count": 500,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Layoutgr.enc",
+      "大小": 127000,
+      "预期大小": 127000,
+      "record_size": 508,
+      "count": 250,
+      "状态": "PASS"
+    },
+    {
+      "文件": "LayoutTeam.ENC",
+      "大小": 169672,
+      "预期大小": 169672,
+      "record_size": 508,
+      "count": 334,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Levelup.enc",
+      "大小": 404,
+      "预期大小": 404,
+      "record_size": 4,
+      "count": 101,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Magiccon.enc",
+      "大小": 32000,
+      "预期大小": 32000,
+      "record_size": 64,
+      "count": 500,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Magictb.enc",
+      "大小": 3672,
+      "预期大小": 3672,
+      "record_size": 36,
+      "count": 102,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Miscinfo.enc",
+      "大小": 1054,
+      "预期大小": 1054,
+      "record_size": null,
+      "count": null,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Refinek.enc",
+      "大小": 1156,
+      "预期大小": 1156,
+      "record_size": 4,
+      "count": 289,
+      "状态": "PASS"
+    },
+    {
+      "文件": "Refinet.enc",
+      "大小": 504,
+      "预期大小": 504,
+      "record_size": 12,
+      "count": 42,
+      "状态": "PASS"
+    }
+  ],
+  "通过": 13
+}

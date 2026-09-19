@@ -1,0 +1,25 @@
+{
+  "版本": "v0.7D阶段中-固化20",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "D8": {
+    "RNG核心": "CLOSED",
+    "Battle启动与初始化": "STATIC_CLOSED",
+    "胜利结算": "STATIC_CLOSED",
+    "AI目标动作": "STATIC_CLOSED",
+    "公式与效果区": "STATIC_CLOSED_FOR_CURRENT_KNOWN_PATHS",
+    "全56个直接call-site分类": "IN_PROGRESS",
+    "动态BattleTrace": "PENDING"
+  },
+  "当前Oracle回归": {
+    "SCI": "67/67 PASS",
+    "EVE": "65/65 PASS",
+    "Battle": "349/349 PASS",
+    "MEN0003↔MEN0009": "PASS"
+  },
+  "第一恢复入口": [
+    "枚举56个0x451565直接call-site减去已分类集合，优先0x421AB6/0x421B20/0x423395",
+    "继续分类尚未覆盖的Battle随机点",
+    "建立动态BattleTrace事件结构与global_draw_index，不以静态分类替代动态验证"
+  ],
+  "严格边界": "不宣称D8完全完成；当前闭合的是已验证初始化、胜利、AI/target/action、公式/effect显式draw协议。"
+}

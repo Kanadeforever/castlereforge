@@ -1,0 +1,79 @@
+{
+  "版本": "v0.7D阶段中-固化8",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "状态": "STATIC_TWO_CHANNEL_PROTOCOL_CLOSED_SAMPLE_DISTRIBUTION_PENDING",
+  "通道A_world_item_result": {
+    "全局": "0x89F7D0",
+    "唯一非零writer": "0x40D03A <- DataCenter+0xEC current item ID",
+    "opcode0x94": "record+4 expected item ID；match→PC=record+8并clear result；record+0xC控制failure分支",
+    "opcode0x95": "result==0→顺序前进；result!=0→PC=record+4",
+    "record静态最小访问": {
+      "0x94": 16,
+      "0x95": 8
+    }
+  },
+  "通道B_saved_event_resume_keys": {
+    "opcode0x96": "0x40F3E0保存 current Event ID→0x89F7F8，record+4→0x89F7FC(keyA)，record+8→0x89F800(keyB)，然后clear active Event并yield",
+    "record静态最小访问": 12,
+    "code11": "0x40CE57：saved Event>0 且 keyB==当前DataCenter+0xEC物品ID → 恢复saved Event",
+    "code12": "0x40CE97：saved Event>0 且 keyA==12 → 恢复saved Event",
+    "code11_Ail2动作码11记录": [
+      {
+        "物理记录索引": 411,
+        "Ail2加20物品ID": 411,
+        "名称": "五方遁符",
+        "说明": "封入飛遁騰挪法儀的道家神符，能使使用者越過土石地表的障礙，直接移往地脈交織之所。",
+        "Ail2加28特殊动作码": 11,
+        "五槽ID": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "五槽数值": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "物理记录索引": 421,
+        "Ail2加20物品ID": 421,
+        "名称": "諸幻神鏡",
+        "说明": "能解破諸多幻象的神異寶鏡，據說若由鏡面內望，便可看到今世所無法想像的奇景。",
+        "Ail2加28特殊动作码": 11,
+        "五槽ID": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "五槽数值": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "code12_fallback": "若resume gate失败，0x40CED7取得运行时对象的vtable+0x384返回值；值==1时clear active Event并0x40B230(Event ID 3)，否则走原版提示/UI分支。Event 3业务含义未由当前样本证明。",
+    "保存槽生命周期": "0x89F7F8在0x408C49存在条件清零；0x40B340本身不清0x89F7F8/FC/800，keyA/keyB以saved Event ID是否有效作gate。"
+  },
+  "协议关系": "两个通道相关但不能混同：0x89F7D0承载world-item异步结果/物品ID供0x94/95分支；0x96三元组登记可由特殊world-item动作恢复的Event与匹配键。",
+  "禁止外推": [
+    "没有全EVE语料，不能宣称keyA/keyB的全部取值集合",
+    "code11已证明keyB按当前物品ID匹配，但不能仅凭两条Ail2记录推断所有0x96 keyB只能是411/421",
+    "code12 fallback中的Event ID 3业务语义未证明",
+    "不能把0x96称为地图传送opcode"
+  ],
+  "下一恢复入口": [
+    "获得更多真实EVE后运行eve96批量，统计keyA/keyB分布",
+    "继续追0x408C40 callers，确定saved Event失效时机",
+    "继续静态追Event ID 3在当前Event表/场景中的定义边界"
+  ]
+}

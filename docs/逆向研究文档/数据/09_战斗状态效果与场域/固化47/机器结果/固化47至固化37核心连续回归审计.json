@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "input_rpg_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+  "input_dddes_sha256": "1c8e3a6e0dfc314bcdc34aeae57388539da95d6443ee0441032452a7d76b2972",
+  "nodes": [
+    {
+      "solidification": 47,
+      "pass": true,
+      "detail": {
+        "machine": "31/31",
+        "reciprocal_pairs": 7,
+        "author_anchors": 16
+      }
+    },
+    {
+      "solidification": 46,
+      "pass": true,
+      "detail": {
+        "route_machine_checks": 21,
+        "logical_channels": 14,
+        "itf_section_counts": [
+          23,
+          23,
+          23,
+          0
+        ]
+      }
+    },
+    {
+      "solidification": 45,
+      "pass": true,
+      "detail": {
+        "machine": "23/23",
+        "direct_callers": "6/6"
+      }
+    },
+    {
+      "solidification": 44,
+      "pass": true,
+      "detail": {
+        "machine": "20/20",
+        "api_total_39_slot_values": 9945,
+        "api_tail_11_values": 2805
+      }
+    },
+    {
+      "solidification": 43,
+      "pass": true,
+      "detail": {
+        "machine": "15/15"
+      }
+    },
+    {
+      "solidification": 42,
+      "pass": true,
+      "detail": {
+        "machine": "11/11",
+        "large_id_records": 19,
+        "large_id_slots": 29
+      }
+    },
+    {
+      "solidification": 41,
+      "pass": true,
+      "detail": {
+        "machine": "13/13"
+      }
+    },
+    {
+      "solidification": 40,
+      "pass": true,
+      "detail": {
+        "machine": "10/10"
+      }
+    },
+    {
+      "solidification": 39,
+      "pass": true,
+      "detail": {
+        "machine": "10/10",
+        "layer_records": 11184
+      }
+    },
+    {
+      "solidification": 38,
+      "pass": true,
+      "detail": {
+        "machine": "29/29",
+        "legacy_hz": 20
+      }
+    },
+    {
+      "solidification": 37,
+      "pass": true,
+      "detail": {
+        "machine": "29/29",
+        "sf2_occurrences": 672,
+        "unique_sha": 506,
+        "standard_sf2": 505,
+        "section3_records": 132,
+        "audio_refs": "147/147"
+      }
+    }
+  ],
+  "note": "所有输出写入临时审计目录，正式包不依赖临时文件；固化46使用固化47语义纠正版工具重放。"
+}

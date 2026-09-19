@@ -1,0 +1,1237 @@
+{
+  "tool": "youcheng_battle_formula_selector_inspector.py",
+  "tool_version": "0.7D-solid51.0",
+  "status": "PASS",
+  "inputs": {
+    "rpg": {
+      "path": "/mnt/data/work50/input/RPG.exe",
+      "size": 462848,
+      "sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f"
+    },
+    "firttech_enc": {
+      "path": "/mnt/data/work50/regress3/raw/Firttech.enc",
+      "size": 280000,
+      "sha256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d"
+    },
+    "firttech_decoded_sha256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+    "api_enc": {
+      "path": "/mnt/data/work50/regress3/multimedia/public/Api.enc",
+      "size": 216240,
+      "sha256": "ff9de0da24113242f352e0cb7be3cd6e3032403399d547952f8c5ab10e94d907"
+    },
+    "api_decoded_sha256": "b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d",
+    "ail2_enc": {
+      "path": "/mnt/data/work50/regress3/raw/Ail2.ENC",
+      "size": 648200,
+      "sha256": "a24784316c2bd23fc2683637ab860c0e54f1b4175f6db990398843bd0a13c5d8"
+    },
+    "ail2_decoded_sha256": "a85d0904e969700b996ee89134582552bfabb98af76321804af34f9896b051a8"
+  },
+  "machine_assertions": {
+    "pass_count": 19,
+    "total_count": 19,
+    "all_pass": true,
+    "items": [
+      {
+        "名称": "FIRTTECH+0x30 只把 selector2..6送入五路jump table",
+        "VA": "0x0042C7B2",
+        "期望": "8b 47 30 89 44 24 18 83 c0 fe 83 f8 04 77 6b ff 24 85 98 cc 42 00",
+        "实际": "8b 47 30 89 44 24 18 83 c0 fe 83 f8 04 77 6b ff 24 85 98 cc 42 00",
+        "PASS": true
+      },
+      {
+        "名称": "selector2..6 jump table五项目标",
+        "VA": "0x0042CC98",
+        "期望": "c8 c7 42 00 dc c7 42 00 f0 c7 42 00 04 c8 42 00 18 c8 42 00",
+        "实际": "c8 c7 42 00 dc c7 42 00 f0 c7 42 00 04 c8 42 00 18 c8 42 00",
+        "PASS": true
+      },
+      {
+        "名称": "selector2读取主资源max-current缺口并乘FIRTTECH+0x40",
+        "VA": "0x0042B63F",
+        "期望": "8b 4b 2c 8b 53 30 8b f0 8b 44 24 18 2b ca 8b 5b 3c 0f af 48 40",
+        "实际": "8b 4b 2c 8b 53 30 8b f0 8b 44 24 18 2b ca 8b 5b 3c 0f af 48 40",
+        "PASS": true
+      },
+      {
+        "名称": "selector2把缺口乘K后的结果按signed /10加入A",
+        "VA": "0x0042B654",
+        "期望": "b8 67 66 66 66 f7 e9 c1 fa 02 8b ca b8 67 66 66 66 c1 e9 1f 03 d1 03 f2",
+        "实际": "b8 67 66 66 66 f7 e9 c1 fa 02 8b ca b8 67 66 66 66 c1 e9 1f 03 d1 03 f2",
+        "PASS": true
+      },
+      {
+        "名称": "selector3把主资源max乘K后按signed /100",
+        "VA": "0x0042B6CF",
+        "期望": "8b 4b 2c 0f af 48 40 b8 1f 85 eb 51 f7 e9 c1 fa 05 8b ca c1 e9 1f 03 d1",
+        "实际": "8b 4b 2c 0f af 48 40 b8 1f 85 eb 51 f7 e9 c1 fa 05 8b ca c1 e9 1f 03 d1",
+        "PASS": true
+      },
+      {
+        "名称": "selector4先取得A并乘K",
+        "VA": "0x0042B75A",
+        "期望": "e8 21 03 00 00 8b 4c 24 18 8b 49 40 0f af c8 b8 67 66 66 66 f7 e9",
+        "实际": "e8 21 03 00 00 8b 4c 24 18 8b 49 40 0f af c8 b8 67 66 66 66 f7 e9",
+        "PASS": true
+      },
+      {
+        "名称": "selector4的A*K结果按signed /10后继续",
+        "VA": "0x0042B770",
+        "期望": "8b 4b 3c c1 fa 02 8b c2 c1 e8 1f 03 d0",
+        "实际": "8b 4b 3c c1 fa 02 8b c2 c1 e8 1f 03 d0",
+        "PASS": true
+      },
+      {
+        "名称": "selector5形成base后直接signed idiv base，无本地除零guard",
+        "VA": "0x0042B80F",
+        "期望": "8b 54 24 14 8b cf 52 03 f0 e8 33 03 00 00 99 f7 fe",
+        "实际": "8b 54 24 14 8b cf 52 03 f0 e8 33 03 00 00 99 f7 fe",
+        "PASS": true
+      },
+      {
+        "名称": "selector5把整数商乘K后从base中扣除",
+        "VA": "0x0042B820",
+        "期望": "8b 4c 24 18 5f 0f af 41 40 2b f0",
+        "实际": "8b 4c 24 18 5f 0f af 41 40 2b f0",
+        "PASS": true
+      },
+      {
+        "名称": "selector6先调用default formula",
+        "VA": "0x0042B840",
+        "期望": "8b 44 24 08 8b 54 24 04 56 8b 74 24 10 56 50 52 e8 9b fd ff ff",
+        "实际": "8b 44 24 08 8b 54 24 04 56 8b 74 24 10 56 50 52 e8 9b fd ff ff",
+        "PASS": true
+      },
+      {
+        "名称": "selector6把default结果乘K并按signed /10",
+        "VA": "0x0042B855",
+        "期望": "8b 4e 40 5e 0f af c8 b8 67 66 66 66 f7 e9 c1 fa 02",
+        "实际": "8b 4e 40 5e 0f af c8 b8 67 66 66 66 f7 e9 c1 fa 02",
+        "PASS": true
+      },
+      {
+        "名称": "default formula入口取得performer并调用A builder",
+        "VA": "0x0042B5F0",
+        "期望": "53 56 57 8b 7c 24 10 8b f1 57 e8 81 04 00 00",
+        "实际": "53 56 57 8b 7c 24 10 8b f1 57 e8 81 04 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "FIRTTECH+0x40的全局zero gate：K==0则主结果归零",
+        "VA": "0x0042C850",
+        "期望": "8b 47 40 85 c0 89 4c 24 20 75 08 c7 44 24 20 00 00 00 00",
+        "实际": "8b 47 40 85 c0 89 4c 24 20 75 08 c7 44 24 20 00 00 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "A builder从RoleDefinition+0x3C取基线",
+        "VA": "0x0042BA0C",
+        "期望": "8b 8a 90 00 00 00 8b 42 3c 85 c9",
+        "实际": "8b 8a 90 00 00 00 8b 42 3c 85 c9",
+        "PASS": true
+      },
+      {
+        "名称": "A builder按装备ID叠加Ail2派生记录+0x38",
+        "VA": "0x0042BA19",
+        "期望": "8d 3c cd 00 00 00 00 2b f9 8d 3c b9 c1 e7 04 2b f9 03 44 7e 38",
+        "实际": "8d 3c cd 00 00 00 00 2b f9 8d 3c b9 c1 e7 04 2b f9 03 44 7e 38",
+        "PASS": true
+      },
+      {
+        "名称": "A builder状态+0x1F4分支构造7*A",
+        "VA": "0x0042BA8B",
+        "期望": "8b 8e f4 01 00 00 85 c9 7e 0b 8d 0c c5 00 00 00 00 2b c8",
+        "实际": "8b 8e f4 01 00 00 85 c9 7e 0b 8d 0c c5 00 00 00 00 2b c8",
+        "PASS": true
+      },
+      {
+        "名称": "A builder状态+0x240分支构造13*A",
+        "VA": "0x0042BAA0",
+        "期望": "8b 8e 40 02 00 00 85 c9 7e 19 8d 0c 40 8d 0c 88",
+        "实际": "8b 8e 40 02 00 00 85 c9 7e 19 8d 0c 40 8d 0c 88",
+        "PASS": true
+      },
+      {
+        "名称": "A builder状态倍率最终按signed /10",
+        "VA": "0x0042BAB0",
+        "期望": "b8 67 66 66 66 f7 e9 c1 fa 02 8b c2 c1 e8 1f 03 d0 8b c2",
+        "实际": "b8 67 66 66 66 f7 e9 c1 fa 02 8b c2 c1 e8 1f 03 d0 8b c2",
+        "PASS": true
+      },
+      {
+        "名称": "selector5随机边界源S来自RoleDefinition+0x3C",
+        "VA": "0x0042B7DF",
+        "期望": "8b 4b 3c 8b f0 b8 67 66 66 66 f7 e9",
+        "实际": "8b 4b 3c 8b f0 b8 67 66 66 66 f7 e9",
+        "PASS": true
+      }
+    ]
+  },
+  "formula_semantics": {
+    "definitions": {
+      "A": "0x42BA80(performer) 的派生量；基线来自 RoleDefinition+0x3C，并叠加Ail2+0x38修正与临时倍率",
+      "B": "0x42BB50(target) 的派生量；作者正式属性名仍不强命名",
+      "S": "performer RoleDefinition+0x3C 原始值",
+      "K": "FIRTTECH+0x40 原始参数；不是全局统一百分比",
+      "Rand": "0x42CCB0 的 sorted half-open integer random range"
+    },
+    "default": "Clamp1(A + Rand[S/25,S/10) - B)（前代已闭合；本轮不重新命名业务属性）",
+    "selector2": "Clamp0(A + trunc((max_main-current_main)*K/10) + Rand[S/50,S/10) - B)",
+    "selector3": "Clamp0(A + trunc(max_main*K/100) + Rand[S/50,S/10) - B)",
+    "selector4": "Clamp0(trunc(A*K/10) + Rand[S/50,S/10) - B)",
+    "selector5": "base=A+Rand[S/50,S/10); Clamp0(base - trunc(B/base)*K)",
+    "selector6": "Clamp0(trunc(default_formula*K/10))",
+    "k_semantic_boundary": {
+      "global": "helper返回后仍有K==0则主结果归零的zero gate",
+      "selector0_or_1": "走default helper；K数值不参与default helper倍率，只参与后级zero gate",
+      "selector2": "缺口项的十分位系数",
+      "selector3": "max主资源项的百分位系数",
+      "selector4": "A的十分位前置倍率",
+      "selector5": "整数商 trunc(B/base) 的原始乘数/扣减量子；不是百分比",
+      "selector6": "default结果的十分位后置倍率",
+      "forbidden_simplification": "不得把FIRTTECH+0x40统一转换成一个damage_percent字段"
+    }
+  },
+  "firttech_corpus": {
+    "selector_distribution": {
+      "0": 418,
+      "1": 14,
+      "2": 2,
+      "3": 2,
+      "4": 35,
+      "5": 8,
+      "6": 21
+    },
+    "by_selector": {
+      "0": {
+        "record_count": 418,
+        "k_zero_count": 406,
+        "k_nonzero_count": 12,
+        "k_min": 0,
+        "k_max": 100,
+        "k_distribution": {
+          "0": 406,
+          "30": 2,
+          "40": 1,
+          "50": 3,
+          "60": 3,
+          "80": 2,
+          "100": 1
+        }
+      },
+      "1": {
+        "record_count": 14,
+        "k_zero_count": 0,
+        "k_nonzero_count": 14,
+        "k_min": 1,
+        "k_max": 1,
+        "k_distribution": {
+          "1": 14
+        }
+      },
+      "2": {
+        "record_count": 2,
+        "k_zero_count": 0,
+        "k_nonzero_count": 2,
+        "k_min": 20,
+        "k_max": 30,
+        "k_distribution": {
+          "20": 1,
+          "30": 1
+        }
+      },
+      "3": {
+        "record_count": 2,
+        "k_zero_count": 0,
+        "k_nonzero_count": 2,
+        "k_min": 50,
+        "k_max": 60,
+        "k_distribution": {
+          "50": 1,
+          "60": 1
+        }
+      },
+      "4": {
+        "record_count": 35,
+        "k_zero_count": 0,
+        "k_nonzero_count": 35,
+        "k_min": 11,
+        "k_max": 20000,
+        "k_distribution": {
+          "11": 1,
+          "12": 4,
+          "13": 4,
+          "14": 5,
+          "15": 2,
+          "16": 1,
+          "17": 1,
+          "18": 2,
+          "20": 3,
+          "22": 1,
+          "25": 1,
+          "30": 2,
+          "40": 1,
+          "50": 2,
+          "20000": 5
+        }
+      },
+      "5": {
+        "record_count": 8,
+        "k_zero_count": 0,
+        "k_nonzero_count": 8,
+        "k_min": 10,
+        "k_max": 30,
+        "k_distribution": {
+          "10": 1,
+          "12": 1,
+          "15": 2,
+          "20": 2,
+          "25": 1,
+          "30": 1
+        }
+      },
+      "6": {
+        "record_count": 21,
+        "k_zero_count": 0,
+        "k_nonzero_count": 21,
+        "k_min": 13,
+        "k_max": 40,
+        "k_distribution": {
+          "13": 1,
+          "15": 6,
+          "17": 1,
+          "18": 2,
+          "20": 8,
+          "25": 1,
+          "30": 1,
+          "40": 1
+        }
+      }
+    },
+    "selector_2_to_6_records": [
+      {
+        "record_index": 301,
+        "id": 301,
+        "name": "攝魂鬼爪",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 40,
+        "second_cost_0x38": 0,
+        "k_0x40": 12,
+        "description": "夏侯儀的獨門絕技，以自己魂中的幽凜之氣化為手刀攻敵，傷敵之外兼能吸取敵方魂氣。"
+      },
+      {
+        "record_index": 303,
+        "id": 303,
+        "name": "絕劍凶號",
+        "mode_0x18": 1,
+        "selector_0x30": 3,
+        "main_cost_0x34": 20,
+        "second_cost_0x38": 0,
+        "k_0x40": 60,
+        "description": "「絕劍」之一，以心中殺意引發劍魔「煌熇」凶號共鳴，其威力能一擊而令敵魂體半損。"
+      },
+      {
+        "record_index": 304,
+        "id": 304,
+        "name": "滅劍血朧",
+        "mode_0x18": 1,
+        "selector_0x30": 2,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 30,
+        "k_0x40": 30,
+        "description": "以劍魔「煌熇」的厲氣化為逆命血氣，使用此技者的傷勢越重，逆命血氣之威便越強。"
+      },
+      {
+        "record_index": 305,
+        "id": 306,
+        "name": "絕劍喪魂",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 70,
+        "k_0x40": 30,
+        "description": "引幽冥往的幽劍第二式，能以絕凜殺意看穿敵人弱點、發而破之，令敵之重甲如同無形。"
+      },
+      {
+        "record_index": 306,
+        "id": 305,
+        "name": "幽劍冥引",
+        "mode_0x18": 1,
+        "selector_0x30": 5,
+        "main_cost_0x34": 90,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": "冰璃的劍技，以劍風引帶無數戾魄鬼氣，令敵中招後喪魄失神，因而完全忘卻先前的行動。"
+      },
+      {
+        "record_index": 307,
+        "id": 307,
+        "name": "滅劍羅淵",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 120,
+        "second_cost_0x38": 0,
+        "k_0x40": 40,
+        "description": "「滅劍」中最威猛的一式，能藉劍魔的煞力引動羅淵厲界，並以劍氣罡風將敵群噬殺吞滅。"
+      },
+      {
+        "record_index": 308,
+        "id": 308,
+        "name": "神華天舞",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 30,
+        "second_cost_0x38": 0,
+        "k_0x40": 11,
+        "description": "據說是自天女的舞姿演變而來，此技能以曼妙舞姿舞動索帶，以眩目之姿盡擊陣中諸敵。"
+      },
+      {
+        "record_index": 309,
+        "id": 309,
+        "name": "罡風盈索",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 60,
+        "second_cost_0x38": 0,
+        "k_0x40": 15,
+        "description": "將罡氣灌注於索帶之內，不獨可揮擊一直排敵人，並能以罡氣反激敵內脈氣蘊而使之麻痺。"
+      },
+      {
+        "record_index": 310,
+        "id": 310,
+        "name": "紫琰飛煌",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 40,
+        "second_cost_0x38": 0,
+        "k_0x40": 13,
+        "description": "操擁「宿玉」者所專擅的絕技，以真元內氣封注玉內之後發而擊之，有倍於平時的破壞力。"
+      },
+      {
+        "record_index": 311,
+        "id": 311,
+        "name": "潑風槍",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 30,
+        "second_cost_0x38": 0,
+        "k_0x40": 15,
+        "description": "古倫德的槍技之一，以剛力疾舞手中長槍潑風揚塵，斬擊眼前一橫排敵人並令其不能視物。"
+      },
+      {
+        "record_index": 312,
+        "id": 312,
+        "name": "炎殺戟",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 30,
+        "k_0x40": 14,
+        "description": "古倫德的槍技之一，將帶有火炎之力的長槍全力打擊一個敵人。"
+      },
+      {
+        "record_index": 313,
+        "id": 313,
+        "name": "猛鬼破衝",
+        "mode_0x18": 1,
+        "selector_0x30": 5,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 50,
+        "k_0x40": 15,
+        "description": "古倫德的槍技之一，無視敵人的防禦，有如惡鬼般突入敵陣中斬殺敵人。"
+      },
+      {
+        "record_index": 314,
+        "id": 314,
+        "name": "迴光華斬",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 80,
+        "second_cost_0x38": 0,
+        "k_0x40": 40,
+        "description": "古倫德的槍技之一，以自己為中心劃出一記回馬槍，威力相當強大。"
+      },
+      {
+        "record_index": 315,
+        "id": 315,
+        "name": "天將奔烈",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 150,
+        "second_cost_0x38": 0,
+        "k_0x40": 50,
+        "description": "古倫德的最強槍技，能以心中極意瞬間予敵無數攻擊，其威勢有如神將降臨，故得其名。"
+      },
+      {
+        "record_index": 316,
+        "id": 316,
+        "name": "紫琰飛煌",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 50,
+        "second_cost_0x38": 0,
+        "k_0x40": 13,
+        "description": "操擁「宿玉」者所專擅的絕技，以真元內氣封注玉內之後發而擊之，有倍於平時的破壞力。"
+      },
+      {
+        "record_index": 321,
+        "id": 321,
+        "name": "連珠箭雨",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 20,
+        "second_cost_0x38": 0,
+        "k_0x40": 12,
+        "description": ""
+      },
+      {
+        "record_index": 322,
+        "id": 322,
+        "name": "無方飛劍",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 30,
+        "second_cost_0x38": 0,
+        "k_0x40": 13,
+        "description": ""
+      },
+      {
+        "record_index": 323,
+        "id": 323,
+        "name": "離魂喚喪",
+        "mode_0x18": 1,
+        "selector_0x30": 2,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 1,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 325,
+        "id": 325,
+        "name": "奪魄鬼眼",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 60,
+        "second_cost_0x38": 0,
+        "k_0x40": 14,
+        "description": ""
+      },
+      {
+        "record_index": 326,
+        "id": 326,
+        "name": "鬼顱彈",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 80,
+        "second_cost_0x38": 0,
+        "k_0x40": 17,
+        "description": ""
+      },
+      {
+        "record_index": 328,
+        "id": 328,
+        "name": "妖光邪眼",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 30,
+        "second_cost_0x38": 0,
+        "k_0x40": 12,
+        "description": ""
+      },
+      {
+        "record_index": 329,
+        "id": 329,
+        "name": "化血毒沫",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 40,
+        "second_cost_0x38": 0,
+        "k_0x40": 12,
+        "description": ""
+      },
+      {
+        "record_index": 330,
+        "id": 330,
+        "name": "蛇軀毒鑽",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 80,
+        "second_cost_0x38": 0,
+        "k_0x40": 16,
+        "description": ""
+      },
+      {
+        "record_index": 331,
+        "id": 331,
+        "name": "禁血蝕殺",
+        "mode_0x18": 1,
+        "selector_0x30": 3,
+        "main_cost_0x34": 50,
+        "second_cost_0x38": 0,
+        "k_0x40": 50,
+        "description": ""
+      },
+      {
+        "record_index": 333,
+        "id": 333,
+        "name": "剛破崩擊",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 50,
+        "second_cost_0x38": 0,
+        "k_0x40": 15,
+        "description": ""
+      },
+      {
+        "record_index": 334,
+        "id": 334,
+        "name": "血凅之觸",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 50,
+        "k_0x40": 15,
+        "description": ""
+      },
+      {
+        "record_index": 337,
+        "id": 337,
+        "name": "死灼妖光",
+        "mode_0x18": 1,
+        "selector_0x30": 5,
+        "main_cost_0x34": 180,
+        "second_cost_0x38": 0,
+        "k_0x40": 12,
+        "description": ""
+      },
+      {
+        "record_index": 341,
+        "id": 341,
+        "name": "鬼叉刃",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 140,
+        "second_cost_0x38": 0,
+        "k_0x40": 15,
+        "description": ""
+      },
+      {
+        "record_index": 342,
+        "id": 342,
+        "name": "無方鬼影",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 150,
+        "second_cost_0x38": 0,
+        "k_0x40": 18,
+        "description": ""
+      },
+      {
+        "record_index": 343,
+        "id": 343,
+        "name": "絕煞劍",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 180,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 347,
+        "id": 347,
+        "name": "鬼角馳衝",
+        "mode_0x18": 1,
+        "selector_0x30": 5,
+        "main_cost_0x34": 120,
+        "second_cost_0x38": 0,
+        "k_0x40": 15,
+        "description": ""
+      },
+      {
+        "record_index": 348,
+        "id": 348,
+        "name": "倀魂血咒",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 100,
+        "k_0x40": 15,
+        "description": ""
+      },
+      {
+        "record_index": 350,
+        "id": 350,
+        "name": "幻煞羅斬",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 200,
+        "second_cost_0x38": 0,
+        "k_0x40": 22,
+        "description": ""
+      },
+      {
+        "record_index": 351,
+        "id": 351,
+        "name": "死琰烈光",
+        "mode_0x18": 1,
+        "selector_0x30": 5,
+        "main_cost_0x34": 200,
+        "second_cost_0x38": 0,
+        "k_0x40": 10,
+        "description": ""
+      },
+      {
+        "record_index": 352,
+        "id": 352,
+        "name": "封獄壞界",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 10,
+        "second_cost_0x38": 0,
+        "k_0x40": 20000,
+        "description": ""
+      },
+      {
+        "record_index": 355,
+        "id": 355,
+        "name": "開山剛勁",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 50,
+        "second_cost_0x38": 0,
+        "k_0x40": 18,
+        "description": ""
+      },
+      {
+        "record_index": 357,
+        "id": 357,
+        "name": "八裂旋刃",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 60,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 358,
+        "id": 358,
+        "name": "飛星神劍",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 300,
+        "second_cost_0x38": 0,
+        "k_0x40": 25,
+        "description": ""
+      },
+      {
+        "record_index": 362,
+        "id": 362,
+        "name": "雲橫華山",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 250,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 363,
+        "id": 363,
+        "name": "猛氣破衝",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 220,
+        "second_cost_0x38": 0,
+        "k_0x40": 13,
+        "description": ""
+      },
+      {
+        "record_index": 365,
+        "id": 365,
+        "name": "千闇之淵",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 10,
+        "k_0x40": 20000,
+        "description": ""
+      },
+      {
+        "record_index": 366,
+        "id": 366,
+        "name": "朱色魔霧",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 200,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 367,
+        "id": 367,
+        "name": "紫色魔霧",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 200,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 368,
+        "id": 368,
+        "name": "青色魔霧",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 200,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 369,
+        "id": 369,
+        "name": "白色魔霧",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 200,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 370,
+        "id": 370,
+        "name": "黑色魔霧",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 200,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 371,
+        "id": 371,
+        "name": "九儀崩亂",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 200,
+        "second_cost_0x38": 0,
+        "k_0x40": 18,
+        "description": ""
+      },
+      {
+        "record_index": 373,
+        "id": 373,
+        "name": "諸殺滅陣",
+        "mode_0x18": 1,
+        "selector_0x30": 5,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 200,
+        "k_0x40": 25,
+        "description": ""
+      },
+      {
+        "record_index": 374,
+        "id": 374,
+        "name": "羅鍭煌舞",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 400,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 375,
+        "id": 375,
+        "name": "幽寰玄壑",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 300,
+        "second_cost_0x38": 0,
+        "k_0x40": 20000,
+        "description": ""
+      },
+      {
+        "record_index": 376,
+        "id": 376,
+        "name": "滅元斬",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 300,
+        "second_cost_0x38": 0,
+        "k_0x40": 20000,
+        "description": ""
+      },
+      {
+        "record_index": 377,
+        "id": 377,
+        "name": "羅鍭光舞",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 500,
+        "second_cost_0x38": 0,
+        "k_0x40": 30,
+        "description": ""
+      },
+      {
+        "record_index": 386,
+        "id": 386,
+        "name": "連珠箭雨",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 30,
+        "second_cost_0x38": 0,
+        "k_0x40": 14,
+        "description": ""
+      },
+      {
+        "record_index": 387,
+        "id": 387,
+        "name": "無方飛劍",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 40,
+        "second_cost_0x38": 0,
+        "k_0x40": 15,
+        "description": ""
+      },
+      {
+        "record_index": 388,
+        "id": 388,
+        "name": "鬼顱彈",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 50,
+        "second_cost_0x38": 0,
+        "k_0x40": 15,
+        "description": ""
+      },
+      {
+        "record_index": 391,
+        "id": 391,
+        "name": "妖光邪眼",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 40,
+        "second_cost_0x38": 0,
+        "k_0x40": 14,
+        "description": ""
+      },
+      {
+        "record_index": 392,
+        "id": 392,
+        "name": "化血毒沫",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 60,
+        "second_cost_0x38": 0,
+        "k_0x40": 13,
+        "description": ""
+      },
+      {
+        "record_index": 393,
+        "id": 393,
+        "name": "化血毒沫",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 80,
+        "second_cost_0x38": 0,
+        "k_0x40": 14,
+        "description": ""
+      },
+      {
+        "record_index": 394,
+        "id": 394,
+        "name": "剛破崩擊",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 60,
+        "second_cost_0x38": 0,
+        "k_0x40": 17,
+        "description": ""
+      },
+      {
+        "record_index": 395,
+        "id": 395,
+        "name": "剛破崩擊",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 120,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 396,
+        "id": 396,
+        "name": "血凅之觸",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 60,
+        "k_0x40": 18,
+        "description": ""
+      },
+      {
+        "record_index": 397,
+        "id": 397,
+        "name": "血凅之觸",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 80,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 398,
+        "id": 398,
+        "name": "八裂旋刃",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 100,
+        "second_cost_0x38": 0,
+        "k_0x40": 25,
+        "description": ""
+      },
+      {
+        "record_index": 400,
+        "id": 400,
+        "name": "幽寰玄壑",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 400,
+        "second_cost_0x38": 0,
+        "k_0x40": 20000,
+        "description": ""
+      },
+      {
+        "record_index": 471,
+        "id": 471,
+        "name": "幽劍冥引",
+        "mode_0x18": 1,
+        "selector_0x30": 5,
+        "main_cost_0x34": 200,
+        "second_cost_0x38": 0,
+        "k_0x40": 20,
+        "description": ""
+      },
+      {
+        "record_index": 472,
+        "id": 472,
+        "name": "絕劍喪魂",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 150,
+        "k_0x40": 30,
+        "description": ""
+      },
+      {
+        "record_index": 473,
+        "id": 473,
+        "name": "浮光掠影",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 10,
+        "second_cost_0x38": 0,
+        "k_0x40": 50,
+        "description": ""
+      },
+      {
+        "record_index": 474,
+        "id": 474,
+        "name": "兩佰雄兵",
+        "mode_0x18": 1,
+        "selector_0x30": 5,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 10,
+        "k_0x40": 30,
+        "description": ""
+      }
+    ],
+    "author_text_anchors": [
+      {
+        "record_index": 304,
+        "id": 304,
+        "name": "滅劍血朧",
+        "mode_0x18": 1,
+        "selector_0x30": 2,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 30,
+        "k_0x40": 30,
+        "description": "以劍魔「煌熇」的厲氣化為逆命血氣，使用此技者的傷勢越重，逆命血氣之威便越強。"
+      },
+      {
+        "record_index": 303,
+        "id": 303,
+        "name": "絕劍凶號",
+        "mode_0x18": 1,
+        "selector_0x30": 3,
+        "main_cost_0x34": 20,
+        "second_cost_0x38": 0,
+        "k_0x40": 60,
+        "description": "「絕劍」之一，以心中殺意引發劍魔「煌熇」凶號共鳴，其威力能一擊而令敵魂體半損。"
+      },
+      {
+        "record_index": 310,
+        "id": 310,
+        "name": "紫琰飛煌",
+        "mode_0x18": 1,
+        "selector_0x30": 4,
+        "main_cost_0x34": 40,
+        "second_cost_0x38": 0,
+        "k_0x40": 13,
+        "description": "操擁「宿玉」者所專擅的絕技，以真元內氣封注玉內之後發而擊之，有倍於平時的破壞力。"
+      },
+      {
+        "record_index": 313,
+        "id": 313,
+        "name": "猛鬼破衝",
+        "mode_0x18": 1,
+        "selector_0x30": 5,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 50,
+        "k_0x40": 15,
+        "description": "古倫德的槍技之一，無視敵人的防禦，有如惡鬼般突入敵陣中斬殺敵人。"
+      },
+      {
+        "record_index": 305,
+        "id": 306,
+        "name": "絕劍喪魂",
+        "mode_0x18": 1,
+        "selector_0x30": 6,
+        "main_cost_0x34": 0,
+        "second_cost_0x38": 70,
+        "k_0x40": 30,
+        "description": "引幽冥往的幽劍第二式，能以絕凜殺意看穿敵人弱點、發而破之，令敵之重甲如同無形。"
+      }
+    ],
+    "selector4_k_20000_count": 5
+  },
+  "api_roledefinition_invariant": {
+    "record_count": 255,
+    "named_record_count": 151,
+    "blank_record_count": 104,
+    "positive_s_count": 151,
+    "zero_s_count": 104,
+    "negative_s_count": 0,
+    "named_s_min": 20,
+    "named_s_max": 800,
+    "name_nonempty_iff_s_positive_mismatch_count": 0,
+    "smallest_named_records": [
+      {
+        "role_id": 50,
+        "name": "Eagle",
+        "s_0x3c": 20
+      },
+      {
+        "role_id": 4,
+        "name": "慕容璇璣",
+        "s_0x3c": 30
+      },
+      {
+        "role_id": 138,
+        "name": "羽魅",
+        "s_0x3c": 30
+      },
+      {
+        "role_id": 103,
+        "name": "西夏兵",
+        "s_0x3c": 35
+      },
+      {
+        "role_id": 104,
+        "name": "西夏兵",
+        "s_0x3c": 35
+      },
+      {
+        "role_id": 235,
+        "name": "西夏兵",
+        "s_0x3c": 35
+      },
+      {
+        "role_id": 101,
+        "name": "沙漠盜賊",
+        "s_0x3c": 40
+      },
+      {
+        "role_id": 102,
+        "name": "沙漠盜賊",
+        "s_0x3c": 40
+      },
+      {
+        "role_id": 119,
+        "name": "沙蟲",
+        "s_0x3c": 40
+      },
+      {
+        "role_id": 232,
+        "name": "闇咒者",
+        "s_0x3c": 40
+      },
+      {
+        "role_id": 113,
+        "name": "巨蠍",
+        "s_0x3c": 50
+      },
+      {
+        "role_id": 122,
+        "name": "兀鷹",
+        "s_0x3c": 50
+      }
+    ]
+  },
+  "ail2_a_bonus_invariant": {
+    "record_count": 700,
+    "min": 0,
+    "max": 2000,
+    "negative_count": 0,
+    "zero_count": 472,
+    "positive_count": 228
+  },
+  "selector5_division_boundary": {
+    "canonical_named_role_s_min": 20,
+    "ail2_plus_0x38_min": 0,
+    "a_before_status_lower_bound": 20,
+    "a_after_0_7_status_lower_bound": 14,
+    "random_term_lower_bound_at_s_min": 0,
+    "selector5_base_lower_bound": 14,
+    "base_zero_possible_under_current_proven_inputs": false,
+    "original_function_has_local_zero_guard": false,
+    "compatibility_rule": "canonical正常输入必须按原式计算；不要在正常路径插入改变结果的额外分支。若宿主引擎希望对损坏/MOD数据防崩溃，应把base<=0当作非canonical数据保护策略，并与原版语义明确分层记录。"
+  },
+  "corpus_checks": {
+    "firttech_selector_distribution_is_0_to_6_only": true,
+    "selector2_count_is_2": true,
+    "selector3_count_is_2": true,
+    "selector4_count_is_35": true,
+    "selector5_count_is_8": true,
+    "selector6_count_is_21": true,
+    "selector2_to_6_k_all_nonzero": true,
+    "selector4_has_five_k_20000_outliers": true,
+    "api_255_records": true,
+    "api_named_151": true,
+    "api_named_iff_s_positive": true,
+    "api_named_s_min_is_20": true,
+    "ail2_700_records": true,
+    "ail2_plus_0x38_has_no_negative": true,
+    "selector5_canonical_base_lower_bound_positive": true
+  },
+  "evidence_boundary": [
+    "+0x40不是全局统一百分比；不同selector必须按各自公式原样解释。",
+    "selector0/1的default helper本身不按K缩放，但后级K==0会把主结果归零。",
+    "selector5函数内部没有base==0保护；当前canonical已证正常构造输入给出base>=14。",
+    "base>=14只覆盖当前canonical有名称RoleDefinition、当前Ail2+0x38非负修正以及已证0.7/1.3状态倍率。",
+    "不得把损坏数据、恶意MOD或其他版本强行归入canonical安全输入域。",
+    "结构类名称不是作者官方变量名；A/B等内部派生量继续保持业务名UNKNOWN。"
+  ]
+}

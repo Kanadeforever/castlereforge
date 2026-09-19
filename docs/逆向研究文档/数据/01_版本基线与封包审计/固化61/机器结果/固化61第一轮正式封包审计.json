@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "solidification": 61,
+  "baseline_zip": "幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化60_Battle场域相对阵营路由选择器与双八槽组真值表边界闭合版.zip",
+  "inherited_non_markdown": {
+    "total": 1001,
+    "passed": 1001
+  },
+  "markdown": {
+    "total": 103,
+    "passed_basic": 103
+  },
+  "python_tools": {
+    "total": 37,
+    "ast_compile_passed": 37,
+    "new_tool_help_returncode": 0,
+    "old_tool_cli_audit": "inherited from solid60 because bytes are protected by inherited SHA"
+  },
+  "tool_manuals": {
+    "total": 37,
+    "missing_mentions": []
+  },
+  "json_before_audit": {
+    "total": 528,
+    "parsed": 528
+  },
+  "csv": {
+    "total": 58,
+    "parsed": 58
+  },
+  "new_tool": {
+    "lines": 1016,
+    "chinese_hash_comments": 112
+  },
+  "fail_history": {
+    "count": 3,
+    "all_still_FAIL": true
+  },
+  "cache_count": 0,
+  "issues": []
+}

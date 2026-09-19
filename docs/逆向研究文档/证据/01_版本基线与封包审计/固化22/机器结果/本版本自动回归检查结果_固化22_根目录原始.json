@@ -1,0 +1,115 @@
+{
+  "版本": "v0.7D阶段中-固化22",
+  "完整版本名": "D8非Battle随机语义与SCI实体行为静态闭合版",
+  "日期": "2026-08-14",
+  "直接基线": "v0.7D阶段中-固化21_D8剩余随机调用分类静态闭合版_封包同步修正版1",
+  "研究性质": "纯静态逆向研究固化；不包含DLL、Hook、BattleTrace、运行时探针、兼容引擎实现或其他分析外工作。",
+  "旧错误固化22处理": "不作为基线；仅取回静态线索后使用当前Oracle重新验证，所有运行时内容排除。",
+  "原始输入Oracle": {
+    "RPG.exe_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "multimedia.zip_SHA256": "faa994d6e47b46ce610e75019e8a1da35822560781ba9e8e160814571e952f1f"
+  },
+  "核心静态回归": {
+    "Battle": {
+      "工具版本": "0.7D.12-固化22",
+      "检查项": 413,
+      "全部通过": true
+    },
+    "EVE": {
+      "工具版本": "0.7D.6-固化16",
+      "检查项": 65,
+      "全部通过": true
+    },
+    "SCI_MapTail": {
+      "工具版本": "0.7D.4-固化22",
+      "检查项": 67,
+      "全部通过": true
+    },
+    "SCI_EntityBehavior": {
+      "工具版本": "0.7D.4-固化22",
+      "检查项": 27,
+      "全部通过": true
+    },
+    "SCI_MapBackground": {
+      "工具版本": "0.7D.4-固化22",
+      "检查项": 11,
+      "全部通过": true
+    },
+    "Interface天書资源A_B": {
+      "全部通过": true
+    },
+    "游戏SF2证据": {
+      "输入文件": 15,
+      "唯一SHA256": 13,
+      "PASS": 13
+    }
+  },
+  "D8静态闭合": {
+    "RNG函数": "0x451565",
+    "全EXE直接E8调用点": 56,
+    "固化21最后11点": 11,
+    "分类": {
+      "窗口创建初始化": 2,
+      "随机遭遇阈值": 2,
+      "Entity_type3自主漫游": 4,
+      "EVE_RANDOM_TO_VAR999": 1,
+      "相机随机抖动": 2
+    },
+    "说明": "11点均已到具体业务链级静态分类；不把战斗期间运行与否作为本阶段任务。"
+  },
+  "SCI新增闭合": {
+    "Entity_behavior_type": "0 passive/static；1 externally-directed movable；2 one-shot/non-loop override；3 autonomous random roam（均为中性结构名）",
+    "Entity_movement_profiles": "+77*6,+78*4,+79*9,+7A*6；selector=(runtime+0x0C & 0xFF00)!=0；禁止命名walk/run",
+    "Entity_type3": "绝对lower/upper边界；target为[lower,upper)；RNG%2状态；RNG%30+30等待",
+    "Map_0x65": "mode1 delta/5；mode2 7*delta/5+special render；mode10 skip base recompute+special render；other positive 1:1",
+    "Map_0x6E": "普通render仅消费(value>0)布尔值"
+  },
+  "当前样本边界": {
+    "Entity记录": 22,
+    "type分布": {
+      "0": 19,
+      "1": 3,
+      "2": 0,
+      "3": 0
+    },
+    "movement四字段非零": 0,
+    "Map记录": 2,
+    "Map_0x65非零": 0,
+    "Map_0x6E非零": 0,
+    "解释": "coverage不足，不否定EXE direct consumer"
+  },
+  "文档与结构审计": {
+    "Markdown": 30,
+    "Markdown全部通过": true,
+    "实际存在包内路径引用": 627,
+    "断链": 0,
+    "JSON当前审计数": 307,
+    "CSV": 35,
+    "Python": 7,
+    "PNG": 68,
+    "运行时产物排除": true,
+    "文档文件名全简体中文名规则": true,
+    "Python缓存污染": true
+  },
+  "最终封包预期统计": {
+    "总文件数": 650,
+    "Markdown": 30,
+    "JSON": 308,
+    "CSV": 35,
+    "Python工具": 7,
+    "PNG": 68,
+    "SF2": 15,
+    "ASM": 178,
+    "TXT": 9,
+    "说明": "包含本结果两份活动副本及最后生成的1份非自引用SHA256完整性清单。"
+  },
+  "完整性状态": {
+    "文档审计": "数据/阶段D/文档全量遍历审计_固化22.json",
+    "结构审计": "数据/阶段D/全包结构审计_固化22.json",
+    "最终SHA清单": "数据/阶段D/包内完整性校验_固化22.json",
+    "清单预期条目": 649,
+    "自引用排除": true
+  },
+  "当前唯一主线": "继续静态拆解RPG.exe与multimedia数据/格式/字段/状态机/业务逻辑；优先Entity未知字段、Map未知block/tail、DDDES 70-byte subtype、SF2剩余property/mode、Battle未命名runtime slots；在彻底拆透前不开展分析外实现。",
+  "总体状态": "固化22新增静态证据与继承Oracle全部PASS；文档/工具同步完成；最终SHA清单须在所有内容定稿后最后生成。"
+}

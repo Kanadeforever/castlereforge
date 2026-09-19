@@ -1,0 +1,26 @@
+{
+  "阶段": "固化19调查中 D8 AI/target/action RNG",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "AI": {
+    "0x444267": "0x444240每次调用固定1 draw；RNG%100用于Enemy_AI当前记录阈值分流",
+    "进入0x444330条件": "roll位于当前Enemy_AI record +0x1C 与 (+0x1C + +0x20) 的中间区间；其他分支不调用0x444330",
+    "0x4444E1": "0x444330循环FightRole+0x8F4个候选，每候选无条件1 draw；候选无效也已消耗draw；有效候选才对MagicCon[candidate]+0x24取模生成评分",
+    "显式draw数": "1 或 1+FightRole+0x8F4，取决于是否进入0x444330"
+  },
+  "target": {
+    "0x422DF2_0x422E6C": "0x422CB0两条互斥随机列表选择路径；选中列表count>0时恰好1 draw % count；空列表不draw直接失败；selector 2/4直接目标不走此随机",
+    "阵营映射": "FightRole+0x850不同会交换selector到faction0/faction1列表的映射；暂不超出已证阵营结构命名业务阵营"
+  },
+  "action_prepare": {
+    "0x422F1F": "仅action mode=1、FightRole+0x8F4>0且调用者未给正显式action ID时，1 draw % +0x8F4，从+0x8F8[]取action ID；否则0 draw",
+    "候选池交叉": "与0x444330使用同一FightRole+0x8F4/+0x8F8候选池"
+  },
+  "special": {
+    "FIRTTECH_0x1EA": "戰場脫逃（原始CP950记录直接证据）",
+    "0x4222A2": "仅当前FIRTTECH ID=0x1EA时执行1次RNG%100，与0x424560返回阈值比较；成功后写相关逃脱状态；0x424560具体概率公式待拆"
+  },
+  "边界": [
+    "尚未分类0x421AB6/0x421B20、0x423395及0x42A/B/C公式区RNG",
+    "尚未建立动态trace对照"
+  ]
+}

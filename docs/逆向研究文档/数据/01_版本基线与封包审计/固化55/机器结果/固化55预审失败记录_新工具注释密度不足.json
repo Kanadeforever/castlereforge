@@ -1,0 +1,416 @@
+{
+  "节点": "固化55",
+  "阶段": "第一轮封包前合规与回归审计",
+  "固化54继承非Markdown": {
+    "检查数": 891,
+    "缺失": [],
+    "变化": [],
+    "PASS": true
+  },
+  "Markdown": {
+    "总数": 91,
+    "问题": [],
+    "旧节点冒充当前": [],
+    "PASS": true
+  },
+  "Python工具": {
+    "总数": 31,
+    "AST_compile_help通过数": 31,
+    "详细": [
+      {
+        "文件": "organize_data_evidence.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "package_file_indexer.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_12f_resource_cost_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_big_effect_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_class4_dispatch_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_core_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_core_stat_names_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_effect_lifecycle_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_effect_pair_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_formula_selector_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_item_power_defense_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_one_way_counterpart_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_result_dispatch_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_runtime_clock_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_selector15_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_single_status_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_status_presentation_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_battle_tail_slots_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_compatibility_engine_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_enc_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_eve_sf2_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_legacy_clock_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_resource_container_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_saf_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_saf_runtime_surface_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_sample_structure_validator.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_sci_sf2_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_sf2_audio_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_sf2_layer_metadata_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_tsf_gamestate_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      },
+      {
+        "文件": "youcheng_world_encounter_duration_inspector.py",
+        "AST_compile": true,
+        "help_returncode": 0,
+        "help": true
+      }
+    ],
+    "工具详细说明总数": 31,
+    "未找到明确对应说明的工具": [],
+    "PASS": true
+  },
+  "固化55新工具注释": {
+    "总行数": 895,
+    "纯注释行": 74,
+    "含中文纯注释行": 72,
+    "注释比例": 0.0827,
+    "PASS": false
+  },
+  "数据解析_写入本审计前": {
+    "JSON总数": 469,
+    "JSON问题": [],
+    "CSV总数": 52,
+    "CSV问题": [],
+    "PASS": true
+  },
+  "固化55至固化37同输入核心重放": {
+    "节点数": 19,
+    "节点": {
+      "37": {
+        "输出JSON": [
+          "solid37_corpus.json",
+          "solid37_rpg.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "38": {
+        "输出JSON": [
+          "solid38.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "39": {
+        "输出JSON": [
+          "solid39.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "40": {
+        "输出JSON": [
+          "solid40.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "41": {
+        "输出JSON": [
+          "solid41.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "42": {
+        "输出JSON": [
+          "solid42.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "43": {
+        "输出JSON": [
+          "solid43.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "44": {
+        "输出JSON": [
+          "solid44.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "45": {
+        "输出JSON": [
+          "solid45.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "46": {
+        "输出JSON": [
+          "solid46.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "47": {
+        "输出JSON": [
+          "solid47.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "48": {
+        "输出JSON": [
+          "solid48.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "49": {
+        "输出JSON": [
+          "solid49.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "50": {
+        "输出JSON": [
+          "solid50.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "51": {
+        "输出JSON": [
+          "solid51.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "52": {
+        "输出JSON": [
+          "solid52.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "53": {
+        "输出JSON": [
+          "solid53.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "54": {
+        "输出JSON": [
+          "solid54.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "55": {
+        "输出JSON": [
+          "solid55.json"
+        ],
+        "存在": true,
+        "显式PASS字段假值": [],
+        "命令返回0": true,
+        "PASS": true
+      }
+    },
+    "全部PASS": true
+  },
+  "缓存污染_审计时": {
+    "项目": [
+      "工具/__pycache__",
+      "工具/__pycache__/youcheng_sci_sf2_inspector.cpython-313.pyc",
+      "工具/__pycache__/youcheng_eve_sf2_inspector.cpython-313.pyc",
+      "工具/__pycache__/youcheng_sf2_audio_inspector.cpython-313.pyc",
+      "工具/__pycache__/youcheng_resource_container_inspector.cpython-313.pyc",
+      "工具/__pycache__/youcheng_battle_class4_dispatch_inspector.cpython-313.pyc"
+    ],
+    "数量": 6,
+    "说明": "本轮compile/help产生；正式封包前删除并二次确认。"
+  },
+  "整体PASS": false
+}

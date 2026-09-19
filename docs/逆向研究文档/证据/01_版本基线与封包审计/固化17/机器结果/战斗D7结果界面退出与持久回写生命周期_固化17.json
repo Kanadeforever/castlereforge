@@ -1,0 +1,56 @@
+{
+  "版本": "v0.7D阶段中-固化17",
+  "证据等级": "A/当前同SHA Oracle直接静态证据；FANIN/FANOUT视觉方向另由真实SF2重放",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "对象": {
+    "BattleContainer": {
+      "构造": "0x432090",
+      "析构": "0x432130",
+      "全局指针": "0x8B01F0",
+      "大小": "0x24C",
+      "result_phase_entered": "+0x240",
+      "post_result_delay": "+0x244=15",
+      "fanin_started": "+0x248"
+    },
+    "结果UI外层": {
+      "全局指针": "0x89FCC8",
+      "大小": "0x61C",
+      "构造": "0x411FB0",
+      "析构": "0x412190",
+      "vtable": "0x460790",
+      "virtual_update": "0x412290",
+      "活动标志": "+0x579",
+      "明细子界面指针": "+0x600",
+      "启动": "0x412440",
+      "退出请求": "0x412490"
+    },
+    "结果明细子界面": {
+      "构造": "0x412570",
+      "vtable": "0x4607B0",
+      "virtual_update": "0x412CA0",
+      "活动标志": "+0x579",
+      "启动": "0x4133C0",
+      "退出请求": "0x413410"
+    }
+  },
+  "状态链": [
+    "EVE opcode0x37 首次执行分配0x24C Battle container→0x432090→全局0x8B01F0→0x4322C0初始化Battle/结果UI；EVE后续通过DataCenter+0x118等待异步结果。",
+    "0x4328A0取得0x443590 detector。detector1/2/3分别准备对应结果并调用0x412440启动正常结果UI；detector4（伏龍A）仍以0x443660(1)执行胜利奖励/结果填充，但cmp edi,4明确跳过0x412440。",
+    "普通结果路径等待0x89FCC8+0x579==0，再等待(0x89FCC8+0x600)+0x579==0；两者是独立异步门。",
+    "双门均结束且+0x248==0时，通过Effect Manager 0x42D4D0创建Fight\\Other\\FANIN.SF2效果，0x42D6E0启动/配置，并置+0x248=1保证一次性。",
+    "FANIN启动后的同一次合格update也检查+0x244；+0x244初值15，>0则递减1并返回。累计15次合格递减后变0；下一次合格update才进入0x441F60持久回写。",
+    "0x441F60将FightRole+0x84C整0x350 RoleDefinition同步回API主表；随后0x432130销毁Battle container并清0x8B01F0。结果UI由Battle清理阶段调用0x412190释放并清0x89FCC8。"
+  ],
+  "FANIN_FANOUT": {
+    "FANIN": "真实资源18个Section0；前7步近黑权重2→14，之后11步NORMAL_COPY RGB(8,8,8)近黑平面并保持。",
+    "FANOUT": "真实资源8个Section0；先NORMAL_COPY近黑，再权重14→2逐步降低近黑覆盖。",
+    "边界": "作者资源名为FANIN/FANOUT；视觉方向由Section0渲染参数和单色Section1共同证明。"
+  },
+  "关键否定证据": [
+    "0x42D4D0不是此路径的“cleanup函数”；它在Effect Manager中创建/取得FANIN效果句柄。",
+    "BattleContainer+0x244=15不得称15帧/15毫秒/15 Legacy Tick，只能称15次符合该容器路径条件的update递减。",
+    "伏龍A detector4并非“没有胜利结算”：它执行0x443660(1)胜利奖励逻辑；特殊之处是跳过正常结果UI活动周期。",
+    "伏龍A→伏龍B顺序仍无真实EVE样本，不能因伏龍A跳过结果UI而升级为脚本事实。"
+  ],
+  "下一步": "D8：恢复实际RNG draw order并建立deterministic BattleTrace；D7剩余低优先项包括dispatcher参数4“因事停戰”的实际来源。"
+}

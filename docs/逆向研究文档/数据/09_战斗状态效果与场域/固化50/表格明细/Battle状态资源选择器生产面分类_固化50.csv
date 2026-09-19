@@ -1,0 +1,6 @@
+﻿阶段,地址/来源,对象,可生产/包含selector,selector15,证据边界
+构造初始化,0x41D350/0x41D3C7,ITF0052两排14个child,1..14,否,两排各7个；selector15不在初始化集合
+正常状态update,0x41CD79..0x41D119,14路状态表现mux,"0,1..14,16..22",否,15条direct call对应14个逻辑槽；selector15缺席
+状态容器专用虚方法,0x41D920..0x41DB80,vtable[6]专用方法,无direct setter call,否（静态直调面）,只确认当前方法内没有0x43E6F0 direct E8
+析构释放,0x41D720..0x41D920,14个child释放循环,无direct setter call,否,从self+0x598固定循环14项
+资源本体,ITF0052.SF2,23个Section0入口,0..22,是（资源存在）,selector15是合法资源入口；不能删除或命名dead

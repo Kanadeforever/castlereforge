@@ -1,0 +1,23 @@
+0x42A1A0 Section0 property Getter
+16 direct E8 callsites:
+0x420455 0x42046D 0x422524 0x42D473 0x42D96C 0x42D9AF
+0x43F53A 0x43F558 0x43F567 0x43F584 0x43F595 0x43F5A4
+0x43F5B5 0x444E10 0x444E2F 0x444E64
+
+0x422510 dynamic wrapper direct callers:
+0x4236F9 -> slot1 (EBX initialized 1 at 0x4236A3)
+0x444A20 -> slot3
+0x445280 -> slot3
+
+0x42D980 dynamic wrapper only direct caller:
+0x445743 -> slot1
+
+slot3 consumers:
+0x444ABB / 0x445322
+positive and <= effect-player record count
+
+slot1 special values:
+0x444E15 compare 12
+0x444E34 compare 13
+0x444E69 compare 12 for additional cleanup
+

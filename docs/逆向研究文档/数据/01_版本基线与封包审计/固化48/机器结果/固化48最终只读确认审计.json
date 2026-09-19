@@ -1,0 +1,71 @@
+{
+  "status": "PASS",
+  "audit_round": "final_read_only_confirmation",
+  "markdown_frozen_after_this_confirmation": true,
+  "counts_before_final_confirmation_json": {
+    "files": 891,
+    "markdown": 76,
+    "python_tools": 24,
+    "tool_docs": 24,
+    "json": 427,
+    "csv": 45
+  },
+  "inheritance": {
+    "solid47_non_markdown_total": 802,
+    "byte_identical": 802,
+    "mismatch": []
+  },
+  "documents": {
+    "pass": 76,
+    "total": 76,
+    "first_line_bad": [],
+    "filename_stem_bad": [],
+    "fence_bad": []
+  },
+  "tools": {
+    "pass": 24,
+    "total": 24,
+    "failures": [],
+    "tool_docs": 24,
+    "missing_tool_refs": []
+  },
+  "data": {
+    "json_pass": 427,
+    "json_total": 427,
+    "json_bad": [],
+    "csv_pass": 45,
+    "csv_total": 45,
+    "csv_bad": []
+  },
+  "cache": [],
+  "formal_solid48_output_exact_match": {
+    "json": true,
+    "csv": true
+  },
+  "core_regression": {
+    "solid48_to_solid37_nodes": 12,
+    "all_pass": true,
+    "node_pass_vector": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "solid48_machine": "33/33",
+    "solid48_text": "12/12",
+    "solid48_cure": "3/3",
+    "solid39_layers": 11184,
+    "solid37_sf2_occurrences": 672,
+    "solid37_unique_sha": 506,
+    "solid37_standard_sf2": 505,
+    "solid37_audio_refs": "147/147"
+  }
+}

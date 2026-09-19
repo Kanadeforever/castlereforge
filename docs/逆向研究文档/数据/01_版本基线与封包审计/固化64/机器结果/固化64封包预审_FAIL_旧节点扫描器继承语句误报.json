@@ -1,0 +1,83 @@
+{
+  "status": "FAIL",
+  "baseline": "固化63最终ZIP直接读取并按ZIP原始UTF-8名称恢复",
+  "baseline_total_files": 1152,
+  "baseline_markdown": 107,
+  "baseline_non_markdown": 1045,
+  "inherited_non_markdown_unchanged": 1045,
+  "unexpected_modified_inherited_non_markdown": [],
+  "missing_inherited_non_markdown": [],
+  "new_files_count_before_this_audit_write": 14,
+  "new_files": [
+    "工具/youcheng_battle_class56_action_state_inspector.py",
+    "数据/固化64/Battle动作类五六动作状态与来源依赖调查结果.json",
+    "数据/固化64/Battle动作类五六资源字段.csv",
+    "数据/固化64/预审失败_调查器错误把不可达BC7当成class4活动状态.json",
+    "文档/工具详细说明_战斗动作类五六角色状态与来源依赖调查器.md",
+    "文档/战斗动作类五六角色状态路由与类六来源依赖边界说明.md",
+    "证据/阶段D/固化64/原版_0x420F1D_来源依赖写入与类六跳过.asm",
+    "证据/阶段D/固化64/原版_0x4214D3_BC6第一结果通道抑制.asm",
+    "证据/阶段D/固化64/原版_0x422530_来源依赖消费者.asm",
+    "证据/阶段D/固化64/原版_0x423738_BC6专用动作请求.asm",
+    "证据/阶段D/固化64/原版_0x442CC3_BC0BC6动作结束门.asm",
+    "证据/阶段D/固化64/原版_0x443310_类五六动作状态路由.asm",
+    "证据/阶段D/固化64/原版_0x445FB0_BC0角色候选缓存排除.asm",
+    "证据/阶段D/固化64/反汇编证据清单.json"
+  ],
+  "markdown": {
+    "count": 109,
+    "all_have_solid64_banner": true,
+    "bad_utf8": [],
+    "missing_banner": [],
+    "stale_live_assignments": [
+      [
+        "文档/战斗核心路线卡与恢复入口.md",
+        945,
+        "当前正式节点：**固化64**。固化63及更早继续继承；本节点闭合class5/class6角色动作状态路由、BC0/BC6通用结束门以及class6普通路径跳过的CE8/DE0来源依赖协议。现行活动路由为class1/2/4→BBC、class5→BC0、class6→BC6、其它普通类→BBB；+10C8到FightRole当前状态+CE4的具体转移仍UNKNOWN。固化64封包后停止，不自动推进固化65。"
+      ],
+      [
+        "文档/截至当前版本的完整接档说明.md",
+        85,
+        "> **当前研究状态：纯静态逆向 ACTIVE_CHECKPOINT_NOT_FINAL；当前正式节点为固化64。固化63及更早全部已确认结论继续继承。固化64已在完全原版Oracle上继续闭合class5/class6角色动作状态与来源依赖：动作启动真实可达映射为class1/2/4→BBC、class5→BC0、class6→BC6、其它普通类→BBB；后段BC7字面分支对入口class4不可达。BC0/BC6会阻挡通用7D6→7D1收尾；FightRole+CE8/+DE0已闭合为默认FA0/-1、普通路径建立FA1+来源角色槽并由后续逻辑反查来源角色状态/资源的来源依赖协议，class6在固化56已知普通分支不建立该依赖。FightRole当前状态CE4==BC6另有第一结果DWORD归零与0x72动作请求，CE4==BC0参与一条角色候选/缓存排除。+10C8如何进入+CE4仍U"
+      ],
+      [
+        "文档/截至当前版本的完整接档说明.md",
+        8071,
+        "【固化63历史】固化63只关闭本节主题；当时完成封包后立即待机，不自动推进固化64。"
+      ],
+      [
+        "文档/文档全面审查与修订记录.md",
+        2077,
+        "固化63开始时继承固化62的105份Markdown，并新增两份简体中文专题/工具文档，当前总数107。全部107份重新遍历：统一加入固化63现行横幅，固化62四条封包横幅统一历史化；实质修正《截至当前版本的完整接档说明》的当前节点、《战斗核心路线卡与恢复入口》中仍停在固化58的真实旧状态、《战斗阶段证据分级与恢复记录》的旧当前包版本，以及历史段落里仍把现行停止点指向固化56的旧指针。固化59专题中slot0/1/5“其它数值consumer仍开放”的现行解释也同步为固化63的新边界。历史取证过程本身不删除、不改写成当时就知道后续结论。"
+      ]
+    ],
+    "odd_code_fences": []
+  },
+  "python_tools": {
+    "count": 40,
+    "ast_compile_pass": 40,
+    "ast_compile_bad": [],
+    "tool_docs": 40,
+    "new_tool_lines": 1278,
+    "new_tool_chinese_pure_hash_comments": 243,
+    "new_tool_help_returncode": 0,
+    "new_tool_help_pass": true
+  },
+  "structured_files_before_this_audit_write": {
+    "json_count": 551,
+    "json_bad": [],
+    "csv_count": 61,
+    "csv_bad": []
+  },
+  "theme_status": "PASS",
+  "cache_files": [],
+  "preserved_fail_history": [
+    "数据/固化64/预审失败_调查器错误把不可达BC7当成class4活动状态.json"
+  ],
+  "notes": [
+    "固化64未修改任何固化63继承的旧非Markdown文件；新增工具、数据、证据均为新路径。",
+    "初版工具把不可达BC7误作class4活动状态的真实语义FAIL已原样保留，修正可达性后才运行正式主题输出。"
+  ],
+  "failure_class": "审计器扫描规则假阳性",
+  "failure_explanation": "旧规则会把“当前正式节点为固化64。固化63及更早继承”中的后半句固化63吞入当前节点正则，并未发现真实旧现行状态。后续正式审计只匹配明确的旧节点赋值形式。"
+}

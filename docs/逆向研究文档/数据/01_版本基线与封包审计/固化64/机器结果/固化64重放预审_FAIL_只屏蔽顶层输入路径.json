@@ -1,0 +1,21 @@
+{
+  "status": "FAIL",
+  "replay1_tool_pass": true,
+  "replay2_tool_pass": true,
+  "masked_input_path_object": "输入（仅路径字符串；输入SHA仍参与比较）",
+  "json_entire_remaining_tree_equal": false,
+  "csv_sha256": [
+    "aba243c78ec74ff95a986998e069629d4ba76cb93a5f3cd1604868c44d6b0612",
+    "aba243c78ec74ff95a986998e069629d4ba76cb93a5f3cd1604868c44d6b0612",
+    "aba243c78ec74ff95a986998e069629d4ba76cb93a5f3cd1604868c44d6b0612"
+  ],
+  "csv_all_byte_identical": true,
+  "inputs_reextracted_independently": true,
+  "notes": [
+    "两轮分别重新从用户原始RPG.exe.org.zip提取完全原版EXE，并从multimedia.zip重新提取Firttech.enc与Magiccon.enc；研究版RPG.exe分别复制。",
+    "除主题JSON顶层“输入”对象中的路径字符串外，整个其余JSON树参与严格比较，包括文件SHA、class路由、短机器码、位移命中集合、关键切片双版本等价和PASS状态。",
+    "历史固化56及更早机器输出不冒充本轮重新研究。"
+  ],
+  "failure_class": "重放比较器路径屏蔽不完整",
+  "failure_explanation": "调查器同时在顶层“输入”和“资源证据/输入”保存输入绝对路径。第一次比较只屏蔽顶层4个路径，导致两条资源输入路径产生假差异；机器事实与CSV没有差异。"
+}

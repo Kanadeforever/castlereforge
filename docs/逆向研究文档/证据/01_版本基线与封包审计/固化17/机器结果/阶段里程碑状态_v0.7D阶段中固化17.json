@@ -1,0 +1,27 @@
+{
+  "版本": "v0.7D阶段中-固化17",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "阶段D": {
+    "D3": "STATIC_CLOSED_DYNAMIC_TRACE_PENDING",
+    "D4": "STATIC_CORE_CLOSED_REMAINDER_PENDING",
+    "D5": "STATIC_CORE_CLOSED_AUTHOR_NAMES_PENDING",
+    "D6": "STATIC_CORE_CLOSED_DYNAMIC_TRACE_PENDING",
+    "D7": "RESULT_REWARD_UI_COMMIT_STATIC_CLOSED",
+    "D8": "ACTIVE_NEXT"
+  },
+  "当前Oracle静态回归": {
+    "SCI": "67/67 PASS",
+    "EVE": "65/65 PASS",
+    "Battle": "237/237 PASS",
+    "MEN0003↔MEN0009": "PASS"
+  },
+  "当前恢复入口": [
+    "D8：枚举Battle中0x451565的实际draw顺序；先覆盖升级helper、銀兩、掉落，再覆盖动作公式/AI。",
+    "建立deterministic BattleTrace最小记录格式：seed、draw_index、caller/category、raw_rng、modulus/result、关联action/target。",
+    "D7低优先补证：dispatcher参数4「因事停戰」的实际调用源。"
+  ],
+  "本轮纠正": [
+    "0x42D4D0在结果链是Effect Manager效果创建/取得入口，不是cleanup。",
+    "+0x244=15的单位未知，不得称帧或时间。"
+  ]
+}

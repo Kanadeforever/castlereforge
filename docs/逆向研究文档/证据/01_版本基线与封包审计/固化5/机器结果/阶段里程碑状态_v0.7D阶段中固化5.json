@@ -1,0 +1,25 @@
+{
+  "版本": "v0.7D阶段中-固化5",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "主题": "D6 大ID与39槽边界静态核对",
+  "本轮新增确认": [
+    "Ail2+0x20 是0..699唯一记录/物品ID字段；691/700与物理索引相等，9条为明确置换。",
+    "Ail2五槽 ID>27 共29次/19记录；官方中文名称与说明已随包固化。",
+    "positive ID>27 被 0x422C3D normal raw-ID pending writer 的 signed<=27 gate 排除。",
+    "复苏物品 0x10F/110/111 存在按 Ail2+0x20 的直接目标许可与处理分支；这证明特殊 item-ID control flow，而不是证明大ID43本身被执行。",
+    "0x12D..0x133 永久能力物品族在 0x437960 被代码明确作为连续范围识别；实际能力 writer 尚未闭合。",
+    "RoleDefinition源 +0x1E8..+0x280 39 DWORD 在255条 Api 源记录全部为0；runtime后11槽 +AA4..+ACC 无 disp32 literal 直接访问证据，业务含义仍未知。"
+  ],
+  "当前阻塞": [
+    "追出 0x12D..0x133 永久能力物品的实际 RoleDefinition/CanonicalGameState writer。",
+    "追出 0x170..0x172 脱离区域/遇敌率物品的战斗外 consumer。",
+    "确认 DamageInfo 中保留的 >27 ID/value 是否存在独立后续 consumer，还是仅为通用结构保留输出。",
+    "runtime 39槽后11槽真实用途仍未证明。"
+  ],
+  "恢复入口": [
+    "0x437960 及其 0x436205/23C/2AB/2EA callers：0x12D..133 特殊范围目前仅闭合到菜单表现",
+    "Ail2 ID 0x170..0x172 及效果码61/63/64：从探索/Encounter系统追 consumer",
+    "0x42B0D0→0x422C3D：继续搜索 ID>27 DamageInfo 输出的非-normal consumer"
+  ],
+  "后续主路线": "先完成上述 D6 战斗外/特殊物品边界，再转 D7 Battle Result/Reward；D8 RNG draw order 后收口。"
+}

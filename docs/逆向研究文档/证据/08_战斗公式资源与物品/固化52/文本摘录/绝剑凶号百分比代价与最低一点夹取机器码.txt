@@ -1,0 +1,43 @@
+
+/mnt/data/work52/input/RPG.exe:     file format pei-i386
+
+
+Disassembly of section .text:
+
+00421b90 <.text+0x20b90>:
+  421b90:	5d                   	pop    ebp
+  421b91:	5b                   	pop    ebx
+  421b92:	83 c4 08             	add    esp,0x8
+  421b95:	c2 04 00             	ret    0x4
+  421b98:	83 f8 02             	cmp    eax,0x2
+  421b9b:	0f 85 96 04 00 00    	jne    0x422037
+  421ba1:	8b 87 48 08 00 00    	mov    eax,DWORD PTR [edi+0x848]
+  421ba7:	8b 08                	mov    ecx,DWORD PTR [eax]
+  421ba9:	8d b1 d1 fe ff ff    	lea    esi,[ecx-0x12f]
+  421baf:	81 fe a4 00 00 00    	cmp    esi,0xa4
+  421bb5:	0f 87 7c 04 00 00    	ja     0x422037
+  421bbb:	33 d2                	xor    edx,edx
+  421bbd:	8a 96 74 20 42 00    	mov    dl,BYTE PTR [esi+0x422074]
+  421bc3:	ff 24 95 44 20 42 00 	jmp    DWORD PTR [edx*4+0x422044]
+  421bca:	8b 48 34             	mov    ecx,DWORD PTR [eax+0x34]
+  421bcd:	b8 e1 7a 14 ae       	mov    eax,0xae147ae1
+  421bd2:	0f af 8f 78 08 00 00 	imul   ecx,DWORD PTR [edi+0x878]
+  421bd9:	f7 e9                	imul   ecx
+  421bdb:	8b 8f 7c 08 00 00    	mov    ecx,DWORD PTR [edi+0x87c]
+  421be1:	c1 fa 05             	sar    edx,0x5
+  421be4:	8b c2                	mov    eax,edx
+  421be6:	c1 e8 1f             	shr    eax,0x1f
+  421be9:	03 d0                	add    edx,eax
+  421beb:	03 ca                	add    ecx,edx
+  421bed:	8b c1                	mov    eax,ecx
+  421bef:	89 8f 7c 08 00 00    	mov    DWORD PTR [edi+0x87c],ecx
+  421bf5:	3b c3                	cmp    eax,ebx
+  421bf7:	0f 8f 3a 04 00 00    	jg     0x422037
+  421bfd:	c7 87 7c 08 00 00 01 	mov    DWORD PTR [edi+0x87c],0x1
+  421c04:	00 00 00 
+  421c07:	5f                   	pop    edi
+  421c08:	5e                   	pop    esi
+  421c09:	5d                   	pop    ebp
+  421c0a:	5b                   	pop    ebx
+  421c0b:	83 c4 08             	add    esp,0x8
+  421c0e:	c2 04              	ret    0x4

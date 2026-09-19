@@ -1,0 +1,75 @@
+{
+  "固化节点": "v0.7D阶段中-固化35",
+  "审计日期": "2026-08-18",
+  "Python工具数": 11,
+  "JSON数_生成审计前": 348,
+  "CSV数": 36,
+  "Markdown数": 50,
+  "Python源码AST与内存compile": "PASS",
+  "全部工具顶层help": "PASS",
+  "Python注释统计": {
+    "工具/organize_data_evidence.py": {
+      "注释行": 87,
+      "非空非纯注释行": 86
+    },
+    "工具/package_file_indexer.py": {
+      "注释行": 35,
+      "非空非纯注释行": 36
+    },
+    "工具/youcheng_battle_core_inspector.py": {
+      "注释行": 1354,
+      "非空非纯注释行": 1423
+    },
+    "工具/youcheng_compatibility_engine_inspector.py": {
+      "注释行": 65,
+      "非空非纯注释行": 66
+    },
+    "工具/youcheng_enc_inspector.py": {
+      "注释行": 219,
+      "非空非纯注释行": 226
+    },
+    "工具/youcheng_eve_sf2_inspector.py": {
+      "注释行": 956,
+      "非空非纯注释行": 961
+    },
+    "工具/youcheng_resource_container_inspector.py": {
+      "注释行": 411,
+      "非空非纯注释行": 443
+    },
+    "工具/youcheng_saf_inspector.py": {
+      "注释行": 154,
+      "非空非纯注释行": 618
+    },
+    "工具/youcheng_sample_structure_validator.py": {
+      "注释行": 336,
+      "非空非纯注释行": 343
+    },
+    "工具/youcheng_sci_sf2_inspector.py": {
+      "注释行": 1296,
+      "非空非纯注释行": 1350
+    },
+    "工具/youcheng_tsf_gamestate_inspector.py": {
+      "注释行": 524,
+      "非空非纯注释行": 553
+    }
+  },
+  "新SAF回归": {
+    "Header0x74": true,
+    "Section2精确RLE": "125/125",
+    "图集几何": "650x100"
+  },
+  "EXE静态边界回归": {
+    "机器断言": "16/16 PASS",
+    "RLE直接caller": [
+      "0x004071D9",
+      "0x00428E48"
+    ]
+  },
+  "旧标准SF2工具_ITF001正向解析": "PASS",
+  "Markdown全量遍历": "50/50",
+  "JSON全量解析": "348/348",
+  "CSV全量解析": "36/36",
+  "临时缓存污染": 0,
+  "问题": [],
+  "总状态": "PASS"
+}

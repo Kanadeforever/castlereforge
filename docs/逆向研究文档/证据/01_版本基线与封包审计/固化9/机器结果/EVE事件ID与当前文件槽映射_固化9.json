@@ -1,0 +1,36 @@
+{
+  "版本": "v0.7D阶段中-固化9",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "状态": "STATIC_EVENT_ID_TO_CURRENT_EVE_SLOT_MAPPING_CLOSED",
+  "EVE已冻结布局": {
+    "header_bytes": 8,
+    "slot_count": 130,
+    "slot_descriptor_bytes": 16,
+    "descriptor0_offset": 8,
+    "data_base": 2088
+  },
+  "运行时基址": "0x89F820 当前已加载EVE缓冲区",
+  "0x40B230寻址": [
+    {
+      "地址": "0x40B26F",
+      "指令": "shl esi,4",
+      "含义": "Event ID n × 16"
+    },
+    {
+      "地址": "0x40B272",
+      "指令": "mov edx,[esi+ecx-4]",
+      "等价": "base + 16*n - 4 = base + 8 + 16*(n-1) + 4"
+    },
+    {
+      "地址": "0x40B286",
+      "指令": "mov eax,[eax-0x10]，其中eax此前=base+16*n+8",
+      "等价": "base + 16*n - 8 = base + 8 + 16*(n-1) + 0"
+    }
+  ],
+  "结论": "对n>0，Event ID n结构化映射为当前已加载EVE的0-based slot(n-1)。",
+  "code12_fallback": "Event ID 3 = 当前EVE 0-based slot 2；不是全游戏固定“Event 3”数据库编号。",
+  "禁止外推": [
+    "slot2在不同EVE中的具体业务含义未证明",
+    "当前只有1个真实EVE样本，不能把slot2统一命名成“返回点/出口/传送事件”等"
+  ]
+}

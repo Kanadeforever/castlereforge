@@ -1,0 +1,28 @@
+Oracle RPG.exe SHA256
+b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf
+
+0x420444 slot9
+0x420462 slot8
+0x420472 slot9 == 1
+0x420477 FightRole+0x7A0 primary target slot
+0x42048A target animation derived position
+0x42048F +1000
+0x420494 flag 1
+0x420497 slot9 == 2
+0x42049C slot8 == 1
+0x4204A1 current FightRole index
+0x4204B0 self animation derived position
+0x4204B5 flag 0
+0x4204C1 call 0x43D6E0
+
+0x43D6E0 per-slot anchor registration
+0x43D6E9 flag array pointer
+0x43D6F7 fixed-position array pointer
+0x43D8EC update reads flag
+0x43D8F8 flag!=0 uses fixed position
+0x43D90C flag==0 derives live animation position
+
+0x442CDB unique direct caller of 0x420440
+0x442DAF FightRole stride 0xDE4
+0x442DB5 loop bound 16
+

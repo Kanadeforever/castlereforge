@@ -1,0 +1,18 @@
+{
+  "节点": "固化60",
+  "审计": "双轮独立原始输入重放",
+  "输入说明": "每轮独立重新从用户RPG.exe.org.zip和multimedia.zip提取原版EXE与Firttech.enc，并单独复制研究版RPG.exe。比较JSON时只屏蔽三项明确的输入绝对路径字段，哈希与其它全部机器/资源结果完整比较。",
+  "检查": {
+    "正式主题PASS": true,
+    "重放1_PASS": true,
+    "重放2_PASS": true,
+    "仅屏蔽三项输入路径后正式JSON_重放1完全一致": true,
+    "仅屏蔽三项输入路径后正式JSON_重放2完全一致": true,
+    "仅屏蔽三项输入路径后两轮JSON完全一致": true,
+    "三份CSV逐字节一致": true,
+    "正式CSV_SHA256": "a4e35f0c38b2838d16c8e0f61f5908599afc1a630dd20aca232f014ab9d40143",
+    "重放1_CSV_SHA256": "a4e35f0c38b2838d16c8e0f61f5908599afc1a630dd20aca232f014ab9d40143",
+    "重放2_CSV_SHA256": "a4e35f0c38b2838d16c8e0f61f5908599afc1a630dd20aca232f014ab9d40143"
+  },
+  "全部通过": true
+}

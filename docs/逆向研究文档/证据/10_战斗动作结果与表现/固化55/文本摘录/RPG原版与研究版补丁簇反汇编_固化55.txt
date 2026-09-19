@@ -1,0 +1,377 @@
+=== 原版 RPG.exe.org / SHA-256 8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f ===
+
+--- 0x402A30 .. 0x402AA0 ---
+
+/mnt/data/freeze54_work/org/RPG.exe:     file format pei-i386
+
+
+Disassembly of section .text:
+
+00402a30 <.text+0x1a30>:
+  402a30:	46                   	inc    esi
+  402a31:	00 50 ff             	add    BYTE PTR [eax-0x1],dl
+  402a34:	d7                   	xlat   BYTE PTR ds:[ebx]
+  402a35:	83 c4 0c             	add    esp,0xc
+  402a38:	8d 4c 24 14          	lea    ecx,[esp+0x14]
+  402a3c:	51                   	push   ecx
+  402a3d:	ff d5                	call   ebp
+  402a3f:	83 f8 05             	cmp    eax,0x5
+  402a42:	75 20                	jne    0x402a64
+  402a44:	56                   	push   esi
+  402a45:	8d 54 24 18          	lea    edx,[esp+0x18]
+  402a49:	68 b0 83 46 00       	push   0x4683b0
+  402a4e:	52                   	push   edx
+  402a4f:	ff d7                	call   edi
+  402a51:	8d 44 24 20          	lea    eax,[esp+0x20]
+  402a55:	6a 00                	push   0x0
+  402a57:	50                   	push   eax
+  402a58:	e8 81 a2 05 00       	call   0x45ccde
+  402a5d:	83 c4 14             	add    esp,0x14
+  402a60:	85 c0                	test   eax,eax
+  402a62:	74 2e                	je     0x402a92
+  402a64:	fe c3                	inc    bl
+  402a66:	80 fb 5b             	cmp    bl,0x5b
+  402a69:	7c ba                	jl     0x402a25
+  402a6b:	8b 0d ec 01 8b 00    	mov    ecx,DWORD PTR ds:0x8b01ec
+  402a71:	68 9c 83 46 00       	push   0x46839c
+  402a76:	e8 f5 f4 02 00       	call   0x431f70
+  402a7b:	8d 4c 24 10          	lea    ecx,[esp+0x10]
+  402a7f:	68 d8 37 46 00       	push   0x4637d8
+  402a84:	51                   	push   ecx
+  402a85:	c7 44 24 18 70 83 46 	mov    DWORD PTR [esp+0x18],0x468370
+  402a8c:	00 
+  402a8d:	e8 35 f1 04 00       	call   0x451bc7
+  402a92:	5f                   	pop    edi
+  402a93:	5e                   	pop    esi
+  402a94:	88 1d c8 f5 46 00    	mov    BYTE PTR ds:0x46f5c8,bl
+  402a9a:	5d                   	pop    ebp
+  402a9b:	5b                   	pop    ebx
+  402a9c:	83 c4 38             	add    esp,0x38
+  402a9f:	c3                   	ret
+
+--- 0x423540 .. 0x4235A0 ---
+
+/mnt/data/freeze54_work/org/RPG.exe:     file format pei-i386
+
+
+Disassembly of section .text:
+
+00423540 <.text+0x22540>:
+  423540:	00 00                	add    BYTE PTR [eax],al
+  423542:	c7 86 1c 07 00 00 ff 	mov    DWORD PTR [esi+0x71c],0xffffffff
+  423549:	ff ff ff 
+  42354c:	5e                   	pop    esi
+  42354d:	59                   	pop    ecx
+  42354e:	c3                   	ret
+  42354f:	90                   	nop
+  423550:	56                   	push   esi
+  423551:	57                   	push   edi
+  423552:	8b f9                	mov    edi,ecx
+  423554:	33 f6                	xor    esi,esi
+  423556:	a1 b4 01 8a 00       	mov    eax,ds:0x8a01b4
+  42355b:	8b 48 04             	mov    ecx,DWORD PTR [eax+0x4]
+  42355e:	8b 84 31 30 01 00 00 	mov    eax,DWORD PTR [ecx+esi*1+0x130]
+  423565:	85 c0                	test   eax,eax
+  423567:	7e 08                	jle    0x423571
+  423569:	50                   	push   eax
+  42356a:	8b cf                	mov    ecx,edi
+  42356c:	e8 ff fb ff ff       	call   0x423170
+  423571:	8b 15 b4 01 8a 00    	mov    edx,DWORD PTR ds:0x8a01b4
+  423577:	8b 42 04             	mov    eax,DWORD PTR [edx+0x4]
+  42357a:	8b 84 30 34 01 00 00 	mov    eax,DWORD PTR [eax+esi*1+0x134]
+  423581:	85 c0                	test   eax,eax
+  423583:	7e 08                	jle    0x42358d
+  423585:	50                   	push   eax
+  423586:	8b cf                	mov    ecx,edi
+  423588:	e8 e3 fb ff ff       	call   0x423170
+  42358d:	83 c6 08             	add    esi,0x8
+  423590:	83 fe 28             	cmp    esi,0x28
+  423593:	7c c1                	jl     0x423556
+  423595:	5f                   	pop    edi
+  423596:	5e                   	pop    esi
+  423597:	c3                   	ret
+  423598:	90                   	nop
+  423599:	90                   	nop
+  42359a:	90                   	nop
+  42359b:	90                   	nop
+  42359c:	90                   	nop
+  42359d:	90                   	nop
+  42359e:	90                   	nop
+  42359f:	90                   	nop
+
+--- 0x440E70 .. 0x440F70 ---
+
+/mnt/data/freeze54_work/org/RPG.exe:     file format pei-i386
+
+
+Disassembly of section .text:
+
+00440e70 <.text+0x3fe70>:
+  440e70:	80 05 00 00 8b 90 90 	add    BYTE PTR ds:0x908b0000,0x90
+  440e77:	05 00 00 8b 86       	add    eax,0x868b0000
+  440e7c:	84 05 00 00 8d 0c    	test   BYTE PTR ds:0xc8d0000,al
+  440e82:	40                   	inc    eax
+  440e83:	8b 52 44             	mov    edx,DWORD PTR [edx+0x44]
+  440e86:	8d 0c c9             	lea    ecx,[ecx+ecx*8]
+  440e89:	d1 e1                	shl    ecx,1
+  440e8b:	2b c8                	sub    ecx,eax
+  440e8d:	c1 e1 04             	shl    ecx,0x4
+  440e90:	89 54 39 74          	mov    DWORD PTR [ecx+edi*1+0x74],edx
+  440e94:	8b 86 80 05 00 00    	mov    eax,DWORD PTR [esi+0x580]
+  440e9a:	8b 90 98 05 00 00    	mov    edx,DWORD PTR [eax+0x598]
+  440ea0:	8b 86 84 05 00 00    	mov    eax,DWORD PTR [esi+0x584]
+  440ea6:	8d 0c 40             	lea    ecx,[eax+eax*2]
+  440ea9:	8b 52 44             	mov    edx,DWORD PTR [edx+0x44]
+  440eac:	8d 0c c9             	lea    ecx,[ecx+ecx*8]
+  440eaf:	d1 e1                	shl    ecx,1
+  440eb1:	2b c8                	sub    ecx,eax
+  440eb3:	c1 e1 04             	shl    ecx,0x4
+  440eb6:	89 54 39 78          	mov    DWORD PTR [ecx+edi*1+0x78],edx
+  440eba:	8b 86 80 05 00 00    	mov    eax,DWORD PTR [esi+0x580]
+  440ec0:	8b 90 a0 05 00 00    	mov    edx,DWORD PTR [eax+0x5a0]
+  440ec6:	8b 86 84 05 00 00    	mov    eax,DWORD PTR [esi+0x584]
+  440ecc:	8d 0c 40             	lea    ecx,[eax+eax*2]
+  440ecf:	8b 52 44             	mov    edx,DWORD PTR [edx+0x44]
+  440ed2:	8d 0c c9             	lea    ecx,[ecx+ecx*8]
+  440ed5:	d1 e1                	shl    ecx,1
+  440ed7:	2b c8                	sub    ecx,eax
+  440ed9:	c1 e1 04             	shl    ecx,0x4
+  440edc:	89 54 39 7c          	mov    DWORD PTR [ecx+edi*1+0x7c],edx
+  440ee0:	8b 86 80 05 00 00    	mov    eax,DWORD PTR [esi+0x580]
+  440ee6:	8b 90 a8 05 00 00    	mov    edx,DWORD PTR [eax+0x5a8]
+  440eec:	8b 86 84 05 00 00    	mov    eax,DWORD PTR [esi+0x584]
+  440ef2:	8d 0c 40             	lea    ecx,[eax+eax*2]
+  440ef5:	8b 52 44             	mov    edx,DWORD PTR [edx+0x44]
+  440ef8:	8d 0c c9             	lea    ecx,[ecx+ecx*8]
+  440efb:	d1 e1                	shl    ecx,1
+  440efd:	2b c8                	sub    ecx,eax
+  440eff:	c1 e1 04             	shl    ecx,0x4
+  440f02:	89 94 39 80 00 00 00 	mov    DWORD PTR [ecx+edi*1+0x80],edx
+  440f09:	8b 86 80 05 00 00    	mov    eax,DWORD PTR [esi+0x580]
+  440f0f:	8b 90 b0 05 00 00    	mov    edx,DWORD PTR [eax+0x5b0]
+  440f15:	8b 86 84 05 00 00    	mov    eax,DWORD PTR [esi+0x584]
+  440f1b:	8d 0c 40             	lea    ecx,[eax+eax*2]
+  440f1e:	8d 0c c9             	lea    ecx,[ecx+ecx*8]
+  440f21:	d1 e1                	shl    ecx,1
+  440f23:	2b c8                	sub    ecx,eax
+  440f25:	8b 52 44             	mov    edx,DWORD PTR [edx+0x44]
+  440f28:	c1 e1 04             	shl    ecx,0x4
+  440f2b:	89 94 39 84 00 00 00 	mov    DWORD PTR [ecx+edi*1+0x84],edx
+  440f32:	8b 86 80 05 00 00    	mov    eax,DWORD PTR [esi+0x580]
+  440f38:	8b b6 84 05 00 00    	mov    esi,DWORD PTR [esi+0x584]
+  440f3e:	8b 88 b8 05 00 00    	mov    ecx,DWORD PTR [eax+0x5b8]
+  440f44:	8d 04 76             	lea    eax,[esi+esi*2]
+  440f47:	8d 14 c0             	lea    edx,[eax+eax*8]
+  440f4a:	8b 41 44             	mov    eax,DWORD PTR [ecx+0x44]
+  440f4d:	d1 e2                	shl    edx,1
+  440f4f:	2b d6                	sub    edx,esi
+  440f51:	c1 e2 04             	shl    edx,0x4
+  440f54:	89 84 3a 88 00 00 00 	mov    DWORD PTR [edx+edi*1+0x88],eax
+  440f5b:	5f                   	pop    edi
+  440f5c:	5d                   	pop    ebp
+  440f5d:	5b                   	pop    ebx
+  440f5e:	5e                   	pop    esi
+  440f5f:	c2 04 00             	ret    0x4
+  440f62:	90                   	nop
+  440f63:	90                   	nop
+  440f64:	90                   	nop
+  440f65:	90                   	nop
+  440f66:	90                   	nop
+  440f67:	90                   	nop
+  440f68:	90                   	nop
+  440f69:	90                   	nop
+  440f6a:	90                   	nop
+  440f6b:	90                   	nop
+  440f6c:	90                   	nop
+  440f6d:	90                   	nop
+  440f6e:	90                   	nop
+  440f6f:	90                   	nop
+
+=== 历史研究版 RPG.exe / SHA-256 b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf ===
+
+--- 0x402A30 .. 0x402AA0 ---
+
+/mnt/data/RPG.exe:     file format pei-i386
+
+
+Disassembly of section .text:
+
+00402a30 <.text+0x1a30>:
+  402a30:	46                   	inc    esi
+  402a31:	00 50 ff             	add    BYTE PTR [eax-0x1],dl
+  402a34:	d7                   	xlat   BYTE PTR ds:[ebx]
+  402a35:	83 c4 0c             	add    esp,0xc
+  402a38:	8d 4c 24 14          	lea    ecx,[esp+0x14]
+  402a3c:	51                   	push   ecx
+  402a3d:	ff d5                	call   ebp
+  402a3f:	83 f8 02             	cmp    eax,0x2
+  402a42:	7c 20                	jl     0x402a64
+  402a44:	56                   	push   esi
+  402a45:	8d 54 24 18          	lea    edx,[esp+0x18]
+  402a49:	68 b0 83 46 00       	push   0x4683b0
+  402a4e:	52                   	push   edx
+  402a4f:	ff d7                	call   edi
+  402a51:	8d 44 24 20          	lea    eax,[esp+0x20]
+  402a55:	6a 00                	push   0x0
+  402a57:	50                   	push   eax
+  402a58:	e8 81 a2 05 00       	call   0x45ccde
+  402a5d:	83 c4 14             	add    esp,0x14
+  402a60:	85 c0                	test   eax,eax
+  402a62:	eb 2e                	jmp    0x402a92
+  402a64:	fe c3                	inc    bl
+  402a66:	80 fb 5b             	cmp    bl,0x5b
+  402a69:	7c ba                	jl     0x402a25
+  402a6b:	8b 0d ec 01 8b 00    	mov    ecx,DWORD PTR ds:0x8b01ec
+  402a71:	68 9c 83 46 00       	push   0x46839c
+  402a76:	e8 f5 f4 02 00       	call   0x431f70
+  402a7b:	8d 4c 24 10          	lea    ecx,[esp+0x10]
+  402a7f:	68 d8 37 46 00       	push   0x4637d8
+  402a84:	51                   	push   ecx
+  402a85:	c7 44 24 18 70 83 46 	mov    DWORD PTR [esp+0x18],0x468370
+  402a8c:	00 
+  402a8d:	e8 35 f1 04 00       	call   0x451bc7
+  402a92:	5f                   	pop    edi
+  402a93:	5e                   	pop    esi
+  402a94:	88 1d c8 f5 46 00    	mov    BYTE PTR ds:0x46f5c8,bl
+  402a9a:	5d                   	pop    ebp
+  402a9b:	5b                   	pop    ebx
+  402a9c:	83 c4 38             	add    esp,0x38
+  402a9f:	c3                   	ret
+
+--- 0x423540 .. 0x4235A0 ---
+
+/mnt/data/RPG.exe:     file format pei-i386
+
+
+Disassembly of section .text:
+
+00423540 <.text+0x22540>:
+  423540:	00 00                	add    BYTE PTR [eax],al
+  423542:	c7 86 1c 07 00 00 ff 	mov    DWORD PTR [esi+0x71c],0xffffffff
+  423549:	ff ff ff 
+  42354c:	5e                   	pop    esi
+  42354d:	59                   	pop    ecx
+  42354e:	c3                   	ret
+  42354f:	90                   	nop
+  423550:	56                   	push   esi
+  423551:	57                   	push   edi
+  423552:	8b f9                	mov    edi,ecx
+  423554:	33 f6                	xor    esi,esi
+  423556:	a1 b4 01 8a 00       	mov    eax,ds:0x8a01b4
+  42355b:	8b 48 04             	mov    ecx,DWORD PTR [eax+0x4]
+  42355e:	8b 84 31 30 01 00 00 	mov    eax,DWORD PTR [ecx+esi*1+0x130]
+  423565:	85 c0                	test   eax,eax
+  423567:	7e 08                	jle    0x423571
+  423569:	50                   	push   eax
+  42356a:	8b cf                	mov    ecx,edi
+  42356c:	e8 ff fb ff ff       	call   0x423170
+  423571:	8b 15 b4 01 8a 00    	mov    edx,DWORD PTR ds:0x8a01b4
+  423577:	8b 42 04             	mov    eax,DWORD PTR [edx+0x4]
+  42357a:	8b 84 30 34 01 00 00 	mov    eax,DWORD PTR [eax+esi*1+0x134]
+  423581:	85 c0                	test   eax,eax
+  423583:	7e 08                	jle    0x42358d
+  423585:	50                   	push   eax
+  423586:	8b cf                	mov    ecx,edi
+  423588:	e8 e3 fb ff ff       	call   0x423170
+  42358d:	83 c6 08             	add    esi,0x8
+  423590:	83 fe 30             	cmp    esi,0x30
+  423593:	7c c1                	jl     0x423556
+  423595:	5f                   	pop    edi
+  423596:	5e                   	pop    esi
+  423597:	c3                   	ret
+  423598:	90                   	nop
+  423599:	90                   	nop
+  42359a:	90                   	nop
+  42359b:	90                   	nop
+  42359c:	90                   	nop
+  42359d:	90                   	nop
+  42359e:	90                   	nop
+  42359f:	90                   	nop
+
+--- 0x440E70 .. 0x440F70 ---
+
+/mnt/data/RPG.exe:     file format pei-i386
+
+
+Disassembly of section .text:
+
+00440e70 <.text+0x3fe70>:
+  440e70:	80 05 00 00 8b 90 90 	add    BYTE PTR ds:0x908b0000,0x90
+  440e77:	05 00 00 8b 86       	add    eax,0x868b0000
+  440e7c:	84 05 00 00 8d 0c    	test   BYTE PTR ds:0xc8d0000,al
+  440e82:	40                   	inc    eax
+  440e83:	8b 52 44             	mov    edx,DWORD PTR [edx+0x44]
+  440e86:	8d 0c c9             	lea    ecx,[ecx+ecx*8]
+  440e89:	d1 e1                	shl    ecx,1
+  440e8b:	2b c8                	sub    ecx,eax
+  440e8d:	c1 e1 04             	shl    ecx,0x4
+  440e90:	89 54 39 70          	mov    DWORD PTR [ecx+edi*1+0x70],edx
+  440e94:	8b 86 80 05 00 00    	mov    eax,DWORD PTR [esi+0x580]
+  440e9a:	8b 90 98 05 00 00    	mov    edx,DWORD PTR [eax+0x598]
+  440ea0:	8b 86 84 05 00 00    	mov    eax,DWORD PTR [esi+0x584]
+  440ea6:	8d 0c 40             	lea    ecx,[eax+eax*2]
+  440ea9:	8b 52 44             	mov    edx,DWORD PTR [edx+0x44]
+  440eac:	8d 0c c9             	lea    ecx,[ecx+ecx*8]
+  440eaf:	d1 e1                	shl    ecx,1
+  440eb1:	2b c8                	sub    ecx,eax
+  440eb3:	c1 e1 04             	shl    ecx,0x4
+  440eb6:	89 54 39 74          	mov    DWORD PTR [ecx+edi*1+0x74],edx
+  440eba:	8b 86 80 05 00 00    	mov    eax,DWORD PTR [esi+0x580]
+  440ec0:	8b 90 a0 05 00 00    	mov    edx,DWORD PTR [eax+0x5a0]
+  440ec6:	8b 86 84 05 00 00    	mov    eax,DWORD PTR [esi+0x584]
+  440ecc:	8d 0c 40             	lea    ecx,[eax+eax*2]
+  440ecf:	8b 52 44             	mov    edx,DWORD PTR [edx+0x44]
+  440ed2:	8d 0c c9             	lea    ecx,[ecx+ecx*8]
+  440ed5:	d1 e1                	shl    ecx,1
+  440ed7:	2b c8                	sub    ecx,eax
+  440ed9:	c1 e1 04             	shl    ecx,0x4
+  440edc:	89 54 39 78          	mov    DWORD PTR [ecx+edi*1+0x78],edx
+  440ee0:	8b 86 80 05 00 00    	mov    eax,DWORD PTR [esi+0x580]
+  440ee6:	8b 90 a8 05 00 00    	mov    edx,DWORD PTR [eax+0x5a8]
+  440eec:	8b 86 84 05 00 00    	mov    eax,DWORD PTR [esi+0x584]
+  440ef2:	8d 0c 40             	lea    ecx,[eax+eax*2]
+  440ef5:	8b 52 44             	mov    edx,DWORD PTR [edx+0x44]
+  440ef8:	8d 0c c9             	lea    ecx,[ecx+ecx*8]
+  440efb:	d1 e1                	shl    ecx,1
+  440efd:	2b c8                	sub    ecx,eax
+  440eff:	c1 e1 04             	shl    ecx,0x4
+  440f02:	89 94 39 7c 00 00 00 	mov    DWORD PTR [ecx+edi*1+0x7c],edx
+  440f09:	8b 86 80 05 00 00    	mov    eax,DWORD PTR [esi+0x580]
+  440f0f:	8b 90 b0 05 00 00    	mov    edx,DWORD PTR [eax+0x5b0]
+  440f15:	8b 86 84 05 00 00    	mov    eax,DWORD PTR [esi+0x584]
+  440f1b:	8d 0c 40             	lea    ecx,[eax+eax*2]
+  440f1e:	8d 0c c9             	lea    ecx,[ecx+ecx*8]
+  440f21:	d1 e1                	shl    ecx,1
+  440f23:	2b c8                	sub    ecx,eax
+  440f25:	8b 52 44             	mov    edx,DWORD PTR [edx+0x44]
+  440f28:	c1 e1 04             	shl    ecx,0x4
+  440f2b:	89 94 39 80 00 00 00 	mov    DWORD PTR [ecx+edi*1+0x80],edx
+  440f32:	8b 86 80 05 00 00    	mov    eax,DWORD PTR [esi+0x580]
+  440f38:	8b b6 84 05 00 00    	mov    esi,DWORD PTR [esi+0x584]
+  440f3e:	8b 88 b8 05 00 00    	mov    ecx,DWORD PTR [eax+0x5b8]
+  440f44:	8d 04 76             	lea    eax,[esi+esi*2]
+  440f47:	8d 14 c0             	lea    edx,[eax+eax*8]
+  440f4a:	8b 41 44             	mov    eax,DWORD PTR [ecx+0x44]
+  440f4d:	d1 e2                	shl    edx,1
+  440f4f:	2b d6                	sub    edx,esi
+  440f51:	c1 e2 04             	shl    edx,0x4
+  440f54:	89 84 3a 84 00 00 00 	mov    DWORD PTR [edx+edi*1+0x84],eax
+  440f5b:	5f                   	pop    edi
+  440f5c:	5d                   	pop    ebp
+  440f5d:	5b                   	pop    ebx
+  440f5e:	5e                   	pop    esi
+  440f5f:	c2 04 00             	ret    0x4
+  440f62:	90                   	nop
+  440f63:	90                   	nop
+  440f64:	90                   	nop
+  440f65:	90                   	nop
+  440f66:	90                   	nop
+  440f67:	90                   	nop
+  440f68:	90                   	nop
+  440f69:	90                   	nop
+  440f6a:	90                   	nop
+  440f6b:	90                   	nop
+  440f6c:	90                   	nop
+  440f6d:	90                   	nop
+  440f6e:	90                   	nop
+  440f6f:	90                   	nop

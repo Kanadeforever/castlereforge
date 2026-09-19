@@ -1,0 +1,251 @@
+{
+  "版本": "v0.7D阶段中-固化22（沿用v0.7B文件名；Entity behavior/movement静态增量闭合）",
+  "记录大小": 551,
+  "Reader": "0x0040A160",
+  "动作状态机": "0x0040A2B0",
+  "字段": [
+    {
+      "偏移": "+0x00",
+      "大小": 100,
+      "类型": "cp950 cstr/固定区",
+      "Canonical": "name",
+      "状态": "样本/查找链强证据"
+    },
+    {
+      "偏移": "+0x64",
+      "大小": 4,
+      "类型": "i32",
+      "Canonical": "initial_world_x",
+      "状态": "已确认"
+    },
+    {
+      "偏移": "+0x68",
+      "大小": 4,
+      "类型": "i32",
+      "Canonical": "initial_world_y",
+      "状态": "已确认"
+    },
+    {
+      "偏移": "+0x6C",
+      "大小": 2,
+      "类型": "i16",
+      "Canonical": "sprite_anchor_x",
+      "状态": "已确认进入world+anchor播放位置"
+    },
+    {
+      "偏移": "+0x6E",
+      "大小": 2,
+      "类型": "i16",
+      "Canonical": "sprite_anchor_y",
+      "状态": "已确认进入world+anchor播放位置"
+    },
+    {
+      "偏移": "+0x70",
+      "大小": 1,
+      "类型": "u8/bool",
+      "Canonical": "presence_enabled",
+      "状态": "已确认实例化门控"
+    },
+    {
+      "偏移": "+0x71/+0x72",
+      "大小": 2,
+      "类型": "raw u8",
+      "Canonical": "unknown_71_72",
+      "状态": "未知"
+    },
+    {
+      "偏移": "+0x73",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "interaction_mode",
+      "状态": "已确认参与交互；==2特殊路径"
+    },
+    {
+      "偏移": "+0x74",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "collision_proximity_processing_flag",
+      "状态": "已确认处理门控/临时保存恢复，不是visibility"
+    },
+    {
+      "偏移": "+0x75",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "render_update_suppression",
+      "状态": "已确认非零跳过0x40A6D0"
+    },
+    {
+      "偏移": "+0x76",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "behavior_type",
+      "状态": "结构枚举0/1/2/3已静态闭合；作者原始枚举名未知",
+      "已确认枚举": {
+        "0": "被动/静态类：不进入type1/3移动管理；SF2动作循环",
+        "1": "外部驱动可移动类：进入移动/碰撞管理；无type3随机目的地生成；SF2动作循环",
+        "2": "一次性/非循环动作覆盖模式：SF2 clip末帧停住；EVE 0x1A/0x8F可写入；存在恢复原值路径",
+        "3": "自主随机漫游类：随机目标/随机等待，进入移动/碰撞管理，带viewport/tick门控；SF2动作循环"
+      },
+      "证据": "0x4096BB/0x409701；0x40A18D/0x40A1D9/0x40A4D4/0x40A7E5/0x40AAF7；0x40C83F/0x40F101；0x407450"
+    },
+    {
+      "偏移": "+0x77",
+      "大小": 1,
+      "类型": "i8",
+      "Canonical": "movement_profile0_cardinal_modifier",
+      "状态": "已确认：signed值+6 -> runtime+0x1C；作者档位名未知",
+      "证据": "0x40A193；0x40A83D；0x40AA1E/0x40AA42等消费"
+    },
+    {
+      "偏移": "+0x78",
+      "大小": 1,
+      "类型": "i8",
+      "Canonical": "movement_profile0_diagonal_modifier",
+      "状态": "已确认：signed值+4 -> runtime+0x20；作者档位名未知",
+      "证据": "0x40A19D；0x40A847；0x40A8B7等消费"
+    },
+    {
+      "偏移": "+0x79",
+      "大小": 1,
+      "类型": "i8",
+      "Canonical": "movement_profile1_cardinal_modifier",
+      "状态": "已确认：signed值+9 -> runtime+0x24；由packed state bits8..15非零选择profile1",
+      "证据": "0x40A1A7；0x40A851；0x40A862..0x40A878 selector"
+    },
+    {
+      "偏移": "+0x7A",
+      "大小": 1,
+      "类型": "i8",
+      "Canonical": "movement_profile1_diagonal_modifier",
+      "状态": "已确认：signed值+6 -> runtime+0x28；由packed state bits8..15非零选择profile1",
+      "证据": "0x40A1B1；0x40A85E；0x40A862..0x40A878 selector"
+    },
+    {
+      "偏移": "+0x7B",
+      "大小": 100,
+      "类型": "cp950 cstr",
+      "Canonical": "sprite_sf2_path",
+      "状态": "已确认"
+    },
+    {
+      "偏移": "+0xDF",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "animation_variant_scale",
+      "状态": "已确认公式variant=(scale*orientation)>>3"
+    },
+    {
+      "偏移": "+0xE0",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "unknown_e0",
+      "状态": "未知"
+    },
+    {
+      "偏移": "+0xE1",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "render_base_entry_zero_before_current_action",
+      "状态": "已确认：Entity+E1 → SF2 Controller+0x20；非零时0x004074A0先选择Section0 entry0并绘制一次，再绘当前Action。仅命名为基础entry0预绘层，不强称shadow/background。",
+      "证据": "0x0040A25A..0x0040A28B 参数传递；Controller+0x20 consumer 0x004074AC..0x004074DA"
+    },
+    {
+      "偏移": "+0xE2/+0xE3",
+      "大小": 2,
+      "类型": "u8+u8",
+      "Canonical": "animation_clip_0_start_length",
+      "状态": "已确认"
+    },
+    {
+      "偏移": "+0xE4/+0xE5",
+      "大小": 2,
+      "类型": "u8+u8",
+      "Canonical": "animation_clip_1_start_length",
+      "状态": "已确认"
+    },
+    {
+      "偏移": "+0xE6/+0xE7",
+      "大小": 2,
+      "类型": "u8+u8",
+      "Canonical": "animation_clip_2_start_length",
+      "状态": "已确认"
+    },
+    {
+      "偏移": "+0xE8/+0xE9",
+      "大小": 2,
+      "类型": "u8+u8",
+      "Canonical": "animation_clip_3_start_length",
+      "状态": "已确认"
+    },
+    {
+      "偏移": "+0xEA/+0xEB",
+      "大小": 2,
+      "类型": "u8+u8",
+      "Canonical": "event_binding_a_b",
+      "状态": "强证据：接近/碰撞与点击/调查两路径；精确业务方向继续保守"
+    },
+    {
+      "偏移": "+0xEC/+0xED",
+      "大小": 2,
+      "类型": "raw",
+      "Canonical": "unknown_ec_ed",
+      "状态": "未知"
+    },
+    {
+      "偏移": "+0xEE",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "special_spatial_coverage_context_enable",
+      "状态": "结构语义已确认：Entity+EE → SF2 Controller byte+0x2C；非零门控0x0040771A/0x00407BFA额外空间/覆盖修正路径；作者业务名称未知。",
+      "证据": "0x0040A25A..0x0040A28B 参数传递；Controller+0x2C consumers 0x0040771A / 0x00407BFA"
+    },
+    {
+      "偏移": "+0xEF/+0xF3",
+      "大小": 8,
+      "类型": "i32+i32",
+      "Canonical": "roam_lower_extents_serialized_then_absolute_lower",
+      "状态": "type3已进一步闭合：serialized值在loader中参与 initial-position 减法，改写为绝对lower；随后作为随机目标下界",
+      "证据": "0x40A1E0..0x40A227；0x40AB4E..0x40AB8E"
+    },
+    {
+      "偏移": "+0xF7/+0xFB",
+      "大小": 8,
+      "类型": "i32+i32",
+      "Canonical": "roam_upper_extents_serialized_then_absolute_upper",
+      "状态": "type3已进一步闭合：loader写 initial+serialized extent 为绝对upper；随机目标区间为[lower,upper)",
+      "证据": "0x40A1E0..0x40A227；0x40AB4E..0x40AB8E"
+    },
+    {
+      "偏移": "+0xFF",
+      "大小": 4,
+      "类型": "u32",
+      "Canonical": "presence_state_variable_id",
+      "状态": "已确认本地NPC加载前读GameVar并写+0x70"
+    },
+    {
+      "偏移": "+0x103",
+      "大小": 1,
+      "类型": "u8",
+      "Canonical": "default_orientation_code",
+      "状态": "强证据：恢复/default写packed state bits16..23"
+    },
+    {
+      "偏移": "+0x104..+0x226",
+      "大小": 291,
+      "类型": "raw",
+      "Canonical": "unknown_tail",
+      "状态": "当前未完整映射"
+    }
+  ],
+  "固化22新增边界": {
+    "当前multimedia实体记录": 22,
+    "behavior_type分布": {
+      "0": 19,
+      "1": 3,
+      "2": 0,
+      "3": 0
+    },
+    "四个movement modifier全零记录": 22,
+    "说明": "type2/type3与移动公式的语义来自同SHA RPG.exe直接consumer/writer，不依赖当前样本出现；作者枚举名/两档业务名仍未知。"
+  }
+}

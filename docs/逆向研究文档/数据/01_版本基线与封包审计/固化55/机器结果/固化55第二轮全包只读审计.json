@@ -1,0 +1,218 @@
+{
+  "节点": "固化55",
+  "阶段": "第二轮独立全包只读审计",
+  "固化54继承非Markdown": {
+    "总数": 891,
+    "缺失": [],
+    "变化": [],
+    "PASS": true
+  },
+  "Markdown": {
+    "总数": 91,
+    "问题": [],
+    "PASS": true
+  },
+  "Python工具": {
+    "总数": 31,
+    "AST_compile问题": [],
+    "工具说明总数": 31,
+    "无对应说明": [],
+    "PASS": true
+  },
+  "数据_写入本审计前": {
+    "JSON": 472,
+    "JSON问题": [],
+    "CSV": 52,
+    "CSV问题": [],
+    "PASS": true
+  },
+  "固化55至37第二轮核心重放": {
+    "节点数": 19,
+    "节点": {
+      "37": {
+        "JSON": [
+          "solid37_corpus.json",
+          "solid37_rpg.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "38": {
+        "JSON": [
+          "solid38.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "39": {
+        "JSON": [
+          "solid39.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "40": {
+        "JSON": [
+          "solid40.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "41": {
+        "JSON": [
+          "solid41.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "42": {
+        "JSON": [
+          "solid42.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "43": {
+        "JSON": [
+          "solid43.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "44": {
+        "JSON": [
+          "solid44.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "45": {
+        "JSON": [
+          "solid45.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "46": {
+        "JSON": [
+          "solid46.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "47": {
+        "JSON": [
+          "solid47.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "48": {
+        "JSON": [
+          "solid48.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "49": {
+        "JSON": [
+          "solid49.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "50": {
+        "JSON": [
+          "solid50.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "51": {
+        "JSON": [
+          "solid51.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "52": {
+        "JSON": [
+          "solid52.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "53": {
+        "JSON": [
+          "solid53.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "54": {
+        "JSON": [
+          "solid54.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      },
+      "55": {
+        "JSON": [
+          "solid55.json"
+        ],
+        "显式失败": [],
+        "stderr非空": [],
+        "命令返回0": true,
+        "PASS": true
+      }
+    },
+    "全部PASS": true
+  },
+  "第一轮与第二轮同输入结果等价": {
+    "比较文件数": 32,
+    "不一致": [],
+    "PASS": true
+  },
+  "缓存污染": {
+    "数量": 0,
+    "项目": [],
+    "PASS": true
+  },
+  "整体PASS": true
+}

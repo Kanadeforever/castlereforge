@@ -1,0 +1,37 @@
+{
+  "工具版本": "0.7D.10-固化20",
+  "快照性质": "固化20阶段中导航索引；若要验证当前 EXE，请使用“验证RPG”。",
+  "固定结构证据": {
+    "BattleManager槽步长": "0xDE4",
+    "FightRole真实对象": "FightRole(slot) = BattleManager + 0x3E4 + slot*0xDE4",
+    "API内嵌块": "FightRole+0x84C，大小0x350；同一数值字段在已观测路径还作为 Enemy_AI record index 与 fallback FIRTTECH ID 使用，作者业务名未定",
+    "AI候选区": "raw-slot +0xCD8/+0xCDC = FightRole+0x8F4/+0x8F8：candidate count / DWORD IDs",
+    "选中动作": "FightRole+0x7A8 = selected FIRTTECH ID；+0x848 = selected FIRTTECH record*",
+    "目标": "FightRole+0x7A0 = target seed/primary index；+0x88 target list；+0xC8 target count",
+    "动作模式": "FightRole+0xCF0；mode 7 已直接闭合为 Article/Ail2；mode 1/4 仍只保留结构名",
+    "Article": "FightRole+0xCF4 = Ail2 record*；0x42A7D0 为 Article/Ail2 processor",
+    "FIRTTECH处理": "0x42A7A0 5参数包装器 → 0x42C680 FIRTTECH Action/Damage Processor",
+    "DamageInfo": "每目标 base=FightRole+0x170，stride=0x50；0x42B0D0 固定处理5槽：ID +0x10、residual/value +0x24；RoleDefinition+0x1E8 会复制到 +0x44，但 0x421518 实际读取的是 +0x48，固化3旧直接串联已撤销",
+    "D6状态管线": "五槽 residual→目标 pending +0xCC+rawID*4；mode2 将39槽 pending 一对一提交到 runtime +0xA34；0x420440 每次调用对正 runtime 值一般减10并夹0；normal producer 对 signed raw ID<=27，因此前28槽对应 raw effect-like ID 0..27。后11槽属于generic 39槽 envelope，但当前用途未知，不能擅称辅助/保留；0x421690/0x421A00/0x4231D0 提供直接清除路径",
+    "API主表": "DataCenter+0xA4 由 Public\\API.ENC 初始化器直接装载，几何 255×0x350；Battle 0x441FD0 路径把 FightRole+0x84C 的 0x350-byte RoleDefinition 整记录同步回对应 API record。",
+    "非战斗物品writer": "0x43AEC0 在 DataCenter+0xA4 + role_id*0x350 上直接写持久角色字段。五槽 value>0 且 effect ID43..60 进入 switch；ID54..60 映射到 +0x3C/+0x40/+0x48/+0x4C/+0x44/+0x2C/+0x34，实际 add=Ail2+0xD0；ID44..53 在此 switch no-op，不能外推全局无用途。",
+    "世界物品动作": "Ail2+0x28>0 时 0x43AEC0 写 DataCenter+0xC4=action code、+0xEC=item ID 并提前返回；主流程 0x40CE23 按 code3..17 分派。0x170/171/172 对应 code12/13/14；13/14 分别把 1500-duration encounter threshold mode 设为放大约2× / 压缩约1/3，对应降低/提高遇敌。",
+    "RoleDefinition双资源": "RoleDefinition+0x2C/+0x30 = FightRole+0x878/+0x87C 主生存资源 max/current；+0x34/+0x38 = FightRole+0x880/+0x884 次资源 max/current；Battle与EVE双 consumer 交叉证明，作者资源名未知",
+    "动作资源消耗": "FIRTTECH+0x34/+0x38 分别为主/次动作资源消耗量，AI前检与动作后扣除闭环；Article/Ail2+0x118/+0x11C分别扣主/次资源",
+    "公式分派": "FIRTTECH+0x30：2/3/4/5/6 → 0x42B630/6C0/750/7D0/840，其他 → 0x42B5F0；精确整数公式已固化到阶段D数据",
+    "RNG": "state@0x46E29C；0x45155B seed；0x451565: state=state*0x343FD+0x269EC3(mod 2^32), return (state>>16)&0x7FFF；Battle init 0x442076/0x44207C 用系统时间 helper 0x451583 重新播种",
+    "D7胜负与奖励": "0x443590 扫16个 FightRole，+0x850=0/1 对应敌方侧/我方侧计数，+0xA74!=0 的幽冥返召操偶单位不计入正常存活数；return1=敌方侧清零、return2=我方侧清零。0x443660 参数1进入完整胜利奖励：LayoutTeam+0x00/+0x04 奖励源API ID累加 RoleDefinition+0x24 EXP，+0x74/+0x78 生成銀兩，+0x7C/+0x80/+0x90 为最多4项 Ail2 掉落及阈值。固化17已闭合结果UI生命周期：普通1/2/3启动0x89FCC8外层结果UI并等待外层+0x579与+0x600明细子界面+0x579分别归零；随后只创建一次FANIN黑幕转场，+0x244从15按合格update递减，下一次合格update再0x441F60回写RoleDefinition并销毁Battle容器。detector4虽走dispatcher参数1胜利奖励，却明确跳过正常结果UI启动。"
+  },
+  "坐标换算示例": {
+    "raw+0xC30": "FightRole+0x84C",
+    "raw+0xCD8": "FightRole+0x8F4",
+    "raw+0xCDC": "FightRole+0x8F8",
+    "raw+0x10D4": "FightRole+0xCF0"
+  },
+  "当前继续入口": [
+    "D5：精确公式与 RoleDefinition 双资源 runtime 结构、FIRTTECH+0x34/+0x38 动作消耗已闭合；继续证明作者资源名、selector/FIRTTECH+0x40 业务语义与其他后处理",
+    "D6：normal residual→pending→runtime 已闭合；非战斗物品应用 0x43AEC0 已直接闭合 API 主表 writer：effect ID54..60 写 RoleDefinition +0x3C/+0x40/+0x48/+0x4C/+0x44/+0x2C/+0x34，实际增量=Ail2+0xD0；ID43 为特殊路径。0x170..172 使用 Ail2+0x28=12/13/14 的世界动作 dispatch，13/14 已闭合为 encounter-threshold 降低/提高算法。继续追属性作者术语、code12 场景迁移更深边界、后11槽用途和动态时序。",
+    "D7：主奖励、伏龍A特殊结束、结果UI双层活动门、FANIN转场与API持久回写时序已静态闭合；detector4走胜利奖励但跳过正常结果UI。D7下一侧线只剩未分类的dispatcher参数4实际来源等低优先项。",
+    "D8：RNG算法/state/时间播种已闭合；固化18已先闭合胜利结算draw顺序（銀兩→条件升级→掉落）及升级成长7-draw主角色路径；继续分类其余RNG call-site并建立deterministic BattleTrace。"
+  ]
+}

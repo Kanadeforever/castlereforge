@@ -1,0 +1,30 @@
+{
+  "版本": "v0.7D阶段中-固化4",
+  "日期": "2026-08-13",
+  "BattleCore": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "路线": {
+    "D1": "ACTIVE_CONSUMER_DRIVEN",
+    "D2": "COORDINATE_CORRECTED_ACTIVE",
+    "D3": "STATIC_CLOSED_DYNAMIC_TRACE_PENDING",
+    "D4": "FIRST_DISPATCH_SKELETON_STATIC_CLOSED_MORE_CLASSES_PENDING",
+    "D5": "MATH_STATIC_CLOSED_BUSINESS_SEMANTICS_PENDING",
+    "D6": "STRUCTURAL_WRITER_COMMIT_DECREMENT_CLEAR_STATIC_CLOSED_NAMES_DYNAMIC_TIMING_PENDING",
+    "D7": "PENDING",
+    "D8": "RNG_CORE_STATIC_CLOSED_DRAW_ORDER_PENDING"
+  },
+  "本固化新增": [
+    "DamageInfo真实基址 +0x170 与固化3字段偏移修正",
+    "五槽 residual→pending(+0xCC) 第一阶段 application",
+    "39槽 pending→runtime(+0xA34) 第二阶段 commit",
+    "39槽 runtime 正值每0x420440调用减10并归零",
+    "前28 raw effect-ID runtime 槽全清零路径",
+    "0x421690 Article/Ail2解除跳表",
+    "0x421A00 FIRTTECH特殊动作分派表"
+  ],
+  "下一恢复入口": [
+    "优先追 >27 五槽输出后续 consumer",
+    "证明 39 槽后11槽各自 consumer/writer 与特殊规则",
+    "动态验证 0x420440 调用频率与计时单位",
+    "随后回 D4 未分类 action class/mode，D7 Result/Reward，D8 RNG draw order/BattleTrace"
+  ]
+}

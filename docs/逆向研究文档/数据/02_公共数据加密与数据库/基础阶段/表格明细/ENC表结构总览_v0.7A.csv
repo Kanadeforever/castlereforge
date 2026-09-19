@@ -1,0 +1,14 @@
+﻿表,文件,名称,Canonical,身份证据,记录大小,记录数,说明
+levelup,Levelup.enc,等级累计经验阈值表,LevelUpThresholdTable,A,4,101,
+magictb,Magictb.enc,角色招式/术法学习条件表,TechniqueLearningConditionTable,A,36,102,
+magiccon,Magiccon.enc,命名招式/术法条件与AI使用条件表,TechniqueConditionTable,B,64,500,
+enemy_ai,Enemy_ai.enc,敌人AI决策定义表,EnemyAiDefinitionTable,A,56,283,
+refinet,Refinet.enc,两物品炼化配方表,RefineRecipeTable,A,12,42,
+refinek,Refinek.enc,17×17炼化类别/映射矩阵,RefineMatrix17x17,A,4,289,
+api,Api.enc,角色基础定义表,RoleDefinitionTable,A,848,255,Loader/初始化代码把单条API记录用 rep movs 0xD4 DWORD 原样复制成0x350-byte Runtime Role Record。
+ail2,Ail2.ENC,物品定义表,ItemDefinitionTable,A,926,700,0x39E=926字节固定stride；旧文档若将Ail2解释为角色/敌人表均已废止。
+firttech,Firttech.enc,招式/术法动作定义表,TechniqueDefinitionTable,A,560,500,
+layoutteam,LayoutTeam.ENC,布局/编队完整载荷表,LayoutTeamPayloadTable,A,508,334,每条127 DWORD；0x424430按LayoutGR选定索引后rep movs 0x7F DWORD完整复制到输出。
+layoutgr,Layoutgr.enc,布局组/剧情场景组定义表,LayoutGroupDefinitionTable,A,508,250,0x424430校验GR索引；+0x18为LayoutTeam候选数，+0x1C为候选ID数组并从中随机选择后复制完整508-byte LayoutTeam payload；+0x6C/+0x70是第二组随机候选计数/值数组，返回值业务语义仍待证明。旧版把+0x18误命名为primary LayoutTeam ID，已在固化16撤销。
+battlegb,Battlegb.enc,战斗背景/环境定义表,BattleBackgroundDefinitionTable,A,94,66,
+miscinfo,Miscinfo.enc,杂项固定配置Blob,MiscInfoBlob,A,,,Loader要求精确0x41E字节；不是固定记录数组。未被xref证明的剩余字节保持opaque。

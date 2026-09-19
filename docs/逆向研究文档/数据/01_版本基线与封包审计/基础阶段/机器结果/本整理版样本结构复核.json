@@ -1,0 +1,4654 @@
+{
+  "tool_version": "0.1.2",
+  "warnings": [
+    "本工具只验证已经建立证据的结构，不会把候选字段自动升级为已确认字段。"
+  ],
+  "pe": {
+    "path": "/workspace/scratch/3f7398360f84/upload/RPG.exe",
+    "size": 462848,
+    "sha256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "machine": "0x014C",
+    "pe_magic": "0x010B",
+    "sections": 4,
+    "timestamp": 1010569175,
+    "entry_rva": "0x00052C19",
+    "image_base": "0x00400000",
+    "size_of_image": 5787648,
+    "subsystem": 2,
+    "characteristics": "0x010F",
+    "dll_characteristics": "0x0000",
+    "relocations_stripped": true,
+    "large_address_aware": false,
+    "dynamic_base": false
+  },
+  "resource_root": "/workspace/scratch/3f7398360f84/work/resources/multimedia",
+  "menus_archive": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/MenusDir.DAT",
+    "size": 17257137,
+    "sha256": "8e1974dc818b47ce84eb5659ae58053914a26cf57f07507385d812ecc406c525",
+    "directory_record_offset": 49,
+    "directory_name": "MENUS",
+    "entry_count": 106,
+    "file_table_offset": 88,
+    "entry_size": 39,
+    "valid_entries": 106,
+    "first_entries": [
+      {
+        "index": 0,
+        "flags": 0,
+        "size": 18832,
+        "unknown": 0,
+        "name": "MEN0000.SF2",
+        "offset": 4222,
+        "in_bounds": true
+      },
+      {
+        "index": 1,
+        "flags": 0,
+        "size": 296855,
+        "unknown": 0,
+        "name": "MEN0001.SF2",
+        "offset": 23054,
+        "in_bounds": true
+      },
+      {
+        "index": 2,
+        "flags": 0,
+        "size": 786174,
+        "unknown": 0,
+        "name": "MEN0002.SF2",
+        "offset": 319909,
+        "in_bounds": true
+      },
+      {
+        "index": 3,
+        "flags": 0,
+        "size": 554515,
+        "unknown": 0,
+        "name": "MEN0002B.SF2",
+        "offset": 1106083,
+        "in_bounds": true
+      },
+      {
+        "index": 4,
+        "flags": 0,
+        "size": 32008,
+        "unknown": 0,
+        "name": "MEN0003.SF2",
+        "offset": 1660598,
+        "in_bounds": true
+      },
+      {
+        "index": 5,
+        "flags": 0,
+        "size": 40416,
+        "unknown": 0,
+        "name": "MEN0004.SF2",
+        "offset": 1692606,
+        "in_bounds": true
+      },
+      {
+        "index": 6,
+        "flags": 0,
+        "size": 32095,
+        "unknown": 0,
+        "name": "MEN0005.SF2",
+        "offset": 1733022,
+        "in_bounds": true
+      },
+      {
+        "index": 7,
+        "flags": 0,
+        "size": 19319,
+        "unknown": 0,
+        "name": "MEN0006.SF2",
+        "offset": 1765117,
+        "in_bounds": true
+      }
+    ],
+    "entries": [
+      {
+        "index": 0,
+        "flags": 0,
+        "size": 18832,
+        "unknown": 0,
+        "name": "MEN0000.SF2",
+        "offset": 4222,
+        "in_bounds": true
+      },
+      {
+        "index": 1,
+        "flags": 0,
+        "size": 296855,
+        "unknown": 0,
+        "name": "MEN0001.SF2",
+        "offset": 23054,
+        "in_bounds": true
+      },
+      {
+        "index": 2,
+        "flags": 0,
+        "size": 786174,
+        "unknown": 0,
+        "name": "MEN0002.SF2",
+        "offset": 319909,
+        "in_bounds": true
+      },
+      {
+        "index": 3,
+        "flags": 0,
+        "size": 554515,
+        "unknown": 0,
+        "name": "MEN0002B.SF2",
+        "offset": 1106083,
+        "in_bounds": true
+      },
+      {
+        "index": 4,
+        "flags": 0,
+        "size": 32008,
+        "unknown": 0,
+        "name": "MEN0003.SF2",
+        "offset": 1660598,
+        "in_bounds": true
+      },
+      {
+        "index": 5,
+        "flags": 0,
+        "size": 40416,
+        "unknown": 0,
+        "name": "MEN0004.SF2",
+        "offset": 1692606,
+        "in_bounds": true
+      },
+      {
+        "index": 6,
+        "flags": 0,
+        "size": 32095,
+        "unknown": 0,
+        "name": "MEN0005.SF2",
+        "offset": 1733022,
+        "in_bounds": true
+      },
+      {
+        "index": 7,
+        "flags": 0,
+        "size": 19319,
+        "unknown": 0,
+        "name": "MEN0006.SF2",
+        "offset": 1765117,
+        "in_bounds": true
+      },
+      {
+        "index": 8,
+        "flags": 0,
+        "size": 19513,
+        "unknown": 0,
+        "name": "MEN0007.SF2",
+        "offset": 1784436,
+        "in_bounds": true
+      },
+      {
+        "index": 9,
+        "flags": 0,
+        "size": 18992,
+        "unknown": 0,
+        "name": "MEN0008.SF2",
+        "offset": 1803949,
+        "in_bounds": true
+      },
+      {
+        "index": 10,
+        "flags": 0,
+        "size": 45539,
+        "unknown": 0,
+        "name": "MEN0009.SF2",
+        "offset": 1822941,
+        "in_bounds": true
+      },
+      {
+        "index": 11,
+        "flags": 0,
+        "size": 57087,
+        "unknown": 0,
+        "name": "MEN0010.SF2",
+        "offset": 1868480,
+        "in_bounds": true
+      },
+      {
+        "index": 12,
+        "flags": 0,
+        "size": 18814,
+        "unknown": 0,
+        "name": "MEN0011.SF2",
+        "offset": 1925567,
+        "in_bounds": true
+      },
+      {
+        "index": 13,
+        "flags": 0,
+        "size": 18828,
+        "unknown": 0,
+        "name": "MEN0012.SF2",
+        "offset": 1944381,
+        "in_bounds": true
+      },
+      {
+        "index": 14,
+        "flags": 0,
+        "size": 39642,
+        "unknown": 0,
+        "name": "MEN0013.SF2",
+        "offset": 1963209,
+        "in_bounds": true
+      },
+      {
+        "index": 15,
+        "flags": 0,
+        "size": 261060,
+        "unknown": 0,
+        "name": "MEN0015.SF2",
+        "offset": 2002851,
+        "in_bounds": true
+      },
+      {
+        "index": 16,
+        "flags": 0,
+        "size": 163334,
+        "unknown": 0,
+        "name": "MEN0016.SF2",
+        "offset": 2263911,
+        "in_bounds": true
+      },
+      {
+        "index": 17,
+        "flags": 0,
+        "size": 20899,
+        "unknown": 0,
+        "name": "MEN0017.SF2",
+        "offset": 2427245,
+        "in_bounds": true
+      },
+      {
+        "index": 18,
+        "flags": 0,
+        "size": 21049,
+        "unknown": 0,
+        "name": "MEN0018.SF2",
+        "offset": 2448144,
+        "in_bounds": true
+      },
+      {
+        "index": 19,
+        "flags": 0,
+        "size": 35235,
+        "unknown": 0,
+        "name": "MEN0020.SF2",
+        "offset": 2469193,
+        "in_bounds": true
+      },
+      {
+        "index": 20,
+        "flags": 0,
+        "size": 17518,
+        "unknown": 0,
+        "name": "MEN0021.SF2",
+        "offset": 2504428,
+        "in_bounds": true
+      },
+      {
+        "index": 21,
+        "flags": 0,
+        "size": 21526,
+        "unknown": 0,
+        "name": "MEN0025.SF2",
+        "offset": 2521946,
+        "in_bounds": true
+      },
+      {
+        "index": 22,
+        "flags": 0,
+        "size": 21526,
+        "unknown": 0,
+        "name": "MEN0026.SF2",
+        "offset": 2543472,
+        "in_bounds": true
+      },
+      {
+        "index": 23,
+        "flags": 0,
+        "size": 17341,
+        "unknown": 0,
+        "name": "MEN0027.SF2",
+        "offset": 2564998,
+        "in_bounds": true
+      },
+      {
+        "index": 24,
+        "flags": 0,
+        "size": 21948,
+        "unknown": 0,
+        "name": "MEN0028.SF2",
+        "offset": 2582339,
+        "in_bounds": true
+      },
+      {
+        "index": 25,
+        "flags": 0,
+        "size": 21978,
+        "unknown": 0,
+        "name": "MEN0029.SF2",
+        "offset": 2604287,
+        "in_bounds": true
+      },
+      {
+        "index": 26,
+        "flags": 0,
+        "size": 17590,
+        "unknown": 0,
+        "name": "MEN1001.SF2",
+        "offset": 2626265,
+        "in_bounds": true
+      },
+      {
+        "index": 27,
+        "flags": 0,
+        "size": 18092,
+        "unknown": 0,
+        "name": "MEN1002.SF2",
+        "offset": 2643855,
+        "in_bounds": true
+      },
+      {
+        "index": 28,
+        "flags": 0,
+        "size": 18322,
+        "unknown": 0,
+        "name": "MEN1016.SF2",
+        "offset": 2661947,
+        "in_bounds": true
+      },
+      {
+        "index": 29,
+        "flags": 0,
+        "size": 18679,
+        "unknown": 0,
+        "name": "MEN1017.SF2",
+        "offset": 2680269,
+        "in_bounds": true
+      },
+      {
+        "index": 30,
+        "flags": 0,
+        "size": 18786,
+        "unknown": 0,
+        "name": "MEN1018.SF2",
+        "offset": 2698948,
+        "in_bounds": true
+      },
+      {
+        "index": 31,
+        "flags": 0,
+        "size": 18852,
+        "unknown": 0,
+        "name": "MEN1019.SF2",
+        "offset": 2717734,
+        "in_bounds": true
+      },
+      {
+        "index": 32,
+        "flags": 0,
+        "size": 18380,
+        "unknown": 0,
+        "name": "MEN1026.SF2",
+        "offset": 2736586,
+        "in_bounds": true
+      },
+      {
+        "index": 33,
+        "flags": 0,
+        "size": 18727,
+        "unknown": 0,
+        "name": "MEN1027.SF2",
+        "offset": 2754966,
+        "in_bounds": true
+      },
+      {
+        "index": 34,
+        "flags": 0,
+        "size": 18609,
+        "unknown": 0,
+        "name": "MEN1028.SF2",
+        "offset": 2773693,
+        "in_bounds": true
+      },
+      {
+        "index": 35,
+        "flags": 0,
+        "size": 18838,
+        "unknown": 0,
+        "name": "MEN1029.SF2",
+        "offset": 2792302,
+        "in_bounds": true
+      },
+      {
+        "index": 36,
+        "flags": 0,
+        "size": 17730,
+        "unknown": 0,
+        "name": "MEN1038.SF2",
+        "offset": 2811140,
+        "in_bounds": true
+      },
+      {
+        "index": 37,
+        "flags": 0,
+        "size": 23699,
+        "unknown": 0,
+        "name": "MEN2001.SF2",
+        "offset": 2828870,
+        "in_bounds": true
+      },
+      {
+        "index": 38,
+        "flags": 0,
+        "size": 25205,
+        "unknown": 0,
+        "name": "MEN2002.SF2",
+        "offset": 2852569,
+        "in_bounds": true
+      },
+      {
+        "index": 39,
+        "flags": 0,
+        "size": 25216,
+        "unknown": 0,
+        "name": "MEN2003.SF2",
+        "offset": 2877774,
+        "in_bounds": true
+      },
+      {
+        "index": 40,
+        "flags": 0,
+        "size": 100346,
+        "unknown": 0,
+        "name": "MEN2004.SF2",
+        "offset": 2902990,
+        "in_bounds": true
+      },
+      {
+        "index": 41,
+        "flags": 0,
+        "size": 26869,
+        "unknown": 0,
+        "name": "MEN3001.SF2",
+        "offset": 3003336,
+        "in_bounds": true
+      },
+      {
+        "index": 42,
+        "flags": 0,
+        "size": 26647,
+        "unknown": 0,
+        "name": "MEN3002.SF2",
+        "offset": 3030205,
+        "in_bounds": true
+      },
+      {
+        "index": 43,
+        "flags": 0,
+        "size": 27089,
+        "unknown": 0,
+        "name": "MEN3003.SF2",
+        "offset": 3056852,
+        "in_bounds": true
+      },
+      {
+        "index": 44,
+        "flags": 0,
+        "size": 100280,
+        "unknown": 0,
+        "name": "MEN3004.SF2",
+        "offset": 3083941,
+        "in_bounds": true
+      },
+      {
+        "index": 45,
+        "flags": 0,
+        "size": 17952,
+        "unknown": 0,
+        "name": "MEN3005.SF2",
+        "offset": 3184221,
+        "in_bounds": true
+      },
+      {
+        "index": 46,
+        "flags": 0,
+        "size": 17455,
+        "unknown": 0,
+        "name": "MEN3006.SF2",
+        "offset": 3202173,
+        "in_bounds": true
+      },
+      {
+        "index": 47,
+        "flags": 0,
+        "size": 17475,
+        "unknown": 0,
+        "name": "MEN3007.SF2",
+        "offset": 3219628,
+        "in_bounds": true
+      },
+      {
+        "index": 48,
+        "flags": 0,
+        "size": 28538,
+        "unknown": 0,
+        "name": "MEN4001.SF2",
+        "offset": 3237103,
+        "in_bounds": true
+      },
+      {
+        "index": 49,
+        "flags": 0,
+        "size": 86570,
+        "unknown": 0,
+        "name": "MEN4002.SF2",
+        "offset": 3265641,
+        "in_bounds": true
+      },
+      {
+        "index": 50,
+        "flags": 0,
+        "size": 17952,
+        "unknown": 0,
+        "name": "MEN4003.SF2",
+        "offset": 3352211,
+        "in_bounds": true
+      },
+      {
+        "index": 51,
+        "flags": 0,
+        "size": 17455,
+        "unknown": 0,
+        "name": "MEN4004.SF2",
+        "offset": 3370163,
+        "in_bounds": true
+      },
+      {
+        "index": 52,
+        "flags": 0,
+        "size": 17475,
+        "unknown": 0,
+        "name": "MEN4005.SF2",
+        "offset": 3387618,
+        "in_bounds": true
+      },
+      {
+        "index": 53,
+        "flags": 0,
+        "size": 18790,
+        "unknown": 0,
+        "name": "MEN4006.SF2",
+        "offset": 3405093,
+        "in_bounds": true
+      },
+      {
+        "index": 54,
+        "flags": 0,
+        "size": 18903,
+        "unknown": 0,
+        "name": "MEN4008.SF2",
+        "offset": 3423883,
+        "in_bounds": true
+      },
+      {
+        "index": 55,
+        "flags": 0,
+        "size": 2215609,
+        "unknown": 0,
+        "name": "MEN4010.SF2",
+        "offset": 3442786,
+        "in_bounds": true
+      },
+      {
+        "index": 56,
+        "flags": 0,
+        "size": 2537115,
+        "unknown": 0,
+        "name": "MEN4011.SF2",
+        "offset": 5658395,
+        "in_bounds": true
+      },
+      {
+        "index": 57,
+        "flags": 0,
+        "size": 1406030,
+        "unknown": 0,
+        "name": "MEN4012.SF2",
+        "offset": 8195510,
+        "in_bounds": true
+      },
+      {
+        "index": 58,
+        "flags": 0,
+        "size": 1123299,
+        "unknown": 0,
+        "name": "MEN4013.SF2",
+        "offset": 9601540,
+        "in_bounds": true
+      },
+      {
+        "index": 59,
+        "flags": 0,
+        "size": 1089795,
+        "unknown": 0,
+        "name": "MEN4014.SF2",
+        "offset": 10724839,
+        "in_bounds": true
+      },
+      {
+        "index": 60,
+        "flags": 0,
+        "size": 87101,
+        "unknown": 0,
+        "name": "MEN5001.SF2",
+        "offset": 11814634,
+        "in_bounds": true
+      },
+      {
+        "index": 61,
+        "flags": 0,
+        "size": 17806,
+        "unknown": 0,
+        "name": "MEN5002.SF2",
+        "offset": 11901735,
+        "in_bounds": true
+      },
+      {
+        "index": 62,
+        "flags": 0,
+        "size": 17457,
+        "unknown": 0,
+        "name": "MEN5003.SF2",
+        "offset": 11919541,
+        "in_bounds": true
+      },
+      {
+        "index": 63,
+        "flags": 0,
+        "size": 17475,
+        "unknown": 0,
+        "name": "MEN5004.SF2",
+        "offset": 11936998,
+        "in_bounds": true
+      },
+      {
+        "index": 64,
+        "flags": 0,
+        "size": 21342,
+        "unknown": 0,
+        "name": "MEN5005.SF2",
+        "offset": 11954473,
+        "in_bounds": true
+      },
+      {
+        "index": 65,
+        "flags": 0,
+        "size": 17463,
+        "unknown": 0,
+        "name": "MEN5006.SF2",
+        "offset": 11975815,
+        "in_bounds": true
+      },
+      {
+        "index": 66,
+        "flags": 0,
+        "size": 93239,
+        "unknown": 0,
+        "name": "MEN6001.SF2",
+        "offset": 11993278,
+        "in_bounds": true
+      },
+      {
+        "index": 67,
+        "flags": 0,
+        "size": 17530,
+        "unknown": 0,
+        "name": "MEN6002.SF2",
+        "offset": 12086517,
+        "in_bounds": true
+      },
+      {
+        "index": 68,
+        "flags": 0,
+        "size": 17536,
+        "unknown": 0,
+        "name": "MEN6003.SF2",
+        "offset": 12104047,
+        "in_bounds": true
+      },
+      {
+        "index": 69,
+        "flags": 0,
+        "size": 17593,
+        "unknown": 0,
+        "name": "MEN6004.SF2",
+        "offset": 12121583,
+        "in_bounds": true
+      },
+      {
+        "index": 70,
+        "flags": 0,
+        "size": 32688,
+        "unknown": 0,
+        "name": "MEN6005.SF2",
+        "offset": 12139176,
+        "in_bounds": true
+      },
+      {
+        "index": 71,
+        "flags": 0,
+        "size": 71185,
+        "unknown": 0,
+        "name": "MEN7001.SF2",
+        "offset": 12171864,
+        "in_bounds": true
+      },
+      {
+        "index": 72,
+        "flags": 0,
+        "size": 29678,
+        "unknown": 0,
+        "name": "MEN7002.SF2",
+        "offset": 12243049,
+        "in_bounds": true
+      },
+      {
+        "index": 73,
+        "flags": 0,
+        "size": 44266,
+        "unknown": 0,
+        "name": "MEN7003.SF2",
+        "offset": 12272727,
+        "in_bounds": true
+      },
+      {
+        "index": 74,
+        "flags": 0,
+        "size": 29842,
+        "unknown": 0,
+        "name": "MEN7004.SF2",
+        "offset": 12316993,
+        "in_bounds": true
+      },
+      {
+        "index": 75,
+        "flags": 0,
+        "size": 767031,
+        "unknown": 0,
+        "name": "MEN8001.SF2",
+        "offset": 12346835,
+        "in_bounds": true
+      },
+      {
+        "index": 76,
+        "flags": 0,
+        "size": 42345,
+        "unknown": 0,
+        "name": "MEN8002.SF2",
+        "offset": 13113866,
+        "in_bounds": true
+      },
+      {
+        "index": 77,
+        "flags": 0,
+        "size": 30781,
+        "unknown": 0,
+        "name": "MEN8003.SF2",
+        "offset": 13156211,
+        "in_bounds": true
+      },
+      {
+        "index": 78,
+        "flags": 0,
+        "size": 17718,
+        "unknown": 0,
+        "name": "MEN8004.SF2",
+        "offset": 13186992,
+        "in_bounds": true
+      },
+      {
+        "index": 79,
+        "flags": 0,
+        "size": 17738,
+        "unknown": 0,
+        "name": "MEN8005.SF2",
+        "offset": 13204710,
+        "in_bounds": true
+      },
+      {
+        "index": 80,
+        "flags": 0,
+        "size": 30781,
+        "unknown": 0,
+        "name": "MEN8006.SF2",
+        "offset": 13222448,
+        "in_bounds": true
+      },
+      {
+        "index": 81,
+        "flags": 0,
+        "size": 48141,
+        "unknown": 0,
+        "name": "MEN8007.SF2",
+        "offset": 13253229,
+        "in_bounds": true
+      },
+      {
+        "index": 82,
+        "flags": 0,
+        "size": 37915,
+        "unknown": 0,
+        "name": "MEN8008.SF2",
+        "offset": 13301370,
+        "in_bounds": true
+      },
+      {
+        "index": 83,
+        "flags": 0,
+        "size": 1611637,
+        "unknown": 0,
+        "name": "MEN9001.SF2",
+        "offset": 13339285,
+        "in_bounds": true
+      },
+      {
+        "index": 84,
+        "flags": 0,
+        "size": 39772,
+        "unknown": 0,
+        "name": "MEN9002.SF2",
+        "offset": 14950922,
+        "in_bounds": true
+      },
+      {
+        "index": 85,
+        "flags": 0,
+        "size": 308083,
+        "unknown": 0,
+        "name": "MEN9100.SF2",
+        "offset": 14990694,
+        "in_bounds": true
+      },
+      {
+        "index": 86,
+        "flags": 0,
+        "size": 17791,
+        "unknown": 0,
+        "name": "MEN9101.SF2",
+        "offset": 15298777,
+        "in_bounds": true
+      },
+      {
+        "index": 87,
+        "flags": 0,
+        "size": 29840,
+        "unknown": 0,
+        "name": "MEN9102.SF2",
+        "offset": 15316568,
+        "in_bounds": true
+      },
+      {
+        "index": 88,
+        "flags": 0,
+        "size": 38194,
+        "unknown": 0,
+        "name": "MEN9103.SF2",
+        "offset": 15346408,
+        "in_bounds": true
+      },
+      {
+        "index": 89,
+        "flags": 0,
+        "size": 135841,
+        "unknown": 0,
+        "name": "MEN9200.SF2",
+        "offset": 15384602,
+        "in_bounds": true
+      },
+      {
+        "index": 90,
+        "flags": 0,
+        "size": 29522,
+        "unknown": 0,
+        "name": "MEN9201.SF2",
+        "offset": 15520443,
+        "in_bounds": true
+      },
+      {
+        "index": 91,
+        "flags": 0,
+        "size": 47268,
+        "unknown": 0,
+        "name": "MEN9202.SF2",
+        "offset": 15549965,
+        "in_bounds": true
+      },
+      {
+        "index": 92,
+        "flags": 0,
+        "size": 17799,
+        "unknown": 0,
+        "name": "MEN9203.SF2",
+        "offset": 15597233,
+        "in_bounds": true
+      },
+      {
+        "index": 93,
+        "flags": 0,
+        "size": 48581,
+        "unknown": 0,
+        "name": "MEN9204.SF2",
+        "offset": 15615032,
+        "in_bounds": true
+      },
+      {
+        "index": 94,
+        "flags": 0,
+        "size": 17502,
+        "unknown": 0,
+        "name": "MEN9205.SF2",
+        "offset": 15663613,
+        "in_bounds": true
+      },
+      {
+        "index": 95,
+        "flags": 0,
+        "size": 17502,
+        "unknown": 0,
+        "name": "MEN9206.SF2",
+        "offset": 15681115,
+        "in_bounds": true
+      },
+      {
+        "index": 96,
+        "flags": 0,
+        "size": 17912,
+        "unknown": 0,
+        "name": "MEN9207.SF2",
+        "offset": 15698617,
+        "in_bounds": true
+      },
+      {
+        "index": 97,
+        "flags": 0,
+        "size": 17587,
+        "unknown": 0,
+        "name": "MEN9208.SF2",
+        "offset": 15716529,
+        "in_bounds": true
+      },
+      {
+        "index": 98,
+        "flags": 0,
+        "size": 19788,
+        "unknown": 0,
+        "name": "MEN9209.SF2",
+        "offset": 15734116,
+        "in_bounds": true
+      },
+      {
+        "index": 99,
+        "flags": 0,
+        "size": 29406,
+        "unknown": 0,
+        "name": "MEN9210.SF2",
+        "offset": 15753904,
+        "in_bounds": true
+      },
+      {
+        "index": 100,
+        "flags": 0,
+        "size": 601217,
+        "unknown": 0,
+        "name": "MEN9300.SF2",
+        "offset": 15783310,
+        "in_bounds": true
+      },
+      {
+        "index": 101,
+        "flags": 0,
+        "size": 27109,
+        "unknown": 0,
+        "name": "MEN9301.SF2",
+        "offset": 16384527,
+        "in_bounds": true
+      },
+      {
+        "index": 102,
+        "flags": 0,
+        "size": 27254,
+        "unknown": 0,
+        "name": "MEN9302.SF2",
+        "offset": 16411636,
+        "in_bounds": true
+      },
+      {
+        "index": 103,
+        "flags": 0,
+        "size": 26929,
+        "unknown": 0,
+        "name": "MEN9303.SF2",
+        "offset": 16438890,
+        "in_bounds": true
+      },
+      {
+        "index": 104,
+        "flags": 0,
+        "size": 769591,
+        "unknown": 0,
+        "name": "MEN9304.SF2",
+        "offset": 16465819,
+        "in_bounds": true
+      },
+      {
+        "index": 105,
+        "flags": 0,
+        "size": 21727,
+        "unknown": 0,
+        "name": "MEN9400.SF2",
+        "offset": 17235410,
+        "in_bounds": true
+      }
+    ]
+  },
+  "sys_archive": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/Sys/Sys.dat",
+    "size": 65025813,
+    "sha256": "fef92575d7ff968ac73d85c745ff35c24add5e17e1ffbc4caca095ad66e6c3ea",
+    "directory_record_offset": 10,
+    "directory_name": "SYS",
+    "entry_count": 145,
+    "file_table_offset": 49,
+    "entry_size": 39,
+    "valid_entries": 145,
+    "first_entries": [
+      {
+        "index": 0,
+        "flags": 0,
+        "size": 21670,
+        "unknown": 0,
+        "name": "1-1.SF2",
+        "offset": 5704,
+        "in_bounds": true
+      },
+      {
+        "index": 1,
+        "flags": 0,
+        "size": 3170746,
+        "unknown": 0,
+        "name": "1-2.SF2",
+        "offset": 27374,
+        "in_bounds": true
+      },
+      {
+        "index": 2,
+        "flags": 0,
+        "size": 245939,
+        "unknown": 0,
+        "name": "1-21.SF2",
+        "offset": 3198120,
+        "in_bounds": true
+      },
+      {
+        "index": 3,
+        "flags": 0,
+        "size": 438344,
+        "unknown": 0,
+        "name": "1.SF2",
+        "offset": 3444059,
+        "in_bounds": true
+      },
+      {
+        "index": 4,
+        "flags": 0,
+        "size": 258695,
+        "unknown": 0,
+        "name": "10-2.SF2",
+        "offset": 3882403,
+        "in_bounds": true
+      },
+      {
+        "index": 5,
+        "flags": 0,
+        "size": 569666,
+        "unknown": 0,
+        "name": "100-2.SF2",
+        "offset": 4141098,
+        "in_bounds": true
+      },
+      {
+        "index": 6,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "101-2.SF2",
+        "offset": 4710764,
+        "in_bounds": true
+      },
+      {
+        "index": 7,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "102-2.SF2",
+        "offset": 4730984,
+        "in_bounds": true
+      }
+    ],
+    "entries": [
+      {
+        "index": 0,
+        "flags": 0,
+        "size": 21670,
+        "unknown": 0,
+        "name": "1-1.SF2",
+        "offset": 5704,
+        "in_bounds": true
+      },
+      {
+        "index": 1,
+        "flags": 0,
+        "size": 3170746,
+        "unknown": 0,
+        "name": "1-2.SF2",
+        "offset": 27374,
+        "in_bounds": true
+      },
+      {
+        "index": 2,
+        "flags": 0,
+        "size": 245939,
+        "unknown": 0,
+        "name": "1-21.SF2",
+        "offset": 3198120,
+        "in_bounds": true
+      },
+      {
+        "index": 3,
+        "flags": 0,
+        "size": 438344,
+        "unknown": 0,
+        "name": "1.SF2",
+        "offset": 3444059,
+        "in_bounds": true
+      },
+      {
+        "index": 4,
+        "flags": 0,
+        "size": 258695,
+        "unknown": 0,
+        "name": "10-2.SF2",
+        "offset": 3882403,
+        "in_bounds": true
+      },
+      {
+        "index": 5,
+        "flags": 0,
+        "size": 569666,
+        "unknown": 0,
+        "name": "100-2.SF2",
+        "offset": 4141098,
+        "in_bounds": true
+      },
+      {
+        "index": 6,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "101-2.SF2",
+        "offset": 4710764,
+        "in_bounds": true
+      },
+      {
+        "index": 7,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "102-2.SF2",
+        "offset": 4730984,
+        "in_bounds": true
+      },
+      {
+        "index": 8,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "103-2.SF2",
+        "offset": 4751204,
+        "in_bounds": true
+      },
+      {
+        "index": 9,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "104-2.SF2",
+        "offset": 4771424,
+        "in_bounds": true
+      },
+      {
+        "index": 10,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "105-2.SF2",
+        "offset": 4791644,
+        "in_bounds": true
+      },
+      {
+        "index": 11,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "106-2.SF2",
+        "offset": 4811864,
+        "in_bounds": true
+      },
+      {
+        "index": 12,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "107-2.SF2",
+        "offset": 4832084,
+        "in_bounds": true
+      },
+      {
+        "index": 13,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "108-2.SF2",
+        "offset": 4852304,
+        "in_bounds": true
+      },
+      {
+        "index": 14,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "109-2.SF2",
+        "offset": 4872524,
+        "in_bounds": true
+      },
+      {
+        "index": 15,
+        "flags": 0,
+        "size": 1499048,
+        "unknown": 0,
+        "name": "11-2.SF2",
+        "offset": 4892744,
+        "in_bounds": true
+      },
+      {
+        "index": 16,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "110-2.SF2",
+        "offset": 6391792,
+        "in_bounds": true
+      },
+      {
+        "index": 17,
+        "flags": 0,
+        "size": 272219,
+        "unknown": 0,
+        "name": "111-2.SF2",
+        "offset": 6412012,
+        "in_bounds": true
+      },
+      {
+        "index": 18,
+        "flags": 0,
+        "size": 261770,
+        "unknown": 0,
+        "name": "112-2.SF2",
+        "offset": 6684231,
+        "in_bounds": true
+      },
+      {
+        "index": 19,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "113-2.SF2",
+        "offset": 6946001,
+        "in_bounds": true
+      },
+      {
+        "index": 20,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "114-2.SF2",
+        "offset": 6966221,
+        "in_bounds": true
+      },
+      {
+        "index": 21,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "115-2.SF2",
+        "offset": 6986441,
+        "in_bounds": true
+      },
+      {
+        "index": 22,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "116-2.SF2",
+        "offset": 7006661,
+        "in_bounds": true
+      },
+      {
+        "index": 23,
+        "flags": 0,
+        "size": 632487,
+        "unknown": 0,
+        "name": "12-2.SF2",
+        "offset": 7026881,
+        "in_bounds": true
+      },
+      {
+        "index": 24,
+        "flags": 0,
+        "size": 536630,
+        "unknown": 0,
+        "name": "13-2.SF2",
+        "offset": 7659368,
+        "in_bounds": true
+      },
+      {
+        "index": 25,
+        "flags": 0,
+        "size": 608334,
+        "unknown": 0,
+        "name": "14-2.SF2",
+        "offset": 8195998,
+        "in_bounds": true
+      },
+      {
+        "index": 26,
+        "flags": 0,
+        "size": 604197,
+        "unknown": 0,
+        "name": "15-2.SF2",
+        "offset": 8804332,
+        "in_bounds": true
+      },
+      {
+        "index": 27,
+        "flags": 0,
+        "size": 1188316,
+        "unknown": 0,
+        "name": "16-2.SF2",
+        "offset": 9408529,
+        "in_bounds": true
+      },
+      {
+        "index": 28,
+        "flags": 0,
+        "size": 899018,
+        "unknown": 0,
+        "name": "17-2.SF2",
+        "offset": 10596845,
+        "in_bounds": true
+      },
+      {
+        "index": 29,
+        "flags": 0,
+        "size": 764534,
+        "unknown": 0,
+        "name": "18-2.SF2",
+        "offset": 11495863,
+        "in_bounds": true
+      },
+      {
+        "index": 30,
+        "flags": 0,
+        "size": 868463,
+        "unknown": 0,
+        "name": "19-2.SF2",
+        "offset": 12260397,
+        "in_bounds": true
+      },
+      {
+        "index": 31,
+        "flags": 0,
+        "size": 2204837,
+        "unknown": 0,
+        "name": "2-2.SF2",
+        "offset": 13128860,
+        "in_bounds": true
+      },
+      {
+        "index": 32,
+        "flags": 0,
+        "size": 158581,
+        "unknown": 0,
+        "name": "2.SF2",
+        "offset": 15333697,
+        "in_bounds": true
+      },
+      {
+        "index": 33,
+        "flags": 0,
+        "size": 1027819,
+        "unknown": 0,
+        "name": "20-2.SF2",
+        "offset": 15492278,
+        "in_bounds": true
+      },
+      {
+        "index": 34,
+        "flags": 0,
+        "size": 3259796,
+        "unknown": 0,
+        "name": "21-2.SF2",
+        "offset": 16520097,
+        "in_bounds": true
+      },
+      {
+        "index": 35,
+        "flags": 0,
+        "size": 942389,
+        "unknown": 0,
+        "name": "22-2.SF2",
+        "offset": 19779893,
+        "in_bounds": true
+      },
+      {
+        "index": 36,
+        "flags": 0,
+        "size": 862871,
+        "unknown": 0,
+        "name": "23-2.SF2",
+        "offset": 20722282,
+        "in_bounds": true
+      },
+      {
+        "index": 37,
+        "flags": 0,
+        "size": 632265,
+        "unknown": 0,
+        "name": "24-2.SF2",
+        "offset": 21585153,
+        "in_bounds": true
+      },
+      {
+        "index": 38,
+        "flags": 0,
+        "size": 1003461,
+        "unknown": 0,
+        "name": "25-2.SF2",
+        "offset": 22217418,
+        "in_bounds": true
+      },
+      {
+        "index": 39,
+        "flags": 0,
+        "size": 251995,
+        "unknown": 0,
+        "name": "26-2.SF2",
+        "offset": 23220879,
+        "in_bounds": true
+      },
+      {
+        "index": 40,
+        "flags": 0,
+        "size": 1171189,
+        "unknown": 0,
+        "name": "27-2.SF2",
+        "offset": 23472874,
+        "in_bounds": true
+      },
+      {
+        "index": 41,
+        "flags": 0,
+        "size": 411812,
+        "unknown": 0,
+        "name": "28-2.SF2",
+        "offset": 24644063,
+        "in_bounds": true
+      },
+      {
+        "index": 42,
+        "flags": 0,
+        "size": 423864,
+        "unknown": 0,
+        "name": "29-2.SF2",
+        "offset": 25055875,
+        "in_bounds": true
+      },
+      {
+        "index": 43,
+        "flags": 0,
+        "size": 3376553,
+        "unknown": 0,
+        "name": "3-2.SF2",
+        "offset": 25479739,
+        "in_bounds": true
+      },
+      {
+        "index": 44,
+        "flags": 0,
+        "size": 146903,
+        "unknown": 0,
+        "name": "3.SF2",
+        "offset": 28856292,
+        "in_bounds": true
+      },
+      {
+        "index": 45,
+        "flags": 0,
+        "size": 1190975,
+        "unknown": 0,
+        "name": "30-2.SF2",
+        "offset": 29003195,
+        "in_bounds": true
+      },
+      {
+        "index": 46,
+        "flags": 0,
+        "size": 1212083,
+        "unknown": 0,
+        "name": "31-2.SF2",
+        "offset": 30194170,
+        "in_bounds": true
+      },
+      {
+        "index": 47,
+        "flags": 0,
+        "size": 407233,
+        "unknown": 0,
+        "name": "32-2.SF2",
+        "offset": 31406253,
+        "in_bounds": true
+      },
+      {
+        "index": 48,
+        "flags": 0,
+        "size": 456967,
+        "unknown": 0,
+        "name": "33-2.SF2",
+        "offset": 31813486,
+        "in_bounds": true
+      },
+      {
+        "index": 49,
+        "flags": 0,
+        "size": 938584,
+        "unknown": 0,
+        "name": "34-2.SF2",
+        "offset": 32270453,
+        "in_bounds": true
+      },
+      {
+        "index": 50,
+        "flags": 0,
+        "size": 559959,
+        "unknown": 0,
+        "name": "35-2.SF2",
+        "offset": 33209037,
+        "in_bounds": true
+      },
+      {
+        "index": 51,
+        "flags": 0,
+        "size": 1082295,
+        "unknown": 0,
+        "name": "36-2.SF2",
+        "offset": 33768996,
+        "in_bounds": true
+      },
+      {
+        "index": 52,
+        "flags": 0,
+        "size": 703853,
+        "unknown": 0,
+        "name": "37-2.SF2",
+        "offset": 34851291,
+        "in_bounds": true
+      },
+      {
+        "index": 53,
+        "flags": 0,
+        "size": 830632,
+        "unknown": 0,
+        "name": "38-2.SF2",
+        "offset": 35555144,
+        "in_bounds": true
+      },
+      {
+        "index": 54,
+        "flags": 0,
+        "size": 205847,
+        "unknown": 0,
+        "name": "39-2.SF2",
+        "offset": 36385776,
+        "in_bounds": true
+      },
+      {
+        "index": 55,
+        "flags": 0,
+        "size": 3297612,
+        "unknown": 0,
+        "name": "4-2.SF2",
+        "offset": 36591623,
+        "in_bounds": true
+      },
+      {
+        "index": 56,
+        "flags": 0,
+        "size": 152194,
+        "unknown": 0,
+        "name": "4.SF2",
+        "offset": 39889235,
+        "in_bounds": true
+      },
+      {
+        "index": 57,
+        "flags": 0,
+        "size": 541093,
+        "unknown": 0,
+        "name": "40-2.SF2",
+        "offset": 40041429,
+        "in_bounds": true
+      },
+      {
+        "index": 58,
+        "flags": 0,
+        "size": 394076,
+        "unknown": 0,
+        "name": "41-2.SF2",
+        "offset": 40582522,
+        "in_bounds": true
+      },
+      {
+        "index": 59,
+        "flags": 0,
+        "size": 725369,
+        "unknown": 0,
+        "name": "42-2.SF2",
+        "offset": 40976598,
+        "in_bounds": true
+      },
+      {
+        "index": 60,
+        "flags": 0,
+        "size": 729752,
+        "unknown": 0,
+        "name": "43-2.SF2",
+        "offset": 41701967,
+        "in_bounds": true
+      },
+      {
+        "index": 61,
+        "flags": 0,
+        "size": 1018607,
+        "unknown": 0,
+        "name": "44-2.SF2",
+        "offset": 42431719,
+        "in_bounds": true
+      },
+      {
+        "index": 62,
+        "flags": 0,
+        "size": 569255,
+        "unknown": 0,
+        "name": "45-2.SF2",
+        "offset": 43450326,
+        "in_bounds": true
+      },
+      {
+        "index": 63,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "46-2.SF2",
+        "offset": 44019581,
+        "in_bounds": true
+      },
+      {
+        "index": 64,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "47-2.SF2",
+        "offset": 44039801,
+        "in_bounds": true
+      },
+      {
+        "index": 65,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "48-2.SF2",
+        "offset": 44060021,
+        "in_bounds": true
+      },
+      {
+        "index": 66,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "49-2.SF2",
+        "offset": 44080241,
+        "in_bounds": true
+      },
+      {
+        "index": 67,
+        "flags": 0,
+        "size": 2623568,
+        "unknown": 0,
+        "name": "5-2.SF2",
+        "offset": 44100461,
+        "in_bounds": true
+      },
+      {
+        "index": 68,
+        "flags": 0,
+        "size": 184114,
+        "unknown": 0,
+        "name": "5.SF2",
+        "offset": 46724029,
+        "in_bounds": true
+      },
+      {
+        "index": 69,
+        "flags": 0,
+        "size": 346892,
+        "unknown": 0,
+        "name": "50-1.SF2",
+        "offset": 46908143,
+        "in_bounds": true
+      },
+      {
+        "index": 70,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "50-2.SF2",
+        "offset": 47255035,
+        "in_bounds": true
+      },
+      {
+        "index": 71,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "51-2.SF2",
+        "offset": 47275255,
+        "in_bounds": true
+      },
+      {
+        "index": 72,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "52-2.SF2",
+        "offset": 47295475,
+        "in_bounds": true
+      },
+      {
+        "index": 73,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "53-2.SF2",
+        "offset": 47315695,
+        "in_bounds": true
+      },
+      {
+        "index": 74,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "54-2.SF2",
+        "offset": 47335915,
+        "in_bounds": true
+      },
+      {
+        "index": 75,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "55-2.SF2",
+        "offset": 47356135,
+        "in_bounds": true
+      },
+      {
+        "index": 76,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "56-2.SF2",
+        "offset": 47376355,
+        "in_bounds": true
+      },
+      {
+        "index": 77,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "57-2.SF2",
+        "offset": 47396575,
+        "in_bounds": true
+      },
+      {
+        "index": 78,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "58-2.SF2",
+        "offset": 47416795,
+        "in_bounds": true
+      },
+      {
+        "index": 79,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "59-2.SF2",
+        "offset": 47437015,
+        "in_bounds": true
+      },
+      {
+        "index": 80,
+        "flags": 0,
+        "size": 1079539,
+        "unknown": 0,
+        "name": "6-2.SF2",
+        "offset": 47457235,
+        "in_bounds": true
+      },
+      {
+        "index": 81,
+        "flags": 0,
+        "size": 107781,
+        "unknown": 0,
+        "name": "6.SF2",
+        "offset": 48536774,
+        "in_bounds": true
+      },
+      {
+        "index": 82,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "60-2.SF2",
+        "offset": 48644555,
+        "in_bounds": true
+      },
+      {
+        "index": 83,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "61-2.SF2",
+        "offset": 48664775,
+        "in_bounds": true
+      },
+      {
+        "index": 84,
+        "flags": 0,
+        "size": 351835,
+        "unknown": 0,
+        "name": "62-2.SF2",
+        "offset": 48684995,
+        "in_bounds": true
+      },
+      {
+        "index": 85,
+        "flags": 0,
+        "size": 440665,
+        "unknown": 0,
+        "name": "63-2.SF2",
+        "offset": 49036830,
+        "in_bounds": true
+      },
+      {
+        "index": 86,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "64-2.SF2",
+        "offset": 49477495,
+        "in_bounds": true
+      },
+      {
+        "index": 87,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "65-2.SF2",
+        "offset": 49497715,
+        "in_bounds": true
+      },
+      {
+        "index": 88,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "66-2.SF2",
+        "offset": 49517935,
+        "in_bounds": true
+      },
+      {
+        "index": 89,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "67-2.SF2",
+        "offset": 49538155,
+        "in_bounds": true
+      },
+      {
+        "index": 90,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "68-2.SF2",
+        "offset": 49558375,
+        "in_bounds": true
+      },
+      {
+        "index": 91,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "69-2.SF2",
+        "offset": 49578595,
+        "in_bounds": true
+      },
+      {
+        "index": 92,
+        "flags": 0,
+        "size": 1680120,
+        "unknown": 0,
+        "name": "7-2.SF2",
+        "offset": 49598815,
+        "in_bounds": true
+      },
+      {
+        "index": 93,
+        "flags": 0,
+        "size": 319145,
+        "unknown": 0,
+        "name": "7.SF2",
+        "offset": 51278935,
+        "in_bounds": true
+      },
+      {
+        "index": 94,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "70-2.SF2",
+        "offset": 51598080,
+        "in_bounds": true
+      },
+      {
+        "index": 95,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "71-2.SF2",
+        "offset": 51618300,
+        "in_bounds": true
+      },
+      {
+        "index": 96,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "72-2.SF2",
+        "offset": 51638520,
+        "in_bounds": true
+      },
+      {
+        "index": 97,
+        "flags": 0,
+        "size": 470780,
+        "unknown": 0,
+        "name": "73-2.SF2",
+        "offset": 51658740,
+        "in_bounds": true
+      },
+      {
+        "index": 98,
+        "flags": 0,
+        "size": 447837,
+        "unknown": 0,
+        "name": "74-2.SF2",
+        "offset": 52129520,
+        "in_bounds": true
+      },
+      {
+        "index": 99,
+        "flags": 0,
+        "size": 528329,
+        "unknown": 0,
+        "name": "75-2.SF2",
+        "offset": 52577357,
+        "in_bounds": true
+      },
+      {
+        "index": 100,
+        "flags": 0,
+        "size": 3376553,
+        "unknown": 0,
+        "name": "76-2.SF2",
+        "offset": 53105686,
+        "in_bounds": true
+      },
+      {
+        "index": 101,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "77-2.SF2",
+        "offset": 56482239,
+        "in_bounds": true
+      },
+      {
+        "index": 102,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "78-2.SF2",
+        "offset": 56502459,
+        "in_bounds": true
+      },
+      {
+        "index": 103,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "79-2.SF2",
+        "offset": 56522679,
+        "in_bounds": true
+      },
+      {
+        "index": 104,
+        "flags": 0,
+        "size": 240035,
+        "unknown": 0,
+        "name": "8-2.SF2",
+        "offset": 56542899,
+        "in_bounds": true
+      },
+      {
+        "index": 105,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "80-2.SF2",
+        "offset": 56782934,
+        "in_bounds": true
+      },
+      {
+        "index": 106,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "81-2.SF2",
+        "offset": 56803154,
+        "in_bounds": true
+      },
+      {
+        "index": 107,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "82-2.SF2",
+        "offset": 56823374,
+        "in_bounds": true
+      },
+      {
+        "index": 108,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "83-2.SF2",
+        "offset": 56843594,
+        "in_bounds": true
+      },
+      {
+        "index": 109,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "84-2.SF2",
+        "offset": 56863814,
+        "in_bounds": true
+      },
+      {
+        "index": 110,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "85-2.SF2",
+        "offset": 56884034,
+        "in_bounds": true
+      },
+      {
+        "index": 111,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "86-2.SF2",
+        "offset": 56904254,
+        "in_bounds": true
+      },
+      {
+        "index": 112,
+        "flags": 0,
+        "size": 1356260,
+        "unknown": 0,
+        "name": "87-2.SF2",
+        "offset": 56924474,
+        "in_bounds": true
+      },
+      {
+        "index": 113,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "88-2.SF2",
+        "offset": 58280734,
+        "in_bounds": true
+      },
+      {
+        "index": 114,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "89-2.SF2",
+        "offset": 58300954,
+        "in_bounds": true
+      },
+      {
+        "index": 115,
+        "flags": 0,
+        "size": 510610,
+        "unknown": 0,
+        "name": "9-2.SF2",
+        "offset": 58321174,
+        "in_bounds": true
+      },
+      {
+        "index": 116,
+        "flags": 0,
+        "size": 238185,
+        "unknown": 0,
+        "name": "9.SF2",
+        "offset": 58831784,
+        "in_bounds": true
+      },
+      {
+        "index": 117,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "90-2.SF2",
+        "offset": 59069969,
+        "in_bounds": true
+      },
+      {
+        "index": 118,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "91-2.SF2",
+        "offset": 59090189,
+        "in_bounds": true
+      },
+      {
+        "index": 119,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "92-2.SF2",
+        "offset": 59110409,
+        "in_bounds": true
+      },
+      {
+        "index": 120,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "93-2.SF2",
+        "offset": 59130629,
+        "in_bounds": true
+      },
+      {
+        "index": 121,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "94-2.SF2",
+        "offset": 59150849,
+        "in_bounds": true
+      },
+      {
+        "index": 122,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "95-2.SF2",
+        "offset": 59171069,
+        "in_bounds": true
+      },
+      {
+        "index": 123,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "96-2.SF2",
+        "offset": 59191289,
+        "in_bounds": true
+      },
+      {
+        "index": 124,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "97-2.SF2",
+        "offset": 59211509,
+        "in_bounds": true
+      },
+      {
+        "index": 125,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "98-2.SF2",
+        "offset": 59231729,
+        "in_bounds": true
+      },
+      {
+        "index": 126,
+        "flags": 0,
+        "size": 20220,
+        "unknown": 0,
+        "name": "99-2.SF2",
+        "offset": 59251949,
+        "in_bounds": true
+      },
+      {
+        "index": 127,
+        "flags": 0,
+        "size": 551,
+        "unknown": 0,
+        "name": "CURSOR.SCI",
+        "offset": 59272169,
+        "in_bounds": true
+      },
+      {
+        "index": 128,
+        "flags": 0,
+        "size": 145753,
+        "unknown": 0,
+        "name": "CURSOR.SF2",
+        "offset": 59272720,
+        "in_bounds": true
+      },
+      {
+        "index": 129,
+        "flags": 0,
+        "size": 70,
+        "unknown": 0,
+        "name": "DDDES.SCI",
+        "offset": 59418473,
+        "in_bounds": true
+      },
+      {
+        "index": 130,
+        "flags": 0,
+        "size": 272131,
+        "unknown": 0,
+        "name": "DRAGON.SF2",
+        "offset": 59418543,
+        "in_bounds": true
+      },
+      {
+        "index": 131,
+        "flags": 0,
+        "size": 1458532,
+        "unknown": 0,
+        "name": "EXIT.SF2",
+        "offset": 59690674,
+        "in_bounds": true
+      },
+      {
+        "index": 132,
+        "flags": 0,
+        "size": 33736,
+        "unknown": 0,
+        "name": "F-FASCIA.SF2",
+        "offset": 61149206,
+        "in_bounds": true
+      },
+      {
+        "index": 133,
+        "flags": 0,
+        "size": 19168,
+        "unknown": 0,
+        "name": "F-FLOAT.SF2",
+        "offset": 61182942,
+        "in_bounds": true
+      },
+      {
+        "index": 134,
+        "flags": 0,
+        "size": 25551,
+        "unknown": 0,
+        "name": "F-NAME.SF2",
+        "offset": 61202110,
+        "in_bounds": true
+      },
+      {
+        "index": 135,
+        "flags": 0,
+        "size": 186745,
+        "unknown": 0,
+        "name": "F-TALK.SF2",
+        "offset": 61227661,
+        "in_bounds": true
+      },
+      {
+        "index": 136,
+        "flags": 0,
+        "size": 55506,
+        "unknown": 0,
+        "name": "F-YESNO.SF2",
+        "offset": 61414406,
+        "in_bounds": true
+      },
+      {
+        "index": 137,
+        "flags": 0,
+        "size": 774151,
+        "unknown": 0,
+        "name": "FLY.SF2",
+        "offset": 61469912,
+        "in_bounds": true
+      },
+      {
+        "index": 138,
+        "flags": 0,
+        "size": 21084,
+        "unknown": 0,
+        "name": "HIDE.SF2",
+        "offset": 62244063,
+        "in_bounds": true
+      },
+      {
+        "index": 139,
+        "flags": 0,
+        "size": 727873,
+        "unknown": 0,
+        "name": "LAND.SF2",
+        "offset": 62265147,
+        "in_bounds": true
+      },
+      {
+        "index": 140,
+        "flags": 0,
+        "size": 2755,
+        "unknown": 0,
+        "name": "MAINNPC.SCI",
+        "offset": 62993020,
+        "in_bounds": true
+      },
+      {
+        "index": 141,
+        "flags": 0,
+        "size": 1677,
+        "unknown": 0,
+        "name": "NAMELIST.LIS",
+        "offset": 62995775,
+        "in_bounds": true
+      },
+      {
+        "index": 142,
+        "flags": 0,
+        "size": 1939872,
+        "unknown": 0,
+        "name": "RECALL.SF2",
+        "offset": 62997452,
+        "in_bounds": true
+      },
+      {
+        "index": 143,
+        "flags": 0,
+        "size": 82979,
+        "unknown": 0,
+        "name": "S1.SF2",
+        "offset": 64937324,
+        "in_bounds": true
+      },
+      {
+        "index": 144,
+        "flags": 0,
+        "size": 5510,
+        "unknown": 0,
+        "name": "SUBNPC.SCI",
+        "offset": 65020303,
+        "in_bounds": true
+      }
+    ]
+  },
+  "music_archive": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/Music/Music.DAT",
+    "size": 70721262,
+    "sha256": "37adb5892842a5fda4b0391f0ca9ac6ca07de2147b0d0616262dc3b765268b1c",
+    "directory_record_offset": 10,
+    "directory_name": "Music",
+    "entry_count": 59,
+    "file_table_offset": 49,
+    "entry_size": 39,
+    "valid_entries": 59,
+    "first_entries": [
+      {
+        "index": 0,
+        "flags": 0,
+        "size": 3538570,
+        "unknown": 0,
+        "name": "1.MP3",
+        "offset": 2350,
+        "in_bounds": true
+      },
+      {
+        "index": 1,
+        "flags": 0,
+        "size": 138072,
+        "unknown": 0,
+        "name": "1.WAV",
+        "offset": 3540920,
+        "in_bounds": true
+      },
+      {
+        "index": 2,
+        "flags": 0,
+        "size": 2200265,
+        "unknown": 0,
+        "name": "10.MP3",
+        "offset": 3678992,
+        "in_bounds": true
+      },
+      {
+        "index": 3,
+        "flags": 0,
+        "size": 251004,
+        "unknown": 0,
+        "name": "10.WAV",
+        "offset": 5879257,
+        "in_bounds": true
+      },
+      {
+        "index": 4,
+        "flags": 0,
+        "size": 4128311,
+        "unknown": 0,
+        "name": "11.MP3",
+        "offset": 6130261,
+        "in_bounds": true
+      },
+      {
+        "index": 5,
+        "flags": 0,
+        "size": 59402,
+        "unknown": 0,
+        "name": "11.WAV",
+        "offset": 10258572,
+        "in_bounds": true
+      },
+      {
+        "index": 6,
+        "flags": 0,
+        "size": 2545917,
+        "unknown": 0,
+        "name": "12.MP3",
+        "offset": 10317974,
+        "in_bounds": true
+      },
+      {
+        "index": 7,
+        "flags": 0,
+        "size": 23056,
+        "unknown": 0,
+        "name": "12.WAV",
+        "offset": 12863891,
+        "in_bounds": true
+      }
+    ],
+    "entries": [
+      {
+        "index": 0,
+        "flags": 0,
+        "size": 3538570,
+        "unknown": 0,
+        "name": "1.MP3",
+        "offset": 2350,
+        "in_bounds": true
+      },
+      {
+        "index": 1,
+        "flags": 0,
+        "size": 138072,
+        "unknown": 0,
+        "name": "1.WAV",
+        "offset": 3540920,
+        "in_bounds": true
+      },
+      {
+        "index": 2,
+        "flags": 0,
+        "size": 2200265,
+        "unknown": 0,
+        "name": "10.MP3",
+        "offset": 3678992,
+        "in_bounds": true
+      },
+      {
+        "index": 3,
+        "flags": 0,
+        "size": 251004,
+        "unknown": 0,
+        "name": "10.WAV",
+        "offset": 5879257,
+        "in_bounds": true
+      },
+      {
+        "index": 4,
+        "flags": 0,
+        "size": 4128311,
+        "unknown": 0,
+        "name": "11.MP3",
+        "offset": 6130261,
+        "in_bounds": true
+      },
+      {
+        "index": 5,
+        "flags": 0,
+        "size": 59402,
+        "unknown": 0,
+        "name": "11.WAV",
+        "offset": 10258572,
+        "in_bounds": true
+      },
+      {
+        "index": 6,
+        "flags": 0,
+        "size": 2545917,
+        "unknown": 0,
+        "name": "12.MP3",
+        "offset": 10317974,
+        "in_bounds": true
+      },
+      {
+        "index": 7,
+        "flags": 0,
+        "size": 23056,
+        "unknown": 0,
+        "name": "12.WAV",
+        "offset": 12863891,
+        "in_bounds": true
+      },
+      {
+        "index": 8,
+        "flags": 0,
+        "size": 3643060,
+        "unknown": 0,
+        "name": "13.MP3",
+        "offset": 12886947,
+        "in_bounds": true
+      },
+      {
+        "index": 9,
+        "flags": 0,
+        "size": 7060,
+        "unknown": 0,
+        "name": "13.WAV",
+        "offset": 16530007,
+        "in_bounds": true
+      },
+      {
+        "index": 10,
+        "flags": 0,
+        "size": 3397718,
+        "unknown": 0,
+        "name": "14.MP3",
+        "offset": 16537067,
+        "in_bounds": true
+      },
+      {
+        "index": 11,
+        "flags": 0,
+        "size": 12886,
+        "unknown": 0,
+        "name": "14.WAV",
+        "offset": 19934785,
+        "in_bounds": true
+      },
+      {
+        "index": 12,
+        "flags": 0,
+        "size": 1997137,
+        "unknown": 0,
+        "name": "15.MP3",
+        "offset": 19947671,
+        "in_bounds": true
+      },
+      {
+        "index": 13,
+        "flags": 0,
+        "size": 16738,
+        "unknown": 0,
+        "name": "15.WAV",
+        "offset": 21944808,
+        "in_bounds": true
+      },
+      {
+        "index": 14,
+        "flags": 0,
+        "size": 3633865,
+        "unknown": 0,
+        "name": "16.MP3",
+        "offset": 21961546,
+        "in_bounds": true
+      },
+      {
+        "index": 15,
+        "flags": 0,
+        "size": 48068,
+        "unknown": 0,
+        "name": "16.WAV",
+        "offset": 25595411,
+        "in_bounds": true
+      },
+      {
+        "index": 16,
+        "flags": 0,
+        "size": 2085326,
+        "unknown": 0,
+        "name": "17.MP3",
+        "offset": 25643479,
+        "in_bounds": true
+      },
+      {
+        "index": 17,
+        "flags": 0,
+        "size": 21128,
+        "unknown": 0,
+        "name": "17.WAV",
+        "offset": 27728805,
+        "in_bounds": true
+      },
+      {
+        "index": 18,
+        "flags": 0,
+        "size": 1676144,
+        "unknown": 0,
+        "name": "18.MP3",
+        "offset": 27749933,
+        "in_bounds": true
+      },
+      {
+        "index": 19,
+        "flags": 0,
+        "size": 93454,
+        "unknown": 0,
+        "name": "18.WAV",
+        "offset": 29426077,
+        "in_bounds": true
+      },
+      {
+        "index": 20,
+        "flags": 0,
+        "size": 3414437,
+        "unknown": 0,
+        "name": "19.MP3",
+        "offset": 29519531,
+        "in_bounds": true
+      },
+      {
+        "index": 21,
+        "flags": 0,
+        "size": 15136,
+        "unknown": 0,
+        "name": "19.WAV",
+        "offset": 32933968,
+        "in_bounds": true
+      },
+      {
+        "index": 22,
+        "flags": 0,
+        "size": 3863743,
+        "unknown": 0,
+        "name": "2.MP3",
+        "offset": 32949104,
+        "in_bounds": true
+      },
+      {
+        "index": 23,
+        "flags": 0,
+        "size": 21746,
+        "unknown": 0,
+        "name": "2.WAV",
+        "offset": 36812847,
+        "in_bounds": true
+      },
+      {
+        "index": 24,
+        "flags": 0,
+        "size": 1599240,
+        "unknown": 0,
+        "name": "20.MP3",
+        "offset": 36834593,
+        "in_bounds": true
+      },
+      {
+        "index": 25,
+        "flags": 0,
+        "size": 70122,
+        "unknown": 0,
+        "name": "20.WAV",
+        "offset": 38433833,
+        "in_bounds": true
+      },
+      {
+        "index": 26,
+        "flags": 0,
+        "size": 3849532,
+        "unknown": 0,
+        "name": "21.MP3",
+        "offset": 38503955,
+        "in_bounds": true
+      },
+      {
+        "index": 27,
+        "flags": 0,
+        "size": 652782,
+        "unknown": 0,
+        "name": "21.WAV",
+        "offset": 42353487,
+        "in_bounds": true
+      },
+      {
+        "index": 28,
+        "flags": 0,
+        "size": 1599240,
+        "unknown": 0,
+        "name": "22.MP3",
+        "offset": 43006269,
+        "in_bounds": true
+      },
+      {
+        "index": 29,
+        "flags": 0,
+        "size": 435706,
+        "unknown": 0,
+        "name": "22.WAV",
+        "offset": 44605509,
+        "in_bounds": true
+      },
+      {
+        "index": 30,
+        "flags": 0,
+        "size": 1259439,
+        "unknown": 0,
+        "name": "23.MP3",
+        "offset": 45041215,
+        "in_bounds": true
+      },
+      {
+        "index": 31,
+        "flags": 0,
+        "size": 97320,
+        "unknown": 0,
+        "name": "23.WAV",
+        "offset": 46300654,
+        "in_bounds": true
+      },
+      {
+        "index": 32,
+        "flags": 0,
+        "size": 2100373,
+        "unknown": 0,
+        "name": "24.MP3",
+        "offset": 46397974,
+        "in_bounds": true
+      },
+      {
+        "index": 33,
+        "flags": 0,
+        "size": 578604,
+        "unknown": 0,
+        "name": "24.WAV",
+        "offset": 48498347,
+        "in_bounds": true
+      },
+      {
+        "index": 34,
+        "flags": 0,
+        "size": 1085654,
+        "unknown": 0,
+        "name": "25.WAV",
+        "offset": 49076951,
+        "in_bounds": true
+      },
+      {
+        "index": 35,
+        "flags": 0,
+        "size": 70266,
+        "unknown": 0,
+        "name": "26.WAV",
+        "offset": 50162605,
+        "in_bounds": true
+      },
+      {
+        "index": 36,
+        "flags": 0,
+        "size": 424258,
+        "unknown": 0,
+        "name": "27.WAV",
+        "offset": 50232871,
+        "in_bounds": true
+      },
+      {
+        "index": 37,
+        "flags": 0,
+        "size": 641068,
+        "unknown": 0,
+        "name": "28.WAV",
+        "offset": 50657129,
+        "in_bounds": true
+      },
+      {
+        "index": 38,
+        "flags": 0,
+        "size": 70154,
+        "unknown": 0,
+        "name": "29.WAV",
+        "offset": 51298197,
+        "in_bounds": true
+      },
+      {
+        "index": 39,
+        "flags": 0,
+        "size": 1173757,
+        "unknown": 0,
+        "name": "3.MP3",
+        "offset": 51368351,
+        "in_bounds": true
+      },
+      {
+        "index": 40,
+        "flags": 0,
+        "size": 16002,
+        "unknown": 0,
+        "name": "3.WAV",
+        "offset": 52542108,
+        "in_bounds": true
+      },
+      {
+        "index": 41,
+        "flags": 0,
+        "size": 131970,
+        "unknown": 0,
+        "name": "30.WAV",
+        "offset": 52558110,
+        "in_bounds": true
+      },
+      {
+        "index": 42,
+        "flags": 0,
+        "size": 14025,
+        "unknown": 0,
+        "name": "31.MP3",
+        "offset": 52690080,
+        "in_bounds": true
+      },
+      {
+        "index": 43,
+        "flags": 0,
+        "size": 172686,
+        "unknown": 0,
+        "name": "31.WAV",
+        "offset": 52704105,
+        "in_bounds": true
+      },
+      {
+        "index": 44,
+        "flags": 0,
+        "size": 409728,
+        "unknown": 0,
+        "name": "32.MP3",
+        "offset": 52876791,
+        "in_bounds": true
+      },
+      {
+        "index": 45,
+        "flags": 0,
+        "size": 3025317,
+        "unknown": 0,
+        "name": "4.MP3",
+        "offset": 53286519,
+        "in_bounds": true
+      },
+      {
+        "index": 46,
+        "flags": 0,
+        "size": 152660,
+        "unknown": 0,
+        "name": "4.WAV",
+        "offset": 56311836,
+        "in_bounds": true
+      },
+      {
+        "index": 47,
+        "flags": 0,
+        "size": 2530035,
+        "unknown": 0,
+        "name": "5.MP3",
+        "offset": 56464496,
+        "in_bounds": true
+      },
+      {
+        "index": 48,
+        "flags": 0,
+        "size": 23282,
+        "unknown": 0,
+        "name": "5.WAV",
+        "offset": 58994531,
+        "in_bounds": true
+      },
+      {
+        "index": 49,
+        "flags": 0,
+        "size": 2600670,
+        "unknown": 0,
+        "name": "6.MP3",
+        "offset": 59017813,
+        "in_bounds": true
+      },
+      {
+        "index": 50,
+        "flags": 0,
+        "size": 21526,
+        "unknown": 0,
+        "name": "6.WAV",
+        "offset": 61618483,
+        "in_bounds": true
+      },
+      {
+        "index": 51,
+        "flags": 0,
+        "size": 2398378,
+        "unknown": 0,
+        "name": "7.MP3",
+        "offset": 61640009,
+        "in_bounds": true
+      },
+      {
+        "index": 52,
+        "flags": 0,
+        "size": 32384,
+        "unknown": 0,
+        "name": "7.WAV",
+        "offset": 64038387,
+        "in_bounds": true
+      },
+      {
+        "index": 53,
+        "flags": 0,
+        "size": 4765989,
+        "unknown": 0,
+        "name": "8.MP3",
+        "offset": 64070771,
+        "in_bounds": true
+      },
+      {
+        "index": 54,
+        "flags": 0,
+        "size": 46010,
+        "unknown": 0,
+        "name": "8.WAV",
+        "offset": 68836760,
+        "in_bounds": true
+      },
+      {
+        "index": 55,
+        "flags": 0,
+        "size": 1799860,
+        "unknown": 0,
+        "name": "9.MP3",
+        "offset": 68882770,
+        "in_bounds": true
+      },
+      {
+        "index": 56,
+        "flags": 0,
+        "size": 34348,
+        "unknown": 0,
+        "name": "9.WAV",
+        "offset": 70682630,
+        "in_bounds": true
+      },
+      {
+        "index": 57,
+        "flags": 0,
+        "size": 1683,
+        "unknown": 0,
+        "name": "MP3LIST.SCI",
+        "offset": 70716978,
+        "in_bounds": true
+      },
+      {
+        "index": 58,
+        "flags": 0,
+        "size": 2601,
+        "unknown": 0,
+        "name": "WAVLIST.SCI",
+        "offset": 70718661,
+        "in_bounds": true
+      }
+    ]
+  },
+  "eve_sample": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/Map/mp2412a/Mp2412a.eve",
+    "size": 2104,
+    "sha256": "d7295dd5606ddf367aec47abd1d84f7daf90c0bf4a69f29810ba6725e531f900",
+    "slot_count": 130,
+    "data_base": 2088,
+    "expected_table_end": 2088,
+    "table_matches_data_base": true,
+    "nonempty_slots": [
+      {
+        "slot": 0,
+        "offset": 2088,
+        "count": 2,
+        "unknown": 0,
+        "size": 16
+      }
+    ],
+    "first_nonempty_eve_offsets": [
+      2096,
+      2100
+    ],
+    "first_nonempty_eve_opcodes": [
+      {
+        "offset": 2096,
+        "opcode": 53
+      },
+      {
+        "offset": 2100,
+        "opcode": 0
+      }
+    ]
+  },
+  "msg_sample": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/Map/mp2412a/Mp2412a.msg",
+    "size": 3856,
+    "sha256": "dcbd54b151e33561f85babca075318e1b75ed5d9ee7fdb934b9614430d12b570",
+    "slot_count": 130,
+    "data_base": 2088,
+    "expected_table_end": 2088,
+    "table_matches_data_base": true,
+    "nonempty_slots": [
+      {
+        "slot": 0,
+        "offset": 2088,
+        "count": 2,
+        "unknown": 0,
+        "size": 22
+      },
+      {
+        "slot": 1,
+        "offset": 2110,
+        "count": 10,
+        "unknown": 0,
+        "size": 722
+      },
+      {
+        "slot": 2,
+        "offset": 2832,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 3,
+        "offset": 2840,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 4,
+        "offset": 2848,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 5,
+        "offset": 2856,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 6,
+        "offset": 2864,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 7,
+        "offset": 2872,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 8,
+        "offset": 2880,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 9,
+        "offset": 2888,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 10,
+        "offset": 2896,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 11,
+        "offset": 2904,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 12,
+        "offset": 2912,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 13,
+        "offset": 2920,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 14,
+        "offset": 2928,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 15,
+        "offset": 2936,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 16,
+        "offset": 2944,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 17,
+        "offset": 2952,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 18,
+        "offset": 2960,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 19,
+        "offset": 2968,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 20,
+        "offset": 2976,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 21,
+        "offset": 2984,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 22,
+        "offset": 2992,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 23,
+        "offset": 3000,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 24,
+        "offset": 3008,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 25,
+        "offset": 3016,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 26,
+        "offset": 3024,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 27,
+        "offset": 3032,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 28,
+        "offset": 3040,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 29,
+        "offset": 3048,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 30,
+        "offset": 3056,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 31,
+        "offset": 3064,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 32,
+        "offset": 3072,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 33,
+        "offset": 3080,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 34,
+        "offset": 3088,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 35,
+        "offset": 3096,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 36,
+        "offset": 3104,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 37,
+        "offset": 3112,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 38,
+        "offset": 3120,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 39,
+        "offset": 3128,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 40,
+        "offset": 3136,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 41,
+        "offset": 3144,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 42,
+        "offset": 3152,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 43,
+        "offset": 3160,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 44,
+        "offset": 3168,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 45,
+        "offset": 3176,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 46,
+        "offset": 3184,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 47,
+        "offset": 3192,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 48,
+        "offset": 3200,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 49,
+        "offset": 3208,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 50,
+        "offset": 3216,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 51,
+        "offset": 3224,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 52,
+        "offset": 3232,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 53,
+        "offset": 3240,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 54,
+        "offset": 3248,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 55,
+        "offset": 3256,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 56,
+        "offset": 3264,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 57,
+        "offset": 3272,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 58,
+        "offset": 3280,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 59,
+        "offset": 3288,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 60,
+        "offset": 3296,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 61,
+        "offset": 3304,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 62,
+        "offset": 3312,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 63,
+        "offset": 3320,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 64,
+        "offset": 3328,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 65,
+        "offset": 3336,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 66,
+        "offset": 3344,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 67,
+        "offset": 3352,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 68,
+        "offset": 3360,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 69,
+        "offset": 3368,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 70,
+        "offset": 3376,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 71,
+        "offset": 3384,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 72,
+        "offset": 3392,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 73,
+        "offset": 3400,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 74,
+        "offset": 3408,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 75,
+        "offset": 3416,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 76,
+        "offset": 3424,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 77,
+        "offset": 3432,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 78,
+        "offset": 3440,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 79,
+        "offset": 3448,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 80,
+        "offset": 3456,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 81,
+        "offset": 3464,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 82,
+        "offset": 3472,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 83,
+        "offset": 3480,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 84,
+        "offset": 3488,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 85,
+        "offset": 3496,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 86,
+        "offset": 3504,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 87,
+        "offset": 3512,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 88,
+        "offset": 3520,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 89,
+        "offset": 3528,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 90,
+        "offset": 3536,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 91,
+        "offset": 3544,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 92,
+        "offset": 3552,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 93,
+        "offset": 3560,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 94,
+        "offset": 3568,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 95,
+        "offset": 3576,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 96,
+        "offset": 3584,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 97,
+        "offset": 3592,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 98,
+        "offset": 3600,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 99,
+        "offset": 3608,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 100,
+        "offset": 3616,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 101,
+        "offset": 3624,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 102,
+        "offset": 3632,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 103,
+        "offset": 3640,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 104,
+        "offset": 3648,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 105,
+        "offset": 3656,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 106,
+        "offset": 3664,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 107,
+        "offset": 3672,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 108,
+        "offset": 3680,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 109,
+        "offset": 3688,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 110,
+        "offset": 3696,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 111,
+        "offset": 3704,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 112,
+        "offset": 3712,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 113,
+        "offset": 3720,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 114,
+        "offset": 3728,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 115,
+        "offset": 3736,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 116,
+        "offset": 3744,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 117,
+        "offset": 3752,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 118,
+        "offset": 3760,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 119,
+        "offset": 3768,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 120,
+        "offset": 3776,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 121,
+        "offset": 3784,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 122,
+        "offset": 3792,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 123,
+        "offset": 3800,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 124,
+        "offset": 3808,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 125,
+        "offset": 3816,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 126,
+        "offset": 3824,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 127,
+        "offset": 3832,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 128,
+        "offset": 3840,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      },
+      {
+        "slot": 129,
+        "offset": 3848,
+        "count": 1,
+        "unknown": 0,
+        "size": 8
+      }
+    ]
+  },
+  "map_sci_sample": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/Map/mp2412a/MPmp2412a.SCI",
+    "size": 1139,
+    "sha256": "8051317975a72b9a6de72cc9da9bd98d6d4df44a7701ad2970eb5771aa915511",
+    "confirmed_map_width_u16_at_0x6A": 1792,
+    "confirmed_map_height_u16_at_0x6C": 1584,
+    "path_like_strings": [
+      {
+        "offset": 116,
+        "text": "mp2412a\\mp2412a.JPG"
+      },
+      {
+        "offset": 317,
+        "text": "mp2412a\\mb2412a.SF2"
+      },
+      {
+        "offset": 517,
+        "text": "mp2412a\\NP新圖001.SCI"
+      },
+      {
+        "offset": 717,
+        "text": "mp2412a\\mp2412a.eve"
+      }
+    ]
+  },
+  "npc_sci_sample": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+    "size": 6061,
+    "sha256": "88366090d53cfa2eda71e512176888d6262402b9ebd9e6961d29e7ba3947c582",
+    "record_size": 551,
+    "record_count": 11,
+    "sample_records": [
+      {
+        "record": 0,
+        "name": "中央傳送",
+        "confirmed_world_x_i32_at_0x64": 911,
+        "confirmed_world_y_i32_at_0x68": 877,
+        "sprite_path_at_0x7B": "mp2412a\\nd2412a.SF2"
+      },
+      {
+        "record": 1,
+        "name": "end1",
+        "confirmed_world_x_i32_at_0x64": 923,
+        "confirmed_world_y_i32_at_0x68": 688,
+        "sprite_path_at_0x7B": "mp2412a\\Event36-1.SF2"
+      },
+      {
+        "record": 2,
+        "name": "end2",
+        "confirmed_world_x_i32_at_0x64": 923,
+        "confirmed_world_y_i32_at_0x68": 688,
+        "sprite_path_at_0x7B": "mp2412a\\Event36-2.SF2"
+      },
+      {
+        "record": 3,
+        "name": "sunwheel",
+        "confirmed_world_x_i32_at_0x64": 890,
+        "confirmed_world_y_i32_at_0x68": 213,
+        "sprite_path_at_0x7B": "mp2412a\\EVENT31-1.SF2"
+      },
+      {
+        "record": 4,
+        "name": "ragou_1",
+        "confirmed_world_x_i32_at_0x64": 891,
+        "confirmed_world_y_i32_at_0x68": 235,
+        "sprite_path_at_0x7B": "mp2412a\\EVENT31-1A.SF2"
+      },
+      {
+        "record": 5,
+        "name": "ragou_2",
+        "confirmed_world_x_i32_at_0x64": 904,
+        "confirmed_world_y_i32_at_0x68": 224,
+        "sprite_path_at_0x7B": "mp2412a\\EVENT31-1B.SF2"
+      },
+      {
+        "record": 6,
+        "name": "羅喉石輪.SF2",
+        "confirmed_world_x_i32_at_0x64": 890,
+        "confirmed_world_y_i32_at_0x68": 160,
+        "sprite_path_at_0x7B": "mp2412a\\羅喉石輪.SF2"
+      },
+      {
+        "record": 7,
+        "name": "light",
+        "confirmed_world_x_i32_at_0x64": 901,
+        "confirmed_world_y_i32_at_0x68": 199,
+        "sprite_path_at_0x7B": "mp2412a\\羅喉底座.SF2"
+      },
+      {
+        "record": 8,
+        "name": "kou",
+        "confirmed_world_x_i32_at_0x64": 1041,
+        "confirmed_world_y_i32_at_0x68": 351,
+        "sprite_path_at_0x7B": "mp2412a\\皇甫申.SF2"
+      },
+      {
+        "record": 9,
+        "name": "damage",
+        "confirmed_world_x_i32_at_0x64": 1024,
+        "confirmed_world_y_i32_at_0x68": 872,
+        "sprite_path_at_0x7B": "mp2412a\\電.SF2"
+      },
+      {
+        "record": 10,
+        "name": "end3",
+        "confirmed_world_x_i32_at_0x64": 923,
+        "confirmed_world_y_i32_at_0x68": 686,
+        "sprite_path_at_0x7B": "mp2412a\\Event36-3.SF2"
+      }
+    ]
+  },
+  "sf2_sample": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/fight/mouse/mousewait.sf2",
+    "size": 18060,
+    "sha256": "115cdd340ec13190d1abd226881e2aa572a9c881c89364f33357e21bc3220e7e",
+    "magic": "53 46 32 05 02 bc",
+    "tile_width_u16_at_0x07": 64,
+    "tile_height_u16_at_0x09": 48,
+    "canvas_width_u32_at_0x0C": 37,
+    "canvas_height_u32_at_0x10": 23,
+    "u32_at_0x34": 18060
+  },
+  "shopitem": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/public/Shopitem.dat",
+    "size": 36936,
+    "sha256": "19b97bdf26818aa7a9b0002e5b8d34d279bc91160882cb3c20fcfce80b45026d",
+    "confirmed_record_size": 648,
+    "record_count_if_648": 57
+  },
+  "font24": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/Font/font24.fnt",
+    "size": 992952,
+    "sha256": "37ccd58694209b0dee4e2d6d1b6eca8e7bd56e9f21bf67f95bf53fdd98f291b7",
+    "legacy_record_size_observed": 216,
+    "record_count_if_216": 4597,
+    "runtime_policy": "仅作原版视觉/格式参考；Remastered 字体运行时不依赖原 FNT。"
+  },
+  "flow_save_zip": {
+    "path": "/workspace/scratch/3f7398360f84/work/resources/multimedia/save/流程存档.zip",
+    "size": 2043724,
+    "sha256": "8de7af05de0233c89bd41c646d8e48423076f1861051d5d6fba8c688a06dc92b",
+    "entries": 160,
+    "tsf_sizes": {
+      "67721": 6,
+      "104657": 153
+    },
+    "shopitem_exact_matches": [
+      {
+        "name": "save/Save006.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save007.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save008.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save009.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save010.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save011.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save012.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save013.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save017.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save018.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save019.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save020.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save021.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save022.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save023.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save024.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save025.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save026.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save027.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save028.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save029.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save031.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save032.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save033.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save034.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save035.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save036.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save037.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save038.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save053.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save054.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save055.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save057.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save059.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save060.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save061.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save062.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save063.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save064.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save065.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save066.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save067.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save068.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save069.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save070.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save071.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save072.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save073.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save074.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save075.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save076.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save077.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save078.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save079.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save080.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save081.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save082.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save083.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save084.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save085.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save086.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save087.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save088.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save109.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save110.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save111.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save112.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save113.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save114.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save115.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save116.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save117.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save118.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save119.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save120.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save121.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save122.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save123.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save124.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save125.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save126.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save127.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save128.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save129.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save130.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save131.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save132.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save133.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save134.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save135.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save136.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save137.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save138.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save139.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save140.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save141.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save142.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save143.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save144.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save145.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save146.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save147.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save148.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save149.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save150.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save151.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save152.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save153.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save154.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save155.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save156.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save157.TSF",
+        "offset": 67721
+      },
+      {
+        "name": "save/Save158.TSF",
+        "offset": 67721
+      }
+    ]
+  },
+  "save_dirs": [
+    {
+      "save_dir": "/workspace/scratch/3f7398360f84/work/resources/multimedia/save",
+      "files": [
+        {
+          "name": "NewGame.TSF",
+          "size": 67721
+        },
+        {
+          "name": "Save001.TSF",
+          "size": 104657
+        },
+        {
+          "name": "Save004.TSF",
+          "size": 104657,
+          "contains_shopitem_exact_at": 67721
+        },
+        {
+          "name": "Save032.TSF",
+          "size": 104657
+        }
+      ]
+    }
+  ]
+}

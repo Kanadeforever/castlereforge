@@ -1,0 +1,35 @@
+{
+  "版本": "v0.7D阶段中-固化24",
+  "Oracle": {"SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf", "架构": "PE32 i386", "text_VA": "0x00401000..0x0045FF84"},
+  "目标": ["Entity record +0xE0", "Entity record +0xEC", "Entity record +0xED"],
+  "资源语料": {
+    "记录数": 38,
+    "来源": {"multimedia顶层Map样本": 22, "Sys.dat恢复样本": 16},
+    "字段分布": {"+0xE0": {"零": 38, "非零": 0}, "+0xEC": {"零": 38, "非零": 0}, "+0xED": {"零": 38, "非零": 0}},
+    "结论": "当前语料没有任一目标字段的非零正例；不能由资源相关性命名。"
+  },
+  "直接字面位移审计": {
+    "方法": "GNU objdump对完整.text作i386 Intel语法线性反汇编，枚举通用寄存器基址的+E0/+EC/+ED内存操作数；栈帧候选单列并人工复核上下文。",
+    "候选计数": {"+0xE0": 6, "+0xEC": 12, "+0xED": 0},
+    "Entity模块范围": "0x00409D30..0x0040ACFF（由Entity reader/manager/constructor/update链界定）",
+    "Entity模块命中": {"+0xE0": 0, "+0xEC": 0, "+0xED": 0},
+    "说明": "+EC候选包括已知DataCenter world-item字段及其他对象/栈帧，不能与551-byte Entity record混同。"
+  },
+  "已确认的别名边界": [
+    "Entity constructor 0x0040A160在0x0040A184把原始551-byte record指针保存到runtime+0x70。",
+    "同一构造链直接读取+0x74/+0x76/+0x77..+0x7A/+0xE1/+0xEE/+0xEF/+0xF3/+0xF7/+0xFB等字段。",
+    "当前目标字段没有在这条已知直接消费模式中出现。"
+  ],
+  "严格结论": [
+    "当前38-record语料中+E0/+EC/+ED全零。",
+    "当前同SHA Oracle的已知Entity直接访问链和完整.text字面+disp审计均未发现三字段的直接consumer/writer。",
+    "三字段仍为UNKNOWN / RAW-PRESERVE；不得写成unused、padding或任何具体业务名。"
+  ],
+  "未覆盖边界": [
+    "计算后基址可能隐藏等价访问。",
+    "原始record或子区间复制到别名buffer后可能由新基址消费。",
+    "函数指针、虚调用和未恢复数据流仍可能间接消费。",
+    "缺少非零资源正例，无法用值传播反向定位。"
+  ],
+  "恢复条件": "只有取得非零正例、计算型/别名访问证据、独立reader/writer或动态访问轨迹时才升级。"
+}

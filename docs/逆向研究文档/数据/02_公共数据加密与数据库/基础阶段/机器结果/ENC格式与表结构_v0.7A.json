@@ -1,0 +1,781 @@
+{
+  "工具版本": "0.7A.1-固化16",
+  "ENC算法": {
+    "函数": "RPG.exe 0x004284D0",
+    "公式": "decoded[i] = encoded[i] XOR (i mod 255)",
+    "key_range": "0..254",
+    "period": 255,
+    "对称": true,
+    "证据": "13/13现有ENC全文件与参考解码字节完全一致"
+  },
+  "表": {
+    "levelup": {
+      "文件": "Levelup.enc",
+      "名称": "等级累计经验阈值表",
+      "身份证据": "A",
+      "record_size": 4,
+      "record_count": 101,
+      "canonical": "LevelUpThresholdTable",
+      "字段": [
+        {
+          "offset": 0,
+          "type": "int32",
+          "name": "cumulative_exp_threshold",
+          "evidence": "A",
+          "note": "101项数组；消费者按角色等级索引。"
+        }
+      ]
+    },
+    "magictb": {
+      "文件": "Magictb.enc",
+      "名称": "角色招式/术法学习条件表",
+      "身份证据": "A",
+      "record_size": 36,
+      "record_count": 102,
+      "canonical": "TechniqueLearningConditionTable",
+      "字段": [
+        {
+          "offset": 0,
+          "type": "int32",
+          "name": "role_id",
+          "evidence": "A"
+        },
+        {
+          "offset": 4,
+          "type": "int32",
+          "name": "early_unlock_level",
+          "evidence": "A"
+        },
+        {
+          "offset": 8,
+          "type": "int32",
+          "name": "automatic_unlock_level",
+          "evidence": "A"
+        },
+        {
+          "offset": 12,
+          "type": "int32",
+          "name": "stat_min_0",
+          "evidence": "A",
+          "note": "与Runtime Role +0x54比较；业务属性名待角色结构恢复。"
+        },
+        {
+          "offset": 16,
+          "type": "int32",
+          "name": "stat_min_1",
+          "evidence": "A",
+          "note": "与Runtime Role +0x58比较；业务属性名待角色结构恢复。"
+        },
+        {
+          "offset": 20,
+          "type": "int32",
+          "name": "stat_min_2",
+          "evidence": "A",
+          "note": "与Runtime Role +0x5C比较；业务属性名待角色结构恢复。"
+        },
+        {
+          "offset": 24,
+          "type": "int32",
+          "name": "stat_min_3",
+          "evidence": "A",
+          "note": "与Runtime Role +0x60比较；业务属性名待角色结构恢复。"
+        },
+        {
+          "offset": 28,
+          "type": "int32",
+          "name": "stat_min_4",
+          "evidence": "A",
+          "note": "与Runtime Role +0x64比较；业务属性名待角色结构恢复。"
+        },
+        {
+          "offset": 32,
+          "type": "int32",
+          "name": "technique_id",
+          "evidence": "A",
+          "note": "传给0x423100去重加入招式列表。"
+        }
+      ]
+    },
+    "magiccon": {
+      "文件": "Magiccon.enc",
+      "名称": "命名招式/术法条件与AI使用条件表",
+      "身份证据": "B",
+      "record_size": 64,
+      "record_count": 500,
+      "canonical": "TechniqueConditionTable",
+      "字段": [
+        {
+          "offset": 0,
+          "type": "int32",
+          "name": "id",
+          "evidence": "A"
+        },
+        {
+          "offset": 4,
+          "type": "cp950[20]",
+          "name": "name",
+          "evidence": "A"
+        },
+        {
+          "offset": 24,
+          "type": "int32",
+          "name": "condition_18",
+          "evidence": "B",
+          "note": "AI/动作筛选中的阈值/百分比类字段。"
+        },
+        {
+          "offset": 28,
+          "type": "int32",
+          "name": "condition_1C",
+          "evidence": "B"
+        },
+        {
+          "offset": 32,
+          "type": "int32",
+          "name": "condition_20",
+          "evidence": "B"
+        },
+        {
+          "offset": 36,
+          "type": "int32",
+          "name": "random_divisor_or_weight",
+          "evidence": "B"
+        },
+        {
+          "offset": 40,
+          "type": "int32",
+          "name": "flag_28",
+          "evidence": "B"
+        },
+        {
+          "offset": 44,
+          "type": "int32",
+          "name": "mode_2C",
+          "evidence": "B"
+        },
+        {
+          "offset": 48,
+          "type": "int32",
+          "name": "count_or_limit_30",
+          "evidence": "B"
+        },
+        {
+          "offset": 52,
+          "type": "int32",
+          "name": "mode_34",
+          "evidence": "B"
+        },
+        {
+          "offset": 56,
+          "type": "int32",
+          "name": "param_38",
+          "evidence": "B"
+        },
+        {
+          "offset": 60,
+          "type": "int32",
+          "name": "reserved_3C",
+          "evidence": "A",
+          "note": "当前500条样本均为-1。"
+        }
+      ]
+    },
+    "enemy_ai": {
+      "文件": "Enemy_ai.enc",
+      "名称": "敌人AI决策定义表",
+      "身份证据": "A",
+      "record_size": 56,
+      "record_count": 283,
+      "canonical": "EnemyAiDefinitionTable",
+      "字段": [
+        {
+          "offset": 0,
+          "type": "int32",
+          "name": "id",
+          "evidence": "A"
+        },
+        {
+          "offset": 4,
+          "type": "cp950[20]",
+          "name": "name",
+          "evidence": "A"
+        },
+        {
+          "offset": 24,
+          "type": "int32",
+          "name": "decision_weight_0",
+          "evidence": "A"
+        },
+        {
+          "offset": 28,
+          "type": "int32",
+          "name": "decision_weight_1",
+          "evidence": "A"
+        },
+        {
+          "offset": 32,
+          "type": "int32",
+          "name": "decision_weight_2",
+          "evidence": "A",
+          "note": "0x444240系列消费者用随机0..99按权重分区；三结果业务名仍待战斗阶段。"
+        },
+        {
+          "offset": 36,
+          "type": "int32",
+          "name": "reserved_24",
+          "evidence": "A",
+          "note": "当前283条记录全部为0。"
+        },
+        {
+          "offset": 40,
+          "type": "int32",
+          "name": "reserved_28",
+          "evidence": "A",
+          "note": "当前283条记录全部为0。"
+        },
+        {
+          "offset": 44,
+          "type": "int32",
+          "name": "reserved_2C",
+          "evidence": "A",
+          "note": "当前283条记录全部为0。"
+        },
+        {
+          "offset": 48,
+          "type": "int32",
+          "name": "reserved_30",
+          "evidence": "A",
+          "note": "当前283条记录全部为0。"
+        },
+        {
+          "offset": 52,
+          "type": "int32",
+          "name": "reserved_34",
+          "evidence": "A",
+          "note": "当前283条记录全部为0。"
+        }
+      ]
+    },
+    "refinet": {
+      "文件": "Refinet.enc",
+      "名称": "两物品炼化配方表",
+      "身份证据": "A",
+      "record_size": 12,
+      "record_count": 42,
+      "canonical": "RefineRecipeTable",
+      "字段": [
+        {
+          "offset": 0,
+          "type": "int32",
+          "name": "ingredient_a_item_id",
+          "evidence": "A"
+        },
+        {
+          "offset": 4,
+          "type": "int32",
+          "name": "ingredient_b_item_id",
+          "evidence": "A"
+        },
+        {
+          "offset": 8,
+          "type": "int32",
+          "name": "result_item_id",
+          "evidence": "A",
+          "note": "0x411960对前两项作对称匹配。"
+        }
+      ]
+    },
+    "refinek": {
+      "文件": "Refinek.enc",
+      "名称": "17×17炼化类别/映射矩阵",
+      "身份证据": "A",
+      "record_size": 4,
+      "record_count": 289,
+      "canonical": "RefineMatrix17x17",
+      "形状": [
+        17,
+        17
+      ],
+      "字段": [
+        {
+          "offset": 0,
+          "type": "int32",
+          "name": "value",
+          "evidence": "A",
+          "note": "按 a*17+b 直接索引；行列业务类别名待恢复。"
+        }
+      ]
+    },
+    "api": {
+      "文件": "Api.enc",
+      "名称": "角色基础定义表",
+      "身份证据": "A",
+      "record_size": 848,
+      "record_count": 255,
+      "canonical": "RoleDefinitionTable",
+      "字段": [
+        {
+          "offset": 0,
+          "type": "int32",
+          "name": "role_id_or_record_id",
+          "evidence": "B"
+        },
+        {
+          "offset": 12,
+          "type": "cp950",
+          "size": 20,
+          "name": "name",
+          "evidence": "A"
+        },
+        {
+          "offset": 648,
+          "type": "ascii[10]",
+          "name": "action_resource_STN",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 658,
+          "type": "ascii[10]",
+          "name": "action_resource_USE",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 668,
+          "type": "ascii[10]",
+          "name": "action_resource_WEK",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 678,
+          "type": "ascii[10]",
+          "name": "action_resource_HIT",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 688,
+          "type": "ascii[10]",
+          "name": "action_resource_SLOT688",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 698,
+          "type": "ascii[10]",
+          "name": "action_resource_DEF",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 708,
+          "type": "ascii[10]",
+          "name": "action_resource_SLOT708",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 718,
+          "type": "ascii[10]",
+          "name": "action_resource_MOV",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 728,
+          "type": "ascii[10]",
+          "name": "action_resource_BAK",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 738,
+          "type": "ascii[10]",
+          "name": "action_resource_RED",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 748,
+          "type": "ascii[10]",
+          "name": "action_resource_SLOT748",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        },
+        {
+          "offset": 758,
+          "type": "ascii[10]",
+          "name": "action_resource_MAG",
+          "evidence": "A",
+          "note": "按原前缀保留槽名；最终动画业务语义在SCI/SF2阶段冻结。"
+        }
+      ],
+      "说明": "Loader/初始化代码把单条API记录用 rep movs 0xD4 DWORD 原样复制成0x350-byte Runtime Role Record。"
+    },
+    "ail2": {
+      "文件": "Ail2.ENC",
+      "名称": "物品定义表",
+      "身份证据": "A",
+      "record_size": 926,
+      "record_count": 700,
+      "canonical": "ItemDefinitionTable",
+      "字段": [
+        {
+          "offset": 0,
+          "type": "cp950",
+          "size": 36,
+          "name": "name",
+          "evidence": "A"
+        },
+        {
+          "offset": 36,
+          "type": "int32",
+          "name": "field_24",
+          "evidence": "B",
+          "note": "消费者已访问，业务名待Inventory/Equipment阶段。"
+        },
+        {
+          "offset": 392,
+          "type": "cp950",
+          "size": 454,
+          "name": "description",
+          "evidence": "A",
+          "note": "长说明文本固定起点。"
+        },
+        {
+          "offset": 846,
+          "type": "int32",
+          "name": "field_34E",
+          "evidence": "B"
+        },
+        {
+          "offset": 882,
+          "type": "int32",
+          "name": "field_372",
+          "evidence": "B",
+          "note": "消费者与常量17比较。"
+        },
+        {
+          "offset": 886,
+          "type": "int32",
+          "name": "field_376",
+          "evidence": "B"
+        }
+      ],
+      "说明": "0x39E=926字节固定stride；旧文档若将Ail2解释为角色/敌人表均已废止。"
+    },
+    "firttech": {
+      "文件": "Firttech.enc",
+      "名称": "招式/术法动作定义表",
+      "身份证据": "A",
+      "record_size": 560,
+      "record_count": 500,
+      "canonical": "TechniqueDefinitionTable",
+      "字段": [
+        {
+          "offset": 24,
+          "type": "int32",
+          "name": "field_18",
+          "evidence": "B"
+        },
+        {
+          "offset": 32,
+          "type": "int32",
+          "name": "mode_20",
+          "evidence": "B"
+        },
+        {
+          "offset": 52,
+          "type": "int32",
+          "name": "gate_34",
+          "evidence": "B"
+        },
+        {
+          "offset": 56,
+          "type": "int32",
+          "name": "resource_cost_38",
+          "evidence": "B",
+          "note": "至少一个消费路径从Runtime Role +0x38扣除此值；资源业务名待角色/战斗阶段。"
+        },
+        {
+          "offset": 64,
+          "type": "int32",
+          "name": "percent_40",
+          "evidence": "B"
+        },
+        {
+          "offset": 68,
+          "type": "int32",
+          "name": "mode_44",
+          "evidence": "B"
+        },
+        {
+          "offset": 76,
+          "type": "int32",
+          "name": "base_amount_4C",
+          "evidence": "B"
+        },
+        {
+          "offset": 84,
+          "type": "int32",
+          "name": "resource_percent_a_54",
+          "evidence": "B"
+        },
+        {
+          "offset": 88,
+          "type": "int32",
+          "name": "resource_percent_b_58",
+          "evidence": "B"
+        },
+        {
+          "offset": 156,
+          "type": "ascii[10]",
+          "name": "action_resource_RED",
+          "evidence": "A"
+        },
+        {
+          "offset": 166,
+          "type": "ascii[10]",
+          "name": "action_resource_MOV",
+          "evidence": "A"
+        },
+        {
+          "offset": 176,
+          "type": "ascii[10]",
+          "name": "action_resource_ATT",
+          "evidence": "A"
+        },
+        {
+          "offset": 186,
+          "type": "ascii[10]",
+          "name": "action_resource_MIS",
+          "evidence": "A"
+        },
+        {
+          "offset": 196,
+          "type": "ascii[10]",
+          "name": "action_resource_BAK",
+          "evidence": "A"
+        },
+        {
+          "offset": 206,
+          "type": "ascii[10]",
+          "name": "action_resource_SLOT206",
+          "evidence": "A"
+        },
+        {
+          "offset": 216,
+          "type": "ascii[10]",
+          "name": "action_resource_SLOT216",
+          "evidence": "A"
+        },
+        {
+          "offset": 230,
+          "type": "ascii[10]",
+          "name": "action_resource_SHO1候选",
+          "evidence": "A"
+        },
+        {
+          "offset": 240,
+          "type": "ascii[10]",
+          "name": "action_resource_SHO2候选",
+          "evidence": "A"
+        },
+        {
+          "offset": 250,
+          "type": "ascii[10]",
+          "name": "action_resource_EFFA",
+          "evidence": "A"
+        },
+        {
+          "offset": 260,
+          "type": "ascii[10]",
+          "name": "action_resource_EFFM",
+          "evidence": "A"
+        },
+        {
+          "offset": 492,
+          "type": "int32",
+          "name": "result_or_override_id_1EC",
+          "evidence": "B"
+        }
+      ]
+    },
+    "layoutteam": {
+      "文件": "LayoutTeam.ENC",
+      "名称": "布局/编队完整载荷表",
+      "身份证据": "A",
+      "record_size": 508,
+      "record_count": 334,
+      "canonical": "LayoutTeamPayloadTable",
+      "字段": [],
+      "说明": "每条127 DWORD；0x424430按LayoutGR选定索引后rep movs 0x7F DWORD完整复制到输出。"
+    },
+    "layoutgr": {
+      "文件": "Layoutgr.enc",
+      "名称": "布局组/剧情场景组定义表",
+      "身份证据": "A",
+      "record_size": 508,
+      "record_count": 250,
+      "canonical": "LayoutGroupDefinitionTable",
+      "字段": [
+        {
+          "offset": 24,
+          "type": "int32",
+          "name": "layout_team_choice_count",
+          "evidence": "A",
+          "note": "0x424430直接作为LayoutTeam候选数量；0时失败，非0时RNG%count。"
+        },
+        {
+          "offset": 28,
+          "type": "int32[]",
+          "name": "layout_team_ids",
+          "evidence": "A",
+          "count_from_offset": 24,
+          "note": "0x424430按random_index从此数组读取实际LayoutTeam ID。"
+        },
+        {
+          "offset": 68,
+          "type": "cp950",
+          "size": 40,
+          "name": "name",
+          "evidence": "A"
+        },
+        {
+          "offset": 108,
+          "type": "int32",
+          "name": "secondary_choice_count",
+          "evidence": "A",
+          "note": "0x424430复制LayoutTeam后读取的第二候选数量；>0时再次RNG%count。"
+        },
+        {
+          "offset": 112,
+          "type": "int32[]",
+          "name": "secondary_choice_values",
+          "evidence": "A",
+          "count_from_offset": 108,
+          "note": "0x424430按第二随机索引读取并作为helper返回值；具体业务语义仍待证明。"
+        },
+        {
+          "offset": 136,
+          "type": "int32",
+          "name": "field_88",
+          "evidence": "B",
+          "note": "有独立getter 0x424590。"
+        },
+        {
+          "offset": 156,
+          "type": "int32",
+          "name": "field_9C",
+          "evidence": "B",
+          "note": "有独立getter 0x424560。"
+        }
+      ],
+      "说明": "0x424430校验GR索引；+0x18为LayoutTeam候选数，+0x1C为候选ID数组并从中随机选择后复制完整508-byte LayoutTeam payload；+0x6C/+0x70是第二组随机候选计数/值数组，返回值业务语义仍待证明。旧版把+0x18误命名为primary LayoutTeam ID，已在固化16撤销。"
+    },
+    "battlegb": {
+      "文件": "Battlegb.enc",
+      "名称": "战斗背景/环境定义表",
+      "身份证据": "A",
+      "record_size": 94,
+      "record_count": 66,
+      "canonical": "BattleBackgroundDefinitionTable",
+      "字段": [
+        {
+          "offset": 0,
+          "type": "int32",
+          "name": "id",
+          "evidence": "A"
+        },
+        {
+          "offset": 4,
+          "type": "ascii",
+          "size": 20,
+          "name": "sf2_resource",
+          "evidence": "A"
+        },
+        {
+          "offset": 24,
+          "type": "cp950",
+          "size": 70,
+          "name": "description",
+          "evidence": "A"
+        }
+      ]
+    },
+    "miscinfo": {
+      "文件": "Miscinfo.enc",
+      "名称": "杂项固定配置Blob",
+      "身份证据": "A",
+      "record_size": null,
+      "record_count": null,
+      "blob_size": 1054,
+      "canonical": "MiscInfoBlob",
+      "字段": [
+        {
+          "offset": 4,
+          "type": "ascii/cp950",
+          "name": "null_string",
+          "evidence": "A"
+        },
+        {
+          "offset": 54,
+          "type": "ascii/cp950",
+          "name": "stone_resource_1",
+          "evidence": "A"
+        },
+        {
+          "offset": 104,
+          "type": "ascii/cp950",
+          "name": "stone_resource_2",
+          "evidence": "A"
+        },
+        {
+          "offset": 154,
+          "type": "ascii/cp950",
+          "name": "stone_resource_3",
+          "evidence": "A"
+        },
+        {
+          "offset": 204,
+          "type": "ascii/cp950",
+          "name": "stone_resource_4",
+          "evidence": "A"
+        },
+        {
+          "offset": 254,
+          "type": "ascii/cp950",
+          "name": "stone_resource_5",
+          "evidence": "A"
+        },
+        {
+          "offset": 508,
+          "type": "ascii/cp950",
+          "name": "music_resource_30",
+          "evidence": "A"
+        },
+        {
+          "offset": 558,
+          "type": "ascii/cp950",
+          "name": "music_resource_31",
+          "evidence": "A"
+        },
+        {
+          "offset": 608,
+          "type": "ascii/cp950",
+          "name": "music_resource_32",
+          "evidence": "A"
+        },
+        {
+          "offset": 658,
+          "type": "ascii/cp950",
+          "name": "music_resource_33",
+          "evidence": "A"
+        }
+      ],
+      "说明": "Loader要求精确0x41E字节；不是固定记录数组。未被xref证明的剩余字节保持opaque。"
+    }
+  }
+}

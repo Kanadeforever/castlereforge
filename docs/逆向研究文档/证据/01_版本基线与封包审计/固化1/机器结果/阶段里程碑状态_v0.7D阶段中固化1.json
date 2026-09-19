@@ -1,0 +1,16 @@
+{
+  "版本": "v0.7D阶段中-固化1",
+  "日期": "2026-08-13",
+  "阶段": {
+    "v0.7A EVE+ENC": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7B SF2+SCI": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7C TSF+Canonical GameState": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7D Battle Core": "ACTIVE_CHECKPOINT_NOT_FINAL"
+  },
+  "Oracle": {
+    "RPG.exe SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "multimedia.zip SHA256": "faa994d6e47b46ce610e75019e8a1da35822560781ba9e8e160814571e952f1f",
+    "DLL调查基线 SHA256": "4d114d8d5d243f93180f5de4e9463a42db0c812fac70922c41b95da49cfd6f1b"
+  },
+  "Battle当前完成度": "主链与关键对象结构已打开；伤害/状态/胜负奖励尚未完整公式化"
+}

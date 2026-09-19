@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "solidification": 61,
+  "inherited_non_markdown": {
+    "total": 1001,
+    "passed": 1001
+  },
+  "markdown": {
+    "total": 103
+  },
+  "python_tools": 37,
+  "tool_manuals": 37,
+  "json_before_second_audit": {
+    "total": 531,
+    "parsed": 531
+  },
+  "csv": {
+    "total": 58,
+    "parsed": 58
+  },
+  "formal_results": {
+    "theme": "PASS",
+    "first_audit": "PASS",
+    "double_replay": "PASS"
+  },
+  "fail_history_count": 4,
+  "cache_count": 0,
+  "issues": []
+}

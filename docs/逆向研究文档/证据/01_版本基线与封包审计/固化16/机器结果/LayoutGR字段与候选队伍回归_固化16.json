@@ -1,0 +1,4000 @@
+{
+  "工具版本": "0.7A.1-固化16",
+  "文件": "/mnt/data/solid16_d7tmp/Layoutgr.enc",
+  "记录数": 250,
+  "记录": [
+    {
+      "index": 0,
+      "record_sha256": "53611bd73188748cd6cb7ff5b06b03f1c71c24580e89344620d36862c072a4e7",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        241
+      ],
+      "name": "Test",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 1,
+      "record_sha256": "7acaa34ab09664438b1e17f81502be7d9a711399b882c588ceb327abec1258f2",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        1,
+        2,
+        102,
+        103,
+        117,
+        191,
+        192,
+        251,
+        252,
+        253
+      ],
+      "name": "迦夏之窟洞外",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        8
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 2,
+      "record_sha256": "05bac426b9bb27262e43a03fba76f5520590be49a45bc867fc62e05fc117c351",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        3,
+        4,
+        101,
+        193,
+        194,
+        195,
+        254,
+        255,
+        256,
+        257
+      ],
+      "name": "迦夏之窟洞內",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        9
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 3,
+      "record_sha256": "795df4ee51510539f9478d308b5c06a849288e2b4ded85dec82704975da1f275",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        106,
+        108,
+        109,
+        110,
+        111
+      ],
+      "name": "沙漠營地內",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        11
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 4,
+      "record_sha256": "e0f157972768b21f5499413e44b670d6ba73e8b11f3994ee061711c8e590840c",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        7,
+        8,
+        9,
+        105,
+        106,
+        108,
+        110,
+        111,
+        258,
+        259
+      ],
+      "name": "磐沙堡內A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        13
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 5,
+      "record_sha256": "a6310c3020e5b1278241460c58468312a254cef02bdf67049fa7f26bd3b7465a",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        105,
+        110,
+        111,
+        112,
+        258,
+        259,
+        260,
+        261,
+        262,
+        263
+      ],
+      "name": "磐沙堡內B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        13
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 6,
+      "record_sha256": "baf4a7df907aff5e3d2eada6d154e86f1784702295fc05216b6e9bfcd3dacccf",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        10,
+        11,
+        12,
+        13,
+        119,
+        265,
+        266,
+        267,
+        268,
+        310
+      ],
+      "name": "石塔A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        16
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 7,
+      "record_sha256": "f2b522d719d03a631787b58b89516a1bc0ef82c9fbc9814a697a99a7803e7b18",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        119,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271,
+        272,
+        273,
+        310
+      ],
+      "name": "石塔B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        16
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 8,
+      "record_sha256": "a23154ea34d4a2b5badfc35ac77d85630b94a9bce4d98b16a8186bed2d07d26c",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        219,
+        220,
+        221,
+        14,
+        15,
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "高昌地上",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        51
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 9,
+      "record_sha256": "21359b20b68495765d927e937d205e19da00bf20195ed338904f6201e854d6d4",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        52,
+        53,
+        54,
+        55,
+        181,
+        182,
+        274,
+        275,
+        276,
+        277
+      ],
+      "name": "高昌地下A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        18
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 10,
+      "record_sha256": "dea1b3f352f5c0c5dc332a3276231d64a1036b41d95e6b67c7190e9f7d7d02bc",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        181,
+        182,
+        274,
+        275,
+        276,
+        277,
+        278,
+        279,
+        280,
+        281
+      ],
+      "name": "高昌地下B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        18
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 11,
+      "record_sha256": "8722797269ce38b550515f8032f8a640cd72515f5bb7f199d3eab762f343c3bd",
+      "layout_team_choice_count": 6,
+      "layout_team_ids": [
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "name": "拓渾古垣迴道A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        21
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 12,
+      "record_sha256": "86cb9cd7e9ceb270ce370dbb9d21ead5f9803074731e6e9afbb4cd74d195573a",
+      "layout_team_choice_count": 6,
+      "layout_team_ids": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        56
+      ],
+      "name": "拓渾古垣迴道B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        22
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 13,
+      "record_sha256": "f21bcc76ace12298ef9c9fc11979e7561bd7f697416f6fa65039b4ea4f52e4be",
+      "layout_team_choice_count": 6,
+      "layout_team_ids": [
+        26,
+        27,
+        28,
+        56,
+        57,
+        58
+      ],
+      "name": "拓渾古垣迴道C",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        22
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 14,
+      "record_sha256": "d77173d579a0b5e71981954983a343b27d8ce6626dc184660783db60fb1ccc94",
+      "layout_team_choice_count": 8,
+      "layout_team_ids": [
+        29,
+        30,
+        31,
+        32,
+        33,
+        183,
+        188,
+        189
+      ],
+      "name": "龍駒島",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        25
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 15,
+      "record_sha256": "bf3b32ba288e6e6ae9d0e8b9508c14ffbf775377a49ee7cfe2fda7abd255c504",
+      "layout_team_choice_count": 4,
+      "layout_team_ids": [
+        34,
+        35,
+        36,
+        37
+      ],
+      "name": "月牙泉下冰窟A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        31
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 16,
+      "record_sha256": "ce46cc0139b203920840918a13f7484a9e6da42f949c9cad055a277eee89c456",
+      "layout_team_choice_count": 4,
+      "layout_team_ids": [
+        36,
+        37,
+        38,
+        39
+      ],
+      "name": "月牙泉下冰窟B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        31
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 17,
+      "record_sha256": "f7024c84a110059f37e10113a73eed1ec03845a252022a705006577db4ed6b01",
+      "layout_team_choice_count": 4,
+      "layout_team_ids": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "name": "甘陀寺五層塔A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        34
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 18,
+      "record_sha256": "0fc997eded439f25587f2cecf284962629b35b6240f9217a6174a543591727af",
+      "layout_team_choice_count": 4,
+      "layout_team_ids": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "name": "甘陀寺五層塔B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        34
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 19,
+      "record_sha256": "5256161a379ae031fa36d92e443b8facc6c5bf1bba157417417c73af77c2faa5",
+      "layout_team_choice_count": 4,
+      "layout_team_ids": [
+        44,
+        45,
+        46,
+        47
+      ],
+      "name": "甘陀寺五層塔C",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        34
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 20,
+      "record_sha256": "40e000d3de2bbd881ccac58f316a7f7661a6cacefcccc3841b996f82f33dcc35",
+      "layout_team_choice_count": 4,
+      "layout_team_ids": [
+        46,
+        47,
+        48,
+        49
+      ],
+      "name": "甘陀寺五層塔D",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        34
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 21,
+      "record_sha256": "befe026ed213c16d5b72dc6ee50f4a9bd6313193164e8cea2fa3874e8e1fbe2d",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        1,
+        2,
+        102,
+        103,
+        117,
+        191,
+        192,
+        251,
+        252,
+        253
+      ],
+      "name": "蘭州城內",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        6
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 22,
+      "record_sha256": "85547f8ea1055b2ecbe335a41ec0b5b3d2388c8530a3692907c6eabe5b239622",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        219,
+        220,
+        221,
+        311,
+        312,
+        315,
+        14,
+        15,
+        16,
+        17
+      ],
+      "name": "高昌沙漠迷陣",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 23,
+      "record_sha256": "75fa1be204dbba9fb357e3f176895746d8ed8977687ff078ddbbf64a6a6df8e8",
+      "layout_team_choice_count": 4,
+      "layout_team_ids": [
+        50,
+        51,
+        184,
+        185
+      ],
+      "name": "莫高窟A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        29
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 24,
+      "record_sha256": "aed3e88e07a11a217f52f37711b948177d81239ee448115ac12669569f25d183",
+      "layout_team_choice_count": 4,
+      "layout_team_ids": [
+        184,
+        185,
+        186,
+        187
+      ],
+      "name": "莫高窟B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        29
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 25,
+      "record_sha256": "f8801ec99c951e5e1ec498c85a2684e3bb80686a8e76843201b19401990cee1e",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "name": "樓蘭城下半部A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        40
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 26,
+      "record_sha256": "59bbdfb133be56038df5a8004278bc8effba4eecfcc972b71e76d734c9825fb1",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        62,
+        63,
+        64,
+        65,
+        66
+      ],
+      "name": "樓蘭城下半部C",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        40
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 27,
+      "record_sha256": "2704d3396ce7b002c6c4803a9eb76f6ee9d9bf987942bae583b5d54ccc51c420",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        61,
+        62,
+        63,
+        64,
+        65
+      ],
+      "name": "樓蘭城下半部B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        40
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 28,
+      "record_sha256": "86017413f513c56c26360a0be2545e492ae76af2fee97d7212dc07808d3d3757",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        64,
+        65,
+        66,
+        67,
+        68
+      ],
+      "name": "樓蘭城下半部D",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        40
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 29,
+      "record_sha256": "7945c97be8f33f2b20774a7fb62ba4427fa8b6581637aa3fd1844509660afc1b",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        69,
+        70,
+        71,
+        72,
+        73
+      ],
+      "name": "天動儀區",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        42
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 30,
+      "record_sha256": "34d64143162cc83f0feebfa9d8797ba9c122b0ad5fb2f25ba42e8e526b6af838",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        74,
+        75,
+        76,
+        77,
+        78
+      ],
+      "name": "樓蘭城上半部A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        39
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 31,
+      "record_sha256": "5ba3ecda498072feb9078d77123a87655304ee945cebee861053e88e544f9238",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        76,
+        77,
+        78,
+        79,
+        80
+      ],
+      "name": "樓蘭城上半部B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        39
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 32,
+      "record_sha256": "244c0e3a179bbd1ae70249ff1c2c9a068e8d09fe74c8a1dbee1f214d8742929d",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        77,
+        78,
+        79,
+        80,
+        81
+      ],
+      "name": "樓蘭城上半部C",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        39
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 33,
+      "record_sha256": "84dcff41bcc90790428a0710fb8a3fef27e154a946c61745264c947f41c6c3f5",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        79,
+        80,
+        81,
+        82,
+        83
+      ],
+      "name": "樓蘭城上半部D",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        39
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 34,
+      "record_sha256": "f3714156f68763f30b8e2ff2f7e9c0a0320b3d49fb1592bff35f067a38171b9d",
+      "layout_team_choice_count": 4,
+      "layout_team_ids": [
+        84,
+        85,
+        86,
+        190
+      ],
+      "name": "千年前樓蘭漢軍部隊",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        39
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 35,
+      "record_sha256": "7ade1423d0e25098cd1bd0f38167bee8b191f5c5f3c61c8cff42d9f674cb7eef",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        87,
+        88,
+        89,
+        90,
+        91
+      ],
+      "name": "羅喉城A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        46
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 36,
+      "record_sha256": "be5d1fb224c9b9fd18b016b767891c6feb06bd8601a68199a8e5061d9bf22412",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "name": "羅喉城B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        46
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 37,
+      "record_sha256": "903ea1996a1c92f944eecfab1a0f7401ee2117ea117428a3e1706e391308547f",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        91,
+        92,
+        93,
+        94,
+        95
+      ],
+      "name": "羅喉城C",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        47
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 38,
+      "record_sha256": "df4761ac1fa74697fe0fe908e820d481817f5795ff748ed89cdadc989a2c6734",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        93,
+        94,
+        95,
+        96,
+        97
+      ],
+      "name": "羅喉城D",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        47
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 39,
+      "record_sha256": "601a4a35361154077a2c4b88bd2b107f04664f1b3e438db500533ee0481c620e",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        95,
+        96,
+        97,
+        98,
+        99
+      ],
+      "name": "羅喉城E",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        48
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 40,
+      "record_sha256": "00595b39ffe1ab869f9f0f76779079b2d8cc424db7152b775d6e70376824eb58",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        69,
+        70,
+        71,
+        72,
+        73
+      ],
+      "name": "天動儀座面",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        43
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 41,
+      "record_sha256": "59c933843b2085d70079779ba39bbb6d63727bc220cba42eb9fe99c29afe9c4e",
+      "layout_team_choice_count": 7,
+      "layout_team_ids": [
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "name": "羅喉城通道A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        56
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 42,
+      "record_sha256": "1b4c75c15356db85850e8dc6e8ec6d7f972fea4fa993af626b3c306eb11442fe",
+      "layout_team_choice_count": 7,
+      "layout_team_ids": [
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93
+      ],
+      "name": "羅喉城通道B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        57
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 43,
+      "record_sha256": "5673df6985b15769758c27a0ea0b9c08dcac121e47cc3f9329cb9e11aa4b6046",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        69,
+        70,
+        71,
+        72,
+        73
+      ],
+      "name": "天動儀周邊通道",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        43
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 44,
+      "record_sha256": "22b61a18dcb02afd9e37ddd759d73c4f4d6260fb8b4372f3745b10356608a065",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        61,
+        62,
+        63,
+        64,
+        65
+      ],
+      "name": "宿曜之陣用",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        41
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 45,
+      "record_sha256": "844e4d94a6e51042cc5829a43df6a7cb4b1394761448fbb558bfe45cdb5d45d7",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        69,
+        70,
+        71,
+        72,
+        73
+      ],
+      "name": "天動儀通道天然地板",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        65
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 46,
+      "record_sha256": "9ff97eedd157d0c01797d98cc5071ad55d824f82400e33c57c3257df44938c24",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        196,
+        197,
+        198,
+        199,
+        200
+      ],
+      "name": "烽火臺內",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        27
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 47,
+      "record_sha256": "83e480523e63537180a891b1763ef5980d5efb25da2b38ac0426ddac2a6c7ca0",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        74,
+        75,
+        76,
+        77,
+        78
+      ],
+      "name": "樓蘭城一樓",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        38
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 48,
+      "record_sha256": "583e3170e1b44dae61342974aeef09a44340d1bfc52ea204277aad4540544763",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        87,
+        88,
+        89,
+        90,
+        91
+      ],
+      "name": "中央通道",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        59
+      ],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 49,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 50,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 51,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 52,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 53,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 54,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 55,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 56,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 57,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 58,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 59,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 60,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 61,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 62,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 63,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 64,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 65,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 66,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 67,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 68,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 69,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 70,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 71,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 72,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 73,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 74,
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 30
+    },
+    {
+      "index": 75,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 76,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 77,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 78,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 79,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 80,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 81,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 82,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 83,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 84,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 85,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 86,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 87,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 88,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 89,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 90,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 91,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 92,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 93,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 94,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 95,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 96,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 97,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 98,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 99,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 100,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 101,
+      "record_sha256": "0d7638b6c3f1ca860ae00137b7fe9437232c8c16c70e3f05ea9c0ca277a36eb0",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        101
+      ],
+      "name": "拯救阿吉",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        4
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 102,
+      "record_sha256": "ffc36ee63c2344a51448d5d29594e9a862cc86a6321ceb794c3e4e0bc24e8ef2",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        102
+      ],
+      "name": "離火神訣發動",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        7
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 103,
+      "record_sha256": "d9ce319e27865c4ad83004026c59ba188a2182c990eade886d52a09d60005ef0",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        103
+      ],
+      "name": "下車遭遇戰",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        8
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 104,
+      "record_sha256": "202fb83cf727a8f6f1365db02b5cb441a5aa5b6eb9c2e4df2f62e88982f148d4",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        104
+      ],
+      "name": "冰璃登場",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        10
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 105,
+      "record_sha256": "34788bd279440aa291e22e801794bbcf7c7a01bde38b7e07e8948bdc8ce2cd09",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        105
+      ],
+      "name": "營救商人",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 106,
+      "record_sha256": "86b0a7b0d0b8da49fad69ade2048ebf2c2690081e93c2e1fc5ae1376b35838d7",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        106
+      ],
+      "name": "營地守衛戰",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        11
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 107,
+      "record_sha256": "057708d8a218081d232dc1108bfb8e831aa7b633f8ceee877b794671407dea41",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        107
+      ],
+      "name": "沙漠營地決戰",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        12
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 108,
+      "record_sha256": "6a33befb2a1ebeed067dfeaaf94693dae6615c4571ed7ec1a69cc61220f7f7d0",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        108
+      ],
+      "name": "磐沙堡突入",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        13
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 109,
+      "record_sha256": "c55273badd95f52c6b142e2f2dbec7c105a9fdc85319afc45606898792288004",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        109
+      ],
+      "name": "古倫德救出",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        13
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 110,
+      "record_sha256": "02c9b6f878d03d0189d0318f14170afefa3a57f634980b2dc54646ce1944ec73",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        110
+      ],
+      "name": "突襲兵營",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        13
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 111,
+      "record_sha256": "4000511bb9519600edeab6d6614855d8429e31fa383df56b1248258810497d5a",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        111
+      ],
+      "name": "古倫德暴走",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        13
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 112,
+      "record_sha256": "81542364aaae9da70f4bcf2c35d4bcd1e8a20228ff56db0d2e697e292c0eeaef",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        112
+      ],
+      "name": "50%戰鬥",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        13
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 113,
+      "record_sha256": "defca50b759f84a21eba655b2c9d8086167fdd83a42a866ec538dc95f5b1a517",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        113
+      ],
+      "name": "磐沙堡決戰",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        14
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 114,
+      "record_sha256": "3d6fa56424db440436046cab97a668ff77ad9aeaa2f145459d290dc15faa9348",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        114
+      ],
+      "name": "中原五派找碴A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 115,
+      "record_sha256": "fc551caf923bb6ad82211b4cc780d1042119f9da5e54c9765887175dbf8b9c3f",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        115
+      ],
+      "name": "中原五派找碴B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 116,
+      "record_sha256": "a4710c547e4f3f8e378cd198051f0b3fe5ef381d976936b906b8e4532f453023",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        116
+      ],
+      "name": "惡人",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 117,
+      "record_sha256": "274b27813989aa37834fa884dcda6ef758586796800581c634abb8f1ebd767b0",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        264
+      ],
+      "name": "初闖肅州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        62
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 118,
+      "record_sha256": "e585991efca658768f9ff090d303e0e28d76e4886b027b4b818cef351bc2ac85",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        118
+      ],
+      "name": "營救譚同",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        15
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 119,
+      "record_sha256": "3c16ff9a9e1fac45912937247537564bab60e3c9c6bc623b6c73cc3d9b12613f",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        119
+      ],
+      "name": "鐵門封鎖戰",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        16
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 120,
+      "record_sha256": "3687f6cc311c3331e3b019942437e15cda192111a04f317b5474250ccdabb9a6",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        120
+      ],
+      "name": "公主救援",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 121,
+      "record_sha256": "f4041b8fb433dccb616276855017ef845f847151cec609d902c08dc64423e580",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        121
+      ],
+      "name": "公主保衛",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        16
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 122,
+      "record_sha256": "904461c14a7390e1a59a1604e0bf8e5241a8d5766106f7e6748f7552b9f6d2e5",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        122
+      ],
+      "name": "受傷戰鬥",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        16
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 123,
+      "record_sha256": "acdd4863710bc85c466f99b5e2719c244e5e7fa70f0039030f25591a55a53e33",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        123
+      ],
+      "name": "連續戰鬥",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        16
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 124,
+      "record_sha256": "9ddb2143c6ab10f94e1ad0c7a551e5a5220a951d9f066e352827e0c457bcc62d",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        124
+      ],
+      "name": "石塔決戰",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        17
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 125,
+      "record_sha256": "baccef71a75c5829b26c0071bd7b97bfa643976d987c45c5bf777a5d8e6c2017",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        125
+      ],
+      "name": "相胤挑戰",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        60
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 126,
+      "record_sha256": "c7a514b67b41fbd2e7bcb29109359cb5eba3f864052b4f4ec2ee0ca70e398bdf",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        126
+      ],
+      "name": "拯救高皇君",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        18
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 127,
+      "record_sha256": "5a72cf3e96ce2556fcfeba6b7df673688f773fc6992c5ecdbb4ece41dc3e38e3",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        127
+      ],
+      "name": "高昌決戰",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        19
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 128,
+      "record_sha256": "ddfba587fe7b754b6c82278e52b0940f5d74e83785279371b19ee1132f92f391",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        128
+      ],
+      "name": "拯救李元昊",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        30
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 129,
+      "record_sha256": "f6bc10575619bb281bf0490a14b0e01af684facf18ec07980046018a9be1538a",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        129
+      ],
+      "name": "殺人實驗室",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        23
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 130,
+      "record_sha256": "ef6f0a96f343a90ec6b41fae99036eb325859249fa72457a45d7c16d100f5bbd",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        130
+      ],
+      "name": "伏龍A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        26
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 131,
+      "record_sha256": "4b501c8203a207801f67be68525a86de2ad924738d71ce5285053e16bc1d3507",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        131
+      ],
+      "name": "伏龍B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        26
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 132,
+      "record_sha256": "dd9b0e55b28a8aa8d5d8929ea24f9262ca315002998f556a76f14f110a6ef570",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        132
+      ],
+      "name": "拯救方老爹",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        27
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 133,
+      "record_sha256": "58a696886a44b5c87beda985cbe55d9dcc6dfe49e99de7f237fd78b2a19d6fcb",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        133
+      ],
+      "name": "收服冰獸",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        32
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 134,
+      "record_sha256": "0783b90a9d913df41c0b48391e40f364fd33a02e8820abb73384b95328c0de73",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        134
+      ],
+      "name": "幻鏡變化A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        17
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 135,
+      "record_sha256": "d9c41e822450da7ac2a9fa0a9bd10d11f663e141ed055bb02332f8e924a0d5d4",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        135
+      ],
+      "name": "天堂之石事件",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 136,
+      "record_sha256": "869b5c48d7cb47e866aa6813d26ed3db8ef9d59c57ce8cdd2cb27c0c099b3daf",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        136
+      ],
+      "name": "甘陀寺儀軌碎片",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        35
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 137,
+      "record_sha256": "71acd2fd8ed8d1e79925a9342078c6406b521f7f045a586edcc21c1babb96ad4",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        137
+      ],
+      "name": "幻鏡變化B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        23
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 138,
+      "record_sha256": "84ba3631d7a9421c74dbd0daefc508ac2873b9fb12823582e98dc15b6af790d7",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        138
+      ],
+      "name": "幻鏡變化C",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        26
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 139,
+      "record_sha256": "9d4f3356b2a3724309073db9fba3b8a8dc7fc558a741e2980c42fba42c85da4c",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        139
+      ],
+      "name": "拓渾碎片",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        24
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 140,
+      "record_sha256": "6fee53ff6c58a441852fe06bf72fe43e0fb3bcae991879373f55dec491823470",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        140
+      ],
+      "name": "再收冰獸",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        32
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 141,
+      "record_sha256": "87493ae1cb1b1ec1ce8854288d23eeff8f60e799b2879b1e6d53bccff0a87ba6",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        141
+      ],
+      "name": "驅魔事件",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        36
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 142,
+      "record_sha256": "1b01805bf8ebf8217c37eef89c46a0a0b0d67d3964363d223c01cada2ff260e0",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        142
+      ],
+      "name": "莫高窟儀軌碎片",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        29
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 143,
+      "record_sha256": "e6178d5365c0b70f0acd6a2ffd91d4b7357690b6dfc96f1011d5dc74017e0011",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        143
+      ],
+      "name": "河州鎮儀軌碎片",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        61
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 144,
+      "record_sha256": "be827e0d55bf8840c3b2891bbf0d07484de6067fc394a65afd0e2c2bb86a8a36",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        144
+      ],
+      "name": "磐沙堡儀軌碎片",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        14
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 145,
+      "record_sha256": "488898893abdf3f6e52f47fb875c9ff30e3de0549b4a9d5d1f2f0084c0830edd",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        145
+      ],
+      "name": "呼延崇家儀軌碎片",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        28
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 146,
+      "record_sha256": "7743991569ee0fd1ee371ce3eb1b57146104f5d7eafb59bae16b2fa9a2a2ed73",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        146
+      ],
+      "name": "千年前除蟲",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        53
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 147,
+      "record_sha256": "5e44bb1f13dfd6be1e4575c33830d40a49ce453fbd2de3f8a6c5833915eb22cd",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        147
+      ],
+      "name": "天動儀除蟲",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        53
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 148,
+      "record_sha256": "bd3cae91bffe1b2a5691de579a4a358ba127e5bec09300862a99f1824f28ac58",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        148
+      ],
+      "name": "聖槍事件",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        49
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 149,
+      "record_sha256": "7bdeb2bdf00643ae9f3c234e8e9ebbf207043e9e406502256435055183ab51d8",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        149
+      ],
+      "name": "天界使者",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        53
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 150,
+      "record_sha256": "1530cd1c74c849aa0764016620abb9d601665f9acf2ae7619fb5ee957bde3fec",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        150
+      ],
+      "name": "羅喉降臨",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        44
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 151,
+      "record_sha256": "b77c9d19b61f29a7ab2e794ec552b7360ea62bfb9671fc7b4bc68a33a0b23434",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        151
+      ],
+      "name": "最強兵器",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        54
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 152,
+      "record_sha256": "c9bc4870f32261c50635a59ce9ed8b5f68f3cdca48fefe91e91b7b445b2336ec",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        152
+      ],
+      "name": "陰陽人形",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        50
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 153,
+      "record_sha256": "fa18f52a36008b09a9787c6644c67fc887ee58789698fbe89fdd6b350c49f028",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        153
+      ],
+      "name": "最終決戰A1",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        55
+      ],
+      "field_88": 3,
+      "field_9C": 0
+    },
+    {
+      "index": 154,
+      "record_sha256": "879da8d2b0358cca02e2fcdbb0bc2fdd8ed70ebbb7a11b5bcdd445a9500ed6ce",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        154
+      ],
+      "name": "最終決戰A2",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        55
+      ],
+      "field_88": 3,
+      "field_9C": 0
+    },
+    {
+      "index": 155,
+      "record_sha256": "686bff098baf6548bb8cc2cf782406803ccd85b40f8c9ad1ed758a2b77cd740d",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        155
+      ],
+      "name": "最終決戰B1",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        55
+      ],
+      "field_88": 3,
+      "field_9C": 0
+    },
+    {
+      "index": 156,
+      "record_sha256": "e7b0cc7c1a61ae550b714ae5814ffafde0fd78d93643f05e2ed1996ce039ab2b",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        156
+      ],
+      "name": "最終決戰B2",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        55
+      ],
+      "field_88": 3,
+      "field_9C": 0
+    },
+    {
+      "index": 157,
+      "record_sha256": "7035fffa20c7ab73224109e28e5265028e6fcb05e86dd5c01d666c22e68031c6",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        157
+      ],
+      "name": "最終決戰C",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        53
+      ],
+      "field_88": 3,
+      "field_9C": 0
+    },
+    {
+      "index": 158,
+      "record_sha256": "9cc11b72cc448f6437c7ab5d916da1c4f0839e7be8de45324cb9021e2c76ef66",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        158
+      ],
+      "name": "坐騎脫逃",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        45
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 159,
+      "record_sha256": "12515222ba7a08bc9e8c1ed3b897046b13feedfb6b2f60b0ab69c5b550552703",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        159
+      ],
+      "name": "巨蟲A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        52
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 160,
+      "record_sha256": "1e7e7606f251374581a7912135fcb734dacbaad12c10b0751dde39b187038849",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        160
+      ],
+      "name": "巨蟲B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        52
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 161,
+      "record_sha256": "78b8070eb1126b1282c187b07bbae06ac1dfbacd179ec6e4ec1698f7764f89c2",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        161
+      ],
+      "name": "巨蟲C",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        52
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 162,
+      "record_sha256": "4fd54d4ef083484dc8dac2880624ede1b81087877cba5bc53151fddecc346913",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        162
+      ],
+      "name": "巨蟲D",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        52
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 163,
+      "record_sha256": "e6b7342b996d3092022b9c08b636ab0940aec17ff08d1dc66bc78dc2c35e27cb",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        163
+      ],
+      "name": "巨蟲E",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        52
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 164,
+      "record_sha256": "a8b0d569063eddaa2c7fc9fba80a7377906ea81243376cdb0960eed75b8356f6",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        116
+      ],
+      "name": "對周、朱",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        44
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 165,
+      "record_sha256": "f5a6db678e349a6cbeb7e3074108794e07a72c3940bf8c0e7b323d992d8b64ba",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        164
+      ],
+      "name": "封豨",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 166,
+      "record_sha256": "9327090edaf47489633e4391f36393a72efb8dd798e777f5d93bf2c7721cb5a9",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        165
+      ],
+      "name": "護送1",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 167,
+      "record_sha256": "5008b2456e94078594e4aa690f5629ba47f3431efb4914055b9e65c995a55a04",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        166
+      ],
+      "name": "護送2",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 168,
+      "record_sha256": "51f5dd05ae8e586a99ed41e0c81c5909f02bcd1bdc27c905d3b4adef8ff1d70a",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        167
+      ],
+      "name": "護送3",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 169,
+      "record_sha256": "16f294bf3d7a12f3b245e260163982508d415563d0b6f0793e71395117de5828",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        168
+      ],
+      "name": "隧道陷阱",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        21
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 170,
+      "record_sha256": "de5b58fb1083f6ad788a7018be5b691983c747f4b76b30e375835b04dd07b36b",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        169
+      ],
+      "name": "幻鏡變化0",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        19
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 171,
+      "record_sha256": "31f3c551d5ed8339ef75760160dd094427658698a96e25e5a44196b50f679914",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        125
+      ],
+      "name": "收服雷獸",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        64
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 172,
+      "record_sha256": "b051b7ce66b01636fdbd14b172f18ba7a6764133c07b3cead4f17ebd6418d06d",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        170
+      ],
+      "name": "第二次皇甫申",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        44
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 173,
+      "record_sha256": "d8a7c8b87e3dfc84b7c408ba69b20298734ef5518de55d60e67f250509a53b72",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        170
+      ],
+      "name": "聖槍契約",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        48
+      ],
+      "field_88": 1,
+      "field_9C": 0
+    },
+    {
+      "index": 174,
+      "record_sha256": "8b560b0fd67662d2258c22a74c1ac8a4110bccf9c7e524761ff0c1de7ef7ec53",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        171
+      ],
+      "name": "漢軍突入1",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        39
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 175,
+      "record_sha256": "d4f62ac2b12b822b595bd54291c7c3fc7d033771b15f21182d1c379736cd36d6",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        172
+      ],
+      "name": "漢軍突入2",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        39
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 176,
+      "record_sha256": "55e82593d0f994ec272389f168b7392d151675b145ffdbb3fbb2f0334bddc530",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        149
+      ],
+      "name": "天界使者2",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        63
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 177,
+      "record_sha256": "7c1067a8896fc4f49a2c0cfda2054c4888eaaf451b096f10a94813675e3cb444",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        175
+      ],
+      "name": "金",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        61
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 178,
+      "record_sha256": "7dab4982dd79b054c306d97074ba15f4f5155630db09735fb8dd328a5ed01a9d",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        176
+      ],
+      "name": "木",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        61
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 179,
+      "record_sha256": "f60f0649fd6da612c94522c23e152d9e7535a48597f325acc73d2be5044ae7c0",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        177
+      ],
+      "name": "水",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        61
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 180,
+      "record_sha256": "a714920e6a2841787a4e4d0339a3490e3eed18a3cb2d6b1f2e2f1f4f910f00d9",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        178
+      ],
+      "name": "火",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        61
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 181,
+      "record_sha256": "972bd77185144d4d7aca5be53d9863fc72496bc72a9fd94e94f258345084becd",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        179
+      ],
+      "name": "土",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        61
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 182,
+      "record_sha256": "358e245b9b39e1fc1cf408d90ca1e18c88928a25b698289d5b2c8f575adbaa94",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        180
+      ],
+      "name": "蛇妖",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        2
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 183,
+      "record_sha256": "fddc1ef09fc011329eb5889ef21d03fabf65961b030e328396be2693ee7dd1ba",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        118
+      ],
+      "name": "石塔連續戰鬥",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        16
+      ],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 184,
+      "record_sha256": "230aea278d4acd0693dd22feaccc4b60992e5995b413199175b5948c79762cb3",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        173
+      ],
+      "name": "兩百塊A",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        61
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 185,
+      "record_sha256": "eb37b38ba5b26caf8bc4ad151f59183213a60438d4658ed32e6772f7c75395d7",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        174
+      ],
+      "name": "兩百塊B",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        61
+      ],
+      "field_88": 2,
+      "field_9C": 0
+    },
+    {
+      "index": 186,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 187,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 188,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 189,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 190,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 191,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 192,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 193,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 194,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 195,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 196,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 197,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 198,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 199,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 200,
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 0
+    },
+    {
+      "index": 201,
+      "record_sha256": "f56eb895a50fe3fe35a48f2e62acbd33e17828110b4fe9e1856671cae1cfe8cd",
+      "layout_team_choice_count": 1,
+      "layout_team_ids": [
+        200
+      ],
+      "name": "大地圖第一區(未使用)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        0
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 202,
+      "record_sha256": "242ccddebfe003ec1dfd731bb25b9dc453b3152415827405eb926ef48f48f281",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        227,
+        228,
+        229,
+        230,
+        231,
+        242,
+        243,
+        244,
+        245,
+        246
+      ],
+      "name": "大地圖第二區(草原地區)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        4
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 203,
+      "record_sha256": "56e448aa41f2c2a453252b5c52f2c389a3e3ad818d2aee2f83bd092a6f6434b0",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        201,
+        202,
+        203,
+        204,
+        205,
+        241,
+        247,
+        248,
+        249,
+        250
+      ],
+      "name": "大地圖第三區(沙漠區前半)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 204,
+      "record_sha256": "0ce1874e8d4ddb0b645d077a0d7b3a8a52c5a32c0b5b431435f1e58d7e5b4475",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        217,
+        218,
+        219,
+        220,
+        221,
+        311,
+        312,
+        313,
+        314,
+        315
+      ],
+      "name": "大地圖第四區(沙漠區後半)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 205,
+      "record_sha256": "9780ea93c44e7eaffbf3c1b3a31c878c799b052322200a82817561a0a205737c",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        227,
+        228,
+        229,
+        230,
+        231,
+        242,
+        243,
+        244,
+        245,
+        246
+      ],
+      "name": "大地圖第五區(蘭州)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 206,
+      "record_sha256": "56e0c761158a5c5a0417a3168081d68924492615f7fe5e4faa5de5bfe0bcc8c8",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        201,
+        202,
+        203,
+        204,
+        205,
+        211,
+        212,
+        213,
+        214,
+        215
+      ],
+      "name": "大地圖第六區(涼州)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 207,
+      "record_sha256": "1a1d69e6cc41211fd7ec48767eaeb04eb789cb5fe441909437d03f38f266b7c3",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        201,
+        202,
+        203,
+        204,
+        205,
+        211,
+        212,
+        213,
+        214,
+        215
+      ],
+      "name": "大地圖第七區(肅州)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 208,
+      "record_sha256": "2e332995456bbe2c9d224e9095fd0a6137d8dd6ae83ccf1b07111b677af952b5",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        201,
+        202,
+        203,
+        204,
+        205,
+        211,
+        212,
+        213,
+        214,
+        215
+      ],
+      "name": "大地圖第八區(甘州)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 209,
+      "record_sha256": "55e7d4216417dbb71a9d69b59d6a170df6204f1b00b40726a74b330e3ef82632",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        10,
+        11,
+        12,
+        13,
+        240,
+        118,
+        119,
+        121,
+        309,
+        310
+      ],
+      "name": "大地圖第九區(沙州)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 210,
+      "record_sha256": "9751181b30599514558068b32f3f67336989804f4662072aa179e912842ac0e9",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "大地圖第十區(尼雅)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 211,
+      "record_sha256": "eef88f33179b0206ce178ef5b3eebf42e7d4cca6281d99a13c650c51fae116bc",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "name": "大地圖第十一區(拓渾)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        4
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 212,
+      "record_sha256": "38ab5950268fbed444921afebcd4431166ca78936a2c4a2eda74fd6615813160",
+      "layout_team_choice_count": 4,
+      "layout_team_ids": [
+        34,
+        35,
+        36,
+        37
+      ],
+      "name": "大地圖第十二區(北方寒地)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 213,
+      "record_sha256": "cee6e6836f58e4233d657dd66d45bce48b7a2f6fa9055b9d35c59ff910ebc67e",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        227,
+        228,
+        229,
+        230,
+        231,
+        242,
+        243,
+        244,
+        245,
+        246
+      ],
+      "name": "大地圖第十三區(往中原方向)第一期",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 214,
+      "record_sha256": "9a39b8968b92773421296c57e693cb8cd271e99bdd85146ba7a15cf7e0bff67e",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        216,
+        236,
+        237,
+        238,
+        239,
+        301,
+        302,
+        303,
+        304,
+        114
+      ],
+      "name": "磐沙堡-草原",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        4
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 215,
+      "record_sha256": "e3c1aea5993a9c85d0e6b21f10091ddb8ccd3ff92cf4d7c6511796b0ee292e67",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        206,
+        207,
+        208,
+        209,
+        210,
+        120,
+        305,
+        306,
+        307,
+        308
+      ],
+      "name": "磐沙堡-沙漠前半",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 216,
+      "record_sha256": "a8840755de3486ce165dabf6c4e7d05eab268bff308b47e3df284e4da24c0aa1",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        10,
+        11,
+        12,
+        13,
+        240,
+        118,
+        119,
+        121,
+        309,
+        310
+      ],
+      "name": "磐沙堡-蘭州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 217,
+      "record_sha256": "b4f7d070f3ee82bf6394f7158964c7b9e8f1130b8882fa0827482fdee0a7dc07",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        10,
+        11,
+        12,
+        13,
+        240,
+        118,
+        119,
+        121,
+        309,
+        310
+      ],
+      "name": "磐沙堡-涼州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 218,
+      "record_sha256": "8f0ec2dd44c940b0018856f28abcccbaa1a773f63bbf30c752d6ac31d6f0bcb4",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        10,
+        11,
+        12,
+        13,
+        240,
+        118,
+        119,
+        121,
+        309,
+        310
+      ],
+      "name": "磐沙堡-肅州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 219,
+      "record_sha256": "08166019d2911127e5bfb05295f7b1e7739151ec8bb83ccba548fd63357570e3",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        10,
+        11,
+        12,
+        13,
+        240,
+        118,
+        119,
+        121,
+        309,
+        310
+      ],
+      "name": "磐沙堡-甘州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 220,
+      "record_sha256": "306829a7f29e4f5270c130dbc9ab43348038a0e98b0824a6cb8992a668714f3f",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        216,
+        236,
+        237,
+        238,
+        239,
+        301,
+        302,
+        303,
+        304,
+        114
+      ],
+      "name": "磐沙堡-中原",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 221,
+      "record_sha256": "bec496970577c44fe94293b63de7be8aa6f78002af6b1f9a6f49ff9921c87065",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "石塔-草原",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        4
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 222,
+      "record_sha256": "784019c21aab7e85f307267c0068cbf16d53a5740a9f81f19d86042a28cb378c",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        217,
+        218,
+        219,
+        220,
+        221,
+        311,
+        312,
+        313,
+        314,
+        315
+      ],
+      "name": "石塔-沙漠前半",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 223,
+      "record_sha256": "30841fa6b372318ede833782bce67bfa00109b7a0d003ab01df4cb38dcb4ebc1",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "石塔-蘭州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 224,
+      "record_sha256": "c26b8ef2d9f8ddbbca1772dffacdda853ee536bb5e471e222bcf3f6120d95e27",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "石塔-涼州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 225,
+      "record_sha256": "4cd2d1fca02902f9459d380719cb1268431b3192c7b1a7f225bb34f224b320ce",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "石塔-肅州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 226,
+      "record_sha256": "75389403639ad4d9e45eca1b51b11b28acf614e323656770c2399c478ab70403",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        316,
+        317,
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "石塔-甘州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 227,
+      "record_sha256": "1366706dcd830bc2404a58119b290bcc7e8484a370096e0d6788f379c59c7653",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "高昌-草原",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        4
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 228,
+      "record_sha256": "0e5d31cb473a1bb77a9ac2ac50f1679bda495a59f15dc258e226bce5bf34501a",
+      "layout_team_choice_count": 10,
+      "layout_team_ids": [
+        219,
+        220,
+        221,
+        14,
+        15,
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "高昌-沙漠前半",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 229,
+      "record_sha256": "0d0731de5a5ee46dfc0df2b10578ad88a3c31ed46a03a95fd81999f54c6e8c81",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "高昌-蘭州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 230,
+      "record_sha256": "67663b24e05f1c8b1b1ca9b9abe4e356c151162ad36934111837d07fd3d6822a",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "高昌-涼州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 231,
+      "record_sha256": "f77110919f0bbb87e0aa83a67a9e902cb4f257ac56468db4e17dafd0882e36f1",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "高昌-肅州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 232,
+      "record_sha256": "7c395514343337cac03b3b51330afbeccb24acccb80f50e20606ce20eec9219c",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "高昌-甘州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 233,
+      "record_sha256": "6f5b07ba1dd01efe8736de5848beb08fb8ef76fc43ea5dbbec86a53deb105b5f",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "高昌-中原",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 234,
+      "record_sha256": "9e5f8e1483deb40d109a0b3137a56cd332c791e5c090ceec97a56d5e07147813",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "千佛洞-蘭州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 235,
+      "record_sha256": "0daa6708a49390e7abbbf5c3da86a538ecb13b6e890aa36b81a476aa027c7cbb",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "千佛洞-涼州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 236,
+      "record_sha256": "57535584f520cf0dea46f63f46cbbf3198a2d202e648a83fd06e81c8428aef26",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "千佛洞-肅州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 237,
+      "record_sha256": "9b694e8441ddd938a472342cc99d219105fc570f21b34a878a10dd630a15b517",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "千佛洞-甘州",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        3
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 238,
+      "record_sha256": "3065958682d8b2676f525296289b5104326092055cdaba63e4d0bd51959706dc",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "千佛洞-沙洲",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 239,
+      "record_sha256": "f708d7cef0fc37f8ffae5618bcf4b025102cdda62add1ef7be77801f9d264d8f",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        321,
+        322,
+        323,
+        324,
+        325
+      ],
+      "name": "拓渾-草原",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        4
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 240,
+      "record_sha256": "150157c019590179f7e9eb31000b170f26cb4ba38ee952f5657939c825d3564c",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "拓渾-沙漠前半",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 241,
+      "record_sha256": "9d5b31d7e18446cb8c6754570cdfde1d0e37bee06eefc89ed5b5e2e8451c606a",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "拓渾-沙漠後半",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 242,
+      "record_sha256": "f4c73ef154e03b6f2266000add312c15be3a2ed7269264fc5478240ee6257c6d",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "拓渾-尼雅",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        1
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 243,
+      "record_sha256": "b079d98030e231f6d9cdf8c6663e2dc4d817aff97dd75f1bbbef1dee498c3b93",
+      "layout_team_choice_count": 5,
+      "layout_team_ids": [
+        16,
+        18,
+        19,
+        20,
+        21
+      ],
+      "name": "拓渾-拓渾",
+      "secondary_choice_count": 1,
+      "secondary_choice_values": [
+        4
+      ],
+      "field_88": 0,
+      "field_9C": 50
+    },
+    {
+      "index": 244,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 245,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 246,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 247,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 248,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    },
+    {
+      "index": 249,
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4",
+      "layout_team_choice_count": 0,
+      "layout_team_ids": [],
+      "name": "",
+      "secondary_choice_count": 0,
+      "secondary_choice_values": [],
+      "field_88": 0,
+      "field_9C": 100
+    }
+  ]
+}

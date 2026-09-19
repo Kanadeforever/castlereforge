@@ -1,0 +1,20 @@
+{
+  "版本": "v0.7D阶段中-固化7",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "直接前序": "v0.7D阶段中-固化6",
+  "新增闭合": [
+    "EVE opcode 0x96 -> 0x89F7F8/FC/800 deferred continuation 三元组",
+    "world-action code12 gate -> param1==12 -> 0x40B230恢复saved Event"
+  ],
+  "仍未闭合": [
+    "真实EVE中opcode 0x96,param1=12分布",
+    "param2业务语义",
+    "code12 fallback最终迁移目标",
+    "属性作者术语/ID43",
+    "Battle大ID downstream/后11槽",
+    "D7",
+    "D8 draw order/BattleTrace"
+  ],
+  "恢复入口": "先执行工具/youcheng_eve_sf2_inspector.py 的 eve96批量，对真实EVE样本目录扫描0x96并输出param1/param2/前后opcode。",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf"
+}

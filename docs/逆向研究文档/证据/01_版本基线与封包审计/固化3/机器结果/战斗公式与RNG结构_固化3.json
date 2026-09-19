@@ -1,0 +1,1534 @@
+{
+  "版本": "v0.7D阶段中-固化3",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "证据等级说明": {
+    "公式控制流与字段偏移": "A：当前 Oracle 指令直接证明",
+    "API/FIRTTECH字段分布": "A：当前 multimedia 样本直接 period-255 解码统计",
+    "业务名称": "未证明；本文件禁止把结构标量自动命名为攻击/防御/HP/魔法等"
+  },
+  "调用参数模型": {
+    "0x42C680": [
+      "this=0x8A0194 processor context",
+      "arg1=performer FightRole+0x84C RoleDefinition*",
+      "arg2=target FightRole+0x84C RoleDefinition*",
+      "arg3=DamageInfo*",
+      "arg4=FIRTTECH*",
+      "arg5=class/flag-like value（精确业务名未定）"
+    ],
+    "0x42B5F0/630/6C0/750/7D0/840": [
+      "this=processor context",
+      "arg1=performer RoleDefinition*",
+      "arg2=target RoleDefinition*",
+      "arg3=FIRTTECH*"
+    ]
+  },
+  "基础派生标量": {
+    "A0_0x42BA00": "role[+0x3C] + Σ(Ail2[role[+0x90/+0x94/+0x98]] [+0x3C])，仅 id>0 参与",
+    "A_0x42BA80": "A0；若 role+0x1F4>0 → trunc(A0*7/10)；否则若 role+0x240>0 → trunc(A0*13/10)",
+    "B0_0x42BAD0": "trunc(role[+0x40]/2) + Σ(Ail2[role[+0x90/+0x94/+0x98]] [+0x3C])，仅 id>0 参与",
+    "B_0x42BB50": "B0；若 role+0x224>0 → trunc(B0/2) 并立即返回；否则若 +0x24C>0 → trunc(B0*13/10) 并立即返回；否则若 +0x200>0 → trunc(B0*7/10)"
+  },
+  "RNG": {
+    "state_address": "0x0046E29C",
+    "seed_function": "0x0045155B",
+    "next_function": "0x00451565",
+    "update": "state = (state * 0x343FD + 0x269EC3) mod 2^32",
+    "return": "(signed_state >> 16) & 0x7FFF；结果范围 0..32767",
+    "range_helper_0x42CCB0": "取两个 int 边界，若相等返回该值；否则排序后返回 min + RNG()%abs(max-min)",
+    "battle_reseed": "0x442076 调 0x451583 取得系统时间转换值；0x44207C 调 0x45155B 写入 RNG state",
+    "seed_direct_callers": [
+      "0x004010C0",
+      "0x0044207C"
+    ],
+    "seed_source_boundary": "0x451583 直接调用 GetLocalTime/GetSystemTime/GetTimeZoneInformation 并生成 32-bit 时间值；不依赖猜测具体 CRT 符号名。"
+  },
+  "整数公式": {
+    "共同定义": {
+      "A": "0x42BA80(performer)",
+      "B": "0x42BB50(target)",
+      "S": "performer RoleDefinition+0x3C",
+      "K": "FIRTTECH+0x40",
+      "R25_10": "0x42CCB0(trunc(S/10), trunc(S/25))，因 helper 自动排序，等价于从 [trunc(S/25), trunc(S/10)) 取模随机值（边界相等时直接返回边界）",
+      "R50_10": "0x42CCB0(trunc(S/10), trunc(S/50))，同理",
+      "Clamp0": "负值归 0",
+      "Clamp1": "<=0 归 1",
+      "除法": "按 x86 signed integer / magic-multiply 路径，按 0 截断；正常表值均非负"
+    },
+    "selector_default_0x42B5F0": "Clamp1(A + R25_10 - B)。0x42BCD0 虽接收第4参数 FIRTTECH*，当前实现未读取该参数。",
+    "selector_2_0x42B630": "Clamp0(A + trunc((performer[主生存资源max/base +0x2C]-performer[主生存资源current +0x30])*K/10) + R50_10 - B)",
+    "selector_3_0x42B6C0": "Clamp0(A + trunc(performer[主生存资源max/base +0x2C]*K/100) + R50_10 - B)",
+    "selector_4_0x42B750": "Clamp0(trunc(A*K/10) + R50_10 - B)",
+    "selector_5_0x42B7D0": "base=A+R50_10；Clamp0(base - trunc(B/base)*K)。base==0 的输入前提/保护尚需运行时边界验证。",
+    "selector_6_0x42B840": "Clamp0(trunc(0x42B5F0(performer,target,FIRTTECH)*K/10))"
+  },
+  "分派": {
+    "field": "FIRTTECH+0x30",
+    "2": "0x42B630",
+    "3": "0x42B6C0",
+    "4": "0x42B750",
+    "5": "0x42B7D0",
+    "6": "0x42B840",
+    "其他": "0x42B5F0"
+  },
+  "样本统计": {
+    "Api.enc": {
+      "path": "源样本 multimedia.zip::multimedia/public/Api.enc",
+      "decoded_sha256": "b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d",
+      "record_size": 848,
+      "count": 255,
+      "field_stats": [
+        {
+          "offset": "0x2C",
+          "min": 0,
+          "max": 100000,
+          "unique": 68,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 104
+            },
+            {
+              "value": 1000,
+              "count": 11
+            },
+            {
+              "value": 1500,
+              "count": 8
+            },
+            {
+              "value": 1200,
+              "count": 7
+            },
+            {
+              "value": 800,
+              "count": 6
+            },
+            {
+              "value": 3000,
+              "count": 6
+            },
+            {
+              "value": 250,
+              "count": 5
+            },
+            {
+              "value": 2000,
+              "count": 5
+            },
+            {
+              "value": 600,
+              "count": 5
+            },
+            {
+              "value": 5000,
+              "count": 5
+            },
+            {
+              "value": 200,
+              "count": 4
+            },
+            {
+              "value": 400,
+              "count": 4
+            }
+          ],
+          "first_20": [
+            1000,
+            200,
+            280,
+            240,
+            250,
+            400,
+            1500,
+            1800,
+            2000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x30",
+          "min": 0,
+          "max": 100000,
+          "unique": 68,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 104
+            },
+            {
+              "value": 1000,
+              "count": 11
+            },
+            {
+              "value": 1500,
+              "count": 8
+            },
+            {
+              "value": 1200,
+              "count": 7
+            },
+            {
+              "value": 800,
+              "count": 6
+            },
+            {
+              "value": 3000,
+              "count": 6
+            },
+            {
+              "value": 250,
+              "count": 5
+            },
+            {
+              "value": 2000,
+              "count": 5
+            },
+            {
+              "value": 600,
+              "count": 5
+            },
+            {
+              "value": 5000,
+              "count": 5
+            },
+            {
+              "value": 200,
+              "count": 4
+            },
+            {
+              "value": 400,
+              "count": 4
+            }
+          ],
+          "first_20": [
+            1000,
+            200,
+            280,
+            240,
+            250,
+            400,
+            1500,
+            1800,
+            2000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x34",
+          "min": 0,
+          "max": 20000,
+          "unique": 30,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 190
+            },
+            {
+              "value": 1000,
+              "count": 10
+            },
+            {
+              "value": 1200,
+              "count": 4
+            },
+            {
+              "value": 1500,
+              "count": 4
+            },
+            {
+              "value": 300,
+              "count": 3
+            },
+            {
+              "value": 150,
+              "count": 3
+            },
+            {
+              "value": 600,
+              "count": 3
+            },
+            {
+              "value": 800,
+              "count": 3
+            },
+            {
+              "value": 500,
+              "count": 3
+            },
+            {
+              "value": 3000,
+              "count": 3
+            },
+            {
+              "value": 50,
+              "count": 2
+            },
+            {
+              "value": 80,
+              "count": 2
+            }
+          ],
+          "first_20": [
+            1000,
+            50,
+            45,
+            70,
+            140,
+            50,
+            1200,
+            1500,
+            1000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x38",
+          "min": 0,
+          "max": 20000,
+          "unique": 30,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 190
+            },
+            {
+              "value": 1000,
+              "count": 10
+            },
+            {
+              "value": 1200,
+              "count": 4
+            },
+            {
+              "value": 1500,
+              "count": 4
+            },
+            {
+              "value": 300,
+              "count": 3
+            },
+            {
+              "value": 150,
+              "count": 3
+            },
+            {
+              "value": 600,
+              "count": 3
+            },
+            {
+              "value": 800,
+              "count": 3
+            },
+            {
+              "value": 500,
+              "count": 3
+            },
+            {
+              "value": 3000,
+              "count": 3
+            },
+            {
+              "value": 50,
+              "count": 2
+            },
+            {
+              "value": 80,
+              "count": 2
+            }
+          ],
+          "first_20": [
+            1000,
+            50,
+            45,
+            70,
+            140,
+            50,
+            1200,
+            1500,
+            1000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x3C",
+          "min": 0,
+          "max": 800,
+          "unique": 36,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 104
+            },
+            {
+              "value": 120,
+              "count": 16
+            },
+            {
+              "value": 80,
+              "count": 15
+            },
+            {
+              "value": 100,
+              "count": 13
+            },
+            {
+              "value": 90,
+              "count": 10
+            },
+            {
+              "value": 200,
+              "count": 10
+            },
+            {
+              "value": 150,
+              "count": 7
+            },
+            {
+              "value": 60,
+              "count": 6
+            },
+            {
+              "value": 300,
+              "count": 6
+            },
+            {
+              "value": 50,
+              "count": 6
+            },
+            {
+              "value": 180,
+              "count": 6
+            },
+            {
+              "value": 400,
+              "count": 5
+            }
+          ],
+          "first_20": [
+            100,
+            60,
+            90,
+            80,
+            30,
+            200,
+            300,
+            450,
+            500,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x40",
+          "min": 0,
+          "max": 700,
+          "unique": 34,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 104
+            },
+            {
+              "value": 100,
+              "count": 19
+            },
+            {
+              "value": 120,
+              "count": 11
+            },
+            {
+              "value": 200,
+              "count": 10
+            },
+            {
+              "value": 80,
+              "count": 10
+            },
+            {
+              "value": 50,
+              "count": 9
+            },
+            {
+              "value": 90,
+              "count": 8
+            },
+            {
+              "value": 240,
+              "count": 8
+            },
+            {
+              "value": 400,
+              "count": 6
+            },
+            {
+              "value": 150,
+              "count": 6
+            },
+            {
+              "value": 140,
+              "count": 6
+            },
+            {
+              "value": 180,
+              "count": 6
+            }
+          ],
+          "first_20": [
+            100,
+            40,
+            70,
+            70,
+            20,
+            200,
+            350,
+            400,
+            450,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "0x2C_equals_0x30_count": 255,
+      "说明": "当前 255/255 源记录 +0x2C == +0x30；但公式明确把两者当不同输入，说明运行时差异/可变性需要继续从写入 consumer 证明，禁止直接命名。",
+      "source_equalities": {
+        "0x2C==0x30": "255/255",
+        "0x34==0x38": "255/255"
+      }
+    },
+    "Firttech.enc": {
+      "path": "源样本 multimedia.zip::multimedia/public/Firttech.enc",
+      "decoded_sha256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+      "record_size": 560,
+      "count": 500,
+      "field_stats": [
+        {
+          "offset": "0x18",
+          "min": 0,
+          "max": 6,
+          "unique": 6,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 330
+            },
+            {
+              "value": 1,
+              "count": 94
+            },
+            {
+              "value": 2,
+              "count": 67
+            },
+            {
+              "value": 4,
+              "count": 7
+            },
+            {
+              "value": 5,
+              "count": 1
+            },
+            {
+              "value": 6,
+              "count": 1
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x30",
+          "min": 0,
+          "max": 6,
+          "unique": 7,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 418
+            },
+            {
+              "value": 4,
+              "count": 35
+            },
+            {
+              "value": 6,
+              "count": 21
+            },
+            {
+              "value": 1,
+              "count": 14
+            },
+            {
+              "value": 5,
+              "count": 8
+            },
+            {
+              "value": 3,
+              "count": 2
+            },
+            {
+              "value": 2,
+              "count": 2
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x34",
+          "min": 0,
+          "max": 500,
+          "unique": 21,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 427
+            },
+            {
+              "value": 200,
+              "count": 11
+            },
+            {
+              "value": 30,
+              "count": 6
+            },
+            {
+              "value": 150,
+              "count": 6
+            },
+            {
+              "value": 50,
+              "count": 6
+            },
+            {
+              "value": 40,
+              "count": 5
+            },
+            {
+              "value": 60,
+              "count": 5
+            },
+            {
+              "value": 120,
+              "count": 4
+            },
+            {
+              "value": 80,
+              "count": 4
+            },
+            {
+              "value": 100,
+              "count": 4
+            },
+            {
+              "value": 300,
+              "count": 4
+            },
+            {
+              "value": 20,
+              "count": 3
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x38",
+          "min": 0,
+          "max": 200,
+          "unique": 19,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 409
+            },
+            {
+              "value": 30,
+              "count": 14
+            },
+            {
+              "value": 40,
+              "count": 14
+            },
+            {
+              "value": 50,
+              "count": 10
+            },
+            {
+              "value": 20,
+              "count": 10
+            },
+            {
+              "value": 60,
+              "count": 9
+            },
+            {
+              "value": 10,
+              "count": 8
+            },
+            {
+              "value": 100,
+              "count": 5
+            },
+            {
+              "value": 15,
+              "count": 3
+            },
+            {
+              "value": 70,
+              "count": 3
+            },
+            {
+              "value": 80,
+              "count": 3
+            },
+            {
+              "value": 90,
+              "count": 2
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x3C",
+          "min": 0,
+          "max": 11,
+          "unique": 8,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 394
+            },
+            {
+              "value": 11,
+              "count": 42
+            },
+            {
+              "value": 1,
+              "count": 14
+            },
+            {
+              "value": 5,
+              "count": 13
+            },
+            {
+              "value": 10,
+              "count": 13
+            },
+            {
+              "value": 2,
+              "count": 9
+            },
+            {
+              "value": 4,
+              "count": 8
+            },
+            {
+              "value": 3,
+              "count": 7
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x40",
+          "min": 0,
+          "max": 20000,
+          "unique": 21,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 406
+            },
+            {
+              "value": 1,
+              "count": 14
+            },
+            {
+              "value": 20,
+              "count": 14
+            },
+            {
+              "value": 15,
+              "count": 10
+            },
+            {
+              "value": 30,
+              "count": 7
+            },
+            {
+              "value": 50,
+              "count": 6
+            },
+            {
+              "value": 12,
+              "count": 5
+            },
+            {
+              "value": 13,
+              "count": 5
+            },
+            {
+              "value": 14,
+              "count": 5
+            },
+            {
+              "value": 20000,
+              "count": 5
+            },
+            {
+              "value": 60,
+              "count": 4
+            },
+            {
+              "value": 18,
+              "count": 4
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x44",
+          "min": 0,
+          "max": 3,
+          "unique": 4,
+          "top_values": [
+            {
+              "value": 1,
+              "count": 341
+            },
+            {
+              "value": 0,
+              "count": 106
+            },
+            {
+              "value": 3,
+              "count": 40
+            },
+            {
+              "value": 2,
+              "count": 13
+            }
+          ],
+          "first_20": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "offset": "0x48",
+          "min": 0,
+          "max": 100,
+          "unique": 10,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 333
+            },
+            {
+              "value": 100,
+              "count": 130
+            },
+            {
+              "value": 80,
+              "count": 16
+            },
+            {
+              "value": 95,
+              "count": 5
+            },
+            {
+              "value": 90,
+              "count": 5
+            },
+            {
+              "value": 50,
+              "count": 3
+            },
+            {
+              "value": 70,
+              "count": 3
+            },
+            {
+              "value": 99,
+              "count": 2
+            },
+            {
+              "value": 85,
+              "count": 2
+            },
+            {
+              "value": 60,
+              "count": 1
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x54",
+          "min": 0,
+          "max": 100,
+          "unique": 3,
+          "top_values": [
+            {
+              "value": 100,
+              "count": 452
+            },
+            {
+              "value": 0,
+              "count": 47
+            },
+            {
+              "value": 50,
+              "count": 1
+            }
+          ],
+          "first_20": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "offset": "0x58",
+          "min": 0,
+          "max": 100,
+          "unique": 3,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 496
+            },
+            {
+              "value": 100,
+              "count": 3
+            },
+            {
+              "value": 50,
+              "count": 1
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x64",
+          "min": 0,
+          "max": 100,
+          "unique": 14,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 422
+            },
+            {
+              "value": 100,
+              "count": 24
+            },
+            {
+              "value": 90,
+              "count": 14
+            },
+            {
+              "value": 80,
+              "count": 11
+            },
+            {
+              "value": 75,
+              "count": 5
+            },
+            {
+              "value": 50,
+              "count": 5
+            },
+            {
+              "value": 60,
+              "count": 4
+            },
+            {
+              "value": 70,
+              "count": 4
+            },
+            {
+              "value": 30,
+              "count": 3
+            },
+            {
+              "value": 10,
+              "count": 2
+            },
+            {
+              "value": 20,
+              "count": 2
+            },
+            {
+              "value": 40,
+              "count": 2
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x78",
+          "min": 0,
+          "max": 26,
+          "unique": 22,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 420
+            },
+            {
+              "value": 1,
+              "count": 18
+            },
+            {
+              "value": 7,
+              "count": 10
+            },
+            {
+              "value": 9,
+              "count": 9
+            },
+            {
+              "value": 2,
+              "count": 8
+            },
+            {
+              "value": 8,
+              "count": 7
+            },
+            {
+              "value": 6,
+              "count": 4
+            },
+            {
+              "value": 22,
+              "count": 4
+            },
+            {
+              "value": 4,
+              "count": 3
+            },
+            {
+              "value": 10,
+              "count": 2
+            },
+            {
+              "value": 25,
+              "count": 2
+            },
+            {
+              "value": 11,
+              "count": 2
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x8C",
+          "min": 0,
+          "max": 1000000,
+          "unique": 36,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 333
+            },
+            {
+              "value": 100000,
+              "count": 17
+            },
+            {
+              "value": 200000,
+              "count": 13
+            },
+            {
+              "value": 300000,
+              "count": 13
+            },
+            {
+              "value": 50000,
+              "count": 12
+            },
+            {
+              "value": 400000,
+              "count": 11
+            },
+            {
+              "value": 500000,
+              "count": 10
+            },
+            {
+              "value": 150000,
+              "count": 9
+            },
+            {
+              "value": 120000,
+              "count": 8
+            },
+            {
+              "value": 250000,
+              "count": 8
+            },
+            {
+              "value": 20000,
+              "count": 7
+            },
+            {
+              "value": 80000,
+              "count": 7
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0x90",
+          "min": 0,
+          "max": 1000000,
+          "unique": 41,
+          "top_values": [
+            {
+              "value": 0,
+              "count": 336
+            },
+            {
+              "value": 200000,
+              "count": 26
+            },
+            {
+              "value": 100000,
+              "count": 16
+            },
+            {
+              "value": 50000,
+              "count": 11
+            },
+            {
+              "value": 150000,
+              "count": 11
+            },
+            {
+              "value": 40000,
+              "count": 9
+            },
+            {
+              "value": 300000,
+              "count": 9
+            },
+            {
+              "value": 250000,
+              "count": 9
+            },
+            {
+              "value": 20000,
+              "count": 7
+            },
+            {
+              "value": 350000,
+              "count": 6
+            },
+            {
+              "value": 60000,
+              "count": 5
+            },
+            {
+              "value": 30000,
+              "count": 4
+            }
+          ],
+          "first_20": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "待验证": [
+    "RoleDefinition 双资源作者业务名；+0x3C/+0x40 等其他字段作者业务名与运行时语义",
+    "FIRTTECH+0x40 的作者业务名/量纲",
+    "selector 0..6 的作者业务枚举名",
+    "FIRTTECH ID 0x12F 不走普通主资源扣除的原因，以及 Article/Ail2 +0x118/+0x11C 的前置可用性检查",
+    "selector 5 base==0 是否由上游数据不变量排除",
+    "Battle 内每条 action 的 RNG draw 顺序"
+  ],
+  "RoleDefinition字段边界": {
+    "+0x1F4/+0x200/+0x210/+0x220/+0x224/+0x240/+0x248/+0x24C": "当前 255 个 Api.enc source records 均为0；已被公式 consumer 读取的字段属于 runtime-only/mutable state-like 候选，作者状态名未证明。",
+    "+0x2C/+0x30与+0x34/+0x38": "Api.enc source 中两对分别 255/255 相等；当前 Oracle Battle 与 EVE 两套 consumer 已交叉证明它们分别为两对 max/current 资源。+2C/+30 为主生存资源 max/current；+34/+38 为次资源 max/current。作者资源名称仍未证明。"
+  },
+  "D5状态": "FORMULA_MATH_AND_ACTION_RESOURCE_COSTS_CLOSED_BUSINESS_SEMANTICS_PENDING",
+  "D8状态": "RNG_CORE_AND_TIME_RESEED_CLOSED_DRAW_ORDER_PENDING",
+  "仍待验证": [
+    "双资源作者术语与特殊恢复/零值路径的业务称谓；+0x3C/+0x40 等其他 RoleDefinition 字段语义",
+    "selector 2..6 的作者业务分类与 FIRTTECH+0x40 作者字段名",
+    "FIRTTECH ID 0x12F 主资源扣除特例与 Article/Ail2 资源前检",
+    "selector5 中 base==0 的真实输入不变量/保护路径",
+    "RNG 各 Battle action 的精确 draw 顺序与 deterministic BattleTrace",
+    "0x451583 的作者/CRT符号名（不影响“系统时间派生 seed”结构事实）"
+  ],
+  "RoleDefinition双资源运行时闭合": {
+    "状态": "STRUCTURAL_MAX_CURRENT_RESOURCE_PAIRS_CLOSED_AUTHOR_NAMES_PENDING",
+    "字段": {
+      "+0x2C": "主生存资源 max；FightRole+0x878；Battle clamp 与 EVE 0x43B8F0 双重证明",
+      "+0x30": "主生存资源 current；FightRole+0x87C；<=0 进入 0x4231F0",
+      "+0x34": "次资源 max；FightRole+0x880；Battle clamp 与 EVE 0x43B8F0 双重证明",
+      "+0x38": "次资源 current；FightRole+0x884"
+    },
+    "DamageInfo应用": {
+      "+0x04": "扣目标主生存资源 current",
+      "+0x08": "扣目标次资源 current"
+    },
+    "FIRTTECH动作消耗": {
+      "+0x34": "主生存资源消耗；AI前检+落地扣除闭环",
+      "+0x38": "次资源消耗；AI前检+落地扣除闭环"
+    },
+    "Article动作扣除": {
+      "+0x118": "扣主生存资源",
+      "+0x11C": "扣次资源"
+    },
+    "边界": "作者资源名未证明；禁止直接命名 HP/MP/SP。"
+  },
+  "D6五槽结构交叉引用": {
+    "数据文件": "五槽效果ID与Role运行时槽映射_固化3.json",
+    "状态": "FIRTTECH/Article_Ail2 两条五槽来源、ID 0..27 Role映射、>27 独立分支、Role runtime→表现 selector→DamageInfo+0x44 后处理结构已闭合；业务名与 writer/时序待证。",
+    "外部consumer数据文件": "Role运行时状态槽外部Consumer_固化3.json"
+  }
+}

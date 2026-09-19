@@ -1,0 +1,1093 @@
+{
+  "版本": "v0.7D阶段中-固化3",
+  "日期": "2026-08-13",
+  "证据等级": "A（结构/映射/运算）；业务名称仍未证明",
+  "Oracle": {
+    "RPG.exe_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "期望_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "匹配": true
+  },
+  "核心函数": {
+    "地址": "0x0042B0D0",
+    "循环边界": "0x0042B57E: cmp ebx,5；固定处理 slot 0..4",
+    "直接调用者": [
+      "0x0042B050",
+      "0x0042CBE9"
+    ],
+    "DamageInfo写回": {
+      "ID数组": "DamageInfo+0x10+slot*4，0x42B514",
+      "计算值数组": "DamageInfo+0x24+slot*4，0x42B528；负数随后 clamp 0"
+    },
+    "FIRTTECH来源": {
+      "数值字段": "record+0x64+slot*4（5 DWORD）",
+      "ID字段": "record+0x78+slot*4（5 DWORD）",
+      "指令": "0x42B126 / 0x42B12A"
+    },
+    "条件替代来源": {
+      "关联Ail2记录": "当当前 record 槽值为0等条件成立时，可改读关联 Ail2 +0x50/+0x64 + slot*4；见 0x42B143..0x42B171。这里仅冻结“替代来源存在”，不冻结业务名。",
+      "额外记录参数": "若 [esp+0x3C] 非空，则覆盖读 +0xE8+slot*4 与 +0xFC+slot*4；见 0x42B187..0x42B1A5。该记录在 Article/Ail2 路径中的确切身份与边界仍待独立闭合。"
+    },
+    "ID静态参数表": "ID 0..27 时，0x42B1A7..0x42B1BF 用 ID*0x10 索引 0x46A000 的 16-byte 记录并读取 +0x0C DWORD；ID 超出 0..27 时该局部值清零。",
+    "ID到Role槽映射": "0x42B53A 从 0x46A668 + ID*8 读取首 DWORD；若 >=0，则访问 target RoleDefinition+0x1E8+mapped*4。",
+    "Role槽抵消规则": {
+      "指令范围": "0x42B549..0x42B569",
+      "精确结构": "令 R=RoleDefinition[0x1E8+mapped*4]，V=DamageInfo[0x24+slot*4]。若 R>V，则 R:=R-V、V不变；否则 V:=V-R、Role槽不在该分支写零（后续是否有其他清理需单独跟踪）。",
+      "边界": "只冻结可见整数运算与写回，不把 Role+0x1E8 槽命名为抗性/状态计时器/护盾等。"
+    },
+    "路径实参闭合": {
+      "FIRTTECH路径": "0x42CBE9 调 0x42B0D0：arg3=FIRTTECH record，arg4=NULL，arg5=DamageInfo；因此读 +0x64/+0x78 两组五槽字段。",
+      "Article_Ail2路径": "0x42A7D0 的第4参数在 0x42A89F 装入 EBX；此前 caller 已闭合该第4参数为 FightRole+0xCF4=Ail2 record*。0x42B050 调 0x42B0D0 时 arg3=NULL、arg4=EBX(Ail2)、arg5=DamageInfo，因此读 Ail2+0xE8/+0xFC 两组五槽字段。",
+      "证据边界": "这里只证明当前两个直接调用路径的参数来源，不等于 0x42B0D0 不可能通过间接调用被其他类型复用。"
+    },
+    "大ID分支": {
+      "条件": "0x42B313: cmp edi,0x1B；ID>27 进入独立分支",
+      "行为": "0x42B318 写 DamageInfo+0x10+slot*4=ID；0x42B320 写 DamageInfo+0x24+slot*4=0x1F40(8000)；随后直接跳到下一 slot，跳过 0x46A668 与 Role+0x1E8 映射。",
+      "结论": "Ail2 样本中 40/41/50/67 等 >27 ID 属于代码明确支持的独立结构分支，不构成 0x46A668 越界访问。业务含义仍未知。"
+    }
+  },
+  "FIRTTECH样本": {
+    "文件": "Firttech.enc",
+    "record_size": 560,
+    "count": 500,
+    "decoded_sha256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+    "五槽字段统计": {
+      "0x64": {
+        "min": 0,
+        "max": 100,
+        "unique": 14,
+        "zero_count": 422,
+        "top12": [
+          [
+            0,
+            422
+          ],
+          [
+            100,
+            24
+          ],
+          [
+            90,
+            14
+          ],
+          [
+            80,
+            11
+          ],
+          [
+            75,
+            5
+          ],
+          [
+            50,
+            5
+          ],
+          [
+            60,
+            4
+          ],
+          [
+            70,
+            4
+          ],
+          [
+            30,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            20,
+            2
+          ],
+          [
+            40,
+            2
+          ]
+        ]
+      },
+      "0x68": {
+        "min": 0,
+        "max": 100,
+        "unique": 4,
+        "zero_count": 493,
+        "top12": [
+          [
+            0,
+            493
+          ],
+          [
+            80,
+            3
+          ],
+          [
+            100,
+            2
+          ],
+          [
+            90,
+            2
+          ]
+        ]
+      },
+      "0x6C": {
+        "min": 0,
+        "max": 100,
+        "unique": 4,
+        "zero_count": 495,
+        "top12": [
+          [
+            0,
+            495
+          ],
+          [
+            90,
+            2
+          ],
+          [
+            80,
+            2
+          ],
+          [
+            100,
+            1
+          ]
+        ]
+      },
+      "0x70": {
+        "min": 0,
+        "max": 100,
+        "unique": 4,
+        "zero_count": 495,
+        "top12": [
+          [
+            0,
+            495
+          ],
+          [
+            90,
+            2
+          ],
+          [
+            80,
+            2
+          ],
+          [
+            100,
+            1
+          ]
+        ]
+      },
+      "0x74": {
+        "min": 0,
+        "max": 100,
+        "unique": 4,
+        "zero_count": 495,
+        "top12": [
+          [
+            0,
+            495
+          ],
+          [
+            90,
+            2
+          ],
+          [
+            80,
+            2
+          ],
+          [
+            100,
+            1
+          ]
+        ]
+      },
+      "0x78": {
+        "min": 0,
+        "max": 26,
+        "unique": 22,
+        "zero_count": 420,
+        "top12": [
+          [
+            0,
+            420
+          ],
+          [
+            1,
+            18
+          ],
+          [
+            7,
+            10
+          ],
+          [
+            9,
+            9
+          ],
+          [
+            2,
+            8
+          ],
+          [
+            8,
+            7
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            22,
+            4
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            25,
+            2
+          ],
+          [
+            11,
+            2
+          ]
+        ]
+      },
+      "0x7C": {
+        "min": 0,
+        "max": 23,
+        "unique": 6,
+        "zero_count": 493,
+        "top12": [
+          [
+            0,
+            493
+          ],
+          [
+            23,
+            2
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      "0x80": {
+        "min": 0,
+        "max": 24,
+        "unique": 4,
+        "zero_count": 495,
+        "top12": [
+          [
+            0,
+            495
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            24,
+            1
+          ],
+          [
+            5,
+            1
+          ]
+        ]
+      },
+      "0x84": {
+        "min": 0,
+        "max": 25,
+        "unique": 4,
+        "zero_count": 495,
+        "top12": [
+          [
+            0,
+            495
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            25,
+            1
+          ],
+          [
+            6,
+            1
+          ]
+        ]
+      },
+      "0x88": {
+        "min": 0,
+        "max": 26,
+        "unique": 4,
+        "zero_count": 495,
+        "top12": [
+          [
+            0,
+            495
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            26,
+            1
+          ],
+          [
+            7,
+            1
+          ]
+        ]
+      }
+    },
+    "关键范围结论": "+0x78..+0x88 五个 ID 字段在当前 500 条记录中最大值依次为 26/23/24/25/26，因此当前 FIRTTECH 样本全部落在 0..27 的静态参数/映射范围内。"
+  },
+  "Ail2样本边界": {
+    "文件": "Ail2.ENC",
+    "record_size": 926,
+    "count": 700,
+    "decoded_sha256": "a85d0904e969700b996ee89134582552bfabb98af76321804af34f9896b051a8",
+    "覆盖来源字段统计": {
+      "0xE8": {
+        "min": 0,
+        "max": 100,
+        "unique": 4,
+        "zero_count": 657,
+        "top12": [
+          [
+            0,
+            657
+          ],
+          [
+            100,
+            40
+          ],
+          [
+            30,
+            2
+          ],
+          [
+            80,
+            1
+          ]
+        ]
+      },
+      "0xEC": {
+        "min": 0,
+        "max": 100,
+        "unique": 3,
+        "zero_count": 695,
+        "top12": [
+          [
+            0,
+            695
+          ],
+          [
+            100,
+            4
+          ],
+          [
+            50,
+            1
+          ]
+        ]
+      },
+      "0xF0": {
+        "min": 0,
+        "max": 100,
+        "unique": 2,
+        "zero_count": 696,
+        "top12": [
+          [
+            0,
+            696
+          ],
+          [
+            100,
+            4
+          ]
+        ]
+      },
+      "0xF4": {
+        "min": 0,
+        "max": 100,
+        "unique": 2,
+        "zero_count": 699,
+        "top12": [
+          [
+            0,
+            699
+          ],
+          [
+            100,
+            1
+          ]
+        ]
+      },
+      "0xF8": {
+        "min": 0,
+        "max": 100,
+        "unique": 2,
+        "zero_count": 699,
+        "top12": [
+          [
+            0,
+            699
+          ],
+          [
+            100,
+            1
+          ]
+        ]
+      },
+      "0xFC": {
+        "min": 0,
+        "max": 67,
+        "unique": 30,
+        "zero_count": 660,
+        "top12": [
+          [
+            0,
+            660
+          ],
+          [
+            43,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            40,
+            2
+          ],
+          [
+            22,
+            2
+          ],
+          [
+            21,
+            2
+          ],
+          [
+            15,
+            2
+          ],
+          [
+            14,
+            2
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            25,
+            2
+          ],
+          [
+            41,
+            1
+          ],
+          [
+            42,
+            1
+          ]
+        ]
+      },
+      "0x100": {
+        "min": 0,
+        "max": 41,
+        "unique": 7,
+        "zero_count": 693,
+        "top12": [
+          [
+            0,
+            693
+          ],
+          [
+            41,
+            2
+          ],
+          [
+            40,
+            1
+          ],
+          [
+            10,
+            1
+          ],
+          [
+            23,
+            1
+          ],
+          [
+            21,
+            1
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      "0x104": {
+        "min": 0,
+        "max": 50,
+        "unique": 7,
+        "zero_count": 694,
+        "top12": [
+          [
+            0,
+            694
+          ],
+          [
+            40,
+            1
+          ],
+          [
+            41,
+            1
+          ],
+          [
+            50,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            25,
+            1
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "0x108": {
+        "min": 0,
+        "max": 41,
+        "unique": 4,
+        "zero_count": 697,
+        "top12": [
+          [
+            0,
+            697
+          ],
+          [
+            40,
+            1
+          ],
+          [
+            41,
+            1
+          ],
+          [
+            26,
+            1
+          ]
+        ]
+      },
+      "0x10C": {
+        "min": 0,
+        "max": 41,
+        "unique": 3,
+        "zero_count": 698,
+        "top12": [
+          [
+            0,
+            698
+          ],
+          [
+            40,
+            1
+          ],
+          [
+            41,
+            1
+          ]
+        ]
+      }
+    },
+    "关键边界": "Ail2 +0xFC..+0x10C 的当前样本可出现 >27 ID；0x42B313..0x42B328 已直接证明这些 ID 走“写原 ID + 固定值8000 + 跳过 Role 槽映射”的独立分支，因此不存在把 >27 ID 强行索引 0x46A668 的结论。具体业务语义仍待证明。"
+  },
+  "静态表_0x46A000_28x16": [
+    {
+      "id": 0,
+      "dword0": 8000,
+      "dword1": 2,
+      "dword2": 0,
+      "dword3": 8
+    },
+    {
+      "id": 1,
+      "dword0": 8000,
+      "dword1": 4,
+      "dword2": 0,
+      "dword3": 6
+    },
+    {
+      "id": 2,
+      "dword0": 8000,
+      "dword1": 3,
+      "dword2": 0,
+      "dword3": 8
+    },
+    {
+      "id": 3,
+      "dword0": 8000,
+      "dword1": 1,
+      "dword2": 0,
+      "dword3": 6
+    },
+    {
+      "id": 4,
+      "dword0": 8000,
+      "dword1": 4,
+      "dword2": 0,
+      "dword3": 6
+    },
+    {
+      "id": 5,
+      "dword0": 8000,
+      "dword1": 3,
+      "dword2": 0,
+      "dword3": 7
+    },
+    {
+      "id": 6,
+      "dword0": 8000,
+      "dword1": 2,
+      "dword2": 0,
+      "dword3": 6
+    },
+    {
+      "id": 7,
+      "dword0": 8000,
+      "dword1": 3,
+      "dword2": 0,
+      "dword3": 6
+    },
+    {
+      "id": 8,
+      "dword0": 8000,
+      "dword1": 4,
+      "dword2": 0,
+      "dword3": 1
+    },
+    {
+      "id": 9,
+      "dword0": 8000,
+      "dword1": 1,
+      "dword2": 0,
+      "dword3": 2
+    },
+    {
+      "id": 10,
+      "dword0": 8000,
+      "dword1": 1,
+      "dword2": 0,
+      "dword3": 7
+    },
+    {
+      "id": 11,
+      "dword0": 8000,
+      "dword1": 2,
+      "dword2": 0,
+      "dword3": 5
+    },
+    {
+      "id": 12,
+      "dword0": 0,
+      "dword1": 0,
+      "dword2": 0,
+      "dword3": 0
+    },
+    {
+      "id": 13,
+      "dword0": 8000,
+      "dword1": 3,
+      "dword2": 0,
+      "dword3": 5
+    },
+    {
+      "id": 14,
+      "dword0": 8000,
+      "dword1": 0,
+      "dword2": 0,
+      "dword3": 8
+    },
+    {
+      "id": 15,
+      "dword0": 8000,
+      "dword1": 0,
+      "dword2": 0,
+      "dword3": 7
+    },
+    {
+      "id": 16,
+      "dword0": 0,
+      "dword1": 0,
+      "dword2": 0,
+      "dword3": 0
+    },
+    {
+      "id": 17,
+      "dword0": 0,
+      "dword1": 0,
+      "dword2": 0,
+      "dword3": 0
+    },
+    {
+      "id": 18,
+      "dword0": 8000,
+      "dword1": 0,
+      "dword2": 4,
+      "dword3": 10
+    },
+    {
+      "id": 19,
+      "dword0": 8000,
+      "dword1": 0,
+      "dword2": 2,
+      "dword3": 6
+    },
+    {
+      "id": 20,
+      "dword0": 0,
+      "dword1": 0,
+      "dword2": 0,
+      "dword3": 0
+    },
+    {
+      "id": 21,
+      "dword0": 8000,
+      "dword1": 0,
+      "dword2": 2,
+      "dword3": 10
+    },
+    {
+      "id": 22,
+      "dword0": 8000,
+      "dword1": 0,
+      "dword2": 1,
+      "dword3": 6
+    },
+    {
+      "id": 23,
+      "dword0": 8000,
+      "dword1": 0,
+      "dword2": 4,
+      "dword3": 6
+    },
+    {
+      "id": 24,
+      "dword0": 8000,
+      "dword1": 0,
+      "dword2": 3,
+      "dword3": 7
+    },
+    {
+      "id": 25,
+      "dword0": 8000,
+      "dword1": 0,
+      "dword2": 2,
+      "dword3": 6
+    },
+    {
+      "id": 26,
+      "dword0": 8000,
+      "dword1": 0,
+      "dword2": 3,
+      "dword3": 6
+    },
+    {
+      "id": 27,
+      "dword0": 0,
+      "dword1": 0,
+      "dword2": 0,
+      "dword3": 0
+    }
+  ],
+  "ID到Role槽映射_0x46A668_0至27": [
+    {
+      "id": 0,
+      "mapped_index": 21,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 1,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 2,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 3,
+      "mapped_index": 22,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 4,
+      "mapped_index": 23,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 5,
+      "mapped_index": 24,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 6,
+      "mapped_index": 25,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 7,
+      "mapped_index": 26,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 8,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 9,
+      "mapped_index": 8,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 10,
+      "mapped_index": 15,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 11,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 12,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 13,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 14,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 15,
+      "mapped_index": 10,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 16,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 17,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 18,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 19,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 20,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 21,
+      "mapped_index": 0,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 22,
+      "mapped_index": 3,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 23,
+      "mapped_index": 4,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 24,
+      "mapped_index": 5,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 25,
+      "mapped_index": 6,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 26,
+      "mapped_index": 7,
+      "reserved_or_unknown_dword": 0
+    },
+    {
+      "id": 27,
+      "mapped_index": -1,
+      "reserved_or_unknown_dword": 0
+    }
+  ],
+  "非负映射摘要": {
+    "0": 21,
+    "3": 22,
+    "4": 23,
+    "5": 24,
+    "6": 25,
+    "7": 26,
+    "9": 8,
+    "10": 15,
+    "15": 10,
+    "21": 0,
+    "22": 3,
+    "23": 4,
+    "24": 5,
+    "25": 6,
+    "26": 7
+  },
+  "当前可冻结结论": [
+    "0x42B0D0 固定处理 5 个 effect-like 槽；每槽拥有 ID 与计算值两组平行输出。",
+    "FIRTTECH 路径的五槽源字段精确为 +0x64..+0x74 与 +0x78..+0x88。",
+    "当前 FIRTTECH 样本 ID 全落于 0..26，和 0x46A000/0x46A668 的 0..27 静态处理范围吻合。",
+    "ID 经 0x46A668 映射后可访问 RoleDefinition+0x1E8+index*4，并参与确定的抵消运算。",
+    "上述结构足以把 D6 从“五槽存在”升级为“五槽 ID→静态参数→Role runtime 槽映射结构闭合”。",
+    "FIRTTECH 与 Article/Ail2 两个直接调用点的五槽来源已经区分：前者使用 FIRTTECH+0x64/+0x78，后者使用 Ail2+0xE8/+0xFC。",
+    "ID>27 有显式独立分支：DamageInfo 保留原 ID、值固定 8000，并跳过 0x46A668/Role+0x1E8 映射。"
+  ],
+  "仍禁止写成事实": [
+    "不得把具体 ID 叫做中毒、麻痹、睡眠、抗性、buff/debuff 等，除非后续表名/字符串/consumer/动态行为闭合。",
+    "不得把 RoleDefinition+0x1E8 数组整体直接命名为 resistance/status timer/shield。",
+    "不得由“ID>27固定8000并跳过Role映射”猜测其业务类别；必须通过后续 consumer/表现/字符串或动态 trace 证明。"
+  ],
+  "下一步验证": [
+    "追踪 RoleDefinition+0x1E8+mapped*4 的全部 writer/readers，寻找状态 ID、计时/解除、UI/动画等独立 consumer。",
+    "继续恢复 DamageInfo 五槽在 0x420ED0 之后的最终应用路径，确认 0..27 与 >27 两类 ID 的后续差异。",
+    "未来 BattleTrace 记录每次五槽来源类型(FIRTTECH/Ail2)、输入 ID/value、mapped index、Role槽旧值/新值、DamageInfo剩余值。"
+  ],
+  "Role槽到表现层交叉闭环": {
+    "结论等级": "A（地址/映射/控制流）",
+    "事实": "0x46A668 将多组 effect-like ID 映射到 RoleDefinition+0x1E8 附近槽；0x41CD79..0x41D114 恰好把其中多组槽作为同一表现位的一级/二级条件，向 0x43E6F0 传不同固定 code。",
+    "成对对应": [
+      {
+        "表现位": "A",
+        "一级字段": "+0x1E8",
+        "一级ID": 21,
+        "一级code": 1,
+        "二级字段": "+0x23C",
+        "二级ID": 0,
+        "二级code": 12
+      },
+      {
+        "表现位": "B",
+        "一级字段": "+0x1FC",
+        "一级ID": 24,
+        "一级code": 2,
+        "二级字段": "+0x248",
+        "二级ID": 5,
+        "二级code": 3
+      },
+      {
+        "表现位": "C",
+        "一级字段": "+0x1F4",
+        "一级ID": 22,
+        "一级code": 7,
+        "二级字段": "+0x240",
+        "二级ID": 3,
+        "二级code": 6
+      },
+      {
+        "表现位": "D",
+        "一级字段": "+0x1F8",
+        "一级ID": 23,
+        "一级code": 17,
+        "二级字段": "+0x244",
+        "二级ID": 4,
+        "二级code": 4
+      },
+      {
+        "表现位": "E",
+        "一级字段": "+0x200",
+        "一级ID": 25,
+        "一级code": 14,
+        "二级字段": "+0x24C",
+        "二级ID": 6,
+        "二级code": 13
+      },
+      {
+        "表现位": "F",
+        "一级字段": "+0x204",
+        "一级ID": 26,
+        "一级code": 10,
+        "二级字段": "+0x250",
+        "二级ID": 7,
+        "二级code": 11
+      },
+      {
+        "表现位": "G",
+        "一级字段": "+0x224",
+        "一级ID": 10,
+        "一级code": 8,
+        "二级字段": "+0x210",
+        "二级ID": 15,
+        "二级code": 19
+      }
+    ],
+    "额外事实": "RoleDefinition+0x1E8 在 0x42CC5D/0x42CC83 还会复制到 DamageInfo+0x44，并在 0x421518 进入动作后处理判定。",
+    "安全命名": "effect-like ID → runtime state slot → presentation selector → DamageInfo 后处理；禁止据此给具体 ID 起中毒/麻痹/buff/debuff 等作者名。",
+    "证据": [
+      "证据/阶段D/固化3/Role运行时状态槽展示与DamageInfo传播.asm",
+      "证据/阶段D/固化3/DamageInfo状态传播后处理_0x42150C_0x421560.asm"
+    ]
+  }
+}

@@ -1,0 +1,564 @@
+{
+  "节点": "v0.7D阶段中-固化44",
+  "日期": "2026-08-19",
+  "说明": "同一文件累计记录固化44封包前第一轮、二次与最终只读审计。最终只读确认之后Markdown永久冻结；此后只允许更新机器审计JSON、最终SHA索引和ZIP封装元数据。",
+  "第一轮": {
+    "节点": "v0.7D阶段中-固化44",
+    "审计阶段": "第一轮",
+    "日期": "2026-08-19",
+    "继承非Markdown": {
+      "固化43总数": 763,
+      "逐字节一致": 762,
+      "有意修改": [
+        {
+          "path": "工具/youcheng_battle_core_inspector.py",
+          "base_sha256": "22240c06bc18fdae47b9db7b45534a0633942d056ae3049f86ae0a66c5f64e44",
+          "current_sha256": "b8530ba84041f52535e8a6e5c75129aafc0f7f8e37a92ef7a72f80e92d2cf790",
+          "allowed": true
+        }
+      ],
+      "缺失": [],
+      "允许有意修改路径": [
+        "工具/youcheng_battle_core_inspector.py"
+      ],
+      "Battle综合工具字符串归一化AST一致": true,
+      "PASS": true
+    },
+    "Markdown": {
+      "总数": 68,
+      "异常": [],
+      "旧现行状态严格命中": [],
+      "PASS": true
+    },
+    "Python工具": {
+      "总数": 20,
+      "异常": [],
+      "help": [
+        {
+          "tool": "organize_data_evidence.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "package_file_indexer.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_big_effect_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_core_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_result_dispatch_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_runtime_clock_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_tail_slots_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_compatibility_engine_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_enc_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_eve_sf2_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_legacy_clock_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_resource_container_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_saf_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_saf_runtime_surface_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sample_structure_validator.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sci_sf2_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sf2_audio_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sf2_layer_metadata_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_tsf_gamestate_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_world_encounter_duration_inspector.py",
+          "returncode": 0,
+          "pass": true
+        }
+      ],
+      "中文工具说明数": 20,
+      "未被工具说明引用的源码": [],
+      "PASS": true
+    },
+    "JSON": {
+      "总数": 403,
+      "异常": [],
+      "PASS": true
+    },
+    "CSV": {
+      "总数": 40,
+      "异常": [],
+      "PASS": true
+    },
+    "缓存残留": [],
+    "核心回归": {
+      "固化44": {
+        "machine": "20/20",
+        "api_39": "9945/9945",
+        "tail_11": "2805/2805",
+        "pass": true
+      },
+      "固化43": {
+        "machine": "15/15",
+        "pass": true
+      },
+      "固化42": {
+        "machine": "11/11",
+        "pass": true
+      },
+      "固化41": {
+        "machine": "13/13",
+        "pass": true
+      },
+      "固化40": {
+        "machine": "10/10",
+        "pass": true
+      },
+      "固化39": {
+        "layers": 11184,
+        "pass": true
+      },
+      "固化38": {
+        "machine": "29/29",
+        "pass": true
+      },
+      "固化37": {
+        "machine": "29/29",
+        "pass": true
+      }
+    },
+    "PASS": true
+  },
+  "二次": {
+    "节点": "v0.7D阶段中-固化44",
+    "审计阶段": "第一轮",
+    "日期": "2026-08-19",
+    "继承非Markdown": {
+      "固化43总数": 763,
+      "逐字节一致": 762,
+      "有意修改": [
+        {
+          "path": "工具/youcheng_battle_core_inspector.py",
+          "base_sha256": "22240c06bc18fdae47b9db7b45534a0633942d056ae3049f86ae0a66c5f64e44",
+          "current_sha256": "b8530ba84041f52535e8a6e5c75129aafc0f7f8e37a92ef7a72f80e92d2cf790",
+          "allowed": true
+        }
+      ],
+      "缺失": [],
+      "允许有意修改路径": [
+        "工具/youcheng_battle_core_inspector.py"
+      ],
+      "Battle综合工具字符串归一化AST一致": true,
+      "PASS": true
+    },
+    "Markdown": {
+      "总数": 68,
+      "异常": [],
+      "旧现行状态严格命中": [],
+      "PASS": true
+    },
+    "Python工具": {
+      "总数": 20,
+      "异常": [],
+      "help": [
+        {
+          "tool": "organize_data_evidence.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "package_file_indexer.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_big_effect_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_core_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_result_dispatch_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_runtime_clock_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_tail_slots_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_compatibility_engine_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_enc_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_eve_sf2_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_legacy_clock_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_resource_container_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_saf_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_saf_runtime_surface_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sample_structure_validator.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sci_sf2_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sf2_audio_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sf2_layer_metadata_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_tsf_gamestate_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_world_encounter_duration_inspector.py",
+          "returncode": 0,
+          "pass": true
+        }
+      ],
+      "中文工具说明数": 20,
+      "未被工具说明引用的源码": [],
+      "PASS": true
+    },
+    "JSON": {
+      "总数": 404,
+      "异常": [],
+      "PASS": true
+    },
+    "CSV": {
+      "总数": 40,
+      "异常": [],
+      "PASS": true
+    },
+    "缓存残留": [],
+    "核心回归": {
+      "固化44": {
+        "machine": "20/20",
+        "api_39": "9945/9945",
+        "tail_11": "2805/2805",
+        "pass": true
+      },
+      "固化43": {
+        "machine": "15/15",
+        "pass": true
+      },
+      "固化42": {
+        "machine": "11/11",
+        "pass": true
+      },
+      "固化41": {
+        "machine": "13/13",
+        "pass": true
+      },
+      "固化40": {
+        "machine": "10/10",
+        "pass": true
+      },
+      "固化39": {
+        "layers": 11184,
+        "pass": true
+      },
+      "固化38": {
+        "machine": "29/29",
+        "pass": true
+      },
+      "固化37": {
+        "machine": "29/29",
+        "pass": true
+      }
+    },
+    "PASS": true
+  },
+  "最终只读确认": {
+    "节点": "v0.7D阶段中-固化44",
+    "审计阶段": "第一轮",
+    "日期": "2026-08-19",
+    "继承非Markdown": {
+      "固化43总数": 763,
+      "逐字节一致": 762,
+      "有意修改": [
+        {
+          "path": "工具/youcheng_battle_core_inspector.py",
+          "base_sha256": "22240c06bc18fdae47b9db7b45534a0633942d056ae3049f86ae0a66c5f64e44",
+          "current_sha256": "b8530ba84041f52535e8a6e5c75129aafc0f7f8e37a92ef7a72f80e92d2cf790",
+          "allowed": true
+        }
+      ],
+      "缺失": [],
+      "允许有意修改路径": [
+        "工具/youcheng_battle_core_inspector.py"
+      ],
+      "Battle综合工具字符串归一化AST一致": true,
+      "PASS": true
+    },
+    "Markdown": {
+      "总数": 68,
+      "异常": [],
+      "旧现行状态严格命中": [],
+      "PASS": true
+    },
+    "Python工具": {
+      "总数": 20,
+      "异常": [],
+      "help": [
+        {
+          "tool": "organize_data_evidence.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "package_file_indexer.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_big_effect_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_core_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_result_dispatch_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_runtime_clock_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_battle_tail_slots_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_compatibility_engine_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_enc_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_eve_sf2_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_legacy_clock_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_resource_container_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_saf_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_saf_runtime_surface_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sample_structure_validator.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sci_sf2_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sf2_audio_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_sf2_layer_metadata_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_tsf_gamestate_inspector.py",
+          "returncode": 0,
+          "pass": true
+        },
+        {
+          "tool": "youcheng_world_encounter_duration_inspector.py",
+          "returncode": 0,
+          "pass": true
+        }
+      ],
+      "中文工具说明数": 20,
+      "未被工具说明引用的源码": [],
+      "PASS": true
+    },
+    "JSON": {
+      "总数": 404,
+      "异常": [],
+      "PASS": true
+    },
+    "CSV": {
+      "总数": 40,
+      "异常": [],
+      "PASS": true
+    },
+    "缓存残留": [],
+    "核心回归": {
+      "固化44": {
+        "machine": "20/20",
+        "api_39": "9945/9945",
+        "tail_11": "2805/2805",
+        "pass": true
+      },
+      "固化43": {
+        "machine": "15/15",
+        "pass": true
+      },
+      "固化42": {
+        "machine": "11/11",
+        "pass": true
+      },
+      "固化41": {
+        "machine": "13/13",
+        "pass": true
+      },
+      "固化40": {
+        "machine": "10/10",
+        "pass": true
+      },
+      "固化39": {
+        "layers": 11184,
+        "pass": true
+      },
+      "固化38": {
+        "machine": "29/29",
+        "pass": true
+      },
+      "固化37": {
+        "machine": "29/29",
+        "pass": true
+      }
+    },
+    "PASS": true
+  },
+  "当前PASS": true
+}

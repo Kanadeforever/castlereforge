@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "baseline": "固化63最终ZIP直接读取并恢复UTF-8路径",
+  "baseline_total_files": 1152,
+  "baseline_markdown": 107,
+  "baseline_non_markdown": 1045,
+  "inherited_non_markdown_unchanged": 1045,
+  "unexpected_modified_inherited_non_markdown": [],
+  "missing_inherited_non_markdown": [],
+  "new_files_count_before_this_audit_write": 15,
+  "new_files": [
+    "工具/youcheng_battle_class56_action_state_inspector.py",
+    "数据/固化64/Battle动作类五六动作状态与来源依赖调查结果.json",
+    "数据/固化64/Battle动作类五六资源字段.csv",
+    "数据/固化64/固化64封包预审_FAIL_旧节点扫描器继承语句误报.json",
+    "数据/固化64/预审失败_调查器错误把不可达BC7当成class4活动状态.json",
+    "文档/工具详细说明_战斗动作类五六角色状态与来源依赖调查器.md",
+    "文档/战斗动作类五六角色状态路由与类六来源依赖边界说明.md",
+    "证据/阶段D/固化64/原版_0x420F1D_来源依赖写入与类六跳过.asm",
+    "证据/阶段D/固化64/原版_0x4214D3_BC6第一结果通道抑制.asm",
+    "证据/阶段D/固化64/原版_0x422530_来源依赖消费者.asm",
+    "证据/阶段D/固化64/原版_0x423738_BC6专用动作请求.asm",
+    "证据/阶段D/固化64/原版_0x442CC3_BC0BC6动作结束门.asm",
+    "证据/阶段D/固化64/原版_0x443310_类五六动作状态路由.asm",
+    "证据/阶段D/固化64/原版_0x445FB0_BC0角色候选缓存排除.asm",
+    "证据/阶段D/固化64/反汇编证据清单.json"
+  ],
+  "markdown": {
+    "count": 109,
+    "all_have_solid64_banner": true,
+    "bad_utf8": [],
+    "missing_banner": [],
+    "stale_live_assignments": [],
+    "odd_code_fences": []
+  },
+  "python_tools": {
+    "count": 40,
+    "ast_compile_pass": 40,
+    "ast_compile_bad": [],
+    "tool_docs": 40,
+    "new_tool_lines": 1278,
+    "new_tool_chinese_pure_hash_comments": 243,
+    "new_tool_help_pass": true
+  },
+  "structured_files_before_this_audit_write": {
+    "json_count": 552,
+    "json_bad": [],
+    "csv_count": 61,
+    "csv_bad": []
+  },
+  "theme_status": "PASS",
+  "cache_files": [],
+  "preserved_fail_history": [
+    "数据/固化64/预审失败_调查器错误把不可达BC7当成class4活动状态.json",
+    "数据/固化64/固化64封包预审_FAIL_旧节点扫描器继承语句误报.json"
+  ],
+  "notes": [
+    "固化63继承旧非Markdown1045/1045逐字节不变；固化64没有修改旧工具。",
+    "两个FAIL历史均原样保留：BC7可达性语义错误；旧节点扫描器继承语句假阳性。"
+  ]
+}

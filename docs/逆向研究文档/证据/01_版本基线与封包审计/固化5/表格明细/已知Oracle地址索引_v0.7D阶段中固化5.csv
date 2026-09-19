@@ -1,0 +1,11 @@
+﻿地址,结构名,证据等级,当前固化5说明
+0x0042B0D0,D6五槽处理器,A,ID<=27映射；ID>27保留原ID并value=8000
+0x0042B313,D6大ID分支,A,>27写DamageInfo ID并固定8000
+0x00422C3D,D6 normal pending writer,A,residual>0且signed raw ID<=27
+0x004201F0,Article目标合法性/复苏例外,A,target inactive时0x10F/110/111特殊许可
+0x0042B050,Article五槽后专用处理,A,0x108 full-resource;0x10F/110/111 revival类处理
+0x00421690,Ail2状态解除分派,A,按Ail2+0x20清runtime槽
+0x00437960,物品菜单表现分支,A,明确识别0x12D..0x133连续特殊范围；不是能力writer
+0x0046A668,effect-like ID映射表,A,ID0..27映射到RoleDefinition+1E8相对槽
+0x0042160D,pending→runtime提交,A,39槽generic提交
+0x00420440,runtime39槽更新,A,正值每调用减10并夹0

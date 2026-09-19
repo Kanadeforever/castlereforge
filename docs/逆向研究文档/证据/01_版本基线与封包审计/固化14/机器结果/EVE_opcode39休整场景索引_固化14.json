@@ -1,0 +1,113 @@
+{
+  "版本": "v0.7D阶段中-固化13",
+  "日期": "2026-08-14",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "结论等级": "A-静态直接链 + 资源结构直接验证；四种布景描述为资源图像可见事实",
+  "EVE_opcode": "0x39",
+  "Execute": "0x0040D510",
+  "字段": {
+    "偏移": "+0x04",
+    "类型": "u32",
+    "Canonical名称": "men9001_section0_index",
+    "业务语义": "MEN9001.SF2 初始 Section0 组合记录索引"
+  },
+  "直接链": [
+    "0x40D6CF: object+0x04 raw command record* -> object+0x08",
+    "0x40D706: raw_record+0x04 -> DataCenter+0xD0",
+    "0x413665: DataCenter+0xD0 -> 0x43E6F0(MEN9001 controller)",
+    "0x43E4D7: SF2 parser raw+0x14 Section0 count -> controller+0x30",
+    "0x43E6F0/0x43E720: 输入写controller+0x10并夹紧到Section0合法范围",
+    "0x43EDDC/0x43EE00: controller current index -> 0x428E70",
+    "0x428E84/0x428E92: raw+0x14 count边界检查并按Section0 offset table选record"
+  ],
+  "MEN9001": {
+    "源SF2": "证据/阶段D/固化12/MEN9001_从MenusDir重新提取.SF2",
+    "Section数量": [
+      4,
+      4,
+      368,
+      0
+    ],
+    "Section0合法索引": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "Section0记录": [
+      {
+        "索引": 0,
+        "包围盒": [
+          0,
+          0,
+          640,
+          480
+        ],
+        "音频索引": -1,
+        "持续LegacyTick": 1,
+        "子层数量": 1,
+        "Section1图像": [
+          0
+        ]
+      },
+      {
+        "索引": 1,
+        "包围盒": [
+          0,
+          0,
+          800,
+          600
+        ],
+        "音频索引": -1,
+        "持续LegacyTick": 1,
+        "子层数量": 1,
+        "Section1图像": [
+          1
+        ]
+      },
+      {
+        "索引": 2,
+        "包围盒": [
+          0,
+          0,
+          640,
+          480
+        ],
+        "音频索引": -1,
+        "持续LegacyTick": 1,
+        "子层数量": 1,
+        "Section1图像": [
+          2
+        ]
+      },
+      {
+        "索引": 3,
+        "包围盒": [
+          0,
+          0,
+          640,
+          480
+        ],
+        "音频索引": -1,
+        "持续LegacyTick": 1,
+        "子层数量": 1,
+        "Section1图像": [
+          3
+        ]
+      }
+    ],
+    "结构事实": "4个Section0记录各只有1个子层，分别引用同号Section1图像0/1/2/3；均audio=-1、duration=1。"
+  },
+  "重要否定": [
+    "不能把+0x04解释为MEN9002“調態/煉化/歇息”的三项选择index。",
+    "不能泛称frame；直接consumer证明它索引的是SF2 Section0组合记录。",
+    "当前唯一原始EVE样本不含opcode0x39，不能统计脚本实际使用0..3哪些值。"
+  ],
+  "下一步": [
+    "若取得更多EVE，统计opcode0x39 +0x04的实际值/地图分布",
+    "继续追MEN0009 Interface精确控件/合成职责",
+    "支线稳定后返回Battle D7/D8和RNG draw order"
+  ],
+  "固化14复核说明": "本文件语义内容继承固化13；固化14未改变opcode0x39/MEN9001索引结论，并已由当前EVE 57/57静态回归重新验证相关Oracle链。",
+  "当前固化": "v0.7D阶段中-固化14"
+}

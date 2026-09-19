@@ -1,0 +1,193 @@
+{
+  "工具版本": "0.7D.15-固化34",
+  "分派入口": "0x00429480",
+  "分派表": "0x00429AC4 / 0x00429A90",
+  "模式": [
+    {
+      "原始模式": 0,
+      "处理器": "0x004296CD",
+      "Canonical名称": "NORMAL_COPY",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 1,
+      "处理器": "0x004296EB",
+      "Canonical名称": "ALPHA_BLEND_16",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 2,
+      "处理器": "0x0042974D",
+      "Canonical名称": "WEIGHTED_BLEND_16",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 3,
+      "处理器": "0x004297B0",
+      "Canonical名称": "MASKED_DESTINATION_TINT_BLEND",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 4,
+      "处理器": "0x004297FC",
+      "Canonical名称": "WEIGHTED_SOURCE_PLUS_CONSTANT_COLOR",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 5,
+      "处理器": "0x00429848",
+      "Canonical名称": "INVERT_SOURCE_COPY",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 6,
+      "处理器": "0x0042988F",
+      "Canonical名称": "INVERT_DESTINATION_MASK",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 7,
+      "处理器": "0x004298D6",
+      "Canonical名称": "LEGACY_LOOKUP_COMPOSITE_7",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 8,
+      "处理器": "0x0042991D",
+      "Canonical名称": "LEGACY_BRIGHTEN_BY_SOURCE_MAX",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 9,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 10,
+      "处理器": "0x004299C7",
+      "Canonical名称": "MASKED_DESTINATION_NEIGHBOR_AVERAGE_A",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 11,
+      "处理器": "0x00429A08",
+      "Canonical名称": "MASKED_DESTINATION_NEIGHBOR_AVERAGE_B",
+      "原版行为": "专用处理器"
+    },
+    {
+      "原始模式": 12,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 13,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 14,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 15,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 16,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 17,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 18,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 19,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 20,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 21,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 22,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 23,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 24,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 25,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 26,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 27,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 28,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 29,
+      "处理器": null,
+      "Canonical名称": "FALLBACK_NOOP",
+      "原版行为": "fallback/no-op"
+    },
+    {
+      "原始模式": 30,
+      "处理器": "0x00429964",
+      "Canonical名称": "SOURCE_ADD_CONSTANT_BITMASK",
+      "原版行为": "专用处理器"
+    }
+  ]
+}

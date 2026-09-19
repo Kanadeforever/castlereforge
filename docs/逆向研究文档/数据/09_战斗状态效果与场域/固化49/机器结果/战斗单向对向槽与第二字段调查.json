@@ -1,0 +1,609 @@
+{
+  "工具版本": "0.7D-solid49.0",
+  "输入": {
+    "RPG.exe": {
+      "路径": "/mnt/data/work49/input/RPG.exe",
+      "大小": 462848,
+      "SHA256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f"
+    },
+    "Firttech.enc": {
+      "路径": "/mnt/data/work49/input/multimedia/multimedia/public/Firttech.enc",
+      "大小": 280000,
+      "SHA256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+      "解密后SHA256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a"
+    },
+    "Ail2.ENC": {
+      "路径": "/mnt/data/work49/input/multimedia/multimedia/public/Ail2.ENC",
+      "大小": 648200,
+      "SHA256": "a24784316c2bd23fc2683637ab860c0e54f1b4175f6db990398843bd0a13c5d8",
+      "解密后SHA256": "a85d0904e969700b996ee89134582552bfabb98af76321804af34f9896b051a8"
+    }
+  },
+  "机器码断言": [
+    {
+      "名称": "counterpart_first_dword_only",
+      "VA": "0x0042B536",
+      "expected_hex": "8b4c9f108b14cd68a6460085d27c248b7424348b4c9f248b8496e80100003bc17e0b2bc1898496e8010000eb062bc8894c9f24",
+      "actual_hex": "8b4c9f108b14cd68a6460085d27c248b7424348b4c9f248b8496e80100003bc17e0b2bc1898496e8010000eb062bc8894c9f24",
+      "PASS": true
+    },
+    {
+      "名称": "positive_value_gate",
+      "VA": "0x0042B1BF",
+      "expected_hex": "8b44241485c00f8eb2030000",
+      "actual_hex": "8b44241485c00f8eb2030000",
+      "PASS": true
+    },
+    {
+      "名称": "raw8_broad_clear_a",
+      "VA": "0x00421915",
+      "expected_hex": "8995540a0000",
+      "actual_hex": "8995540a0000",
+      "PASS": true
+    },
+    {
+      "名称": "raw8_broad_clear_b",
+      "VA": "0x00421F9B",
+      "expected_hex": "899e540a0000",
+      "actual_hex": "899e540a0000",
+      "PASS": true
+    },
+    {
+      "名称": "normal_pending_same_index_writer",
+      "VA": "0x00422C44",
+      "expected_hex": "8b44241c03c28b048683f81b7f1c",
+      "actual_hex": "8b44241c03c28b048683f81b7f1c",
+      "PASS": true
+    }
+  ],
+  "机器码断言通过数": 5,
+  "机器码断言总数": 5,
+  "对向表": [
+    {
+      "raw_id": 0,
+      "counterpart_slot": 21,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 1,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 2,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 3,
+      "counterpart_slot": 22,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 4,
+      "counterpart_slot": 23,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 5,
+      "counterpart_slot": 24,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 6,
+      "counterpart_slot": 25,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 7,
+      "counterpart_slot": 26,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 8,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 9,
+      "counterpart_slot": 8,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 10,
+      "counterpart_slot": 15,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 11,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 12,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 13,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 14,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 15,
+      "counterpart_slot": 10,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 16,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 17,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 18,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 19,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 20,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 21,
+      "counterpart_slot": 0,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 22,
+      "counterpart_slot": 3,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 23,
+      "counterpart_slot": 4,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 24,
+      "counterpart_slot": 5,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 25,
+      "counterpart_slot": 6,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 26,
+      "counterpart_slot": 7,
+      "second_dword": 0
+    },
+    {
+      "raw_id": 27,
+      "counterpart_slot": -1,
+      "second_dword": 0
+    }
+  ],
+  "对向表检查": {
+    "first_dword_28项精确匹配": true,
+    "second_dword_28项全零": true,
+    "raw8_counterpart": -1,
+    "raw9_counterpart": 8,
+    "raw9_to_8_is_one_way": true
+  },
+  "绝对地址静态引用扫描": {
+    "第一DWORD绝对地址命中": [
+      {
+        "raw_id": 0,
+        "address": "0x0046A668",
+        "file_offsets": [
+          "0x2B53D"
+        ]
+      }
+    ],
+    "第二DWORD绝对地址命中": [],
+    "第一DWORD命中项数": 1,
+    "第二DWORD命中项数": 0,
+    "PASS": true
+  },
+  "资源正样本摘要": {
+    "raw8_occurrence_count": 7,
+    "raw8_firttech_count": 7,
+    "raw8_ail2_count": 0,
+    "raw8_values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "raw8_all_direct_values_zero": true,
+    "raw9_occurrence_count": 10,
+    "raw9_firttech_count": 9,
+    "raw9_ail2_count": 1,
+    "raw9_values": [
+      50,
+      60,
+      90,
+      90,
+      10,
+      20,
+      30,
+      40,
+      50,
+      30
+    ],
+    "raw9_all_direct_values_positive": true,
+    "raw8_firttech_exact": {
+      "source": "Firttech",
+      "expected": {
+        "312": [
+          "炎殺戟",
+          0
+        ],
+        "339": [
+          "炎殺彈",
+          0
+        ],
+        "408": [
+          "離火神訣",
+          0
+        ],
+        "409": [
+          "焚炎之陣",
+          0
+        ],
+        "410": [
+          "七燁真火",
+          0
+        ],
+        "411": [
+          "天火之術",
+          0
+        ],
+        "412": [
+          "九俱焚滅",
+          0
+        ]
+      },
+      "actual": {
+        "312": [
+          "炎殺戟",
+          0
+        ],
+        "339": [
+          "炎殺彈",
+          0
+        ],
+        "408": [
+          "離火神訣",
+          0
+        ],
+        "409": [
+          "焚炎之陣",
+          0
+        ],
+        "410": [
+          "七燁真火",
+          0
+        ],
+        "411": [
+          "天火之術",
+          0
+        ],
+        "412": [
+          "九俱焚滅",
+          0
+        ]
+      },
+      "duplicate_indexes": [],
+      "PASS": true
+    },
+    "raw8_ail2_exact": {
+      "source": "Ail2",
+      "expected": {},
+      "actual": {},
+      "duplicate_indexes": [],
+      "PASS": true
+    },
+    "raw9_firttech_exact": {
+      "source": "Firttech",
+      "expected": {
+        "336": [
+          "魔獄冰嵐",
+          50
+        ],
+        "340": [
+          "冰破飛錐",
+          60
+        ],
+        "368": [
+          "青色魔霧",
+          90
+        ],
+        "383": [
+          "冰魄晶壁",
+          90
+        ],
+        "413": [
+          "天霜雪舞",
+          10
+        ],
+        "414": [
+          "冰華之陣",
+          20
+        ],
+        "415": [
+          "玄凜冰煞",
+          30
+        ],
+        "416": [
+          "冰獄寒嵐",
+          40
+        ],
+        "417": [
+          "魂凍冰魄",
+          50
+        ]
+      },
+      "actual": {
+        "336": [
+          "魔獄冰嵐",
+          50
+        ],
+        "340": [
+          "冰破飛錐",
+          60
+        ],
+        "368": [
+          "青色魔霧",
+          90
+        ],
+        "383": [
+          "冰魄晶壁",
+          90
+        ],
+        "413": [
+          "天霜雪舞",
+          10
+        ],
+        "414": [
+          "冰華之陣",
+          20
+        ],
+        "415": [
+          "玄凜冰煞",
+          30
+        ],
+        "416": [
+          "冰獄寒嵐",
+          40
+        ],
+        "417": [
+          "魂凍冰魄",
+          50
+        ]
+      },
+      "duplicate_indexes": [],
+      "PASS": true
+    },
+    "raw9_ail2_exact": {
+      "source": "Ail2",
+      "expected": {
+        "360": [
+          "封凜冰露",
+          30
+        ]
+      },
+      "actual": {
+        "360": [
+          "封凜冰露",
+          30
+        ]
+      },
+      "duplicate_indexes": [],
+      "PASS": true
+    }
+  },
+  "raw8资源命中": [
+    {
+      "source": "Firttech",
+      "record_index": 312,
+      "record_id": 312,
+      "name": "炎殺戟",
+      "effect_slot": 0,
+      "raw_id": 8,
+      "value": 0,
+      "description": "古倫德的槍技之一，將帶有火炎之力的長槍全力打擊一個敵人。"
+    },
+    {
+      "source": "Firttech",
+      "record_index": 339,
+      "record_id": 339,
+      "name": "炎殺彈",
+      "effect_slot": 0,
+      "raw_id": 8,
+      "value": 0,
+      "description": ""
+    },
+    {
+      "source": "Firttech",
+      "record_index": 408,
+      "record_id": 408,
+      "name": "離火神訣",
+      "effect_slot": 0,
+      "raw_id": 8,
+      "value": 0,
+      "description": "引離火之氣應地脈之向而發，可憑空造出烈焰焚燒一名敵人。"
+    },
+    {
+      "source": "Firttech",
+      "record_index": 409,
+      "record_id": 409,
+      "name": "焚炎之陣",
+      "effect_slot": 0,
+      "raw_id": 8,
+      "value": 0,
+      "description": "引離火之氣循運四方地象，能自敵陣地面引出烈焰，焚燒所有陣中敵人。 "
+    },
+    {
+      "source": "Firttech",
+      "record_index": 410,
+      "record_id": 410,
+      "name": "七燁真火",
+      "effect_slot": 0,
+      "raw_id": 8,
+      "value": 0,
+      "description": "引離火之氣懸罡風之位而發，可自空中引天火捲焚一橫排敵人，威力極強。 "
+    },
+    {
+      "source": "Firttech",
+      "record_index": 411,
+      "record_id": 411,
+      "name": "天火之術",
+      "effect_slot": 0,
+      "raw_id": 8,
+      "value": 0,
+      "description": "以秘儀請召焰尊火獸封豨之力，在空中懸熾聚焰而發，其神火天焰能將敵群一舉焚滅。"
+    },
+    {
+      "source": "Firttech",
+      "record_index": 412,
+      "record_id": 412,
+      "name": "九俱焚滅",
+      "effect_slot": 0,
+      "raw_id": 8,
+      "value": 0,
+      "description": "此術能交織天地兩氣而成至熾至熱的真火，並化為烈焰旋風席捲敵陣，將之燒殺殆盡。"
+    }
+  ],
+  "raw9资源命中": [
+    {
+      "source": "Firttech",
+      "record_index": 336,
+      "record_id": 336,
+      "name": "魔獄冰嵐",
+      "effect_slot": 0,
+      "raw_id": 9,
+      "value": 50,
+      "description": ""
+    },
+    {
+      "source": "Firttech",
+      "record_index": 340,
+      "record_id": 340,
+      "name": "冰破飛錐",
+      "effect_slot": 0,
+      "raw_id": 9,
+      "value": 60,
+      "description": ""
+    },
+    {
+      "source": "Firttech",
+      "record_index": 368,
+      "record_id": 368,
+      "name": "青色魔霧",
+      "effect_slot": 0,
+      "raw_id": 9,
+      "value": 90,
+      "description": ""
+    },
+    {
+      "source": "Firttech",
+      "record_index": 383,
+      "record_id": 383,
+      "name": "冰魄晶壁",
+      "effect_slot": 0,
+      "raw_id": 9,
+      "value": 90,
+      "description": "冰獸冱蚑的絕技之一，製造一面絕對零度的永凍冰壁，能在一定時間防護各種攻擊。"
+    },
+    {
+      "source": "Firttech",
+      "record_index": 413,
+      "record_id": 413,
+      "name": "天霜雪舞",
+      "effect_slot": 0,
+      "raw_id": 9,
+      "value": 10,
+      "description": "初級的冥儀冰咒，引冥凜凍氣圍繞一直列敵人身上，令其遭受凜凍之創。"
+    },
+    {
+      "source": "Firttech",
+      "record_index": 414,
+      "record_id": 414,
+      "name": "冰華之陣",
+      "effect_slot": 0,
+      "raw_id": 9,
+      "value": 20,
+      "description": "以玄凜凍氣循地脈陰象而發，可生結冰刃於敵人腳下造成凍創之傷。"
+    },
+    {
+      "source": "Firttech",
+      "record_index": 415,
+      "record_id": 415,
+      "name": "玄凜冰煞",
+      "effect_slot": 0,
+      "raw_id": 9,
+      "value": 30,
+      "description": "將玄凜寒氣乘罡風迸發，令一橫排敵人所在之處盡遭冰刃割裂凍凜，威力極強。 "
+    },
+    {
+      "source": "Firttech",
+      "record_index": 416,
+      "record_id": 416,
+      "name": "冰獄寒嵐",
+      "effect_slot": 0,
+      "raw_id": 9,
+      "value": 40,
+      "description": "極強的的冥儀冰咒，所引絕凜凍氣能瞬間結水為冰，瞬間予所有敵人致死的傷害。"
+    },
+    {
+      "source": "Firttech",
+      "record_index": 417,
+      "record_id": 417,
+      "name": "魂凍冰魄",
+      "effect_slot": 0,
+      "raw_id": 9,
+      "value": 50,
+      "description": "最強的冥儀冰咒，能引四周寒慄絕凜之氣聚敵群之中，並型化為巨大冰刃凍戮所有敵人。"
+    },
+    {
+      "source": "Ail2",
+      "record_index": 360,
+      "record_id": 360,
+      "name": "封凜冰露",
+      "effect_slot": 0,
+      "raw_id": 9,
+      "value": 30,
+      "description": "以凜儀密法凝聚凍氣而成的寒露，使用後可造出凍慄冰嵐攻敵，效似「冰獄寒嵐」。"
+    }
+  ],
+  "结论边界": [
+    "raw9->slot8 是当前表中的真实单向对向/抵消边；raw8->-1，兼容实现不得自动补成8->9。",
+    "0x46A668每项第二DWORD当前28/28为0；当前EXE静态绝对地址引用面未发现任何第二DWORD地址命中。",
+    "第二DWORD因此应保留原值但继续保持UNKNOWN；不能命名为padding/reserved/dead，也不能在兼容格式中删除。",
+    "当前canonical Firttech/Ail2全表中raw8共7次，全部来自Firttech且direct value=0；raw9共10次，9条Firttech+1条Ail2且direct value全部>0。",
+    "raw8资源名称与火系术法高度关联、raw9资源名称与冰/凛冻高度关联，但这只能作为资源关联观察；raw8作者正式状态名和正值运行时业务仍未证明。",
+    "generic normal-effect同编号writer仍有能力写slot8；因此不得把当前资源direct value=0扩大成raw8运行时绝对不可为正。"
+  ],
+  "PASS": true
+}

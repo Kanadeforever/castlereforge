@@ -1,0 +1,60 @@
+
+/mnt/data/work52/input/RPG.exe:     file format pei-i386
+
+
+Disassembly of section .text:
+
+00421236 <.text+0x20236>:
+  421236:	8b 87 48 08 00 00    	mov    eax,DWORD PTR [edi+0x848]
+  42123c:	3b c5                	cmp    eax,ebp
+  42123e:	74 48                	je     0x421288
+  421240:	83 bf bc 01 00 00 ff 	cmp    DWORD PTR [edi+0x1bc],0xffffffff
+  421247:	74 3f                	je     0x421288
+  421249:	8b 48 38             	mov    ecx,DWORD PTR [eax+0x38]
+  42124c:	8b 97 84 08 00 00    	mov    edx,DWORD PTR [edi+0x884]
+  421252:	2b d1                	sub    edx,ecx
+  421254:	89 97 84 08 00 00    	mov    DWORD PTR [edi+0x884],edx
+  42125a:	8b 08                	mov    ecx,DWORD PTR [eax]
+  42125c:	81 f9 2f 01 00 00    	cmp    ecx,0x12f
+  421262:	74 57                	je     0x4212bb
+  421264:	8b 50 34             	mov    edx,DWORD PTR [eax+0x34]
+  421267:	8b 87 7c 08 00 00    	mov    eax,DWORD PTR [edi+0x87c]
+  42126d:	2b c2                	sub    eax,edx
+  42126f:	6a 03                	push   0x3
+  421271:	8b cf                	mov    ecx,edi
+  421273:	89 87 7c 08 00 00    	mov    DWORD PTR [edi+0x87c],eax
+  421279:	e8 82 07 00 00       	call   0x421a00
+  42127e:	5f                   	pop    edi
+  42127f:	5e                   	pop    esi
+  421280:	5d                   	pop    ebp
+  421281:	5b                   	pop    ebx
+  421282:	83 c4 10             	add    esp,0x10
+  421285:	c2 04 00             	ret    0x4
+  421288:	8b 87 f4 0c 00 00    	mov    eax,DWORD PTR [edi+0xcf4]
+  42128e:	3b c5                	cmp    eax,ebp
+  421290:	74 29                	je     0x4212bb
+  421292:	83 bf bc 01 00 00 ff 	cmp    DWORD PTR [edi+0x1bc],0xffffffff
+  421299:	75 20                	jne    0x4212bb
+  42129b:	8b 88 18 01 00 00    	mov    ecx,DWORD PTR [eax+0x118]
+  4212a1:	8b 97 7c 08 00 00    	mov    edx,DWORD PTR [edi+0x87c]
+  4212a7:	2b d1                	sub    edx,ecx
+  4212a9:	89 97 7c 08 00 00    	mov    DWORD PTR [edi+0x87c],edx
+  4212af:	8b 90 1c 01 00 00    	mov    edx,DWORD PTR [eax+0x11c]
+  4212b5:	29 97 84 08 00 00    	sub    DWORD PTR [edi+0x884],edx
+  4212bb:	6a 03                	push   0x3
+  4212bd:	8b cf                	mov    ecx,edi
+  4212bf:	e8 3c 07 00 00       	call   0x421a00
+  4212c4:	5f                   	pop    edi
+  4212c5:	5e                   	pop    esi
+  4212c6:	5d                   	pop    ebp
+  4212c7:	5b                   	pop    ebx
+  4212c8:	83 c4 10             	add    esp,0x10
+  4212cb:	c2 04 00             	ret    0x4
+  4212ce:	83 f8 02             	cmp    eax,0x2
+  4212d1:	0f 85 ab 03 00 00    	jne    0x421682
+  4212d7:	50                   	push   eax
+  4212d8:	8b cf                	mov    ecx,edi
+  4212da:	89 2d 84 fd 89 00    	mov    DWORD PTR ds:0x89fd84,ebp
+  4212e0:	e8 1b 07 00 00       	call   0x421a00
+  4212e5:	6a 02                	push   0x2
+  4212e7:	8b                 	mov    ecx,edi

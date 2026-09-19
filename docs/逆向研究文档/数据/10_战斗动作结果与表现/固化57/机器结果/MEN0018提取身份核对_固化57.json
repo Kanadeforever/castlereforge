@@ -1,0 +1,13 @@
+{
+  "来源": "本轮使用同包 youcheng_resource_container_inspector.py 从 canonical MenusDir.DAT 重新提取",
+  "容器内记录": {
+    "容器内路径": "tdg/MENUS/MEN0018.SF2",
+    "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0018.SF2",
+    "字节数": 21049,
+    "SHA256": "2a6f885dea4c5c579bd5360e4864fb6769e13c8c4a9fd8bf2b0f192ffec2c4b6",
+    "与目录记录一致": true
+  },
+  "预期SHA256": "2a6f885dea4c5c579bd5360e4864fb6769e13c8c4a9fd8bf2b0f192ffec2c4b6",
+  "预期字节数": 21049,
+  "PASS": true
+}

@@ -1,0 +1,263 @@
+{
+  "工具版本": "0.7D.4-固化22",
+  "资源根": [
+    "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据"
+  ],
+  "输入路径文件总数": 15,
+  "唯一SHA256文件数": 13,
+  "汇总": {
+    "唯一文件": 13,
+    "Section0记录": 80,
+    "Section1记录": 51,
+    "Section2记录": 647,
+    "Section3记录": 0,
+    "Section0子层": 128,
+    "压缩SF2": 6,
+    "PASS": 13
+  },
+  "Tile尺寸分布": {
+    "64x48": 13
+  },
+  "渲染模式分布": {
+    "0": 66,
+    "1": 26,
+    "2": 17,
+    "7": 19
+  },
+  "文件": [
+    {
+      "SHA256": "0addb8c6456df52ea269cd20b1935d6135ed3d9b309a5592bb86589da0ae812c",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化14/MEN8008_从MenusDir重新提取.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        2,
+        27,
+        0
+      ],
+      "子层": 2,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "2a31409d90b7dc75941c633a5f2d0825ef9c3fa00938d7f44c98440924404ea4",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化17/FANIN_原始资源.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        18,
+        1,
+        1,
+        0
+      ],
+      "子层": 18,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "6849e8ea94ee486b898ed13eb7b87ce96b585c34395221de735cb3ce1efe42b8",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化17/FANOUT_原始资源.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        1,
+        1,
+        0
+      ],
+      "子层": 8,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "9e1bd739e4a46b8bc7ddb8f478514a70930141f47ea086d47def4011ef9f78e8",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化14/MEN8004_从MenusDir重新提取.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        2,
+        2,
+        0
+      ],
+      "子层": 12,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "cb63c915098a4bdcea6793b3841a9cececaf836a1f1a131637211ed4b9bf7f84",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化12/MEN9001_从MenusDir重新提取.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        4,
+        4,
+        368,
+        0
+      ],
+      "子层": 4,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "e0f1a7703d604473333a7bb136fbee9446e2e0d6a110fbf7027c31018f0f8808",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化14/MEN0003_从MenusDir重新提取.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        9,
+        11,
+        21,
+        0
+      ],
+      "子层": 27,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e3ee31f14f4fccacbea086a660c68a9ababeebb6eda0763ba186601dcafca0f3",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化12/MEN9002_从MenusDir重新提取.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        17,
+        0
+      ],
+      "子层": 3,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e90e9e623736bc24678421c1b0c3323b1707a1d8ead54c50788fdeab24680e76",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化14/MEN8003_从MenusDir重新提取.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        13,
+        0
+      ],
+      "子层": 2,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e9d4484c1e108b836b2bdbc1794cbb67a8e8086eb9c121159e5b8cb00a2e4ffc",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化14/MEN8007_从MenusDir重新提取.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        7,
+        14,
+        0
+      ],
+      "子层": 8,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "eaf2ee79bf9adbba58346178063b3a4822391148f40f4f1dabc5d6229ebfe260",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化12/MEN0009_从MenusDir重新提取.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        9,
+        10,
+        20,
+        0
+      ],
+      "子层": 26,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "f2f5e804abce509b206ad8df7dcd592e41f1a56797f8ec141d356f11227c1b05",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化14/MEN8005_从MenusDir重新提取.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        2,
+        2,
+        0
+      ],
+      "子层": 12,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "f3971d074c848898ed94091670c896af3f04842719d676301756f18f5a602d6c",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化14/MEN8001_从MenusDir重新提取.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        140,
+        0
+      ],
+      "子层": 3,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "f4f4d945bc3ecc0f1fb909c57e79b054e9f0e8f938e5755e11c2d37ff204ef13",
+      "代表文件": "/mnt/data/gucheng_static22/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化22_D8非Battle随机语义与SCI实体行为静态闭合版/证据/阶段D/固化14/MEN8002_从MenusDir重新提取.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        21,
+        0
+      ],
+      "子层": 3,
+      "压缩": true,
+      "PASS": true
+    }
+  ]
+}

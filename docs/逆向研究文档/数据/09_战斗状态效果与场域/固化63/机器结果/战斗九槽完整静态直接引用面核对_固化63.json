@@ -1,0 +1,836 @@
+{
+  "工具": "youcheng_battle_field_effect_direct_surface_inspector.py",
+  "工具版本": "0.7D-solid63.0",
+  "节点": "固化63",
+  "研究主题": "Battle九槽manager完整静态直接引用面与slot0/1/5额外数值consumer边界",
+  "输入": {
+    "原版RPG": "/mnt/data/solid63_inputs/original/RPG.exe",
+    "研究版RPG": "/mnt/data/RPG.exe",
+    "Firttech": "/mnt/data/solid63_inputs/Firttech.enc"
+  },
+  "输入哈希": {
+    "原版RPG_SHA256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "原版严格匹配": true,
+    "研究版RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "研究版严格匹配": true
+  },
+  "Firttech": {
+    "加密SHA256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+    "加密SHA严格匹配": true,
+    "解密SHA256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a",
+    "解密SHA严格匹配": true,
+    "记录数": 500,
+    "九项slot数": 9,
+    "无额外数值direct_consumer的slot": [
+      0,
+      1,
+      5
+    ]
+  },
+  "九项canonical记录": [
+    {
+      "slot": 0,
+      "FIRTTECH_ID": "0x15A",
+      "物理record_index": 346,
+      "作者名称": "非天死潭",
+      "machine_class": 1,
+      "+0x20_raw": 0,
+      "+0x90_raw": 900000,
+      "作者说明": "",
+      "当前高层数值查询状态": "固化63关闭当前canonical静态直接额外数值consumer边界"
+    },
+    {
+      "slot": 1,
+      "FIRTTECH_ID": "0x17C",
+      "物理record_index": 380,
+      "作者名称": "封炎滅陣",
+      "machine_class": 2,
+      "+0x20_raw": 0,
+      "+0x90_raw": 420000,
+      "作者说明": "炎獸封豨的絕技之一，能將敵方全體封入焚炎離火之陣中，以高熱將其焚炙致死。",
+      "当前高层数值查询状态": "固化63关闭当前canonical静态直接额外数值consumer边界"
+    },
+    {
+      "slot": 2,
+      "FIRTTECH_ID": "0x1C2",
+      "物理record_index": 450,
+      "作者名称": "反咒禁制",
+      "machine_class": 4,
+      "+0x20_raw": 2,
+      "+0x90_raw": 350000,
+      "作者说明": "能為己方辟禦所有咒術的神妙禁制，在承受一定程度的術法之力或時限已至時便會消失。",
+      "当前高层数值查询状态": "已有固化59数值consumer"
+    },
+    {
+      "slot": 3,
+      "FIRTTECH_ID": "0x1C9",
+      "物理record_index": 457,
+      "作者名称": "閾迦封界",
+      "machine_class": 4,
+      "+0x20_raw": 1,
+      "+0x90_raw": 1000000,
+      "作者说明": "幽神羅鍭的至高秘法，能張開難摧不破的「閾迦封界」，保護所有伙伴不受兵刃咒法之害。",
+      "当前高层数值查询状态": "已有固化59数值consumer"
+    },
+    {
+      "slot": 4,
+      "FIRTTECH_ID": "0x1CA",
+      "物理record_index": 458,
+      "作者名称": "鬼唳天幕",
+      "machine_class": 4,
+      "+0x20_raw": 0,
+      "+0x90_raw": 800000,
+      "作者说明": "在敵陣中引聚幽魄為界，這幽魄之界會蔽光蝕靈，使敵人施展的神光和治癒咒術全都失效。",
+      "当前高层数值查询状态": "已有固化59数值consumer"
+    },
+    {
+      "slot": 5,
+      "FIRTTECH_ID": "0x1CD",
+      "物理record_index": 461,
+      "作者名称": "幽魄厲界",
+      "machine_class": 4,
+      "+0x20_raw": 0,
+      "+0x90_raw": 500000,
+      "作者说明": "在敵陣中引聚幽魄為界，這幽魄之界會蔽光蝕靈，使敵人施展的神光和治癒咒術全都失效。",
+      "当前高层数值查询状态": "固化63关闭当前canonical静态直接额外数值consumer边界"
+    },
+    {
+      "slot": 6,
+      "FIRTTECH_ID": "0x1CE",
+      "物理record_index": 462,
+      "作者名称": "六甲神儀",
+      "machine_class": 4,
+      "+0x20_raw": 1,
+      "+0x90_raw": 800000,
+      "作者说明": "能為己方辟禦所有兵刃武技之擊的神妙護界，在承受一定程度的攻擊或時限已至時便會消失。",
+      "当前高层数值查询状态": "已有固化59数值consumer"
+    },
+    {
+      "slot": 7,
+      "FIRTTECH_ID": "0x1CF",
+      "物理record_index": 463,
+      "作者名称": "時輪返陣",
+      "machine_class": 4,
+      "+0x20_raw": 1,
+      "+0x90_raw": 900000,
+      "作者说明": "此咒能以玄機妙法操動時輪之律，在其時效內使己方全員蓄勁行動的速度增為原有的三倍。",
+      "当前高层数值查询状态": "已有固化59数值consumer"
+    },
+    {
+      "slot": 8,
+      "FIRTTECH_ID": "0x1D1",
+      "物理record_index": 465,
+      "作者名称": "鬼縛之陣",
+      "machine_class": 4,
+      "+0x20_raw": 0,
+      "+0x90_raw": 750000,
+      "作者说明": "此咒可在敵陣之下引來怨厲鬼氣纏縛敵人，使其動作減慢並無法使用技法之外的一般攻擊。",
+      "当前高层数值查询状态": "已有固化59数值consumer"
+    }
+  ],
+  "九槽方法direct调用与函数指针面": [
+    {
+      "目标": "0x0043DA30",
+      "意义": "九槽reset",
+      "direct_CALL数量": 3,
+      "direct_CALL实际": [
+        "0x0043DA13",
+        "0x00442849",
+        "0x0044285D"
+      ],
+      "direct_CALL预期": [
+        "0x0043DA13",
+        "0x00442849",
+        "0x0044285D"
+      ],
+      "direct_CALL严格匹配": true,
+      "整个PE绝对函数VA常量数量": 0,
+      "整个PE绝对函数VA常量": [],
+      "无绝对函数指针常量": true
+    },
+    {
+      "目标": "0x0043DA50",
+      "意义": "按slot查询有效性",
+      "direct_CALL数量": 12,
+      "direct_CALL实际": [
+        "0x0041A761",
+        "0x0041A772",
+        "0x004204DD",
+        "0x004204F7",
+        "0x00420515",
+        "0x0042052F",
+        "0x00423087",
+        "0x004230A3",
+        "0x0042BF56",
+        "0x0042BF75",
+        "0x004442C9",
+        "0x004442D9"
+      ],
+      "direct_CALL预期": [
+        "0x0041A761",
+        "0x0041A772",
+        "0x004204DD",
+        "0x004204F7",
+        "0x00420515",
+        "0x0042052F",
+        "0x00423087",
+        "0x004230A3",
+        "0x0042BF56",
+        "0x0042BF75",
+        "0x004442C9",
+        "0x004442D9"
+      ],
+      "direct_CALL严格匹配": true,
+      "整个PE绝对函数VA常量数量": 0,
+      "整个PE绝对函数VA常量": [],
+      "无绝对函数指针常量": true
+    },
+    {
+      "目标": "0x0043DAB0",
+      "意义": "九槽生命周期tick",
+      "direct_CALL数量": 2,
+      "direct_CALL实际": [
+        "0x00442CB4",
+        "0x00442CBE"
+      ],
+      "direct_CALL预期": [
+        "0x00442CB4",
+        "0x00442CBE"
+      ],
+      "direct_CALL严格匹配": true,
+      "整个PE绝对函数VA常量数量": 0,
+      "整个PE绝对函数VA常量": [],
+      "无绝对函数指针常量": true
+    },
+    {
+      "目标": "0x0043DB20",
+      "意义": "按FIRTTECH白名单建立场域slot",
+      "direct_CALL数量": 2,
+      "direct_CALL实际": [
+        "0x004200A7",
+        "0x004200FA"
+      ],
+      "direct_CALL预期": [
+        "0x004200A7",
+        "0x004200FA"
+      ],
+      "direct_CALL严格匹配": true,
+      "整个PE绝对函数VA常量数量": 0,
+      "整个PE绝对函数VA常量": [],
+      "无绝对函数指针常量": true
+    },
+    {
+      "目标": "0x0043DC10",
+      "意义": "按owner查询任一active slot",
+      "direct_CALL数量": 2,
+      "direct_CALL实际": [
+        "0x00442D2C",
+        "0x00442D3C"
+      ],
+      "direct_CALL预期": [
+        "0x00442D2C",
+        "0x00442D3C"
+      ],
+      "direct_CALL严格匹配": true,
+      "整个PE绝对函数VA常量数量": 0,
+      "整个PE绝对函数VA常量": [],
+      "无绝对函数指针常量": true
+    },
+    {
+      "目标": "0x0043DC40",
+      "意义": "按slot查询owner",
+      "direct_CALL数量": 2,
+      "direct_CALL实际": [
+        "0x004230DB",
+        "0x004230ED"
+      ],
+      "direct_CALL预期": [
+        "0x004230DB",
+        "0x004230ED"
+      ],
+      "direct_CALL严格匹配": true,
+      "整个PE绝对函数VA常量数量": 0,
+      "整个PE绝对函数VA常量": [],
+      "无绝对函数指针常量": true
+    },
+    {
+      "目标": "0x0043DC60",
+      "意义": "按owner清理全部slot",
+      "direct_CALL数量": 4,
+      "direct_CALL实际": [
+        "0x00421226",
+        "0x00421231",
+        "0x004232A8",
+        "0x004232B5"
+      ],
+      "direct_CALL预期": [
+        "0x00421226",
+        "0x00421231",
+        "0x004232A8",
+        "0x004232B5"
+      ],
+      "direct_CALL严格匹配": true,
+      "整个PE绝对函数VA常量数量": 0,
+      "整个PE绝对函数VA常量": [],
+      "无绝对函数指针常量": true
+    }
+  ],
+  "manager基址与别名literal面": {
+    "manager基址literal": [
+      {
+        "manager_base": "0x0089FE08",
+        "实际数量": 15,
+        "实际literal起始": [
+          "0x0041F2C0",
+          "0x004200A3",
+          "0x004204D9",
+          "0x00420511",
+          "0x0042121C",
+          "0x0042309F",
+          "0x004230D6",
+          "0x004232A4",
+          "0x004235B1",
+          "0x004235E5",
+          "0x00442793",
+          "0x0044283F",
+          "0x00442CB0",
+          "0x00442D28",
+          "0x004442D5"
+        ],
+        "预期literal起始": [
+          "0x0041F2C0",
+          "0x004200A3",
+          "0x004204D9",
+          "0x00420511",
+          "0x0042121C",
+          "0x0042309F",
+          "0x004230D6",
+          "0x004232A4",
+          "0x004235B1",
+          "0x004235E5",
+          "0x00442793",
+          "0x0044283F",
+          "0x00442CB0",
+          "0x00442D28",
+          "0x004442D5"
+        ],
+        "严格匹配": true
+      },
+      {
+        "manager_base": "0x0089FFD0",
+        "实际数量": 15,
+        "实际literal起始": [
+          "0x0041F2F7",
+          "0x004200F6",
+          "0x004204F3",
+          "0x0042052B",
+          "0x0042122D",
+          "0x00423082",
+          "0x004230E9",
+          "0x004232B0",
+          "0x00423601",
+          "0x00423635",
+          "0x004427A3",
+          "0x0044284F",
+          "0x00442CBA",
+          "0x00442D38",
+          "0x004442C5"
+        ],
+        "预期literal起始": [
+          "0x0041F2F7",
+          "0x004200F6",
+          "0x004204F3",
+          "0x0042052B",
+          "0x0042122D",
+          "0x00423082",
+          "0x004230E9",
+          "0x004232B0",
+          "0x00423601",
+          "0x00423635",
+          "0x004427A3",
+          "0x0044284F",
+          "0x00442CBA",
+          "0x00442D38",
+          "0x004442C5"
+        ],
+        "严格匹配": true
+      }
+    ],
+    "manager别名literal": [
+      {
+        "alias全局": "0x0089FD54",
+        "意义": "菜单侧manager别名A",
+        "实际数量": 2,
+        "实际literal起始": [
+          "0x0041A76C",
+          "0x0044278F"
+        ],
+        "预期literal起始": [
+          "0x0041A76C",
+          "0x0044278F"
+        ],
+        "严格匹配": true
+      },
+      {
+        "alias全局": "0x0089FD58",
+        "意义": "菜单侧manager别名B",
+        "实际数量": 2,
+        "实际literal起始": [
+          "0x0041A75B",
+          "0x0044279F"
+        ],
+        "预期literal起始": [
+          "0x0041A75B",
+          "0x0044279F"
+        ],
+        "严格匹配": true
+      },
+      {
+        "alias全局": "0x008B01CC",
+        "意义": "公式层manager别名A",
+        "实际数量": 2,
+        "实际literal起始": [
+          "0x0042A785",
+          "0x0042BF51"
+        ],
+        "预期literal起始": [
+          "0x0042A785",
+          "0x0042BF51"
+        ],
+        "严格匹配": true
+      },
+      {
+        "alias全局": "0x008B01D0",
+        "意义": "公式层manager别名B",
+        "实际数量": 2,
+        "实际literal起始": [
+          "0x0042A779",
+          "0x0042BF71"
+        ],
+        "预期literal起始": [
+          "0x0042A779",
+          "0x0042BF71"
+        ],
+        "严格匹配": true
+      }
+    ]
+  },
+  "manager_A完整对象地址范围扫描": {
+    "manager": "manager_A_0x89FE08",
+    "base": "0x0089FE08",
+    "扫描范围": "[0x0089FE08, 0x0089FFCC)",
+    "候选数量": 17,
+    "候选全集": [
+      {
+        "literal起始VA": "0x0041F2C0",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004200A3",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004204D9",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x00420511",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x0042121C",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x0042309F",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004230D6",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004232A4",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004235B1",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004235E5",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x00442793",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x0044283F",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x00442855",
+        "候选值": "0x0089FFC8",
+        "相对manager偏移": "+0x1C0",
+        "冻结分类": "direct_field_+0x1C0"
+      },
+      {
+        "literal起始VA": "0x00442CB0",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x00442D28",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004442D5",
+        "候选值": "0x0089FE08",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x00448B4D",
+        "候选值": "0x0089FEE8",
+        "相对manager偏移": "+0xE0",
+        "冻结分类": "false_positive_cross_instruction_bytes"
+      }
+    ],
+    "候选全集严格匹配冻结表": true,
+    "真正直接字段literal": [
+      {
+        "literal起始VA": "0x00442855",
+        "候选值": "0x0089FFC8",
+        "相对manager偏移": "+0x1C0",
+        "冻结分类": "direct_field_+0x1C0"
+      }
+    ],
+    "跨指令假阳性": [
+      {
+        "literal起始VA": "0x00448B4D",
+        "候选值": "0x0089FEE8",
+        "相对manager偏移": "+0xE0",
+        "冻结分类": "false_positive_cross_instruction_bytes"
+      }
+    ],
+    "除base与+0x1C0外出现其它直接字段literal": false
+  },
+  "manager_B完整对象地址范围扫描": {
+    "manager": "manager_B_0x89FFD0",
+    "base": "0x0089FFD0",
+    "扫描范围": "[0x0089FFD0, 0x008A0194)",
+    "候选数量": 18,
+    "候选全集": [
+      {
+        "literal起始VA": "0x0041F2F7",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004200F6",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004204F3",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x0042052B",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x0042122D",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x00423082",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004230E9",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004232B0",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x00423601",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x00423635",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004427A3",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x0044284F",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x00442868",
+        "候选值": "0x008A0190",
+        "相对manager偏移": "+0x1C0",
+        "冻结分类": "direct_field_+0x1C0"
+      },
+      {
+        "literal起始VA": "0x00442CBA",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x00442D38",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x004442C5",
+        "候选值": "0x0089FFD0",
+        "相对manager偏移": "+0x0",
+        "冻结分类": "base"
+      },
+      {
+        "literal起始VA": "0x0044EC1E",
+        "候选值": "0x008A0000",
+        "相对manager偏移": "+0x30",
+        "冻结分类": "false_positive_cross_instruction_bytes"
+      },
+      {
+        "literal起始VA": "0x00457729",
+        "候选值": "0x008A0046",
+        "相对manager偏移": "+0x76",
+        "冻结分类": "false_positive_cross_instruction_bytes"
+      }
+    ],
+    "候选全集严格匹配冻结表": true,
+    "真正直接字段literal": [
+      {
+        "literal起始VA": "0x00442868",
+        "候选值": "0x008A0190",
+        "相对manager偏移": "+0x1C0",
+        "冻结分类": "direct_field_+0x1C0"
+      }
+    ],
+    "跨指令假阳性": [
+      {
+        "literal起始VA": "0x0044EC1E",
+        "候选值": "0x008A0000",
+        "相对manager偏移": "+0x30",
+        "冻结分类": "false_positive_cross_instruction_bytes"
+      },
+      {
+        "literal起始VA": "0x00457729",
+        "候选值": "0x008A0046",
+        "相对manager偏移": "+0x76",
+        "冻结分类": "false_positive_cross_instruction_bytes"
+      }
+    ],
+    "除base与+0x1C0外出现其它直接字段literal": false
+  },
+  "关键区间原版与研究版等价": [
+    {
+      "起始": "0x0041A730",
+      "结束_不含": "0x0041A78F",
+      "长度": 95,
+      "原版SHA256": "24420794322a9d8bdb5c62e51c3adddaf9db908bb6a10128f375079951aad4bc",
+      "研究版SHA256": "24420794322a9d8bdb5c62e51c3adddaf9db908bb6a10128f375079951aad4bc",
+      "逐字节一致": true,
+      "意义": "菜单侧manager别名slot2查询"
+    },
+    {
+      "起始": "0x0041F2B0",
+      "结束_不含": "0x0041F30B",
+      "长度": 91,
+      "原版SHA256": "d122f23598b4478ef4ed557f5f950a58be4237b26f6d0f4f2bbe544c3a2a69d2",
+      "研究版SHA256": "d122f23598b4478ef4ed557f5f950a58be4237b26f6d0f4f2bbe544c3a2a69d2",
+      "逐字节一致": true,
+      "意义": "Battle构造把双manager绑定到公式层"
+    },
+    {
+      "起始": "0x00420048",
+      "结束_不含": "0x00420113",
+      "长度": 203,
+      "原版SHA256": "a1eafc050c30d169bd9f6aec618355b1474d39706996eabf51d8497156649691",
+      "研究版SHA256": "a1eafc050c30d169bd9f6aec618355b1474d39706996eabf51d8497156649691",
+      "逐字节一致": true,
+      "意义": "九项场域建立双manager提交"
+    },
+    {
+      "起始": "0x004204C6",
+      "结束_不含": "0x00420553",
+      "长度": 141,
+      "原版SHA256": "e633822852bd4618d8bc66489ef7cc89dfa7e133b8c7752e4af0fb06e1290f0f",
+      "研究版SHA256": "e633822852bd4618d8bc66489ef7cc89dfa7e133b8c7752e4af0fb06e1290f0f",
+      "逐字节一致": true,
+      "意义": "slot7和slot8行动计时消费"
+    },
+    {
+      "起始": "0x004211FE",
+      "结束_不含": "0x00421238",
+      "长度": 58,
+      "原版SHA256": "6c4d3aa26f31809ab997ba70ff9cc9f1cd2f8f3e86a77dc1256b50b6afa3776d",
+      "研究版SHA256": "6c4d3aa26f31809ab997ba70ff9cc9f1cd2f8f3e86a77dc1256b50b6afa3776d",
+      "逐字节一致": true,
+      "意义": "主资源归零owner清理"
+    },
+    {
+      "起始": "0x00423070",
+      "结束_不含": "0x004230F3",
+      "长度": 131,
+      "原版SHA256": "df4c16b6208503b85ef09fbb0102883024a8c505b58f777593271baa9caf11cc",
+      "研究版SHA256": "df4c16b6208503b85ef09fbb0102883024a8c505b58f777593271baa9caf11cc",
+      "逐字节一致": true,
+      "意义": "manager查询包装器"
+    },
+    {
+      "起始": "0x00423280",
+      "结束_不含": "0x004232C1",
+      "长度": 65,
+      "原版SHA256": "025dabe5908901c576f6cdac70fc916ea80b257ae853782d7622b0305d0dc396",
+      "研究版SHA256": "025dabe5908901c576f6cdac70fc916ea80b257ae853782d7622b0305d0dc396",
+      "逐字节一致": true,
+      "意义": "角色失效owner清理"
+    },
+    {
+      "起始": "0x004235A0",
+      "结束_不含": "0x00423640",
+      "长度": 160,
+      "原版SHA256": "29fa7c81f8f211b57c53ae975cea03d3f11f791fe142d467d8de49cd77bb9414",
+      "研究版SHA256": "29fa7c81f8f211b57c53ae975cea03d3f11f791fe142d467d8de49cd77bb9414",
+      "逐字节一致": true,
+      "意义": "双manager CRT构造析构包装"
+    },
+    {
+      "起始": "0x0042A760",
+      "结束_不含": "0x0042A793",
+      "长度": 51,
+      "原版SHA256": "5bce887e663530b7fc98df47f8326ccef342ad3d543bcf667e9a63239ef2e94b",
+      "研究版SHA256": "5bce887e663530b7fc98df47f8326ccef342ad3d543bcf667e9a63239ef2e94b",
+      "逐字节一致": true,
+      "意义": "公式层manager别名绑定"
+    },
+    {
+      "起始": "0x0042BF40",
+      "结束_不含": "0x0042BF84",
+      "长度": 68,
+      "原版SHA256": "dd4884cecb81cc8401b3f94fb32a4a9b3d27687de788f76ca0931ae8effe82b5",
+      "研究版SHA256": "dd4884cecb81cc8401b3f94fb32a4a9b3d27687de788f76ca0931ae8effe82b5",
+      "逐字节一致": true,
+      "意义": "公式层slot有效性wrapper"
+    },
+    {
+      "起始": "0x0043DA10",
+      "结束_不含": "0x0043DCAB",
+      "长度": 667,
+      "原版SHA256": "70ac032d411116ba63dad7a009fc327514551a55f1f0379463a0104fa6b1f5b8",
+      "研究版SHA256": "70ac032d411116ba63dad7a009fc327514551a55f1f0379463a0104fa6b1f5b8",
+      "逐字节一致": true,
+      "意义": "九槽reset查询tick建立owner方法主体"
+    },
+    {
+      "起始": "0x00442783",
+      "结束_不含": "0x00442863",
+      "长度": 224,
+      "原版SHA256": "08dc23fa399d61376902985c6e774814020d3beaf113b2b38a09ef5f007ff199",
+      "研究版SHA256": "08dc23fa399d61376902985c6e774814020d3beaf113b2b38a09ef5f007ff199",
+      "逐字节一致": true,
+      "意义": "Battle别名绑定与双manager reset"
+    },
+    {
+      "起始": "0x00442CA2",
+      "结束_不含": "0x00442D5D",
+      "长度": 187,
+      "原版SHA256": "2e175c1dbfabd68ec27c856b07710beb2dbf751c66d99595401222ff372ffc88",
+      "研究版SHA256": "2e175c1dbfabd68ec27c856b07710beb2dbf751c66d99595401222ff372ffc88",
+      "逐字节一致": true,
+      "意义": "双manager tick与owner转换门"
+    },
+    {
+      "起始": "0x004442A9",
+      "结束_不含": "0x004442E7",
+      "长度": 62,
+      "原版SHA256": "5ced209545ba84892e746f1ccb5d295fa89afc9b7d3a9a6a2a856ff5408628f6",
+      "研究版SHA256": "5ced209545ba84892e746f1ccb5d295fa89afc9b7d3a9a6a2a856ff5408628f6",
+      "逐字节一致": true,
+      "意义": "Enemy AI slot2查询"
+    }
+  ],
+  "结论边界": {
+    "direct方法调用面严格闭合": true,
+    "manager基址literal面严格闭合": true,
+    "manager别名literal面严格闭合": true,
+    "manager对象内部直接字段literal面严格闭合": true,
+    "slot0_1_5当前canonical静态直接额外数值consumer边界关闭": true,
+    "关闭范围": "当前同版RPG.exe.org的静态direct E8调用、绝对函数VA常量、manager基址literal、完整manager对象地址范围DWORD literal、固化59四组manager别名literal",
+    "不能扩大成": [
+      "slot0/1/5没有任何效果",
+      "slot0/1/5在其他版本没有额外consumer",
+      "不存在计算型指针、未识别间接调用、JIT/自修改或运行时动态访问",
+      "可以删除slot0/1/5或不实现它们的表现/生命周期/owner逻辑"
+    ],
+    "兼容实现规则": [
+      "九槽结构仍完整保留0..8全部slot。",
+      "slot0/1/5仍按固化58规则建立、计时、创建EFF句柄、到界释放并支持owner清理。",
+      "owner拥有任意九槽时，仍参与固化59已证的Battle状态转换阻挡门。",
+      "当前canonical实现不要为slot0/1/5凭空新增额外伤害、恢复、AI或计时数值公式。",
+      "未来若新证据证明间接/异版本consumer，只新增consumer，不推翻九槽结构。"
+    ]
+  },
+  "全部通过": true
+}

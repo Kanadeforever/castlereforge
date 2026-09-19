@@ -1,0 +1,175 @@
+{
+  "工具版本": "0.7D.14-固化33",
+  "文件": "upload/RPG.exe",
+  "关键验证": [
+    {
+      "检查": "RPG.exe Oracle SHA256",
+      "status": "PASS",
+      "实际": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf"
+    },
+    {
+      "检查": "slot3包装器固定push3",
+      "VA": "0x0042D95E",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot3调用Getter",
+      "VA": "0x0042D96C",
+      "status": "PASS"
+    },
+    {
+      "检查": "FightRole属性包装器调用Getter",
+      "VA": "0x00422524",
+      "status": "PASS"
+    },
+    {
+      "检查": "FightRole更新链把包装器实参固定为slot1",
+      "VA": "0x004236A3",
+      "status": "PASS"
+    },
+    {
+      "检查": "FightRole更新链传slot1",
+      "VA": "0x004236F6",
+      "status": "PASS"
+    },
+    {
+      "检查": "播放器A通过FightRole包装器传slot3",
+      "VA": "0x00444A1E",
+      "status": "PASS"
+    },
+    {
+      "检查": "播放器B通过FightRole包装器传slot3",
+      "VA": "0x0044527E",
+      "status": "PASS"
+    },
+    {
+      "检查": "播放器A调用slot3包装器",
+      "VA": "0x00444ABB",
+      "status": "PASS"
+    },
+    {
+      "检查": "播放器B调用slot3包装器",
+      "VA": "0x00445322",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot3与播放器记录总数比较",
+      "VA": "0x00444AD3",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot3不得超过记录总数",
+      "VA": "0x00444AE6",
+      "status": "PASS"
+    },
+    {
+      "检查": "镜像链读取记录总数",
+      "VA": "0x0044533A",
+      "status": "PASS"
+    },
+    {
+      "检查": "镜像链检查slot3上界",
+      "VA": "0x0044534D",
+      "status": "PASS"
+    },
+    {
+      "检查": "动态包装器唯一caller固定传slot1",
+      "VA": "0x00445740",
+      "status": "PASS"
+    },
+    {
+      "检查": "唯一caller调用0x42D980",
+      "VA": "0x00445743",
+      "status": "PASS"
+    },
+    {
+      "检查": "包装器取槽实参",
+      "VA": "0x0042D9A1",
+      "status": "PASS"
+    },
+    {
+      "检查": "包装器调用Getter",
+      "VA": "0x0042D9AF",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot1读取一",
+      "VA": "0x00444E10",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot1比较12",
+      "VA": "0x00444E15",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot1读取二",
+      "VA": "0x00444E2F",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot1比较13",
+      "VA": "0x00444E34",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot1读取三",
+      "VA": "0x00444E64",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot1值12进入额外清理",
+      "VA": "0x00444E69",
+      "status": "PASS"
+    },
+    {
+      "检查": "值12清当前FightRole字段",
+      "VA": "0x00444E7F",
+      "status": "PASS"
+    },
+    {
+      "检查": "值12清关联FightRole字段",
+      "VA": "0x00444EAE",
+      "status": "PASS"
+    },
+    {
+      "检查": "值12写关联FightRole计量4000",
+      "VA": "0x00444EE8",
+      "status": "PASS"
+    },
+    {
+      "检查": "Getter全部16个E8直接调用点精确匹配",
+      "status": "PASS",
+      "实际": [
+        "0x00420455",
+        "0x0042046D",
+        "0x00422524",
+        "0x0042D473",
+        "0x0042D96C",
+        "0x0042D9AF",
+        "0x0043F53A",
+        "0x0043F558",
+        "0x0043F567",
+        "0x0043F584",
+        "0x0043F595",
+        "0x0043F5A4",
+        "0x0043F5B5",
+        "0x00444E10",
+        "0x00444E2F",
+        "0x00444E64"
+      ]
+    },
+    {
+      "检查": "slot10/11无已知E8直接调用",
+      "status": "PASS"
+    }
+  ],
+  "关键验证数量": 29,
+  "关键验证全部通过": true,
+  "闭合结论": {
+    "slot3": "两个效果播放器更新链把它作为当前Section0/阶段选择值；须为正且不得超过播放器记录总数，随后驱动资源重建",
+    "slot1": "两个动态包装器的当前全部直接caller最终都固定传1或3；值12/13触发特殊结束协议，12比13多执行双方FightRole字段清理与4000计量写入",
+    "slot10/11": "同版EXE的16个Getter E8直接调用点及两个动态包装器全部直接caller中不存在可达slot10/11"
+  },
+  "证据边界": "slot1的12/13缺当前磁盘正样本，业务名称未知；slot10/11只能冻结为无已知E8直接caller，不能排除数据保留价值或未知间接调用。"
+}

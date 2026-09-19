@@ -1,0 +1,11 @@
+{
+  "来源包": "幽城幻剑录_DLL_Remastered_调查基线_v0.2.zip",
+  "状态": "v0.4 已成功展开并交叉复核",
+  "采用主题": [
+    "Event VM 88合法Opcode",
+    "SCI交互字段+0x73/+0xEA/+0xEB",
+    "Opcode 0x8F",
+    "Save核心/ShopItem可选块"
+  ],
+  "注意": "只并入可由当前相同Hash EXE或资源样本复核的事实；DLL Hook方案不进入最终架构。"
+}

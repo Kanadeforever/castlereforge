@@ -1,0 +1,79 @@
+{
+  "固化节点": 34,
+  "目的": "按项目硬性规范，把包内全部Python源码补充为面向初学者的逐步骤中文行内讲解；只改注释，不改可执行语义。",
+  "工具文件数": 10,
+  "全部AST语义结构一致": true,
+  "总新增行内讲解注释数": 5179,
+  "文件": [
+    {
+      "文件": "organize_data_evidence.py",
+      "原AST_SHA256": "ca896ee635d96414ea02e6a37919c995955b60b74f7f5143ed3609b5f071a3e6",
+      "补注释后AST_SHA256": "ca896ee635d96414ea02e6a37919c995955b60b74f7f5143ed3609b5f071a3e6",
+      "AST完全一致": true,
+      "新增行内讲解注释数": 85
+    },
+    {
+      "文件": "package_file_indexer.py",
+      "原AST_SHA256": "2242d5e68110fad1479d3a814d1689dddf247512205c478f7643d7bd21dfd67c",
+      "补注释后AST_SHA256": "2242d5e68110fad1479d3a814d1689dddf247512205c478f7643d7bd21dfd67c",
+      "AST完全一致": true,
+      "新增行内讲解注释数": 34
+    },
+    {
+      "文件": "youcheng_battle_core_inspector.py",
+      "原AST_SHA256": "91ef6d3d41099eafc11a7057012fdfed88f11365b8ee2b4a21e4c031fc5a4f33",
+      "补注释后AST_SHA256": "91ef6d3d41099eafc11a7057012fdfed88f11365b8ee2b4a21e4c031fc5a4f33",
+      "AST完全一致": true,
+      "新增行内讲解注释数": 1336
+    },
+    {
+      "文件": "youcheng_compatibility_engine_inspector.py",
+      "原AST_SHA256": "aa21b1bd87816dfea72e427110dc11906cb7ac54b6d68044bfe829c2240f7795",
+      "补注释后AST_SHA256": "aa21b1bd87816dfea72e427110dc11906cb7ac54b6d68044bfe829c2240f7795",
+      "AST完全一致": true,
+      "新增行内讲解注释数": 62
+    },
+    {
+      "文件": "youcheng_enc_inspector.py",
+      "原AST_SHA256": "2e294f478bb4e8ecba0c396ea344d908abfc76f0730ee71375de037c9b8add2c",
+      "补注释后AST_SHA256": "2e294f478bb4e8ecba0c396ea344d908abfc76f0730ee71375de037c9b8add2c",
+      "AST完全一致": true,
+      "新增行内讲解注释数": 213
+    },
+    {
+      "文件": "youcheng_eve_sf2_inspector.py",
+      "原AST_SHA256": "1a03c589b4973d51f207ae1849a241a933cb678221e2dc134e9da98f98b01e93",
+      "补注释后AST_SHA256": "1a03c589b4973d51f207ae1849a241a933cb678221e2dc134e9da98f98b01e93",
+      "AST完全一致": true,
+      "新增行内讲解注释数": 936
+    },
+    {
+      "文件": "youcheng_resource_container_inspector.py",
+      "原AST_SHA256": "b46f2571a9ce84af2536d8c0daf1d4655aa3330a6987b8e048d108d85658a00f",
+      "补注释后AST_SHA256": "b46f2571a9ce84af2536d8c0daf1d4655aa3330a6987b8e048d108d85658a00f",
+      "AST完全一致": true,
+      "新增行内讲解注释数": 409
+    },
+    {
+      "文件": "youcheng_sample_structure_validator.py",
+      "原AST_SHA256": "a380c1dbbe09124a0309164b42a34f8bd4e421b9ec04e28d8c38439dd90dc0d0",
+      "补注释后AST_SHA256": "a380c1dbbe09124a0309164b42a34f8bd4e421b9ec04e28d8c38439dd90dc0d0",
+      "AST完全一致": true,
+      "新增行内讲解注释数": 331
+    },
+    {
+      "文件": "youcheng_sci_sf2_inspector.py",
+      "原AST_SHA256": "594ad3002ecc9aa465d657544edca3f1a1096bd03e6c723b7168bd7c52333b42",
+      "补注释后AST_SHA256": "594ad3002ecc9aa465d657544edca3f1a1096bd03e6c723b7168bd7c52333b42",
+      "AST完全一致": true,
+      "新增行内讲解注释数": 1262
+    },
+    {
+      "文件": "youcheng_tsf_gamestate_inspector.py",
+      "原AST_SHA256": "3773a8d6d13cb662eeb0de72016568a71f3202f1d53895c9bdfff865a1e29a8a",
+      "补注释后AST_SHA256": "3773a8d6d13cb662eeb0de72016568a71f3202f1d53895c9bdfff865a1e29a8a",
+      "AST完全一致": true,
+      "新增行内讲解注释数": 511
+    }
+  ]
+}

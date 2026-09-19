@@ -1,0 +1,112 @@
+{
+  "版本": "v0.7D阶段中-固化4",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "DamageInfo": {
+    "base_per_target": "FightRole(attacker)+0x170 + target_index*0x50",
+    "stride": "0x50",
+    "fields_structural": {
+      "+0x00": "byte flag/result condition",
+      "+0x04": "primary result delta",
+      "+0x08": "secondary result delta",
+      "+0x0C": "byte flag",
+      "+0x10..+0x20": "5 x raw effect-like ID DWORD",
+      "+0x24..+0x34": "5 x computed/residual value DWORD",
+      "+0x38": "DWORD result/aux field",
+      "+0x3C": "DWORD result/aux field",
+      "+0x40": "byte flag",
+      "+0x44": "DWORD copied from target RoleDefinition+0x1E8 at 0x42CC5D/0x42CC83",
+      "+0x48": "byte flag initialized 0 and conditionally set 1 at 0x42CC59; mode2 0x421518 reads this byte",
+      "+0x4C": "DWORD initialized -1 then receives FIRTTECH+0x18 in normal path"
+    },
+    "solid3_correction": "固化3曾把 mode1 [FightRole+0x178 +0x30/+0x34] 误写为 DamageInfo+0x30/+0x34；真实为 +0x38/+0x3C。固化3还错误串联 RoleDef+0x1E8→DamageInfo+0x44→0x421518；0x421518 实际读 +0x48，故该直接串联撤销。"
+  },
+  "five_slot_pipeline": {
+    "producer": "0x42B0D0；固定5槽；FIRTTECH value/id=+0x64/+0x78，Article/Ail2 value/id=+0xE8/+0xFC",
+    "counterpart_mapping_table": "0x46A668, 28 records x 8 bytes",
+    "counterpart_mapping_first_dword": [
+      21,
+      -1,
+      -1,
+      22,
+      23,
+      24,
+      25,
+      26,
+      -1,
+      8,
+      15,
+      -1,
+      -1,
+      -1,
+      -1,
+      10,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      0,
+      3,
+      4,
+      5,
+      6,
+      7,
+      -1
+    ],
+    "stage1_pending_apply": {
+      "code": "0x422C3D..0x422C6E",
+      "condition": "computed value>0; raw ID signed compare <=27; target runtime raw-ID slot <=0",
+      "write": "target FightRole+0xCC+raw_id*4 = residual value",
+      "negative_id_boundary": "代码仅有 signed >27 检查；生产数据目前观测为非负，但不能仅凭该检查宣称负 ID 不可能。"
+    },
+    "pending_array": {
+      "range": "FightRole+0xCC..+0x164",
+      "count_dword": 39,
+      "initialization": "0x41F284..0x41F29A 全39槽清零"
+    },
+    "stage2_commit": {
+      "code": "0x42160D..0x421647",
+      "scan": "pending +0xCC..<+0x168, step4 = 39 DWORD",
+      "condition": "pending>0 and FightRole+0xA6C<=0",
+      "write": "runtime[offset+0x968] = pending; pending=0",
+      "mapping": "0xCC+0x968=0xA34, one-to-one 39 slots"
+    },
+    "runtime_array": {
+      "range": "FightRole+0xA34..+0xACC",
+      "count_dword": 39,
+      "roledef_relative": "RoleDefinition+0x1E8..+0x280"
+    },
+    "effect_id_runtime_prefix": {
+      "range": "FightRole+0xA34..+0xAA0",
+      "count_dword": 28,
+      "meaning": "raw effect-like ID 0..27 direct-index runtime slots at structural level",
+      "clear_all": "0x4231D0 rep stosd count=0x1C; called by reset and inactive/death path 0x42329B"
+    },
+    "extra_runtime_tail": {
+      "range": "FightRole+0xAA4..+0xACC",
+      "count_dword": 11,
+      "meaning": "auxiliary runtime slots; exact business meaning pending"
+    },
+    "decrement": {
+      "function": "0x420440",
+      "code": "0x420662..0x420697",
+      "scan_count": 39,
+      "rule": "positive value generally subtracts 10 per invocation, clamp to 0 when <=0",
+      "cadence_evidence": "only direct E8 caller found at 0x442CDB in battle per-role update path",
+      "time_unit": "unknown; do not call ms/frame until dynamic cadence proven"
+    },
+    "clear_dispatchers": [
+      "0x421690 Article/Ail2+0x20 driven clear dispatcher",
+      "0x421A00 selected FIRTTECH ID special dispatcher",
+      "0x4231D0 first-28 full clear"
+    ]
+  },
+  "status": "D6_STRUCTURAL_WRITER_COMMIT_DECREMENT_CLEAR_STATIC_CLOSED_BUSINESS_SEMANTICS_DYNAMIC_TIMING_PENDING",
+  "remaining": [
+    "作者 status/effect/timer 正式名称",
+    "39槽后11槽的完整结构语义",
+    "真实时间单位/0x420440 实际调用频率",
+    ">27 五槽输出的后续消费语义",
+    "所有特殊清除/覆盖规则的业务解释与动态验证"
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "工具版本": "0.7A.0",
+  "根目录": "/mnt/data/multimedia_extract/multimedia",
+  "汇总": {
+    "文件": 9,
+    "Section0记录": 471,
+    "Section1记录": 1125,
+    "Section2记录": 6566,
+    "Section3记录": 23,
+    "压缩SF2": 0,
+    "通过": 9,
+    "失败": 0,
+    "渲染模式分布": {
+      "2": 349,
+      "0": 420,
+      "10": 45,
+      "4": 26,
+      "1": 356,
+      "7": 98
+    }
+  },
+  "文件": [
+    {
+      "文件": "/mnt/data/multimedia_extract/multimedia/Map/mp2412a/#U7b7f.SF2",
+      "通过": true,
+      "Section数量": [
+        18,
+        17,
+        17,
+        1
+      ],
+      "压缩": false,
+      "画布": [
+        64,
+        48
+      ],
+      "命名动作": 1
+    },
+    {
+      "文件": "/mnt/data/multimedia_extract/multimedia/Map/mp2412a/#U9709#U7b79#U250f#U7552.SF2",
+      "通过": true,
+      "Section数量": [
+        16,
+        32,
+        348,
+        0
+      ],
+      "压缩": false,
+      "画布": [
+        152,
+        308
+      ],
+      "命名动作": 4
+    },
+    {
+      "文件": "/mnt/data/multimedia_extract/multimedia/Map/mp2412a/#U9709#U7b79#U30db#U8fd1.SF2",
+      "通过": true,
+      "Section数量": [
+        31,
+        60,
+        3393,
+        0
+      ],
+      "压缩": false,
+      "画布": [
+        773,
+        352
+      ],
+      "命名动作": 2
+    },
+    {
+      "文件": "/mnt/data/multimedia_extract/multimedia/Map/mp2412a/#Ue0ee#U2566#U30d3.SF2",
+      "通过": true,
+      "Section数量": [
+        26,
+        27,
+        210,
+        0
+      ],
+      "压缩": false,
+      "画布": [
+        135,
+        189
+      ],
+      "命名动作": 8
+    },
+    {
+      "文件": "/mnt/data/multimedia_extract/multimedia/Map/mp2412a/Event36-2.SF2",
+      "通过": true,
+      "Section数量": [
+        276,
+        650,
+        602,
+        7
+      ],
+      "压缩": false,
+      "画布": [
+        171,
+        185
+      ],
+      "命名动作": 6
+    },
+    {
+      "文件": "/mnt/data/multimedia_extract/multimedia/Map/mp2412a/Event36-3.SF2",
+      "通过": true,
+      "Section数量": [
+        15,
+        33,
+        51,
+        2
+      ],
+      "压缩": false,
+      "画布": [
+        161,
+        185
+      ],
+      "命名动作": 6
+    },
+    {
+      "文件": "/mnt/data/multimedia_extract/multimedia/Map/Mp2506/Ed1-b.sf2",
+      "通过": true,
+      "Section数量": [
+        34,
+        145,
+        972,
+        6
+      ],
+      "压缩": false,
+      "画布": [
+        596,
+        398
+      ],
+      "命名动作": 6
+    },
+    {
+      "文件": "/mnt/data/multimedia_extract/multimedia/Map/Mp2506/Ed1-b2.sf2",
+      "通过": true,
+      "Section数量": [
+        34,
+        140,
+        933,
+        7
+      ],
+      "压缩": false,
+      "画布": [
+        599,
+        398
+      ],
+      "命名动作": 6
+    },
+    {
+      "文件": "/mnt/data/multimedia_extract/multimedia/Map/Mp2506/Np040.sf2",
+      "通过": true,
+      "Section数量": [
+        21,
+        21,
+        40,
+        0
+      ],
+      "压缩": false,
+      "画布": [
+        38,
+        87
+      ],
+      "命名动作": 1
+    }
+  ]
+}

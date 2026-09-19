@@ -1,0 +1,557 @@
+{
+  "版本": "v0.6",
+  "说明": "本轮通过当前 RPG.exe 静态调用链恢复；业务名称不足处保留结构化名称。",
+  "对话命令": [
+    {
+      "Opcode": 5,
+      "Opcode十六进制": "0x05",
+      "合法": true,
+      "Canonical名称": "SHOW_MESSAGE",
+      "中文": "按当前 Event ID 从当前地图 MSG 取文本并启动对话（与 0x33 同 Execute）",
+      "证据": "强结构证据",
+      "Execute": "0x0040CB70",
+      "FactoryExecute": "0x0040CB70",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [
+        {
+          "偏移": "+0x04/+0x05/+0x06",
+          "类型": "u8",
+          "名称": "dialogue_ui_args"
+        },
+        {
+          "偏移": "+0x07",
+          "类型": "u32",
+          "名称": "message_index_minus_one"
+        },
+        {
+          "偏移": "+0x0B",
+          "类型": "u8",
+          "名称": "message_option"
+        }
+      ],
+      "说明": "0x403B90(current_event_id, cmd+7+1, cmd+0B) 选择 MSG；0x403C60(cmd+4,+5,+6) 初始化表现；随后同时置 0x89F81D/1E，阻塞并 yield。"
+    },
+    {
+      "Opcode": 51,
+      "Opcode十六进制": "0x33",
+      "合法": true,
+      "Canonical名称": "SHOW_MESSAGE_ALIAS_33",
+      "中文": "对话/消息命令；与 0x05 为不同 Command 类但共享同一 Execute",
+      "证据": "强结构证据",
+      "Execute": "0x0040CB70",
+      "FactoryExecute": "0x0040CB70",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "参数解释与 0x05 相同。Factory 中 command index/vtable 不同，Execute 完全相同；Core 可 canonicalize 为同一 SHOW_MESSAGE 并保留 raw_opcode 供调试。"
+    }
+  ],
+  "实体动作与相机命令": [
+    {
+      "Opcode": 20,
+      "Opcode十六进制": "0x14",
+      "合法": true,
+      "Canonical名称": "SET_ENTITY_POSITION",
+      "中文": "按名称设置场景实体坐标并保留其状态",
+      "证据": "已确认结构",
+      "Execute": "0x0040C550",
+      "FactoryExecute": "0x0040C550",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "名称区",
+          "名称": "entity_name"
+        },
+        {
+          "偏移": "+0x18",
+          "类型": "i32",
+          "名称": "x"
+        },
+        {
+          "偏移": "+0x1C",
+          "类型": "i32",
+          "名称": "y"
+        }
+      ],
+      "说明": null
+    },
+    {
+      "Opcode": 21,
+      "Opcode十六进制": "0x15",
+      "合法": true,
+      "Canonical名称": "SET_ENTITY_STATE_BYTE",
+      "中文": "按名称修改实体 packed state 的状态字节并保留坐标",
+      "证据": "已确认结构",
+      "Execute": "0x0040C5C0",
+      "FactoryExecute": "0x0040C5C0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": null
+    },
+    {
+      "Opcode": 22,
+      "Opcode十六进制": "0x16",
+      "合法": true,
+      "Canonical名称": "CONFIGURE_ENTITY_ACTION_STATE",
+      "中文": "按名称配置实体动作/状态参数，可选择等待",
+      "证据": "强结构证据",
+      "Execute": "0x0040C640",
+      "FactoryExecute": "0x0040C640",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "向 0x40A740 传入 +0x18/+0x1C/+0x20/+0x24 四参数，并处理 +0x28/+0x2C/+0x30 状态/阻塞字段；各字段业务名待样本。"
+    },
+    {
+      "Opcode": 25,
+      "Opcode十六进制": "0x19",
+      "合法": true,
+      "Canonical名称": "CONFIGURE_ENTITY_ACTION_RELATIVE_TO_PLAYER",
+      "中文": "以当前玩家位置为基准配置命名实体动作/目标",
+      "证据": "强结构证据",
+      "Execute": "0x0040C700",
+      "FactoryExecute": "0x0040C700",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": null
+    },
+    {
+      "Opcode": 26,
+      "Opcode十六进制": "0x1A",
+      "合法": true,
+      "Canonical名称": "SET_ENTITY_ACTION_RANGE_E2_E3",
+      "中文": "设置命名实体第一组 SF2 动作入口/长度",
+      "证据": "已确认结构",
+      "Execute": "0x0040C7E0",
+      "FactoryExecute": "0x0040C7E0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "source SCI +0xE2=start(+0x18 byte)；+0xE3=end(+0x1C)-start+1。直接证明实体记录保存 Section0 start/sequence_length。"
+    },
+    {
+      "Opcode": 27,
+      "Opcode十六进制": "0x1B",
+      "合法": true,
+      "Canonical名称": "SET_CAMERA_TRACK_ENTITY",
+      "中文": "把相机跟踪目标切换到命名实体",
+      "证据": "已确认结构",
+      "Execute": "0x0040C880",
+      "FactoryExecute": "0x0040C880",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "实体查找成功后写全局 camera target 0x978550，并 yield。"
+    },
+    {
+      "Opcode": 28,
+      "Opcode十六进制": "0x1C",
+      "合法": true,
+      "Canonical名称": "RESET_CAMERA_TRACK_TO_PLAYER",
+      "中文": "把相机跟踪目标恢复为当前受控角色",
+      "证据": "已确认结构",
+      "Execute": "0x0040C8E0",
+      "FactoryExecute": "0x0040C8E0",
+      "Execute与Factory一致": true,
+      "序列化大小": 4,
+      "参数": [],
+      "说明": null
+    },
+    {
+      "Opcode": 29,
+      "Opcode十六进制": "0x1D",
+      "合法": true,
+      "Canonical名称": "WAIT_SCENE_ENTITY_ACTIONS_COMPLETE",
+      "中文": "等待当前场景所有实体动作控制器空闲",
+      "证据": "强结构证据",
+      "Execute": "0x0040C920",
+      "FactoryExecute": "0x0040C920",
+      "Execute与Factory一致": true,
+      "序列化大小": 4,
+      "参数": [],
+      "说明": "0x409CB0 扫描 active scene entity list，只要 runtime +0x40 非零就继续 yield/retry；全部为0才 PC++。"
+    },
+    {
+      "Opcode": 31,
+      "Opcode十六进制": "0x1F",
+      "合法": true,
+      "Canonical名称": "POSITION_ENTITY_RELATIVE_TO_PLAYER",
+      "中文": "把命名实体放到当前玩家坐标加偏移的位置并设置状态字节",
+      "证据": "强结构证据",
+      "Execute": "0x0040CAA0",
+      "FactoryExecute": "0x0040CAA0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": null
+    }
+  ],
+  "视觉与相机效果命令": [
+    {
+      "Opcode": 13,
+      "Opcode十六进制": "0x0D",
+      "合法": true,
+      "Canonical名称": "ENABLE_SCENE_RENDER_OVERRIDE",
+      "中文": "把场景渲染覆盖状态置为1并主动 yield",
+      "证据": "已确认数据行为",
+      "Execute": "0x0040C320",
+      "FactoryExecute": "0x0040C320",
+      "Execute与Factory一致": true,
+      "序列化大小": 4,
+      "参数": [],
+      "说明": "写 0x89F7B8=1；业务视觉名称仍不提前冻结。"
+    },
+    {
+      "Opcode": 83,
+      "Opcode十六进制": "0x53",
+      "合法": true,
+      "Canonical名称": "VISUAL_TRANSITION_RAMP_A",
+      "中文": "启动并等待视觉转场状态机 A 型",
+      "证据": "已确认控制流/参数形状",
+      "Execute": "0x0040DF20",
+      "FactoryExecute": "0x0040DF20",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "首次调用 0x406F20(cmd+4 byte,0)，之后用 0x406F20(4,0) 轮询完成；全过程 yield。视觉业务名待 Oracle。"
+    },
+    {
+      "Opcode": 84,
+      "Opcode十六进制": "0x54",
+      "合法": true,
+      "Canonical名称": "VISUAL_TRANSITION_RAMP_B",
+      "中文": "启动并等待视觉转场状态机 B 型",
+      "证据": "已确认控制流/参数形状",
+      "Execute": "0x0040DF90",
+      "FactoryExecute": "0x0040DF90",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "与 0x53 平行，helper 为 0x406EE0。"
+    },
+    {
+      "Opcode": 85,
+      "Opcode十六进制": "0x55",
+      "合法": true,
+      "Canonical名称": "VISUAL_TRANSITION_HOLD",
+      "中文": "驱动/等待转场状态机达到空闲",
+      "证据": "已确认控制流",
+      "Execute": "0x0040E000",
+      "FactoryExecute": "0x0040E000",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "使用 0x406F80(cmd+4 byte)；全局 0x468AE8 为转场状态。"
+    },
+    {
+      "Opcode": 86,
+      "Opcode十六进制": "0x56",
+      "合法": true,
+      "Canonical名称": "VISUAL_TRANSITION_CUSTOM",
+      "中文": "以五个 u16 参数配置视觉转场状态机",
+      "证据": "已确认控制流/参数形状",
+      "Execute": "0x0040E060",
+      "FactoryExecute": "0x0040E060",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [
+        {
+          "偏移": "+0x04/+0x06/+0x08/+0x0A/+0x0C",
+          "类型": "5×u16",
+          "名称": "transition_params"
+        }
+      ],
+      "说明": "调用 0x406FA0；最后一个参数会影响是否等待完成。"
+    },
+    {
+      "Opcode": 87,
+      "Opcode十六进制": "0x57",
+      "合法": true,
+      "Canonical名称": "RESET_VISUAL_TRANSITION",
+      "中文": "复位视觉转场状态机",
+      "证据": "已确认结构",
+      "Execute": "0x0040E0F0",
+      "FactoryExecute": "0x0040E0F0",
+      "Execute与Factory一致": true,
+      "序列化大小": 4,
+      "参数": [],
+      "说明": null
+    },
+    {
+      "Opcode": 88,
+      "Opcode十六进制": "0x58",
+      "合法": true,
+      "Canonical名称": "CONFIGURE_CAMERA_JITTER",
+      "中文": "配置相机随机抖动/震动",
+      "证据": "已确认算法",
+      "Execute": "0x0040E120",
+      "FactoryExecute": "0x0040E120",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [
+        {
+          "偏移": "+0x04/+0x08",
+          "类型": "i32",
+          "名称": "x_bias_y_bias"
+        },
+        {
+          "偏移": "+0x0C",
+          "类型": "i32",
+          "名称": "radius"
+        },
+        {
+          "偏移": "+0x10",
+          "类型": "i32",
+          "名称": "cadence_threshold"
+        },
+        {
+          "偏移": "+0x14",
+          "类型": "i32/bool-like",
+          "名称": "cadence_mode"
+        }
+      ],
+      "说明": "0x44B500 生成 dx/dy = rand()%(2*radius)-radius+bias，临时加到 camera origin；0x44B590 渲染后撤销。"
+    },
+    {
+      "Opcode": 89,
+      "Opcode十六进制": "0x59",
+      "合法": true,
+      "Canonical名称": "SET_SCENE_RENDER_OVERRIDE",
+      "中文": "设置场景渲染覆盖状态",
+      "证据": "已确认数据行为",
+      "Execute": "0x0040E170",
+      "FactoryExecute": "0x0040E170",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "写 0x89F7B8；非零时探索 render 绕过 normal active-scene render，走 0x407020。确切视觉业务名待 Oracle。"
+    },
+    {
+      "Opcode": 90,
+      "Opcode十六进制": "0x5A",
+      "合法": true,
+      "Canonical名称": "VISUAL_TRANSITION_RAMP_A_EX",
+      "中文": "A 型转场，两字节参数变体",
+      "证据": "已确认控制流/参数形状",
+      "Execute": "0x0040E1B0",
+      "FactoryExecute": "0x0040E1B0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "0x406F20(cmd+4 byte,cmd+5 byte)；之后轮询完成。"
+    },
+    {
+      "Opcode": 91,
+      "Opcode十六进制": "0x5B",
+      "合法": true,
+      "Canonical名称": "VISUAL_TRANSITION_RAMP_B_EX",
+      "中文": "B 型转场，两字节参数变体",
+      "证据": "已确认控制流/参数形状",
+      "Execute": "0x0040E230",
+      "FactoryExecute": "0x0040E230",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "0x406EE0(cmd+4 byte,cmd+5 byte)；之后轮询完成。"
+    },
+    {
+      "Opcode": 92,
+      "Opcode十六进制": "0x5C",
+      "合法": true,
+      "Canonical名称": "HARD_HALT_SPIN",
+      "中文": "无推进、无 yield 的原版 VM 自旋陷阱",
+      "证据": "已确认行为",
+      "Execute": "0x0040E2B0",
+      "FactoryExecute": "0x0040E2B0",
+      "Execute与Factory一致": true,
+      "序列化大小": 4,
+      "参数": [],
+      "说明": "Execute 仅 xor eax,eax; ret。若可达会被 VM 立即重复执行。新 Core 不应冻结宿主，必须 trap + trace，并把是否原版故意 hard halt 作为兼容诊断。"
+    }
+  ],
+  "玩家角色命令": [
+    {
+      "Opcode": 101,
+      "Opcode十六进制": "0x65",
+      "合法": true,
+      "Canonical名称": "SET_PLAYER_POSITION_AND_STATE_BYTE",
+      "中文": "设置当前受控角色坐标和状态字节",
+      "证据": "已确认结构",
+      "Execute": "0x0040E2C0",
+      "FactoryExecute": "0x0040E2C0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": null
+    },
+    {
+      "Opcode": 102,
+      "Opcode十六进制": "0x66",
+      "合法": true,
+      "Canonical名称": "SET_PLAYER_POSITION",
+      "中文": "仅设置当前受控角色坐标",
+      "证据": "已确认结构",
+      "Execute": "0x0040E320",
+      "FactoryExecute": "0x0040E320",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": null
+    },
+    {
+      "Opcode": 103,
+      "Opcode十六进制": "0x67",
+      "合法": true,
+      "Canonical名称": "SET_PLAYER_STATE_BYTE",
+      "中文": "仅设置当前受控角色 packed state 状态字节",
+      "证据": "已确认结构",
+      "Execute": "0x0040E370",
+      "FactoryExecute": "0x0040E370",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": null
+    },
+    {
+      "Opcode": 104,
+      "Opcode十六进制": "0x68",
+      "合法": true,
+      "Canonical名称": "SWITCH_CONTROLLED_ACTOR_PRESERVE_POSITION",
+      "中文": "切换当前受控角色并继承旧角色位置，同时恢复相机跟随",
+      "证据": "已确认结构",
+      "Execute": "0x0040E3D0",
+      "FactoryExecute": "0x0040E3D0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "u32",
+          "名称": "actor_index"
+        }
+      ],
+      "说明": null
+    },
+    {
+      "Opcode": 105,
+      "Opcode十六进制": "0x69",
+      "合法": true,
+      "Canonical名称": "APPEND_FIXED_ROLE_LIST_ENTRY_BY_SELECTOR",
+      "中文": "按 selector 向角色相关列表追加固定 ID",
+      "证据": "已确认数据行为/业务候选",
+      "Execute": "0x0040E440",
+      "FactoryExecute": "0x0040E440",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "selector1/2/3 分别追加 0x198/0x1BF/0x1A6；列表间距呈 0x350 role stride。与 FIRTTECH/技能高度相关但尚未建立直接调用证据，禁止先命名“学会技能”。"
+    },
+    {
+      "Opcode": 107,
+      "Opcode十六进制": "0x6B",
+      "合法": true,
+      "Canonical名称": "POSITION_PLAYER_RELATIVE_TO_ENTITY",
+      "中文": "把当前受控角色放到命名实体坐标加偏移的位置并设置状态字节",
+      "证据": "强结构证据",
+      "Execute": "0x0040E550",
+      "FactoryExecute": "0x0040E550",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": null
+    }
+  ],
+  "延迟结果协议命令": [
+    {
+      "Opcode": 53,
+      "Opcode十六进制": "0x35",
+      "合法": true,
+      "Canonical名称": null,
+      "中文": null,
+      "证据": null,
+      "Execute": null,
+      "FactoryExecute": "0x0040CBF0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": null
+    },
+    {
+      "Opcode": 148,
+      "Opcode十六进制": "0x94",
+      "合法": true,
+      "Canonical名称": "BRANCH_ON_DEFERRED_RESULT_EQ",
+      "中文": "比较延迟结果码；相等则跳转并清结果，不等时按策略继续或中止",
+      "证据": "强结构证据",
+      "Execute": "0x0040F2F0",
+      "FactoryExecute": "0x0040F2F0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "u32",
+          "名称": "expected_result"
+        },
+        {
+          "偏移": "+0x08",
+          "类型": "u32",
+          "名称": "target_instruction"
+        },
+        {
+          "偏移": "+0x0C",
+          "类型": "u32/bool-like",
+          "名称": "failure_policy"
+        }
+      ],
+      "说明": null
+    },
+    {
+      "Opcode": 149,
+      "Opcode十六进制": "0x95",
+      "合法": true,
+      "Canonical名称": "BRANCH_IF_DEFERRED_RESULT_NONZERO",
+      "中文": "延迟结果非零时跳转",
+      "证据": "已确认控制流",
+      "Execute": "0x0040F390",
+      "FactoryExecute": "0x0040F390",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": null
+    },
+    {
+      "Opcode": 150,
+      "Opcode十六进制": "0x96",
+      "合法": true,
+      "Canonical名称": "STORE_DEFERRED_EVENT_CONTINUATION_AND_EXIT",
+      "中文": "保存当前 Event 与两个 continuation 参数后退出当前事件",
+      "证据": "强结构证据",
+      "Execute": "0x0040F3E0",
+      "FactoryExecute": "0x0040F3E0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "参数": [],
+      "说明": "event id→0x89F7F8，cmd+4→0x89F7FC，cmd+8→0x89F800；随后 0x40B340 清当前事件并 yield。与 0x35 continuation 协议相连。"
+    },
+    {
+      "Opcode": 151,
+      "Opcode十六进制": "0x97",
+      "合法": true,
+      "Canonical名称": "REQUIRE_MOVEMENT_MODE_1_OR_ABORT",
+      "中文": "要求当前移动状态/模式为1，否则进入原版错误/中止路径",
+      "证据": "强结构证据",
+      "Execute": "0x0040F430",
+      "FactoryExecute": "0x0040F430",
+      "Execute与Factory一致": true,
+      "序列化大小": 4,
+      "参数": [],
+      "说明": null
+    }
+  ]
+}

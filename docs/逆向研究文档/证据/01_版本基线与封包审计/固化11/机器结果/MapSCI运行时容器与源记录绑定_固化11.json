@@ -1,0 +1,32 @@
+{
+  "版本": "v0.7D阶段中-固化11",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "状态": "STATIC_MAP_SCI_RUNTIME_CONTAINER_AND_SOURCE_RECORD_BINDING_CLOSED",
+  "MapSCI记录": {
+    "serialized_stride": "0x473",
+    "loader": "0x40AC00",
+    "runtime_entry_stride": "0x38",
+    "entry_parser": "0x408E80"
+  },
+  "runtime_container": {
+    "+0x00": "record count",
+    "+0x04": "selected/current index（源record[0]非零时loader会写当前index；最终业务名仍待定）",
+    "+0x0C": "raw Map SCI buffer",
+    "+0x10": "0x38-byte runtime entry array base"
+  },
+  "runtime_entry": {
+    "+0x00": "direct source Map SCI record*（0x408EA5 mov [esi],ebx）"
+  },
+  "accessors": {
+    "0x40AE50": "return array_base + selected_index*0x38",
+    "0x40AE70": "return array_base（first entry）",
+    "0x40A0C0": "entry->source_record+0x380",
+    "0x40A0D0": "entry->source_record+0x384"
+  },
+  "上层活动更新": {
+    "0x40ADA0": "遍历全部runtime entries；selected index走0x409580，其余走0x409510",
+    "0x40B188": "manager+0x280 container调用0x40ADA0"
+  },
+  "纠错": "固化9口头/文档中的“selected-entry backing object +0x384”应收窄为“selected Map SCI runtime entry所绑定的源Map SCI record +0x384”。",
+  "踩坑": "0x433xxx存在其他对象类型的+0x384写入；同位移不能证明同结构，必须先建立base对象来源。"
+}

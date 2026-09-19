@@ -1,0 +1,49 @@
+{
+  "版本": "v0.7D阶段中-固化13",
+  "日期": "2026-08-14",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "直接前代": "v0.7D阶段中-固化12_休整界面与存档许可生命周期静态闭合版",
+  "本轮闭合": [
+    "opcode0x39 raw record+0x04经DataCenter+0xD0传入MEN9001控制器并最终进入0x428E70 Section0 record selector",
+    "record+0x04精确结构语义=MEN9001.SF2初始Section0组合记录索引；Canonical名称men9001_section0_index",
+    "0x43E460从raw SF2+0x14读取Section0 count并保存控制器上限；0x43E720按范围夹紧索引",
+    "当前MEN9001有4个合法Section0记录0..3，每条单层引用同号Section1图像；四种资源实图已随包保存"
+  ],
+  "本轮纠错": [
+    "固化12“record+0x04 mode精确作用未知”已关闭",
+    "禁止把record+0x04误认为MEN9002“調態/煉化/歇息”三项选择index",
+    "禁止把该字段泛称frame；直接consumer证明它是Section0组合记录索引"
+  ],
+  "当前样本边界": {
+    "原始EVE样本": 1,
+    "含opcode0x39样本": 0,
+    "MEN9001_Section0合法索引": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "脚本实际索引分布": "未知，缺真实opcode0x39 EVE样本",
+    "MapSCI样本": 2,
+    "+0x380==1正例": 0,
+    "+0x384==1正例": 0
+  },
+  "当前回归": {
+    "SCI": "53/53 PASS",
+    "EVE与休整索引": "57/57 PASS",
+    "Battle": "126/126 PASS"
+  },
+  "下一恢复入口": [
+    "继续拆MEN0009在Interface中的精确控件/合成职责",
+    "获得更多EVE后扫描opcode0x39并统计men9001_section0_index实际分布与上下文",
+    "获得更多MapSCI后优先寻找+0x380==1/+0x384==1正例",
+    "侧线稳定后返回Battle D7 Result/Reward与D8 RNG draw order/deterministic BattleTrace"
+  ],
+  "禁止猜测": [
+    "MEN9001四个Section0索引对应的作者地图/地点名",
+    "未有EVE样本前的opcode0x39索引使用频率或地图绑定",
+    "MEN0009精确覆盖/合成职责",
+    "MapSCI+0x380/+0x384作者原字段名"
+  ]
+}

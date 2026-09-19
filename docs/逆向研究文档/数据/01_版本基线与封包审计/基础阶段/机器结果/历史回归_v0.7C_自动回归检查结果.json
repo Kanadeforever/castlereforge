@@ -1,0 +1,137 @@
+{
+  "版本": "v0.7C",
+  "生成日期": "2026-08-13",
+  "阶段": "Stage C / TSF + Canonical GameState",
+  "工具": {
+    "幽城TSF与GameState调查器": "0.7C.0",
+    "幽城SCI与SF2调查器": "0.7B.1",
+    "幽城EVE与SF2调查器": "0.7B.0",
+    "幽城ENC调查器": "0.7A.0",
+    "幽城样本结构验证器": "0.1.1",
+    "Python语法检查": "PASS"
+  },
+  "EVE回归": {
+    "合法Opcode": 88,
+    "非法Opcode": 67,
+    "Factory不同Execute": 87,
+    "Factory重复Execute": {
+      "0x0040CB70": [
+        "0x05",
+        "0x33"
+      ]
+    },
+    "语义Execute冲突": 0,
+    "状态": "PASS"
+  },
+  "ENC回归": {
+    "总数": 13,
+    "通过": 13,
+    "失败": 0,
+    "状态": "PASS"
+  },
+  "SCI回归": {
+    "文件数": 4,
+    "分类统计": {
+      "地图SCI": 2,
+      "实体SCI": 2
+    },
+    "地图记录": 2,
+    "实体记录": 22,
+    "状态": "PASS"
+  },
+  "SCI到SF2交叉验证": {
+    "PASS": 5,
+    "缺样本": 17,
+    "FAIL": 0,
+    "状态": "PASS"
+  },
+  "SF2回归": {
+    "输入路径文件": 217,
+    "唯一SHA256文件": 175,
+    "唯一文件": 175,
+    "Section0记录": 3261,
+    "Section1记录": 4161,
+    "Section2记录": 24713,
+    "Section3记录": 115,
+    "Section0子层": 5059,
+    "压缩SF2": 73,
+    "PASS": 175,
+    "Tile尺寸分布": {
+      "48x48": 2,
+      "64x48": 173
+    },
+    "渲染模式分布": {
+      "0": 2533,
+      "1": 721,
+      "2": 1268,
+      "3": 4,
+      "4": 77,
+      "7": 266,
+      "8": 96,
+      "10": 94
+    },
+    "状态": "PASS"
+  },
+  "TSF回归": {
+    "流程存档": 159,
+    "解析warning总数": 0,
+    "容器总长匹配": 159,
+    "Core固定大小": 57521,
+    "World长度分布": {
+      "10200": 159
+    },
+    "Shop长度分布": {
+      "0": 6,
+      "36936": 153
+    },
+    "文件大小分布": {
+      "67721": 6,
+      "104657": 153
+    },
+    "Role1等级预览匹配": 159,
+    "RAW_DD99精确0xFF样本": 0,
+    "active_inventory_bank_counts": {
+      "0": 151,
+      "1": 8
+    },
+    "party_count_distribution": {
+      "1": 12,
+      "2": 10,
+      "3": 14,
+      "4": 6,
+      "5": 117
+    },
+    "audio_level_distribution_mp3_wav": {
+      "4,4": 125,
+      "5,5": 34
+    },
+    "unique_shop_state_hashes": 8,
+    "shop_states_equal_to_supplied_baseline": 113,
+    "role8_unique_variants": 8,
+    "distinct_game_variables_changed_between_adjacent_saves": 535,
+    "total_game_variable_changes_between_adjacent_saves": 928,
+    "状态": "PASS"
+  },
+  "文档同步审查": {
+    "Markdown数量": 20,
+    "总行数": 16215,
+    "全部头部v0.7C": true,
+    "代码围栏闭合": true,
+    "主手册根数字章节数": 82,
+    "主手册0到81连续": true,
+    "缺失交叉引用": [],
+    "状态": "PASS"
+  },
+  "机器数据审查": {
+    "JSON数量": 31,
+    "CSV数量": 6,
+    "全部可解析": true
+  },
+  "包卫生": {
+    "pycache/pyc": 0,
+    "SHA256清单": "封包前重建",
+    "ZIP完整性": "封包后验证"
+  },
+  "审查错误": [],
+  "总状态": "PASS"
+}

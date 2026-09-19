@@ -1,0 +1,42 @@
+{
+  "审计节点": "v0.7D阶段中-固化65至固化66",
+  "审计日期": "2026-08-22",
+  "继承基线": {
+    "名称": "固化64整理版1_原版Oracle复核与文档合并精简版",
+    "基线文件数": 1068,
+    "新增研究文件写入前逐文件SHA-256一致": "1068/1068",
+    "缺失": 0,
+    "意外改写": 0,
+    "PASS": true
+  },
+  "原始输入": {
+    "RPG.exe.org.zip_SHA-256": "b2d4a4f729ed15582c2ebee7f1cac2aea171b7660d4e14811c8d430a898beb6c",
+    "每轮均独立重新解压原版": true,
+    "完全未修改原版RPG.exe_SHA-256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "历史研究版RPG.exe_SHA-256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "原版优先": true
+  },
+  "双轮重放": {
+    "轮数": 2,
+    "固化65": {
+      "两轮工具总体PASS": "2/2",
+      "正式JSON与两轮JSON仅剔除绝对输入路径后整树一致": true,
+      "正式CSV与两轮CSV逐字节一致": true,
+      "CSV_SHA-256": "472a6ba87b52b9526e4775ca7d826a095e3c666f271ce78ddfc4ec8539f85844",
+      "PASS": true
+    },
+    "固化66": {
+      "两轮工具总体PASS": "2/2",
+      "正式JSON与两轮JSON仅剔除绝对输入路径后整树一致": true,
+      "正式CSV与两轮CSV逐字节一致": true,
+      "CSV_SHA-256": "d249a2fc2764c19dac2ad02c269bbc92eead9b33f4cec52c8ac40e473e45f6cb",
+      "PASS": true
+    }
+  },
+  "主题结论": {
+    "固化65": "role_anchor+0x3E4+0xCE4与role_anchor+0x10C8严格地址恒等；二者是同一物理DWORD，不存在待寻找的复制函数。",
+    "固化66": "+0xCE4的23个真实disp32访问严格分成10写/13读，另有1个disp8+imm32假阳性；+0x10C8的15个真实disp32严格分成8写/5读/2个LEA别名。另闭合BBA、BB9、BBE、BBC的Battle tick局部规则。",
+    "PASS": true
+  },
+  "总体PASS": true
+}

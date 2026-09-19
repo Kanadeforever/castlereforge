@@ -1,0 +1,17 @@
+{
+  "来源": "/mnt/data/multimedia.zip",
+  "条目": [
+    {
+      "ZIP条目": "multimedia/fight/Other/fanin.SF2",
+      "文件名": "FANIN_原始资源.SF2",
+      "大小": 19746,
+      "SHA256": "2a31409d90b7dc75941c633a5f2d0825ef9c3fa00938d7f44c98440924404ea4"
+    },
+    {
+      "ZIP条目": "multimedia/fight/Other/fanout.SF2",
+      "文件名": "FANOUT_原始资源.SF2",
+      "大小": 18476,
+      "SHA256": "6849e8ea94ee486b898ed13eb7b87ce96b585c34395221de735cb3ce1efe42b8"
+    }
+  ]
+}

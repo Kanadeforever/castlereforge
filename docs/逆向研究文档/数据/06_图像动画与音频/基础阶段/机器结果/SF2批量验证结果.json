@@ -1,0 +1,3186 @@
+{
+  "工具版本": "0.7B.1",
+  "资源根": [
+    "/mnt/data/multimedia_extracted",
+    "/mnt/data/menus_all",
+    "/mnt/data/research_assets"
+  ],
+  "输入路径文件总数": 217,
+  "唯一SHA256文件数": 175,
+  "汇总": {
+    "唯一文件": 175,
+    "Section0记录": 3261,
+    "Section1记录": 4161,
+    "Section2记录": 24713,
+    "Section3记录": 115,
+    "Section0子层": 5059,
+    "压缩SF2": 73,
+    "PASS": 175
+  },
+  "Tile尺寸分布": {
+    "48x48": 2,
+    "64x48": 173
+  },
+  "渲染模式分布": {
+    "0": 2533,
+    "1": 721,
+    "2": 1268,
+    "3": 4,
+    "4": 77,
+    "7": 266,
+    "8": 96,
+    "10": 94
+  },
+  "文件": [
+    {
+      "SHA256": "01c9cd5bfaa73d12bdcaf0d17aafc5343beec09cd3887315f5406c3e18a977db",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Audio/sound05.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "子层": 0,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "02e55d555603c84396a10ae221f2942ad739e97890845057fd9f3611a31ef273",
+      "代表文件": "/mnt/data/menus_all/MEN4006.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        2,
+        4,
+        0
+      ],
+      "子层": 6,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "0309d0d6f4d3ba523ad7e36feca106d3e0f30c2a338126202e3d8e04ebb13f4e",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/eff/Eff12120.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        17,
+        17,
+        430,
+        3
+      ],
+      "子层": 17,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "04a0468b0108d6c6bb96213022cc04bda75d68517e68ad6c8dcad786ffe172c4",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/flr/Flr6063.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        169,
+        0
+      ],
+      "子层": 1,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "0672b1875779b72e7b14584cbbffcfa64a3b0fd0f11ec590bca2c15e78f47065",
+      "代表文件": "/mnt/data/menus_all/MEN6004.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        4,
+        2,
+        2,
+        0
+      ],
+      "子层": 4,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "06db6c673c2f5296f3faf3eee8a44a7e16b4fe09daba2e9a414b1c681b1b4fb7",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/red/Red2480.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        4,
+        10,
+        0
+      ],
+      "子层": 4,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "0addb8c6456df52ea269cd20b1935d6135ed3d9b309a5592bb86589da0ae812c",
+      "代表文件": "/mnt/data/menus_all/MEN8008.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        2,
+        27,
+        0
+      ],
+      "子层": 2,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "0c8bb45301ada51089a69542c69e3747e60042d497d6d8d9abbd67a76a632846",
+      "代表文件": "/mnt/data/menus_all/MEN0012.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        10,
+        10,
+        20,
+        0
+      ],
+      "子层": 10,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "0f0e3246044befb5d710a180b6e656cb8b376cdd7644789f808d372804a1b537",
+      "代表文件": "/mnt/data/menus_all/MEN3002.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        6,
+        4,
+        0
+      ],
+      "子层": 6,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "115cdd340ec13190d1abd226881e2aa572a9c881c89364f33357e21bc3220e7e",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mouse/mousewait.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "子层": 1,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "12c109e2ba0e3a88a3e48b894b3809de6031d8abfc17539009bd5f533d273357",
+      "代表文件": "/mnt/data/menus_all/MEN6001.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        56,
+        0
+      ],
+      "子层": 2,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "14a424d18ed08d5e19b1efda1e6c9228f84882a2350e3ccd357b61b9dc434935",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mov/Mov2450.sf2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        9,
+        8,
+        12,
+        0
+      ],
+      "子层": 16,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "1639bc6a54e13e13c07151cd7773e55f5ea92f1a1d43266943ece0c13669a284",
+      "代表文件": "/mnt/data/menus_all/MEN1028.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        11,
+        11,
+        0
+      ],
+      "子层": 11,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "16a6f497af741b1013883963c2bb49565607498ca0c94399ad394224b898e1e4",
+      "代表文件": "/mnt/data/menus_all/MEN7004.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        16,
+        16,
+        30,
+        0
+      ],
+      "子层": 16,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "1ab64544751d0cf5e337ca6e920dc71bb7d870953179e07da12b3fdb11cd3260",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mis/Mis2120.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        28,
+        27,
+        1361,
+        1
+      ],
+      "子层": 27,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "1df3afcbf858f13d1debdc9efba6b2d3333c923c727c910d2f7f118e17988003",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/hit/Hit2210.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        5,
+        18,
+        0
+      ],
+      "子层": 5,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "1fc0e4b4d82dbe6e3c3a951c77dea752bef3af244d007943de6ba4b4060b99b6",
+      "代表文件": "/mnt/data/menus_all/MEN7002.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        16,
+        16,
+        30,
+        0
+      ],
+      "子层": 16,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "208114a5e31c58b0afdac500c2f93d8369b85e36fe77a999f01551673713277e",
+      "代表文件": "/mnt/data/menus_all/MEN0020.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        12,
+        0
+      ],
+      "子层": 1,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "2186092c02cdaf8166be0e849a2622e75b902e8200a5569dc05a10e22378b1be",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/stn/Stn2480.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        10,
+        14,
+        0
+      ],
+      "子层": 14,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "2369ce43649d59daf9cf9f574beb566b9f1e7ce19d4c98eeff8272e0bc8c457e",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/hit/Hit1260.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        6,
+        23,
+        0
+      ],
+      "子层": 7,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "27bfdf716f664a5df46de37b5b060c79e3b7d0059432e168a4212467c099f81e",
+      "代表文件": "/mnt/data/menus_all/MEN5001.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        48,
+        0
+      ],
+      "子层": 2,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "27c356b27029c5b1197519b6e24f4aa698f6a5e4a9dc0853405e6382229fe27d",
+      "代表文件": "/mnt/data/menus_all/MEN4005.SF2",
+      "同内容路径数": 3,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        1,
+        1,
+        0
+      ],
+      "子层": 6,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "2a31409d90b7dc75941c633a5f2d0825ef9c3fa00938d7f44c98440924404ea4",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Other/fanin.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        18,
+        1,
+        1,
+        0
+      ],
+      "子层": 18,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "2a40b4f12abcd7a8b34ffd92c06934ede3cccf2cd3893fa2b2f658db0008e330",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/att/Att2450.sf2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        23,
+        44,
+        49,
+        5
+      ],
+      "子层": 44,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "2a451b44d5b316de2d0f3e998357cd25715dcfebe1e034ab4e66a88fbfa98c5a",
+      "代表文件": "/mnt/data/menus_all/MEN6003.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        2,
+        0
+      ],
+      "子层": 3,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "2a6f885dea4c5c579bd5360e4864fb6769e13c8c4a9fd8bf2b0f192ffec2c4b6",
+      "代表文件": "/mnt/data/menus_all/MEN0018.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        3,
+        0
+      ],
+      "子层": 1,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "2b5779385b6f54bd189107c258fca48b2dbe33ceea94edc827b923d094ff0023",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/hit/Hit2470.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        7,
+        23,
+        0
+      ],
+      "子层": 8,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "2de4dc587a71ebbf0f74399ca802ed69e9c4f0f0fe3148e9c735bfcf75878b12",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Other/sho102.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        5,
+        2,
+        5,
+        0
+      ],
+      "子层": 5,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "2e5323f4b2b6f6efd83177a79010f31b7da1dc76192b2eb973949c227c8800ee",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/hit/Hit2420.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        2,
+        68,
+        0
+      ],
+      "子层": 2,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "2e8368c889762f391c3a7c5c977934d5e5b657e34ebc686ada377b07f7f038df",
+      "代表文件": "/mnt/data/menus_all/MEN1018.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        13,
+        13,
+        0
+      ],
+      "子层": 13,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "2e9459535696341f900c1d5339eb572efe1b3aeb947d234566bce2c5a83b24db",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mov/Mov2470.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        4,
+        6,
+        17,
+        2
+      ],
+      "子层": 6,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "305ffa6554c3155173d086d7617da81760a2f2d84fb30b40ebe1f70c51772069",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mis/Mis2230.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        50,
+        74,
+        765,
+        5
+      ],
+      "子层": 98,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "313c4a3ca8be3fc9b415696d3f549022645d486c26f5ec318fc0b0e7cf2838c2",
+      "代表文件": "/mnt/data/menus_all/MEN4002.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        60,
+        0
+      ],
+      "子层": 3,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "3262fac0cf0d39b9503c8b308b3d3d4fb1c2643e6d4f6d0d31786cd08963033e",
+      "代表文件": "/mnt/data/menus_all/MEN3003.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        6,
+        4,
+        0
+      ],
+      "子层": 6,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "390606883f5dd427c2c31a69782d4d4b3f12400037f9f67dec70689513bda931",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np040.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        21,
+        21,
+        40,
+        0
+      ],
+      "子层": 21,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "3ace7dfcb023b333bc5fa14c85af1c9016cad454929635b0217af1fea7d5adff",
+      "代表文件": "/mnt/data/menus_all/MEN7003.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        48,
+        48
+      ],
+      "Section数量": [
+        8,
+        7,
+        15,
+        0
+      ],
+      "子层": 8,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "3b4c0468f93dbb0c6fca5a1827b75bfbf2ea7f76654e36bfbd7889672bcde5f4",
+      "代表文件": "/mnt/data/menus_all/MEN9202.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        4,
+        4,
+        31,
+        0
+      ],
+      "子层": 4,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "3c33e86886b63f3b0d25933fe8242eb54e231faf0c46ff9acf4e0ba5f68aebb7",
+      "代表文件": "/mnt/data/menus_all/MEN9201.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        13,
+        0
+      ],
+      "子层": 2,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "3f8eb5491b1d36af5bc2bcf389ad76dd36da9c5b2a3f27e9ca1aa07d4eaa49f2",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mis/Mis2220.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        27,
+        80,
+        391,
+        3
+      ],
+      "子层": 130,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "3faf79de5d2bcac83c53c0b416edb159f52e7a6afdd8dc108fc3c7b2708d4f06",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/menus/men0000.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        100,
+        0
+      ],
+      "子层": 1,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "42c79f1bb23896c67f93628f5af687e4c0b8e9e0aa28cec656d022163a814db8",
+      "代表文件": "/mnt/data/menus_all/MEN9400.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        7,
+        0
+      ],
+      "子层": 1,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "44bbbebe7458165864084a84dbbe31696a06415288036adc01d431b3b34fb567",
+      "代表文件": "/mnt/data/menus_all/MEN0029.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        13,
+        13,
+        0
+      ],
+      "子层": 13,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "45047f9340b2c64c1e9b517af72653fb4e863f5322c879079c827a22822ee097",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Other/stone002.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        31,
+        62,
+        127,
+        0
+      ],
+      "子层": 93,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "45d518089d7b3e5827558ae256e411e330866020fad347f017122870d1c1816e",
+      "代表文件": "/mnt/data/menus_all/MEN4004.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        1,
+        1,
+        0
+      ],
+      "子层": 6,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "46091e92d7ed389f5b382a94d7e825d9401a2506e045eea5bff7fa51996d7a58",
+      "代表文件": "/mnt/data/menus_all/MEN6005.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        129,
+        129,
+        150,
+        0
+      ],
+      "子层": 129,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "46e0d49c7dc59eb55a0b3bc78856dfb0c315ceab761d136cfb8e39a6b30fed63",
+      "代表文件": "/mnt/data/menus_all/MEN0017.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        3,
+        0
+      ],
+      "子层": 1,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "47cdaf9c6aa0de42e060f1d06aaa10eb05162c49270d23ce33aff5f16672921b",
+      "代表文件": "/mnt/data/menus_all/MEN0002.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        7,
+        211,
+        0
+      ],
+      "子层": 8,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "4868f79ab85bbacfb96e6bf89c842ce0dfd26a95c9d3f85c94f6d2b30f286bf9",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Audio/sound01.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        0,
+        0,
+        1
+      ],
+      "子层": 0,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "493fca7bc9f9f75525b825b66a98198ddfc15296177e60965d12e156ae53eb2c",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/att/Att2480.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        19,
+        62,
+        3
+      ],
+      "子层": 19,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "4c23741dd5b337e6f1ec220362a0d103c16d1839d49cdf144c0883d36f08fd29",
+      "代表文件": "/mnt/data/menus_all/MEN9206.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        4,
+        2,
+        2,
+        0
+      ],
+      "子层": 4,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "4e75ee6a914d25f10918c7c025c95bcc507ccbde6b15c606d4594d5552c8e977",
+      "代表文件": "/mnt/data/menus_all/MEN0010.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        30,
+        0
+      ],
+      "子层": 1,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "4f477bd6828bb0316900db9bb8552c2632c714c90b33541077c61d5c3a2e5d80",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/flr/Flr6030.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        161,
+        0
+      ],
+      "子层": 1,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "508794c0e9cc4e74a2f333473539b9736307173ec7c95aa7956fef9f4e90ac73",
+      "代表文件": "/mnt/data/menus_all/MEN9300.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        100,
+        0
+      ],
+      "子层": 1,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "514bc8e3b57586cfbe2bb52bbfcb6b4741e2ea526294499e3df0fa4d66f80bb6",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/bak/Bak2470.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        7,
+        12,
+        23,
+        2
+      ],
+      "子层": 12,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "522036e55075496c6864858ac2b36696929b31dab1f4e6df4a5b1d7d40d6fb58",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/stn/Stn2460.sf2",
+      "同内容路径数": 3,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        11,
+        20,
+        11,
+        0
+      ],
+      "子层": 20,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "56f29d3944207954281a86fc9cad4b9ad7a3d1054c3fb8c372523efe805bec5f",
+      "代表文件": "/mnt/data/menus_all/MEN1001.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        11,
+        11,
+        0
+      ],
+      "子层": 11,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "571e0c47c91cc7751e76ac251bc307177264894dadb6d11457fe838717030c79",
+      "代表文件": "/mnt/data/menus_all/MEN4003.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        6,
+        8,
+        0
+      ],
+      "子层": 6,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "577b860bf80755f2729e7d3ee56b6d79b49c2bda3411f6166321fa5aa479005c",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/bak/Bak2450.sf2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        11,
+        12,
+        12,
+        0
+      ],
+      "子层": 20,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "57af71f0b876e621166164fd36e8739655eddedec3af61fdc7dcb72918a0be48",
+      "代表文件": "/mnt/data/menus_all/MEN0007.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        59,
+        59,
+        59,
+        0
+      ],
+      "子层": 59,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "59b982018f9e8fa70641afc91db9cbd40c0b0f0787cadd2219e3c86df7724868",
+      "代表文件": "/mnt/data/menus_all/MEN9302.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        32,
+        33,
+        192,
+        0
+      ],
+      "子层": 64,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "59fe64ffaf866bf55ce855715cbb9231da9a4519617b6b28dff4f0e7ed1fffdf",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/bak/Bak0022.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        9,
+        14,
+        25,
+        2
+      ],
+      "子层": 16,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "5aa19f0ab92e92c5e0089919f84c426a0ec3f839262d0866efd7e975db12f39e",
+      "代表文件": "/mnt/data/menus_all/MEN1016.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        11,
+        11,
+        0
+      ],
+      "子层": 11,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "5ab362d77b835d0aee683312d91154aabe2e434cac4beba8ac115e0a50d3e987",
+      "代表文件": "/mnt/data/menus_all/MEN9209.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        4,
+        4,
+        4,
+        0
+      ],
+      "子层": 4,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "5f4bc55f91111c5d9720de343ae3214e0096145357ccb905947adf9c7a001249",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/hit/Hit2450.sf2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        5,
+        13,
+        0
+      ],
+      "子层": 5,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "60b9f25baf5bd35c71d4a333b34845f56b9dcb936c3550e240a038c1537e3c9b",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Ed1-b2.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        34,
+        140,
+        933,
+        7
+      ],
+      "子层": 162,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "6325bc946aa97f926aad99f11ac167515b9ccdb121615c796a90803f52fd17ab",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/red/Red1230.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        14,
+        61,
+        0
+      ],
+      "子层": 14,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "63fb1b195b6846284255de1a92d620a855d0898b90001da69aa8a0a291f0f93b",
+      "代表文件": "/mnt/data/menus_all/MEN0002B.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        7,
+        7,
+        205,
+        0
+      ],
+      "子层": 7,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "6659ba599a2fa919d3692d4d9267327f5abb42571a209e9b250443544f64b066",
+      "代表文件": "/mnt/data/menus_all/MEN4012.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        100,
+        59,
+        495,
+        0
+      ],
+      "子层": 59,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "66fd1255b7501ca7ced8da99a95164c69f4d66b9d4257718d07a06e0d93b6402",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/def/Def2450.sf2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        3,
+        0
+      ],
+      "子层": 2,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "6849e8ea94ee486b898ed13eb7b87ce96b585c34395221de735cb3ce1efe42b8",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Other/fanout.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        1,
+        1,
+        0
+      ],
+      "子层": 8,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "6a07dae0421094bde1d92f99345f7fba7e57aa21dddc19d355c09fa1fe6dad22",
+      "代表文件": "/mnt/data/menus_all/MEN9101.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        4,
+        4,
+        6,
+        0
+      ],
+      "子层": 4,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "6a48b8f9b53c65d22f276f80665260067eb4bd87149877eda4e4f3eff2d5754b",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mis/Mis2470.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        13,
+        33,
+        3
+      ],
+      "子层": 13,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "6accdb8267c02cb4224416d219cbd9a47ec78867cdb991909131c3901438455c",
+      "代表文件": "/mnt/data/menus_all/MEN0005.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        12,
+        0
+      ],
+      "子层": 2,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "6b91b6b47c8fa075c4d86b7cbbe4c1dbda5c81a2570de22c70895d362d6d789b",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/def/Def2480.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        8,
+        0
+      ],
+      "子层": 2,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "6daad34d0a5417c577a2800616c95e2ed18eb2966626c16cc6f162248610c5c3",
+      "代表文件": "/mnt/data/menus_all/MEN9102.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        10,
+        9,
+        17,
+        0
+      ],
+      "子层": 25,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "6dd788ac576e793e453e27925bc76ba2771dc86fad5ed7455cca6190d3f1c5f5",
+      "代表文件": "/mnt/data/menus_all/MEN1019.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        11,
+        11,
+        0
+      ],
+      "子层": 11,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "6dff07809178b07bf49689191732ccf5bbed4c7e5cf5c5a19864e5f1798a9795",
+      "代表文件": "/mnt/data/menus_all/MEN0027.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "子层": 1,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "6fcae617fac79569b697bfcc7ff87d56eba884661d9ab42fffeb9c21cd31492a",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/霉筹ホ近.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        31,
+        60,
+        3393,
+        0
+      ],
+      "子层": 60,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "738ab3f90184cdccbd13b02345b7c92cfd12ce1618511d217d30459a89085c11",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/eff/Eff22120.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        18,
+        17,
+        430,
+        3
+      ],
+      "子层": 17,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "7549d09139316d8f8637be983bb75b073f0a355eb8139c93b10851ec8fe94d52",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/Event36-3.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        15,
+        33,
+        51,
+        2
+      ],
+      "子层": 33,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "766914375ab39bb6d7688bf851f4afac453dd84b6317d981f39ff42f0a7a04db",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mouse/_mousedefault.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        6,
+        21,
+        0
+      ],
+      "子层": 6,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "7690de385cb786489084bd75c8e6ea89165f015262b59a7028c69f60442f8bdd",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/stn/Stn2470.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        10,
+        12,
+        0
+      ],
+      "子层": 10,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "772584003520e8703b5112987faac573214de59fc9418440a0e4afc4c4dba143",
+      "代表文件": "/mnt/data/menus_all/MEN4014.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        61,
+        58,
+        391,
+        0
+      ],
+      "子层": 59,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "7af8e46e0714ec66bf962c11f2357593af388a7c0de2f3f2ce3b0c3d590fc6d8",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/sho/Sho11821.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        35,
+        26,
+        95,
+        10
+      ],
+      "子层": 103,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "7dfb822d2a66e96f11bb34c63c110b2460f56af18200bed35080070602628de3",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/menus/men4010.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        100,
+        85,
+        794,
+        0
+      ],
+      "子层": 86,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "813b7628978dc41f65760ce24e9237d9596066af45c1728e3a0572d2a61ac8e9",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mis/Mis2460.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        23,
+        44,
+        49,
+        5
+      ],
+      "子层": 44,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "8266cb96665aa65e98c5b49b0264302ebb9d655468e54e80bebd1dc56c0a3ee1",
+      "代表文件": "/mnt/data/menus_all/MEN9203.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        6,
+        5,
+        0
+      ],
+      "子层": 6,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "8575628ad13d2fff6aa525df16f87e2a71f9d8c51c36fb22c74c87e92ded007f",
+      "代表文件": "/mnt/data/menus_all/MEN9200.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        8,
+        96,
+        0
+      ],
+      "子层": 8,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "85e7d1d88f7056a3ab4639d2cb3e148066f1a63175d038ff531a261403abdf15",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Other/stone001.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        31,
+        62,
+        126,
+        0
+      ],
+      "子层": 93,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "87f44cca311972c1ad1ff22b3f3acc87c3e7e170ab50576d5de2c82c807f71cf",
+      "代表文件": "/mnt/data/menus_all/MEN2004.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        49,
+        0
+      ],
+      "子层": 2,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "8805b4637e03a34b68a4bac0203de6828a17d488a8bdabfef6574e7e65ebbe24",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/red/Red2470.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        5,
+        8,
+        13,
+        0
+      ],
+      "子层": 8,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "9140199829e6b1ffeba4bc33ddd4fa2dde534f71735e86c9a374ea33d113b221",
+      "代表文件": "/mnt/data/menus_all/MEN9100.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        7,
+        7,
+        181,
+        0
+      ],
+      "子层": 7,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "93a755dab1b482e4169baf07fe3fc727d3e78710cee7373bb6870cafb5371df7",
+      "代表文件": "/mnt/data/menus_all/MEN0021.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        3,
+        0
+      ],
+      "子层": 1,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "93fd6c2f4a66e37e85c1935d2ecebdf920b6fdd1788a2fb68071bb265671738d",
+      "代表文件": "/mnt/data/menus_all/MEN1027.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        13,
+        13,
+        0
+      ],
+      "子层": 13,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "945a275320c53aa6cc24b37d697ee3f19129555eb1d5f3d30f604e2f3dd96ca5",
+      "代表文件": "/mnt/data/menus_all/MEN3004.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        56,
+        0
+      ],
+      "子层": 2,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "97602976954f8a72aa0fe7342e86ae9ee2fd971186b06f2f8976ef743b50f65b",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/rec/Rec1191.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        19,
+        41,
+        104,
+        5
+      ],
+      "子层": 41,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "98c41965e6ff610eded8e76b6c10e9af89d3b94a9f11f50ce8a69633ea56641e",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/Event36-2.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        276,
+        650,
+        602,
+        7
+      ],
+      "子层": 696,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "9997dff4b78ffa5d3577948c8e026a5396a7f93b4632f958eabda3b897d1ea0d",
+      "代表文件": "/mnt/data/menus_all/MEN0015.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        25,
+        32,
+        220,
+        2
+      ],
+      "子层": 32,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "9e1bd739e4a46b8bc7ddb8f478514a70930141f47ea086d47def4011ef9f78e8",
+      "代表文件": "/mnt/data/menus_all/MEN8004.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        2,
+        2,
+        0
+      ],
+      "子层": 12,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "a17703c5f1cb383e00826c567ea63554d0e4e25def9e6cd421712704a38eeaf7",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mov/Mov0051.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        16,
+        17,
+        445,
+        6
+      ],
+      "子层": 31,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "a2d16d04bbca033437dff4b28eaf06330d02d39a305a5d724595676f50610817",
+      "代表文件": "/mnt/data/menus_all/MEN0011.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        10,
+        10,
+        20,
+        0
+      ],
+      "子层": 10,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "a3e4c00bc3ce3d05392d46e21995ab020726e7cd93221f8a4acba4aa14fbe548",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/flr/Flr7063.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        169,
+        0
+      ],
+      "子层": 1,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "a7a6bdc7fb8202475acf3f3c20daa6e13f28ffd239035059ffa2c1661b7ea300",
+      "代表文件": "/mnt/data/menus_all/MEN2001.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        129,
+        128,
+        134,
+        0
+      ],
+      "子层": 128,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "aa99e0f07ed1b3706dc5171a40d2c5355d5a3e19427dafdf3eb68579ea558375",
+      "代表文件": "/mnt/data/menus_all/MEN4008.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        2,
+        4,
+        0
+      ],
+      "子层": 6,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "aaa3543844fe21767f8ea73766cc29925ea8d7ff74bad33105a2ff7b248cfe97",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Other/stone003.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        31,
+        62,
+        126,
+        0
+      ],
+      "子层": 93,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "ab8a9b52172d9184ce328c334781bf259a08ea4b1afdab71272318ae5f1800c4",
+      "代表文件": "/mnt/data/menus_all/MEN9304.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        140,
+        0
+      ],
+      "子层": 3,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "ac46ed7de8ba6dd85d9e278c8c21505b15f59d721b1d4e887c523d7014450aba",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mov/Mov2480.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        8,
+        21,
+        1
+      ],
+      "子层": 10,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "ac98d25de5288096fffbc5e09a880919ea18fb7fa33735eeed5b96f418167d78",
+      "代表文件": "/mnt/data/menus_all/MEN9303.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        32,
+        33,
+        192,
+        0
+      ],
+      "子层": 64,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "ae154812aa9a5e11b465f6d1fc78e26dcfa2e34c903436a5cd701434b2f498a6",
+      "代表文件": "/mnt/data/menus_all/MEN9210.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "子层": 0,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "b2443f16cfb1372e7194e6a6852302ba4e54dfa703acc93ca53dab947a7b6de5",
+      "代表文件": "/mnt/data/menus_all/MEN0025.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        12,
+        12,
+        12,
+        0
+      ],
+      "子层": 12,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "b3d34a06c6b4997f8bd7bfbd54a2e92e9a80c010385a5297fa1541260f2aade6",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/def/Def1230.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        21,
+        97,
+        0
+      ],
+      "子层": 21,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "b59d9c20cfa538aeb1bc783f184b63e02a0971b184f98d8ab4ec1a73e76da0ea",
+      "代表文件": "/mnt/data/menus_all/MEN0004.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        7,
+        21,
+        0
+      ],
+      "子层": 8,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "b85c7d4ba20e1c454a718098427415be5c49acd1f861a8cdac829214f241ee68",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Other/stone004.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        31,
+        62,
+        127,
+        0
+      ],
+      "子层": 93,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "b8dc50858e88c7ccff93ed437a1183a49d57588b826340805d337e27686dd9c8",
+      "代表文件": "/mnt/data/menus_all/MEN9208.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "子层": 1,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "bc98d30df9763351389e669cf1f6d72b078d9050cc9da6264075afbc07410b74",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/eff/EFFi261.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        55,
+        77,
+        449,
+        3
+      ],
+      "子层": 85,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "be2d69d93ebbad964aea14f3a90586468c2e6a5fa4527876723bdbb3376e97ea",
+      "代表文件": "/mnt/data/menus_all/MEN4010.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        100,
+        85,
+        794,
+        0
+      ],
+      "子层": 85,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "c0758d1c9f3b079035c0d414fd46944d285af81d48ea3569275d5d974962465e",
+      "代表文件": "/mnt/data/menus_all/MEN0016.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        22,
+        21,
+        135,
+        1
+      ],
+      "子层": 21,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "c088719ca7b7cf89a0d07b72d9869ba7da2dae956709fc917932a26752eefe51",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Audio/sound04.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "子层": 0,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "c29fd22db6592117a66938e20e4a984330b7be0500a76dc3f0204cc864b11285",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/hit/Hit1250.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        7,
+        23,
+        0
+      ],
+      "子层": 8,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "c32be1cc355216c8789e5c49ce654b285a7e2a57ce40e977b1ce27d10a2a114b",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/att/Att2120.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        51,
+        50,
+        2488,
+        1
+      ],
+      "子层": 50,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "c54b6a9ba135cdff9409d933ebdaa0861b6d737377152f1e85647ef93907ec7f",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mag/Mag2460.sf2",
+      "同内容路径数": 3,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        49,
+        95,
+        279,
+        8
+      ],
+      "子层": 115,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "c7b11689800d9fb0813aa459084a378aecb1ffc40f13c99b435761b42013d704",
+      "代表文件": "/mnt/data/menus_all/MEN1017.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        13,
+        13,
+        0
+      ],
+      "子层": 13,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "c86745a421c1f07c57b43bbc4a6cc93c364780ead216b9550673de900eb2e8fe",
+      "代表文件": "/mnt/data/menus_all/MEN5003.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        1,
+        1,
+        0
+      ],
+      "子层": 6,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "c913976c6bf353c96dcdb45025c1efdfac4a83ea373b27475bf84b81103581b3",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mis/Mis2480.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        19,
+        62,
+        1
+      ],
+      "子层": 19,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "cb63c915098a4bdcea6793b3841a9cececaf836a1f1a131637211ed4b9bf7f84",
+      "代表文件": "/mnt/data/menus_all/MEN9001.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        4,
+        4,
+        368,
+        0
+      ],
+      "子层": 4,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "cb87697e6014d6194f08f9f5e559138572c4d6cd8a79d8c120ef7ce712315e2f",
+      "代表文件": "/mnt/data/menus_all/MEN6002.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        2,
+        0
+      ],
+      "子层": 3,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "cca777de572f1c272c100b32dcafc2ece37b3597e873f3fed001d71d2d443d8a",
+      "代表文件": "/mnt/data/menus_all/MEN5002.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        6,
+        5,
+        0
+      ],
+      "子层": 6,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "cd8fc274dc072f1350a8ebf7a73708793a548c11b7e0108d7925d7f8b492a22f",
+      "代表文件": "/mnt/data/menus_all/MEN0013.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        6,
+        0
+      ],
+      "子层": 2,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "d081057ed42c8b0d651dcb09d037e3c63b67c5e5588bf800c068d3b824cae8bf",
+      "代表文件": "/mnt/data/menus_all/MEN0026.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        12,
+        12,
+        12,
+        0
+      ],
+      "子层": 12,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "d2dd63182f0092b15a086fd07e5956fe8ba4f984d4327f500d7474fed54e7e4f",
+      "代表文件": "/mnt/data/menus_all/MEN9204.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        4,
+        4,
+        32,
+        0
+      ],
+      "子层": 4,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "d2f98704a252a6d2ec3d6865aa55509cbedade33e1cdf09f0b4660b2ae1f06f8",
+      "代表文件": "/mnt/data/menus_all/MEN9301.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        32,
+        33,
+        192,
+        0
+      ],
+      "子层": 64,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "d2fcbb61bc78f93c58e0acee86d78a8a6ba12d7ab5a3a4449a375b39468fde64",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/bak/Bak2480.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        7,
+        12,
+        26,
+        2
+      ],
+      "子层": 12,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "d8add57761b5d77e13139f93a051d5abba06c0bedcfd4fe1864f6894f7b96827",
+      "代表文件": "/mnt/data/menus_all/MEN0008.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        48,
+        48
+      ],
+      "Section数量": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "子层": 0,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "d8f8d827eb30c8bce8a28e2d0a07bd2f9ff4387022d16eafd105f38de80cb171",
+      "代表文件": "/mnt/data/menus_all/MEN1029.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        11,
+        11,
+        0
+      ],
+      "子层": 11,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "dbae41ee4f34c16d744f6b4bdbc014e8ea8f123b1ab6f6f915bd06ad43a0cd99",
+      "代表文件": "/mnt/data/menus_all/MEN9207.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        4,
+        4,
+        4,
+        0
+      ],
+      "子层": 4,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "dcad6f8ab9b5cbeb365df2c4893d5b1d25d86dc0f84a002e15ef9466c788bc44",
+      "代表文件": "/mnt/data/menus_all/MEN1002.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        11,
+        11,
+        0
+      ],
+      "子层": 11,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e025c8f9d9bb919f4a91e4958e172cf6f4b46aa57a0499dc1dc85637c04650f3",
+      "代表文件": "/mnt/data/menus_all/MEN5005.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        4,
+        7,
+        0
+      ],
+      "子层": 6,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e0f1a7703d604473333a7bb136fbee9446e2e0d6a110fbf7027c31018f0f8808",
+      "代表文件": "/mnt/data/menus_all/MEN0003.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        9,
+        11,
+        21,
+        0
+      ],
+      "子层": 27,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e3133095f0a86de6f378dc4167a033967519d0fb403b89c754a1a807be2fb4e6",
+      "代表文件": "/mnt/data/menus_all/MEN0028.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        13,
+        13,
+        0
+      ],
+      "子层": 13,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "e3675121c37b78a27313e97cc2f3f03bd59006b6e28aa4d74b940456be85f4c7",
+      "代表文件": "/mnt/data/menus_all/MEN1038.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        13,
+        13,
+        0
+      ],
+      "子层": 13,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e3ee31f14f4fccacbea086a660c68a9ababeebb6eda0763ba186601dcafca0f3",
+      "代表文件": "/mnt/data/menus_all/MEN9002.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        17,
+        0
+      ],
+      "子层": 3,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e562b6929c9be887e8a82b36d553085d395348b948e5ba11f5e367eb5232a97a",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/red/Red2440.sf2",
+      "同内容路径数": 5,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        24,
+        31,
+        0
+      ],
+      "子层": 24,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "e68ff1603f7f246c7a66b82713764edc91a5a345f159bf619c20b9bfc1f5bdfa",
+      "代表文件": "/mnt/data/menus_all/MEN4001.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        9,
+        8,
+        15,
+        0
+      ],
+      "子层": 22,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e6ba049d14404ab430ee969e92003b36b3b32b1c751e1bc3e8808d5a932f9da7",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mag/Mag1350.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        21,
+        25,
+        164,
+        2
+      ],
+      "子层": 79,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "e7f0bfb51b163715d3ebc5df623262444cde684b31a07baa66b5ac64b76f239f",
+      "代表文件": "/mnt/data/menus_all/MEN5006.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        2,
+        0
+      ],
+      "子层": 2,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e90e9e623736bc24678421c1b0c3323b1707a1d8ead54c50788fdeab24680e76",
+      "代表文件": "/mnt/data/menus_all/MEN8006.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        13,
+        0
+      ],
+      "子层": 2,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "e984ed02c5d75542eb5df93aeb7512fde5231d54744b50e7de4d80434975a8b5",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/def/Def2470.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        4,
+        0
+      ],
+      "子层": 2,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "e9d2f83d0db3f27803bb00c143118d01b04b4698b8e7a18fdf7bda1e5d912c39",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/筿.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        18,
+        17,
+        17,
+        1
+      ],
+      "子层": 17,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "e9d4484c1e108b836b2bdbc1794cbb67a8e8086eb9c121159e5b8cb00a2e4ffc",
+      "代表文件": "/mnt/data/menus_all/MEN8007.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        8,
+        7,
+        14,
+        0
+      ],
+      "子层": 8,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "eae55aabe30d659a9026f2e100cc655536e976acf265c530a63f83ae17abbe68",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/霉筹┏畒.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        16,
+        32,
+        348,
+        0
+      ],
+      "子层": 60,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "eaf2ee79bf9adbba58346178063b3a4822391148f40f4f1dabc5d6229ebfe260",
+      "代表文件": "/mnt/data/menus_all/MEN0009.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        9,
+        10,
+        20,
+        0
+      ],
+      "子层": 26,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "ec8d9f4b23d9ff8f095329eeeb7e4df32d6ebaa48da18a481d2b4c2251fe6563",
+      "代表文件": "/mnt/data/menus_all/MEN7001.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        2,
+        2,
+        31,
+        0
+      ],
+      "子层": 2,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "ec98005c58c9fe2538c4bcc6052e944c88042e9408521aeb33db0052f81d18a0",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/att/Att2470.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        7,
+        16,
+        38,
+        2
+      ],
+      "子层": 16,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "ec9973b6da803e3ffcf897be94e725cef9ebba3009a32caba355d76ed4ee7e10",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/hit/Hit1420.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        5,
+        22,
+        0
+      ],
+      "子层": 6,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "ecea0d3eea5a67f70d85f5b1ed6af69ee96b8b0e89aaf79c542e6bd62252161d",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/hit/Hit2480.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        6,
+        23,
+        0
+      ],
+      "子层": 7,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "edf610e20a0d14a157103c35fd570db3dbf01b89ef579d4c807d243d06741ff9",
+      "代表文件": "/mnt/data/menus_all/MEN0001.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        5,
+        5,
+        190,
+        0
+      ],
+      "子层": 11,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "ee824b7f3a9b9ce04c9caa0278ae0f6f4cd15c618ca9954310c1f92d6731e624",
+      "代表文件": "/mnt/data/menus_all/MEN3001.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        6,
+        4,
+        0
+      ],
+      "子层": 6,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "eff260a22fb9f5acb8e270a91cb747aa448537b43935636ba43ceef259cb1101",
+      "代表文件": "/mnt/data/menus_all/MEN0006.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        59,
+        59,
+        59,
+        0
+      ],
+      "子层": 59,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "f0d34c1685a2c074ab2233b9f7436598b1901411ff3c01eade51369cfaf5b81d",
+      "代表文件": "/mnt/data/menus_all/MEN4013.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        100,
+        43,
+        402,
+        0
+      ],
+      "子层": 43,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "f2f5e804abce509b206ad8df7dcd592e41f1a56797f8ec141d356f11227c1b05",
+      "代表文件": "/mnt/data/menus_all/MEN8005.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        6,
+        2,
+        2,
+        0
+      ],
+      "子层": 12,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "f37a8fed8b1b4e8a0dde7f61ab1f37e8e49f40d9eb26aa010a7f36350736ae66",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Other/stone005.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        31,
+        62,
+        126,
+        0
+      ],
+      "子层": 93,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "f3971d074c848898ed94091670c896af3f04842719d676301756f18f5a602d6c",
+      "代表文件": "/mnt/data/menus_all/MEN8001.SF2",
+      "同内容路径数": 2,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        140,
+        0
+      ],
+      "子层": 3,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "f3fa57364d7f31517745f88d68fb837599c9ee4d98b4d8f12dc2958d120a8517",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/╦ビ.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        26,
+        27,
+        210,
+        0
+      ],
+      "子层": 78,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "f4f4d945bc3ecc0f1fb909c57e79b054e9f0e8f938e5755e11c2d37ff204ef13",
+      "代表文件": "/mnt/data/menus_all/MEN8002.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        21,
+        0
+      ],
+      "子层": 3,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "f7e227aa3fb9e8cfba1046f1ac5e7875d9206c4f0920a2c00549c98c10ce3444",
+      "代表文件": "/mnt/data/menus_all/MEN2003.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        174,
+        173,
+        179,
+        0
+      ],
+      "子层": 173,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "f90b5a942766b659468fe7603b5da8a77483c1bec5d2e573f11e8d9c2af7c2c3",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/flr/Flr7030.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        154,
+        0
+      ],
+      "子层": 1,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "f95b4e43c15cf7042067af83e1089e344e693fdd8c774cd07b3e7f71ada8ef67",
+      "代表文件": "/mnt/data/menus_all/MEN2002.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        174,
+        173,
+        179,
+        0
+      ],
+      "子层": 173,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "fa68ec385a8dfef28204ba755892d1536e97dbdd185a48fe929689e7f25bd8b2",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/flr/Flr7029.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        1,
+        164,
+        0
+      ],
+      "子层": 1,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "faeb1c1392080f7559976517bf5f59541f577b1e37bcf8254f6eecb246648679",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Audio/sound03.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        0,
+        0,
+        2
+      ],
+      "子层": 0,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "fdcf0e051026ff1dcda1c06e651f576e0307b1649d5a807df75cc85dc71f206a",
+      "代表文件": "/mnt/data/menus_all/MEN1026.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        13,
+        11,
+        11,
+        0
+      ],
+      "子层": 11,
+      "压缩": true,
+      "PASS": true
+    },
+    {
+      "SHA256": "fe62e5412daa1c2cd960f9674227c9228a40a122c1855cacda48796e21526f50",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mouse/mousedefault.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        3,
+        3,
+        4,
+        0
+      ],
+      "子层": 4,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "fe8b1ba10b7f836b97ac16ad3a3f85a5ec3c0588aacda2e52c1643ec706cc828",
+      "代表文件": "/mnt/data/menus_all/MEN4011.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        100,
+        90,
+        875,
+        0
+      ],
+      "子层": 90,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "fec95a45e627c25c79bfd68ac428ba4d50fb28b9b6000e7d330ff67ec84cdb27",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Ed1-b.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        34,
+        145,
+        972,
+        6
+      ],
+      "子层": 167,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "fee7cf94870a1a087114518c4f3ee5c7ceebbd31148b879c27ab471c90b7292a",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/Audio/sound02.SF2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        1,
+        0,
+        0,
+        2
+      ],
+      "子层": 0,
+      "压缩": false,
+      "PASS": true
+    },
+    {
+      "SHA256": "ff14154830f1eb89b87e38d60e528ea76f2bb9f68bde262634692aa6f5836799",
+      "代表文件": "/mnt/data/multimedia_extracted/multimedia/fight/mag/Mag1360.sf2",
+      "同内容路径数": 1,
+      "Tile": [
+        64,
+        48
+      ],
+      "Section数量": [
+        21,
+        25,
+        175,
+        2
+      ],
+      "子层": 79,
+      "压缩": false,
+      "PASS": true
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "版本": "v0.7D阶段中-固化23",
+  "性质": "调查器分类逻辑合成反例测试；不是原始游戏数据证据",
+  "目的": "证明新版SCI分类器不会继续用“文件大小70字节”泛化识别DDDES；只在文件名DDDES.SCI且满足18+52*N几何时进入DDDES解析。",
+  "合成输入": {
+    "总大小": 70,
+    "布局": "18-byte header + 1×52-byte record",
+    "两个文件内容": "逐字节完全相同",
+    "文件名A": "DDDES.SCI",
+    "文件名B": "OTHER.SCI"
+  },
+  "结果": {
+    "DDDES.SCI分类": "DDDES显示定时配置",
+    "DDDES.SCI记录数": 1,
+    "OTHER.SCI分类": "未知SCI",
+    "OTHER.SCI记录数": null,
+    "PASS": true
+  },
+  "证据边界": "此测试只验证分类器不会把任意70-byte SCI错套DDDES；DDDES真实格式/consumer证据来自RPG.exe静态反汇编，历史70字节样本内容来自既有固化数据。"
+}

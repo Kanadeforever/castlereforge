@@ -1,0 +1,27 @@
+{
+  "固化节点": "v0.7D阶段中-固化65",
+  "Oracle": {
+    "文件": "完全未修改原版RPG.exe",
+    "SHA-256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f"
+  },
+  "生成方式": "GNU objdump -d -Mintel，并用固化65调查器的区间SHA-256与短机器码断言交叉验证。",
+  "证据": [
+    {
+      "文件": "原版_统一状态指针正反别名与十六槽步进_00442BEB_00442CE0.asm",
+      "SHA-256": "d104ccba58b30f4360861e5e159b447812c19d4ce6d018786605aa201c118832",
+      "覆盖": "Battle+0x10C8建立首项状态指针、0xDE4步进16槽，以及state_pointer-0xCE4反推FightRole this。"
+    },
+    {
+      "文件": "原版_角色索引FightRole与统一状态成对构造_00443310_00443518.asm",
+      "SHA-256": "42a4940a5417dea0e8c1febf5cd0d8a8acb36ba184bed2890eece2d6e8fd7882",
+      "覆盖": "角色索引0xDE4算式、role_anchor+0x3E4形成FightRole，以及同一锚点+0x10C8状态写入。"
+    },
+    {
+      "文件": "原版_FightRole数组步长与CE4消费者_00445FB0_0044600E.asm",
+      "SHA-256": "a836eaf1ed035355b9073a2f5dbe56f1af43ddd0db9a7bb804accdeaa03c602b",
+      "覆盖": "FightRole数组按0xDE4遍历，并以FightRole+0xCE4读取同一状态DWORD。"
+    }
+  ],
+  "闭合方程": "role_anchor+0x3E4+0xCE4 == role_anchor+0x10C8",
+  "PASS": true
+}

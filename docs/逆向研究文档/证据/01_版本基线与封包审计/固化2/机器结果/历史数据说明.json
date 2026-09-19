@@ -1,0 +1,5 @@
+{
+  "状态": "HISTORICAL_SUPERSEDED",
+  "版本": "v0.7D阶段中-固化2",
+  "说明": "这些文件是固化2当时的原始当前层机器输出。固化3发现 BattleManager raw-slot 坐标与真实 FightRole 对象坐标相差 +0x3E4，故固化2中将 raw +0xC30/+0xCD8/+0xCDC 直接描述为 FightRole 字段的表述已被固化3纠正。历史文件仅用于追溯，不得作为当前实现依据。"
+}

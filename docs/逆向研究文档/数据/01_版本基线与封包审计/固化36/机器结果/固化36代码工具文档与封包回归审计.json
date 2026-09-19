@@ -1,0 +1,290 @@
+{
+  "固化节点": "36",
+  "研究内容状态": "FROZEN_PACKAGE_AUDIT_ONLY",
+  "全部通过": true,
+  "文件计数": {
+    "封包前_尚未生成最终索引_文件数": 737,
+    "预计生成最终索引后文件数": 738,
+    "Markdown": 52,
+    "JSON_当前": 355,
+    "JSON_生成最终索引后": 356,
+    "CSV": 36,
+    "Python": 12,
+    "ASM": 199,
+    "PNG": 54
+  },
+  "Markdown全量遍历": {
+    "通过": true,
+    "总数": 52,
+    "失败数": 0,
+    "报告": "数据/固化36/文档全量遍历审计_固化36.json"
+  },
+  "Python工具": {
+    "通过": true,
+    "总数": 12,
+    "失败项": [],
+    "逐工具": [
+      {
+        "文件": "工具/organize_data_evidence.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 191,
+        "独立注释行数": 87,
+        "错误": []
+      },
+      {
+        "文件": "工具/package_file_indexer.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 83,
+        "独立注释行数": 37,
+        "错误": []
+      },
+      {
+        "文件": "工具/youcheng_battle_core_inspector.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 2863,
+        "独立注释行数": 1354,
+        "错误": []
+      },
+      {
+        "文件": "工具/youcheng_compatibility_engine_inspector.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 135,
+        "独立注释行数": 65,
+        "错误": []
+      },
+      {
+        "文件": "工具/youcheng_enc_inspector.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 461,
+        "独立注释行数": 219,
+        "错误": []
+      },
+      {
+        "文件": "工具/youcheng_eve_sf2_inspector.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 1992,
+        "独立注释行数": 956,
+        "错误": []
+      },
+      {
+        "文件": "工具/youcheng_resource_container_inspector.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 917,
+        "独立注释行数": 411,
+        "错误": []
+      },
+      {
+        "文件": "工具/youcheng_saf_inspector.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 857,
+        "独立注释行数": 154,
+        "错误": []
+      },
+      {
+        "文件": "工具/youcheng_saf_runtime_surface_inspector.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 742,
+        "独立注释行数": 111,
+        "错误": []
+      },
+      {
+        "文件": "工具/youcheng_sample_structure_validator.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 728,
+        "独立注释行数": 336,
+        "错误": []
+      },
+      {
+        "文件": "工具/youcheng_sci_sf2_inspector.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 2767,
+        "独立注释行数": 1296,
+        "错误": []
+      },
+      {
+        "文件": "工具/youcheng_tsf_gamestate_inspector.py",
+        "英文源码文件名": true,
+        "AST": true,
+        "内存compile": true,
+        "顶层--help": true,
+        "总行数": 1160,
+        "独立注释行数": 524,
+        "错误": []
+      }
+    ]
+  },
+  "工具说明映射": {
+    "通过": true,
+    "映射数": 12,
+    "逐项": [
+      {
+        "工具": "organize_data_evidence.py",
+        "工具存在": true,
+        "说明": "工具详细说明_数据与证据整理器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "package_file_indexer.py",
+        "工具存在": true,
+        "说明": "工具详细说明_固化包全文件索引器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "youcheng_battle_core_inspector.py",
+        "工具存在": true,
+        "说明": "工具详细说明_幽城战斗核心调查器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "youcheng_compatibility_engine_inspector.py",
+        "工具存在": true,
+        "说明": "工具详细说明_幽城兼容引擎综合调查器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "youcheng_enc_inspector.py",
+        "工具存在": true,
+        "说明": "工具详细说明_幽城加密公共数据调查器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "youcheng_eve_sf2_inspector.py",
+        "工具存在": true,
+        "说明": "工具详细说明_幽城事件与图像动画调查器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "youcheng_resource_container_inspector.py",
+        "工具存在": true,
+        "说明": "工具详细说明_幽城资源容器调查器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "youcheng_saf_inspector.py",
+        "工具存在": true,
+        "说明": "工具详细说明_异格式动画调查器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "youcheng_saf_runtime_surface_inspector.py",
+        "工具存在": true,
+        "说明": "工具详细说明_异格式动画运行时请求面与资源语料调查器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "youcheng_sample_structure_validator.py",
+        "工具存在": true,
+        "说明": "工具详细说明_幽城样本结构验证器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "youcheng_sci_sf2_inspector.py",
+        "工具存在": true,
+        "说明": "工具详细说明_幽城场景与图像动画调查器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      },
+      {
+        "工具": "youcheng_tsf_gamestate_inspector.py",
+        "工具存在": true,
+        "说明": "工具详细说明_幽城存档与游戏状态调查器.md",
+        "说明存在": true,
+        "说明文件名主体含ASCII": false
+      }
+    ]
+  },
+  "JSON解析": {
+    "通过": true,
+    "当前总数": 355,
+    "失败项": []
+  },
+  "CSV解析": {
+    "通过": true,
+    "总数": 36,
+    "失败项": []
+  },
+  "缓存与临时污染": {
+    "通过": true,
+    "初检": [],
+    "回归后": []
+  },
+  "固化35继承边界": {
+    "通过": true,
+    "逐字节完全一致文件数": 675,
+    "说明性源码修正数": 1,
+    "未预期不一致项数": 0,
+    "说明性修正": [
+      {
+        "路径": "工具/package_file_indexer.py",
+        "固化35_SHA256": "25039f5153e5ae52087f0b02bddf6dfe81405bf07dedcedced6e0157f1d09c96",
+        "固化36_SHA256": "7183c76c80fcb2d225f17f3d069aa68e4c7a4f7f5a6883b2b5a8c22e994d2f04",
+        "字节变化": true,
+        "变化原因": "仅修正错误的工具顶部用途说明和写JSON步骤注释；不改执行语句",
+        "去除docstring后的AST结构完全一致": true
+      }
+    ],
+    "报告": "数据/固化36/固化35继承非文档内容哈希一致性_固化36.json"
+  },
+  "固化36机器结果": {
+    "通过": true,
+    "标准ITF": 100,
+    "标准Tile": 4978,
+    "SAFTile": 125,
+    "候选窗口": 5774480,
+    "精确匹配": 0,
+    "资源正文文件": 646,
+    "ITF000文本命中": 0
+  },
+  "关键正向回归": {
+    "通过": true,
+    "SAF正向回归": true,
+    "标准SF2_ITF001正向回归": true,
+    "错误": []
+  },
+  "数量口径通过": true,
+  "最终索引规则": "本审计后只新增 数据/本版本全文件SHA与遍历索引_固化36.json；索引排除自身。",
+  "ZIP规则": "ZIP CRC与外层SHA-256在ZIP生成后从外部复读。"
+}

@@ -1,0 +1,10 @@
+{
+  "status": "FAIL",
+  "stage": "调查器首轮预审",
+  "failure_type": "tool_implementation_error",
+  "symptom": "VA 0x0042BF90 读取708字节时实际得到0字节",
+  "root_cause": "PE32 Optional Header 的 ImageBase 被误按 +0x34 读取；正确偏移是 +0x1C。",
+  "research_conclusion_affected": false,
+  "fix": "修正 ImageBase 偏移后，从原始输入重新执行全部机器码哈希、短锚点和 direct CALL 断言。",
+  "preservation_note": "此文件故意永久保留 FAIL，不会被后续 PASS 覆盖。"
+}

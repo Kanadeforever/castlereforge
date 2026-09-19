@@ -1,0 +1,94 @@
+{
+  "版本": "v0.7D阶段中-固化6",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "函数": "0x43AEC0",
+  "DataCenter_API主表": "DataCenter+0xA4 = Public\\API.ENC runtime table；255×0x350；Battle FightRole+0x84C 整记录回写闭环",
+  "规则": "Ail2五槽value>0且effect ID∈43..60时进入writer；真正add数值=Ail2+0xD0，而非五槽value本身",
+  "永久能力物品": [
+    {
+      "物品ID": "0x12D",
+      "名称": "八絡血參",
+      "effect_ID": 59,
+      "RoleDefinition目标偏移": "0x2C",
+      "实际增量_Ail2+0xD0": 20,
+      "五槽value_gate": 100,
+      "官方说明与结构语义": "官方说明：体力骤增；结构目标：主生存资源 max (+0x2C)",
+      "证据级别": "A(写入地址/增量)+B(官方文本业务约束)",
+      "边界": "字段作者原始变量名除已闭合max/current资源外仍待UI/更多consumer证明"
+    },
+    {
+      "物品ID": "0x12E",
+      "名称": "冰荷仙實",
+      "effect_ID": 60,
+      "RoleDefinition目标偏移": "0x34",
+      "实际增量_Ail2+0xD0": 20,
+      "五槽value_gate": 100,
+      "官方说明与结构语义": "官方说明：术力大进；结构目标：次资源 max (+0x34)",
+      "证据级别": "A(写入地址/增量)+B(官方文本业务约束)",
+      "边界": "字段作者原始变量名除已闭合max/current资源外仍待UI/更多consumer证明"
+    },
+    {
+      "物品ID": "0x12F",
+      "名称": "熊王金膽",
+      "effect_ID": 54,
+      "RoleDefinition目标偏移": "0x3C",
+      "实际增量_Ail2+0xD0": 5,
+      "五槽value_gate": 100,
+      "官方说明与结构语义": "官方说明：膂力大增；结构目标：RoleDefinition+0x3C 持久属性",
+      "证据级别": "A(写入地址/增量)+B(官方文本业务约束)",
+      "边界": "字段作者原始变量名除已闭合max/current资源外仍待UI/更多consumer证明"
+    },
+    {
+      "物品ID": "0x130",
+      "名称": "靈泉玉露",
+      "effect_ID": 58,
+      "RoleDefinition目标偏移": "0x44",
+      "实际增量_Ail2+0xD0": 5,
+      "五槽value_gate": 100,
+      "官方说明与结构语义": "官方说明：仙力、灵智大进；结构目标：RoleDefinition+0x44 持久属性",
+      "证据级别": "A(写入地址/增量)+B(官方文本业务约束)",
+      "边界": "字段作者原始变量名除已闭合max/current资源外仍待UI/更多consumer证明"
+    },
+    {
+      "物品ID": "0x131",
+      "名称": "迅神五書",
+      "effect_ID": 56,
+      "RoleDefinition目标偏移": "0x48",
+      "实际增量_Ail2+0xD0": 5,
+      "五槽value_gate": 100,
+      "官方说明与结构语义": "官方说明：迅捷提升；结构目标：RoleDefinition+0x48 持久属性",
+      "证据级别": "A(写入地址/增量)+B(官方文本业务约束)",
+      "边界": "字段作者原始变量名除已闭合max/current资源外仍待UI/更多consumer证明"
+    },
+    {
+      "物品ID": "0x132",
+      "名称": "鬼神天釀",
+      "effect_ID": 55,
+      "RoleDefinition目标偏移": "0x40",
+      "实际增量_Ail2+0xD0": 5,
+      "五槽value_gate": 100,
+      "官方说明与结构语义": "官方说明：强筋健体；结构目标：RoleDefinition+0x40 持久属性",
+      "证据级别": "A(写入地址/增量)+B(官方文本业务约束)",
+      "边界": "字段作者原始变量名除已闭合max/current资源外仍待UI/更多consumer证明"
+    },
+    {
+      "物品ID": "0x133",
+      "名称": "玄機道卷",
+      "effect_ID": 57,
+      "RoleDefinition目标偏移": "0x4C",
+      "实际增量_Ail2+0xD0": 5,
+      "五槽value_gate": 100,
+      "官方说明与结构语义": "官方说明：机运趋吉避祸；结构目标：RoleDefinition+0x4C 持久属性",
+      "证据级别": "A(写入地址/增量)+B(官方文本业务约束)",
+      "边界": "字段作者原始变量名除已闭合max/current资源外仍待UI/更多consumer证明"
+    }
+  ],
+  "ID43特别说明": [
+    "effect ID43 在0x43AEC0写 RoleDefinition+0x9C=1，并继续执行 +0x3C += Ail2+0xD0。",
+    "0x10F/0x110/0x111 的Battle复苏许可/处理另由 Ail2+0x20 item ID 专用分支直接实现；不得把effect ID43本身命名为复苏opcode。"
+  ],
+  "未证明": [
+    "RoleDefinition+0x3C/+0x40/+0x44/+0x48/+0x4C的作者原始字段名（官方物品文本只能约束业务关联）",
+    "ID44..53在全游戏其他consumer中的用途"
+  ]
+}

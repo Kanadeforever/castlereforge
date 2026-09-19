@@ -1,0 +1,35 @@
+{
+  "版本": "v0.7D阶段中-固化18",
+  "日期": "2026-08-14",
+  "阶段": "D8 RNG draw order / deterministic BattleTrace（阶段中）",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "直接前代": "v0.7D阶段中-固化17",
+  "Oracle": {
+    "RPG.exe_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf"
+  },
+  "当前回归": {
+    "SCI": "67/67 PASS",
+    "EVE": "65/65 PASS",
+    "Battle": "277/277 PASS",
+    "MEN0003_MEN0009_AB": "PASS"
+  },
+  "D8已闭合": [
+    "伏龍A RNG%400+800 发生在 Battle reseed 之前，不推进 post-reseed Battle RNG 流",
+    "Battle初始化 0x442040/0x424430 显式 draw 协议：默认分支可先 RNG%6+1；LayoutGR候选固定1 draw，+0x6C>0时再1 draw",
+    "胜利结算 draw 顺序：銀兩条件draw -> 8角色槽条件升级 -> 最多4掉落槽条件draw",
+    "主角色ID 1..6一次成功升级固定7 draw；其他角色进入成功升级时只确认2次直接draw",
+    "全EXE对0x451565共有56个E8直接调用点（direct E8 边界）"
+  ],
+  "未闭合": [
+    "56个直接RNG调用点尚未全部业务分类",
+    "AI/target/action/FIRTTECH/Article处理阶段完整draw order待闭合",
+    "尚未建立完整动态 deterministic BattleTrace 与实机序列对照",
+    "初始化间接callee是否存在额外RNG消耗尚未穷尽"
+  ],
+  "下一恢复入口": [
+    "分类AI 0x444267 / 0x4444E1 RNG调用",
+    "分类target/action 0x421xxx/0x422xxx RNG调用",
+    "分类FIRTTECH/Article公式 0x42Axxx/0x42Bxxx/0x42Cxxx RNG调用",
+    "形成call-site category表和最小BattleTrace事件格式"
+  ]
+}

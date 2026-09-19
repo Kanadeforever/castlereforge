@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "baseline_non_markdown": 1045,
+  "inherited_non_markdown_unchanged": 1045,
+  "unexpected_modified": [],
+  "missing_inherited": [],
+  "markdown": {
+    "count": 109,
+    "bad": []
+  },
+  "python": {
+    "count": 40,
+    "bad": [],
+    "tool_docs": 40
+  },
+  "structured_before_this_audit_write": {
+    "json_count": 555,
+    "json_bad": [],
+    "csv_count": 61,
+    "csv_bad": []
+  },
+  "status_checks": {
+    "theme": true,
+    "first_audit": true,
+    "replay": true
+  },
+  "preserved_fail_history": {
+    "数据/固化64/预审失败_调查器错误把不可达BC7当成class4活动状态.json": true,
+    "数据/固化64/固化64封包预审_FAIL_旧节点扫描器继承语句误报.json": true,
+    "数据/固化64/固化64重放预审_FAIL_只屏蔽顶层输入路径.json": true
+  },
+  "cache_files": [],
+  "notes": [
+    "固化63继承非Markdown仍为1045/1045逐字节不变。",
+    "第二轮只复核冻结主题与封包边界，不新增逆向结论。"
+  ]
+}

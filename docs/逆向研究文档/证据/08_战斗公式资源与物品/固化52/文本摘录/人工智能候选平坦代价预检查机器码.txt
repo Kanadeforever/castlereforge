@@ -1,0 +1,25 @@
+
+/mnt/data/work52/input/RPG.exe:     file format pei-i386
+
+
+Disassembly of section .text:
+
+004445c8 <.text+0x435c8>:
+  4445c8:	54                   	push   esp
+  4445c9:	24 1c                	and    al,0x1c
+  4445cb:	8d 0c d2             	lea    ecx,[edx+edx*8]
+  4445ce:	8d 34 8a             	lea    esi,[edx+ecx*4]
+  4445d1:	8d 0c 76             	lea    ecx,[esi+esi*2]
+  4445d4:	8b 77 38             	mov    esi,DWORD PTR [edi+0x38]
+  4445d7:	8d 14 ca             	lea    edx,[edx+ecx*8]
+  4445da:	8b 8c 93 68 0c 00 00 	mov    ecx,DWORD PTR [ebx+edx*4+0xc68]
+  4445e1:	3b ce                	cmp    ecx,esi
+  4445e3:	8d 14 93             	lea    edx,[ebx+edx*4]
+  4445e6:	0f 8c 35 02 00 00    	jl     0x444821
+  4445ec:	8b 92 60 0c 00 00    	mov    edx,DWORD PTR [edx+0xc60]
+  4445f2:	8b 4f 34             	mov    ecx,DWORD PTR [edi+0x34]
+  4445f5:	3b d1                	cmp    edx,ecx
+  4445f7:	0f 8c 24 02 00 00    	jl     0x444821
+  4445fd:	8b 8b 38 e5 00 00    	mov    ecx,DWORD PTR [ebx+0xe538]
+  444603:	c1 e0 06             	shl    eax,0x6
+  444606:	03 c8                	add    ecx,eax

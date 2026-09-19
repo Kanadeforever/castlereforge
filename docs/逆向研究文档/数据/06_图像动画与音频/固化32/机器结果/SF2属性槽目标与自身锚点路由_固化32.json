@@ -1,0 +1,127 @@
+{
+  "工具版本": "0.7D.13-固化32",
+  "文件": "upload/RPG.exe",
+  "SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "关键验证": [
+    {
+      "检查": "RPG.exe Oracle SHA256",
+      "status": "PASS",
+      "实际": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf"
+    },
+    {
+      "检查": "先读Section0 slot9",
+      "VA": "0x00420444",
+      "status": "PASS"
+    },
+    {
+      "检查": "随后读Section0 slot8",
+      "VA": "0x00420462",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot9值1进入主目标锚点分支",
+      "VA": "0x00420472",
+      "status": "PASS"
+    },
+    {
+      "检查": "读取FightRole+0x7A0主目标槽",
+      "VA": "0x00420477",
+      "status": "PASS"
+    },
+    {
+      "检查": "主目标派生位置加1000",
+      "VA": "0x0042048F",
+      "status": "PASS"
+    },
+    {
+      "检查": "主目标分支传flag=1",
+      "VA": "0x00420494",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot9值2进入自身锚点条件",
+      "VA": "0x00420497",
+      "status": "PASS"
+    },
+    {
+      "检查": "slot8值1进入自身锚点条件",
+      "VA": "0x0042049C",
+      "status": "PASS"
+    },
+    {
+      "检查": "自身分支读取当前FightRole索引",
+      "VA": "0x004204A1",
+      "status": "PASS"
+    },
+    {
+      "检查": "自身分支传flag=0",
+      "VA": "0x004204B5",
+      "status": "PASS"
+    },
+    {
+      "检查": "汇合调用0x43D6E0",
+      "VA": "0x004204C1",
+      "status": "PASS"
+    },
+    {
+      "检查": "注册器取得逐槽flag数组",
+      "VA": "0x0043D6E9",
+      "status": "PASS"
+    },
+    {
+      "检查": "按槽写flag",
+      "VA": "0x0043D6F1",
+      "status": "PASS"
+    },
+    {
+      "检查": "flag非零时取得固定位置数组",
+      "VA": "0x0043D6F7",
+      "status": "PASS"
+    },
+    {
+      "检查": "flag非零时写固定位置",
+      "VA": "0x0043D701",
+      "status": "PASS"
+    },
+    {
+      "检查": "更新器读取flag",
+      "VA": "0x0043D8EC",
+      "status": "PASS"
+    },
+    {
+      "检查": "flag非零读取固定位置",
+      "VA": "0x0043D8F8",
+      "status": "PASS"
+    },
+    {
+      "检查": "flag为零读取动画对象",
+      "VA": "0x0043D90C",
+      "status": "PASS"
+    },
+    {
+      "检查": "唯一直接上层调用",
+      "VA": "0x00442CDB",
+      "status": "PASS"
+    },
+    {
+      "检查": "逐FightRole前进0xDE4",
+      "VA": "0x00442DAF",
+      "status": "PASS"
+    },
+    {
+      "检查": "上层循环上界16",
+      "VA": "0x00442DB5",
+      "status": "PASS"
+    }
+  ],
+  "关键验证数量": 22,
+  "关键验证全部通过": true,
+  "闭合结论": {
+    "slot9=1": "以FightRole+0x7A0主目标槽的动画派生位置+1000为固定锚点，登记当前role槽并置flag=1",
+    "slot9=2或slot8=1": "以当前FightRole自身动画派生位置登记，但flag=0；后续从动画对象实时重算位置",
+    "其余": "不执行该锚点登记，函数其余逻辑照常运行",
+    "调用时机": "0x442CDB是唯一E8直接caller，位于Battle Manager最多16个FightRole的逐槽更新循环"
+  },
+  "实现约束": "必须区分固定位置快照(flag=1)与动画对象实时派生(flag=0)，不能把slot8/9简化成同一布尔位。",
+  "证据边界": "当前77份去重SF2的1427条Section0记录中slot8/9均为0；非零语义来自同版EXE静态分支，仍缺实际磁盘正样本与动态画面命名证据。"
+}

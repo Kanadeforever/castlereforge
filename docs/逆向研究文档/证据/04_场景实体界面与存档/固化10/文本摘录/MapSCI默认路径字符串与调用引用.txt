@@ -1,0 +1,5 @@
+RPG.exe SHA256: b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf
+VA 0x00468484: MP0000\MPMP0000.SCI
+
+已确认直接引用地址（objdump全EXE文本检索）：0x4035DC, 0x40CD46, 0x40D272, 0x40D5CD, 0x44A34B
+边界：字符串证明该资源族确为 .SCI 路径；具体当前地图路径会由运行时格式化/状态替换。

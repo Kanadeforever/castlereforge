@@ -1,0 +1,2035 @@
+{
+  "tool": "youcheng_battle_tail_slots_inspector.py",
+  "solidification": 44,
+  "mode": "read-only-static-verification",
+  "inputs": {
+    "exe": "/mnt/data/work44/input/rpg/RPG.exe",
+    "exe_size": 462848,
+    "exe_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "multimedia_zip": "/mnt/data/multimedia.zip",
+    "multimedia_zip_sha256": "faa994d6e47b46ce610e75019e8a1da35822560781ba9e8e160814571e952f1f"
+  },
+  "layout": {
+    "fightrole_role_definition_offset": "0x84C",
+    "role_definition_runtime_block_offset": "0x1E8",
+    "fightrole_runtime_block_offset": "0xA34",
+    "fightrole_pending_block_offset": "0xCC",
+    "runtime_slot_count": 39,
+    "direct_effect_slot_indices": "0..27",
+    "tail_slot_indices": "28..38",
+    "tail_fightrole_range": "0xAA4..0xACC"
+  },
+  "api_path_string": "Public\\API.ENC",
+  "api": {
+    "zip_member": "multimedia/public/Api.enc",
+    "encrypted_size": 216240,
+    "decoded_size": 216240,
+    "decoded_sha256": "b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d",
+    "record_size": 848,
+    "record_count": 255,
+    "runtime_block_roledef_offset": 488,
+    "runtime_block_fightrole_offset": 2612,
+    "runtime_slot_count": 39,
+    "direct_effect_slot_count": 28,
+    "tail_slot_count": 11,
+    "all_39_dword_count": 9945,
+    "all_39_zero_count": 9945,
+    "all_39_nonzero_count": 0,
+    "tail_11_dword_count": 2805,
+    "tail_11_zero_count": 2805,
+    "tail_11_nonzero_count": 0,
+    "per_record": [
+      {
+        "record_index": 0,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 1,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 2,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 3,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 4,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 5,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 6,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 7,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 8,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 9,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 10,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 11,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 12,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 13,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 14,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 15,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 16,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 17,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 18,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 19,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 20,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 21,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 22,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 23,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 24,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 25,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 26,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 27,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 28,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 29,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 30,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 31,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 32,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 33,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 34,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 35,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 36,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 37,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 38,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 39,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 40,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 41,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 42,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 43,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 44,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 45,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 46,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 47,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 48,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 49,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 50,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 51,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 52,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 53,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 54,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 55,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 56,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 57,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 58,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 59,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 60,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 61,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 62,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 63,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 64,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 65,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 66,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 67,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 68,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 69,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 70,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 71,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 72,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 73,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 74,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 75,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 76,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 77,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 78,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 79,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 80,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 81,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 82,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 83,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 84,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 85,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 86,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 87,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 88,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 89,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 90,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 91,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 92,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 93,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 94,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 95,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 96,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 97,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 98,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 99,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 100,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 101,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 102,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 103,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 104,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 105,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 106,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 107,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 108,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 109,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 110,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 111,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 112,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 113,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 114,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 115,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 116,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 117,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 118,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 119,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 120,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 121,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 122,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 123,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 124,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 125,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 126,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 127,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 128,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 129,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 130,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 131,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 132,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 133,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 134,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 135,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 136,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 137,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 138,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 139,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 140,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 141,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 142,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 143,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 144,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 145,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 146,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 147,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 148,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 149,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 150,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 151,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 152,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 153,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 154,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 155,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 156,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 157,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 158,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 159,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 160,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 161,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 162,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 163,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 164,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 165,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 166,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 167,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 168,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 169,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 170,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 171,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 172,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 173,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 174,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 175,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 176,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 177,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 178,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 179,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 180,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 181,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 182,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 183,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 184,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 185,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 186,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 187,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 188,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 189,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 190,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 191,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 192,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 193,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 194,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 195,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 196,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 197,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 198,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 199,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 200,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 201,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 202,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 203,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 204,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 205,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 206,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 207,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 208,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 209,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 210,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 211,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 212,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 213,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 214,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 215,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 216,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 217,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 218,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 219,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 220,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 221,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 222,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 223,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 224,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 225,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 226,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 227,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 228,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 229,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 230,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 231,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 232,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 233,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 234,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 235,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 236,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 237,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 238,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 239,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 240,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 241,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 242,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 243,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 244,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 245,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 246,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 247,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 248,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 249,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 250,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 251,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 252,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 253,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      },
+      {
+        "record_index": 254,
+        "all_39_nonzero_count": 0,
+        "all_39_nonzero_slots": [],
+        "tail_11_nonzero_count": 0,
+        "tail_11_nonzero_slots": []
+      }
+    ]
+  },
+  "machine_assertions": [
+    {
+      "va": "0x0041F5B1",
+      "meaning": "API.ENC 路径常量入栈",
+      "expected_hex": "68 2c 9f 46 00",
+      "actual_hex": "68 2c 9f 46 00",
+      "pass": true
+    },
+    {
+      "va": "0x0041F5EC",
+      "meaning": "role_id×0x350+0x350 边界算式",
+      "expected_hex": "8d 04 49 8d 04 c0 d1 e0 2b c1 c1 e0 04 05 50 03 00 00",
+      "actual_hex": "8d 04 49 8d 04 c0 d1 e0 2b c1 c1 e0 04 05 50 03 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x0041F661",
+      "meaning": "正常路径整条0x350 RoleDefinition复制",
+      "expected_hex": "b9 d4 00 00 00 f3 a5",
+      "actual_hex": "b9 d4 00 00 00 f3 a5",
+      "pass": true
+    },
+    {
+      "va": "0x0041F6B2",
+      "meaning": "fallback路径整条0x350 RoleDefinition复制",
+      "expected_hex": "b9 d4 00 00 00 8b f3 8b fa f3 a5",
+      "actual_hex": "b9 d4 00 00 00 8b f3 8b fa f3 a5",
+      "pass": true
+    },
+    {
+      "va": "0x0041F166",
+      "meaning": "FightRole内嵌RoleDefinition清零计数",
+      "expected_hex": "b9 d4 00 00 00",
+      "actual_hex": "b9 d4 00 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x0041F171",
+      "meaning": "FightRole+0x84C RoleDefinition目标",
+      "expected_hex": "8d be 4c 08 00 00",
+      "actual_hex": "8d be 4c 08 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x0041F184",
+      "meaning": "FightRole内嵌RoleDefinition rep stosd清零",
+      "expected_hex": "f3 ab",
+      "actual_hex": "f3 ab",
+      "pass": true
+    },
+    {
+      "va": "0x0041F284",
+      "meaning": "pending 39槽起点 FightRole+0xCC",
+      "expected_hex": "8d 8e cc 00 00 00",
+      "actual_hex": "8d 8e cc 00 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x0041F297",
+      "meaning": "pending初始化循环39项上界",
+      "expected_hex": "83 f8 27",
+      "actual_hex": "83 f8 27",
+      "pass": true
+    },
+    {
+      "va": "0x0042160D",
+      "meaning": "commit循环pending起始偏移",
+      "expected_hex": "b8 cc 00 00 00",
+      "actual_hex": "b8 cc 00 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x0042162A",
+      "meaning": "pending→runtime变量索引commit",
+      "expected_hex": "89 94 01 68 09 00 00",
+      "actual_hex": "89 94 01 68 09 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x00421642",
+      "meaning": "commit循环39项终点",
+      "expected_hex": "3d 68 01 00 00",
+      "actual_hex": "3d 68 01 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x00422C4D",
+      "meaning": "normal effect writer的ID<=27硬边界",
+      "expected_hex": "83 f8 1b",
+      "actual_hex": "83 f8 1b",
+      "pass": true
+    },
+    {
+      "va": "0x00422C67",
+      "meaning": "normal effect writer写pending数组",
+      "expected_hex": "89 bc 81 cc 00 00 00",
+      "actual_hex": "89 bc 81 cc 00 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x00420662",
+      "meaning": "runtime 39槽递减起点",
+      "expected_hex": "8d be 34 0a 00 00",
+      "actual_hex": "8d be 34 0a 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x00420694",
+      "meaning": "runtime递减循环39项上界",
+      "expected_hex": "83 fa 27",
+      "actual_hex": "83 fa 27",
+      "pass": true
+    },
+    {
+      "va": "0x004231D1",
+      "meaning": "runtime直接clear起点",
+      "expected_hex": "8d b9 34 0a 00 00",
+      "actual_hex": "8d b9 34 0a 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x004231D7",
+      "meaning": "runtime直接clear只清前28槽",
+      "expected_hex": "b9 1c 00 00 00",
+      "actual_hex": "b9 1c 00 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x004231DE",
+      "meaning": "runtime前28槽 rep stosd clear",
+      "expected_hex": "f3 ab",
+      "actual_hex": "f3 ab",
+      "pass": true
+    },
+    {
+      "va": "0x0041F30D",
+      "meaning": "setup调用API RoleDefinition loader",
+      "expected_hex": "e8 6e 02 00 00",
+      "actual_hex": "e8 6e 02 00 00",
+      "pass": true
+    }
+  ],
+  "machine_assertion_pass_count": 20,
+  "machine_assertion_total": 20,
+  "direct_e8_callers": {
+    "0x0041F580_api_role_loader": [
+      "0x0041F30D"
+    ],
+    "0x0041F2B0_role_setup": [
+      "0x0044267C",
+      "0x00443F39"
+    ],
+    "0x004231D0_runtime_first28_clear": [
+      "0x0041F27D",
+      "0x0042329B",
+      "0x00442708",
+      "0x00443F40"
+    ],
+    "0x00420440_runtime_39_decrement": [
+      "0x00442CDB"
+    ]
+  },
+  "expected_direct_e8_callers": {
+    "0x0041F580_api_role_loader": [
+      "0x0041F30D"
+    ],
+    "0x0041F2B0_role_setup": [
+      "0x0044267C",
+      "0x00443F39"
+    ],
+    "0x004231D0_runtime_first28_clear": [
+      "0x0041F27D",
+      "0x0042329B",
+      "0x00442708",
+      "0x00443F40"
+    ],
+    "0x00420440_runtime_39_decrement": [
+      "0x00442CDB"
+    ]
+  },
+  "checks": {
+    "machine_assertions_all_pass": true,
+    "api_path_string_is_Public_API_ENC": true,
+    "direct_callers_match_expected": true,
+    "api_record_count_is_255": true,
+    "api_all_39_slots_are_zero": true,
+    "api_tail_11_slots_are_zero": true,
+    "all_39_value_count_is_9945": true,
+    "tail_11_value_count_is_2805": true
+  },
+  "overall_pass": true,
+  "conclusion": {
+    "confirmed": [
+      "FightRole+0x84C 接收 Public/API.ENC 的完整 0x350-byte RoleDefinition 记录。",
+      "FightRole+0xA34..+0xACC 对应 RoleDefinition/API.ENC +0x1E8..+0x280 的 39 DWORD 原位副本。",
+      "当前 canonical API.ENC 的 255 条记录中，该 39-DWORD 块 9945/9945 个 DWORD 全为 0。",
+      "pending 数组初始化覆盖 39 槽；commit 与 runtime decrement 结构也覆盖完整 39 槽。",
+      "当前已证 normal effect writer 在写 pending 前硬限制 raw ID<=27，因此只能生产前 28 槽的 canonical 正值。",
+      "后 11 槽在当前 canonical 资产 + 已证 writer 链下没有正值生产者。"
+    ],
+    "must_not_overclaim": [
+      "不能把后11槽命名为 reserved、unused、dead 或 auxiliary。",
+      "不能把当前 canonical 静态边界扩大成所有版本、所有间接路径绝对不可写。",
+      "兼容引擎仍应保留完整39槽布局与通用commit/decrement覆盖范围。"
+    ]
+  }
+}

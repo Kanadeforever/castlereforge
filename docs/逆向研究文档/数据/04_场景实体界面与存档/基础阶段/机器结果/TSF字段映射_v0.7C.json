@@ -1,0 +1,85 @@
+{
+  "版本": "v0.7C",
+  "格式": "天地劫外传：幽城幻剑录 TSF",
+  "顶层容器": {
+    "固定Core大小": 57521,
+    "固定Core十六进制": "0xE0B1",
+    "保存函数": "0x0043B360",
+    "读取函数": "0x0043B510",
+    "运行时到Core": "0x0043ACD0",
+    "Core到运行时": "0x0043AB30",
+    "文件顺序": [
+      "FixedCore[0xE0B1]",
+      "WorldGameVariableBlock[Core+0xE0AD bytes]",
+      "ShopManagerBlock[Core+0xE0A9 bytes]"
+    ]
+  },
+  "Core白名单": [
+    {"offset":"0x0000","size":"variable <= 0x14 before metadata overwrite","name":"save_description_legacy_text","evidence":"0x0043AD78..0x0043ADA0 copies manager+0x14C string to Core+0"},
+    {"offset":"0x0014","size":4,"name":"protagonist_role1_field_0x20_preview","evidence":"0x0043AE50..0x0043AE5D copies API base +0x370 = role#1 +0x20"},
+    {"offset":"0x0018","size":4,"name":"timestamp_day","evidence":"0x0043AE2F..0x0043AE34"},
+    {"offset":"0x001C","size":4,"name":"timestamp_month_1_to_12","evidence":"0x0043AE28..0x0043AE2E"},
+    {"offset":"0x0020","size":4,"name":"timestamp_year_mod_100","evidence":"0x0043AE1A..0x0043AE25"},
+    {"offset":"0x0024","size":4,"name":"timestamp_hour_after_plus8_wrap","evidence":"0x0043AE35..0x0043AE49"},
+    {"offset":"0x0028","size":4,"name":"timestamp_minute","evidence":"0x0043AE49..0x0043AE4D"},
+    {"offset":"0x002C","size":24040,"name":"inventory_bank_0","evidence":"0x0043AD54..0x0043AD5D / load 0x0043ABAF..0x0043ABBD"},
+    {"offset":"0x5E14","size":24040,"name":"inventory_bank_1","evidence":"0x0043AD5F..0x0043AD70 / load 0x0043ABBF..0x0043ABD0"},
+    {"offset":"0xBBFC","size":4,"name":"active_inventory_bank","evidence":"0x0043AD72..0x0043AD7E / 0x0043ABD2..0x0043ABE1"},
+    {"offset":"0xBC00","size":7632,"name":"role_records_0_to_8_saved","evidence":"9 × 0x350 at 0x0043ACF4..0x0043AD44; load restores only first 8 × 0x350"},
+    {"offset":"0xDD20","size":36,"name":"party_role_id_storage_9_save_slots","evidence":"save loop writes for valid IDs 1..8; load consumes only first 8"},
+    {"offset":"0xDD48","size":36,"name":"party_formation_slot_storage_9_save_slots","evidence":"manager+0x40 parallel array; 0x0043F960 and party UI prove formation/position slot semantics; load consumes first 8"},
+    {"offset":"0xDD70","size":4,"name":"party_count","evidence":"serializer manager+0x3C; save preview iterates count and DD20 IDs"},
+    {"offset":"0xDD91","size":4,"name":"mp3_music_volume_level_0_to_9","evidence":"serializer/deserializer + runtime playback scales ×10"},
+    {"offset":"0xDD95","size":4,"name":"wav_sfx_volume_level_0_to_9","evidence":"serializer/deserializer + runtime playback scales ×10"},
+    {"offset":"0xDD99","size":4,"name":"raw_legacy_core_decode_marker_probe","canonical":false,"evidence":"Load checks RAW DWORD == 0xFF before calling 0x004284D0 on entire Core; normal current saves contain noise here"},
+    {"offset":"0xE0A9","size":4,"name":"shop_manager_block_length","evidence":"0x0043AE6C..0x0043AE72"},
+    {"offset":"0xE0AD","size":4,"name":"world_game_variable_block_length","evidence":"0x0043AE60..0x0043AE66"}
+  ],
+  "明确禁止Canonicalize的Core区域": [
+    {"range":"0xD9D0..0xDD1F","reason":"恰为0x350但Serializer未定义为第10角色；159档含0xCC、指针/栈残留等未初始化字节"},
+    {"range":"inactive party mapping slots","reason":"保存时仅在role_id 1..8时赋值，未活动槽可能保留旧垃圾"},
+    {"range":"0xDD99..0xE0A8 except proven fields","reason":"存在原栈/运行时残留；按Serializer字段白名单读取"}
+  ],
+  "库存Bank": {
+    "size": 24040,
+    "categories": 6,
+    "category_size": 4004,
+    "per_category": {
+      "quantities": "500 × uint32 at +0x0000",
+      "item_ids": "500 × uint32 at +0x07D0",
+      "count": "uint32 at +0x0FA0"
+    },
+    "money": "uint32 at +0x5DD8",
+    "transient_noncanonical": ["+0x5DDC", "+0x5DE0", "+0x5DE4"]
+  },
+  "Role保存非对称": {
+    "saved": "records #0..#8, 9×0x350",
+    "loaded": "records #0..#7, 8×0x350",
+    "record_8": "API database role ID 8（冰璃 alternate definition）在运行时可被引用，但TSF中的其保存副本不参与原版Load恢复；兼容导入按原版行为从API基础定义重建，不把TSF record#8当权威状态"
+  },
+  "Party保存非对称": {
+    "saved_storage_slots": 9,
+    "loaded_storage_slots": 8,
+    "valid_role_ids": "1..8",
+    "canonical": "party_count + first active entries {role_id, formation_slot}",
+    "save_only_slot_8": "legacy diagnostic only"
+  },
+  "WorldGameVariableBlock": {
+    "standard_size": 10200,
+    "scene_load_descriptor": {"offset":"0x0000","size":50,"source":"0x0044B130 copies exactly 50 bytes"},
+    "controlled_actor_x": {"offset":"0x0032","type":"int32","source":"0x0044B150 DWORD"},
+    "controlled_actor_y": {"offset":"0x0036","type":"int32","source":"0x0044B150 DWORD"},
+    "orientation_or_state": {"offset":"0x003A","type":"uint32 from actor byte +0x1A","source":"0x0044B150"},
+    "controlled_actor_index": {"offset":"0x003E","type":"uint32","source":"global 0x00468BF0 via 0x0044B150"},
+    "game_variables": {"offset":"0x00C8","count":5000,"type":"int16","bytes":10000},
+    "game_var_zero_special_rule": "GET(0) at 0x0044B0D0 always returns 0, while SET/ADD/SUB have no index-0 early return"
+  },
+  "ShopManagerBlock": {
+    "observed_size": 36936,
+    "record_size": 648,
+    "record_count": 57,
+    "seed": "public\\ShopItem.dat",
+    "semantics": "mutable manager state persisted verbatim",
+    "load_validation": "length % 0x288 == 0"
+  }
+}

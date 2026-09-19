@@ -1,0 +1,47 @@
+{
+  "版本": "v0.7D-recovery-point-2026-08-13",
+  "性质": "恢复点，不是正式封版",
+  "证据规则": {
+    "E0": "v0.7C正式封存或可直接重复验证的冻结事实",
+    "E1": "原始ASM/EXE/机器JSON/工具输出，重新取得后可复核",
+    "E2": "不完整会话导出/摘要/记忆，只作导航线索"
+  },
+  "冻结状态": {
+    "v0.7A": "DONE",
+    "v0.7B": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7C": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7D": "ACTIVE / RECOVERY_REQUIRED"
+  },
+  "E0_关键事实": {
+    "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "EVE": {
+      "numeric": 155,
+      "legal": 88,
+      "invalid": 67,
+      "distinct_execute": 87
+    },
+    "ENC": "period-255 XOR; 13/13 current reference sample byte-equal in v0.7A",
+    "SF2": {
+      "unique": 175,
+      "pass": 175,
+      "fail": 0,
+      "compressed_0x6F": 73
+    },
+    "TSF": {
+      "fixed_core": 57521,
+      "world": 10200,
+      "save_corpus": 159
+    }
+  },
+  "E2_待复核对象": [
+    "BattleUnit size 0xDE4 and offsets 0x848/0x84C/0xC30/0xCD8/0xCDC",
+    "Role 0x2C/0x30 final HP naming",
+    "Role 0x34/0x38 final secondary resource naming",
+    "Role 0x1E8 status/timer layout",
+    "battle result 0x50 layout",
+    "0x42A7D0 final Article/Item processor identity",
+    "0x42C680 generic FIRTTECH processor identity",
+    "status IDs, opposing table, periodic boundary",
+    "victory/reward function boundaries"
+  ]
+}

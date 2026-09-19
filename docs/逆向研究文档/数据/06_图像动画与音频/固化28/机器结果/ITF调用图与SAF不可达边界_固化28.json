@@ -1,0 +1,337 @@
+{
+  "工具版本": "0.7D.9-固化28",
+  "文件": "upload/RPG.exe",
+  "SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "Oracle哈希匹配": true,
+  "通用动画加载器调用点": [
+    {
+      "调用点": "0x00401D8C",
+      "来源": "固定字符串",
+      "资源": "F-Fascia.SF2"
+    },
+    {
+      "调用点": "0x0040391C",
+      "来源": "固定字符串",
+      "资源": "F-Talk.SF2"
+    },
+    {
+      "调用点": "0x00403967",
+      "来源": "固定字符串",
+      "资源": "F-Float.SF2"
+    },
+    {
+      "调用点": "0x004039B3",
+      "来源": "固定字符串",
+      "资源": "F-YESNO.SF2"
+    },
+    {
+      "调用点": "0x00403D9F",
+      "来源": "格式化字符串",
+      "资源": "%d-2.SF2"
+    },
+    {
+      "调用点": "0x00403DF9",
+      "来源": "固定字符串",
+      "资源": "F-Name.SF2"
+    },
+    {
+      "调用点": "0x00408F09",
+      "来源": "Map SCI字段",
+      "资源": "record+0x74"
+    },
+    {
+      "调用点": "0x00409010",
+      "来源": "Map SCI字段",
+      "资源": "record+0xD9"
+    },
+    {
+      "调用点": "0x00409074",
+      "来源": "Map SCI字段",
+      "资源": "record+0x13D"
+    },
+    {
+      "调用点": "0x0040A28B",
+      "来源": "Entity SCI字段",
+      "资源": "record+0x7B"
+    }
+  ],
+  "Fight_ITF静态路径数量": 44,
+  "Fight_ITF静态路径": [
+    {
+      "VA": "0x00469364",
+      "路径": "Fight\\ITF\\ITF0400.SF2"
+    },
+    {
+      "VA": "0x0046937C",
+      "路径": "Fight\\ITF\\ITF0012.SF2"
+    },
+    {
+      "VA": "0x00469394",
+      "路径": "Fight\\ITF\\ITF1019.SF2"
+    },
+    {
+      "VA": "0x004693AC",
+      "路径": "Fight\\ITF\\ITF0005.SF2"
+    },
+    {
+      "VA": "0x004693C4",
+      "路径": "Fight\\ITF\\ITF0004.SF2"
+    },
+    {
+      "VA": "0x004693DC",
+      "路径": "Fight\\ITF\\ITF0053.SF2"
+    },
+    {
+      "VA": "0x004693F4",
+      "路径": "Fight\\ITF\\ITF0051.SF2"
+    },
+    {
+      "VA": "0x004697B4",
+      "路径": "Fight\\ITF\\ITF3005.SF2"
+    },
+    {
+      "VA": "0x004697CC",
+      "路径": "Fight\\ITF\\ITF3007.SF2"
+    },
+    {
+      "VA": "0x004697E4",
+      "路径": "Fight\\ITF\\ITF3006.SF2"
+    },
+    {
+      "VA": "0x004697FC",
+      "路径": "Fight\\ITF\\ITF0031.SF2"
+    },
+    {
+      "VA": "0x00469814",
+      "路径": "Fight\\ITF\\ITF0030.SF2"
+    },
+    {
+      "VA": "0x00469854",
+      "路径": "Fight\\ITF\\ITF500.SF2"
+    },
+    {
+      "VA": "0x0046986C",
+      "路径": "Fight\\ITF\\ITF501.SF2"
+    },
+    {
+      "VA": "0x00469884",
+      "路径": "Fight\\ITF\\ITF502.SF2"
+    },
+    {
+      "VA": "0x004698B0",
+      "路径": "Fight\\ITF\\ITF0210.SF2"
+    },
+    {
+      "VA": "0x004698C8",
+      "路径": "Fight\\ITF\\ITF0026.SF2"
+    },
+    {
+      "VA": "0x004698E0",
+      "路径": "Fight\\ITF\\ITF0025.SF2"
+    },
+    {
+      "VA": "0x004699AC",
+      "路径": "Fight\\ITF\\ITF1018.SF2"
+    },
+    {
+      "VA": "0x004699C4",
+      "路径": "Fight\\ITF\\ITF0052.SF2"
+    },
+    {
+      "VA": "0x004699DC",
+      "路径": "Fight\\ITF\\ITF0050.SF2"
+    },
+    {
+      "VA": "0x004699F4",
+      "路径": "Fight\\ITF\\ITF0008.SF2"
+    },
+    {
+      "VA": "0x00469A0C",
+      "路径": "Fight\\ITF\\ITF0009.SF2"
+    },
+    {
+      "VA": "0x00469A24",
+      "路径": "Fight\\ITF\\ITF0010.SF2"
+    },
+    {
+      "VA": "0x00469A3C",
+      "路径": "Fight\\ITF\\ITF0007.SF2"
+    },
+    {
+      "VA": "0x00469A54",
+      "路径": "Fight\\ITF\\ITF0006.SF2"
+    },
+    {
+      "VA": "0x00469A6C",
+      "路径": "Fight\\ITF\\ITF0011.SF2"
+    },
+    {
+      "VA": "0x00469A84",
+      "路径": "Fight\\ITF\\ITF0002.SF2"
+    },
+    {
+      "VA": "0x00469A9C",
+      "路径": "Fight\\ITF\\ITF0003.SF2"
+    },
+    {
+      "VA": "0x00469AB4",
+      "路径": "Fight\\ITF\\ITF300.SF2"
+    },
+    {
+      "VA": "0x00469AF0",
+      "路径": "Fight\\ITF\\ITF314.SF2"
+    },
+    {
+      "VA": "0x00469B0E",
+      "路径": "Fight\\ITF\\ITF306.SF2"
+    },
+    {
+      "VA": "0x00469B2C",
+      "路径": "Fight\\ITF\\ITF304.SF2"
+    },
+    {
+      "VA": "0x00469B4A",
+      "路径": "Fight\\ITF\\ITF312.SF2"
+    },
+    {
+      "VA": "0x00469B86",
+      "路径": "Fight\\ITF\\ITF308.SF2"
+    },
+    {
+      "VA": "0x00469BA4",
+      "路径": "Fight\\ITF\\ITF310.SF2"
+    },
+    {
+      "VA": "0x00469BC2",
+      "路径": "Fight\\ITF\\ITF302.SF2"
+    },
+    {
+      "VA": "0x00469C3C",
+      "路径": "Fight\\ITF\\ITF315.SF2"
+    },
+    {
+      "VA": "0x00469C5A",
+      "路径": "Fight\\ITF\\ITF307.SF2"
+    },
+    {
+      "VA": "0x00469CF0",
+      "路径": "Fight\\ITF\\ITF311.SF2"
+    },
+    {
+      "VA": "0x0046AAE4",
+      "路径": "Fight\\ITF\\ITF0028.SF2"
+    },
+    {
+      "VA": "0x0046C6F0",
+      "路径": "Fight\\ITF\\ITF001.SF2"
+    },
+    {
+      "VA": "0x0046C81C",
+      "路径": "Fight\\ITF\\ITF0013.SF2"
+    },
+    {
+      "VA": "0x0046CC90",
+      "路径": "Fight\\ITF\\ITF201.SF2"
+    }
+  ],
+  "SCI样本": [
+    {
+      "文件": "work/resources/multimedia/Map/Mp2506/Mpmp2506.sci",
+      "大小": 1139,
+      "SHA256": "e0ddea0b5d5405bfbd6da0c9a6b45f860bb2e9227337ca8ab7fd8f0e9977a1c8",
+      "含ITF000": false,
+      "含SAF": false
+    },
+    {
+      "文件": "work/resources/multimedia/Map/Mp2506/Np0.sci",
+      "大小": 6061,
+      "SHA256": "2b626b0e4d5d6ea31b7fc7c6a7b32bd7391a11cd7b875cfac4d70123cedbba0c",
+      "含ITF000": false,
+      "含SAF": false
+    },
+    {
+      "文件": "work/resources/multimedia/Map/mp2412a/MPmp2412a.SCI",
+      "大小": 1139,
+      "SHA256": "8051317975a72b9a6de72cc9da9bd98d6d4df44a7701ad2970eb5771aa915511",
+      "含ITF000": false,
+      "含SAF": false
+    },
+    {
+      "文件": "work/resources/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "大小": 6061,
+      "SHA256": "88366090d53cfa2eda71e512176888d6262402b9ebd9e6961d29e7ba3947c582",
+      "含ITF000": false,
+      "含SAF": false
+    }
+  ],
+  "关键验证": [
+    {
+      "检查": "0x4070D0直接调用点恰为10个既知地址",
+      "status": "PASS",
+      "实际": [
+        "0x00401D8C",
+        "0x0040391C",
+        "0x00403967",
+        "0x004039B3",
+        "0x00403D9F",
+        "0x00403DF9",
+        "0x00408F09",
+        "0x00409010",
+        "0x00409074",
+        "0x0040A28B"
+      ]
+    },
+    {
+      "检查": "zlib包装0x44EAD0只有标准SF2链0x428D25一个直接调用",
+      "status": "PASS",
+      "实际": [
+        "0x00428D25"
+      ]
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x00428C21",
+      "含义": "标准对象先比较3字节SF2魔数",
+      "期望": "6a 03 68 08 a6 46 00 56 e8 92 41 03 00",
+      "实际": "6a 03 68 08 a6 46 00 56 e8 92 41 03 00",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x00428C31",
+      "含义": "魔数不等则跳到拒绝分支",
+      "期望": "85 c0 75 22",
+      "实际": "85 c0 75 22",
+      "status": "PASS"
+    },
+    {
+      "类型": "关键字节",
+      "地址": "0x00428CCB",
+      "含义": "通过SF2魔数后才检查+0x0B压缩标志0x6F",
+      "期望": "8a 45 0b 3c 6f",
+      "实际": "8a 45 0b 3c 6f",
+      "status": "PASS"
+    },
+    {
+      "检查": "EXE无SAF三字节字面量",
+      "status": "PASS"
+    },
+    {
+      "检查": "Fight\\ITF静态路径不含裸名ITF000.SF2",
+      "status": "PASS",
+      "匹配": []
+    },
+    {
+      "检查": "所给SCI样本均不含ITF000/SAF字面量",
+      "status": "PASS"
+    }
+  ],
+  "关键验证数量": 8,
+  "关键验证全部通过": true,
+  "冻结边界": [
+    "仅穷举当前RPG.exe .text中的E8直接调用；不能形式化排除函数指针/自修改代码。",
+    "当前EXE有编号ITF资源的明确静态请求，但没有Fight\\ITF\\ITF000.SF2裸名请求。",
+    "固化27已证明SAF不能通过标准SF2魔数门；本轮不扩大为所有发行版均未使用。"
+  ]
+}

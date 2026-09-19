@@ -1,0 +1,380 @@
+{
+  "tool_version": "0.7D-solid50.0",
+  "topic": "Battle状态资源selector15静态直接生产面",
+  "result": "PASS",
+  "exe": {
+    "path": "/mnt/data/work50/input/RPG.exe",
+    "size": 462848,
+    "sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "image_base": "0x00400000"
+  },
+  "machine_checks": [
+    {
+      "名称": "ITF0052路径字符串",
+      "VA": "0x004699C4",
+      "期望": "46 69 67 68 74 5c 49 54 46 5c 49 54 46 30 30 35 32 2e 53 46 32 00",
+      "实际": "46 69 67 68 74 5c 49 54 46 5c 49 54 46 30 30 35 32 2e 53 46 32 00",
+      "PASS": true
+    },
+    {
+      "名称": "父Battle UI分配0x608字节状态容器",
+      "VA": "0x0041C57A",
+      "期望": "68 08 06 00 00",
+      "实际": "68 08 06 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "父Battle UI直接调用0x41D160",
+      "VA": "0x0041C5A4",
+      "期望": "e8 b7 0b 00 00",
+      "实际": "e8 b7 0b 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "父Battle UI把状态容器保存到+0x5C0",
+      "VA": "0x0041C5B6",
+      "期望": "89 86 c0 05 00 00",
+      "实际": "89 86 c0 05 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "第一排selector计数从EDI=0且X从16开始",
+      "VA": "0x0041D2F3",
+      "期望": "33 ff c7 44 24 10 10 00 00 00",
+      "实际": "33 ff c7 44 24 10 10 00 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "第一排child指针从self+0x598开始",
+      "VA": "0x0041D2FD",
+      "期望": "8d ae 98 05 00 00",
+      "实际": "8d ae 98 05 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "第一排加载ITF0052路径",
+      "VA": "0x0041D32F",
+      "期望": "68 c4 99 46 00",
+      "实际": "68 c4 99 46 00",
+      "PASS": true
+    },
+    {
+      "名称": "第一排每次先INC EDI再PUSH selector",
+      "VA": "0x0041D34B",
+      "期望": "47 57 8b 4a 1c",
+      "实际": "47 57 8b 4a 1c",
+      "PASS": true
+    },
+    {
+      "名称": "第一排调用selector setter",
+      "VA": "0x0041D350",
+      "期望": "e8 9b 13 02 00",
+      "实际": "e8 9b 13 02 00",
+      "PASS": true
+    },
+    {
+      "名称": "第一排child+4且X+30直到226",
+      "VA": "0x0041D355",
+      "期望": "8b 44 24 10 83 c5 04 83 c0 1e 3d e2 00 00 00",
+      "实际": "8b 44 24 10 83 c5 04 83 c0 1e 3d e2 00 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "第二排selector从第一排末值+1且X重置为16",
+      "VA": "0x0041D36A",
+      "期望": "8d 47 01 bd 10 00 00 00 89 44 24 10",
+      "实际": "8d 47 01 bd 10 00 00 00 89 44 24 10",
+      "PASS": true
+    },
+    {
+      "名称": "第二排child紧接第一排后的self+0x598数组",
+      "VA": "0x0041D376",
+      "期望": "8d bc be 98 05 00 00",
+      "实际": "8d bc be 98 05 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "第二排加载同一ITF0052路径",
+      "VA": "0x0041D3A5",
+      "期望": "68 c4 99 46 00",
+      "实际": "68 c4 99 46 00",
+      "PASS": true
+    },
+    {
+      "名称": "第二排读取运行selector并PUSH",
+      "VA": "0x0041D3BD",
+      "期望": "8b 07 8b 54 24 10 52 8b 48 1c",
+      "实际": "8b 07 8b 54 24 10 52 8b 48 1c",
+      "PASS": true
+    },
+    {
+      "名称": "第二排调用selector setter",
+      "VA": "0x0041D3C7",
+      "期望": "e8 24 13 02 00",
+      "实际": "e8 24 13 02 00",
+      "PASS": true
+    },
+    {
+      "名称": "第二排child+4、X+30、selector+1",
+      "VA": "0x0041D3CC",
+      "期望": "8b 54 24 10 83 c7 04 83 c5 1e 42 81 fd e2 00 00 00",
+      "实际": "8b 54 24 10 83 c7 04 83 c5 1e 42 81 fd e2 00 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "析构阶段恢复状态容器vtable",
+      "VA": "0x0041D742",
+      "期望": "c7 06 d0 0a 46 00",
+      "实际": "c7 06 d0 0a 46 00",
+      "PASS": true
+    },
+    {
+      "名称": "析构从14个状态child数组起点开始",
+      "VA": "0x0041D88E",
+      "期望": "8d 9e 98 05 00 00",
+      "实际": "8d 9e 98 05 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "析构child计数固定为14",
+      "VA": "0x0041D894",
+      "期望": "c7 44 24 10 0e 00 00 00",
+      "实际": "c7 44 24 10 0e 00 00 00",
+      "PASS": true
+    },
+    {
+      "名称": "析构循环读取当前child并判空",
+      "VA": "0x0041D89C",
+      "期望": "8b 3b 3b fd",
+      "实际": "8b 3b 3b fd",
+      "PASS": true
+    },
+    {
+      "名称": "析构每次child指针+4并循环14次",
+      "VA": "0x0041D8B8",
+      "期望": "83 c3 04 48 89 44 24 10 75 da",
+      "实际": "83 c3 04 48 89 44 24 10 75 da",
+      "PASS": true
+    }
+  ],
+  "machine_check_count": 21,
+  "machine_check_pass_count": 21,
+  "itf0052_path_static_references": {
+    "dword_literal_vas": [
+      "0x0041D330",
+      "0x0041D3A6"
+    ],
+    "expected": [
+      "0x0041D330",
+      "0x0041D3A6"
+    ],
+    "meaning": "两处都位于0x41D160状态容器构造器的push imm32；未发现第三处同地址静态字面引用",
+    "PASS": true
+  },
+  "status_container_constructor": {
+    "va": "0x0041D160",
+    "direct_e8_callers_in_text": [
+      "0x0041C5A4"
+    ],
+    "expected_unique_caller": "0x0041C5A4",
+    "parent_alloc_size": "0x608",
+    "parent_store_offset": "+0x5C0",
+    "derived_x_positions_each_row": [
+      16,
+      46,
+      76,
+      106,
+      136,
+      166,
+      196
+    ],
+    "derived_first_row_selectors": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "derived_second_row_selectors": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "derived_all_itf0052_initial_selectors": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "selector15_possible": false,
+    "PASS": true
+  },
+  "normal_status_update": {
+    "range": [
+      "0x0041CD79",
+      "0x0041D119"
+    ],
+    "direct_setter_calls": [
+      "0x0041CDC4",
+      "0x0041CE14",
+      "0x0041CE64",
+      "0x0041CEB4",
+      "0x0041CF04",
+      "0x0041CF54",
+      "0x0041CF87",
+      "0x0041CFBA",
+      "0x0041D00A",
+      "0x0041D03D",
+      "0x0041D070",
+      "0x0041D0A3",
+      "0x0041D0D6",
+      "0x0041D0F6",
+      "0x0041D114"
+    ],
+    "direct_setter_call_count": 15,
+    "logical_channel_count": 14,
+    "nonzero_selectors": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+    ],
+    "zero_fallback_selector": 0,
+    "selector15_possible": false,
+    "PASS": true
+  },
+  "canonical_constructor_update_region": {
+    "range": [
+      "0x0041CD00",
+      "0x0041D920"
+    ],
+    "direct_setter_calls": [
+      "0x0041CDC4",
+      "0x0041CE14",
+      "0x0041CE64",
+      "0x0041CEB4",
+      "0x0041CF04",
+      "0x0041CF54",
+      "0x0041CF87",
+      "0x0041CFBA",
+      "0x0041D00A",
+      "0x0041D03D",
+      "0x0041D070",
+      "0x0041D0A3",
+      "0x0041D0D6",
+      "0x0041D0F6",
+      "0x0041D114",
+      "0x0041D1E0",
+      "0x0041D350",
+      "0x0041D3C7"
+    ],
+    "direct_setter_call_count": 18,
+    "classification": {
+      "normal_update_calls": 15,
+      "itf0052_constructor_loop_call_sites": 2,
+      "other_resource_child_constructor_call": 1
+    },
+    "PASS": true
+  },
+  "status_container_vtable": {
+    "va": "0x00460AD0",
+    "first8": [
+      "0x00431140",
+      "0x00431170",
+      "0x00413000",
+      "0x00413000",
+      "0x00413000",
+      "0x0040FBD0",
+      "0x0041D920",
+      "0x00413000"
+    ],
+    "expected_first8": [
+      "0x00431140",
+      "0x00431170",
+      "0x00413000",
+      "0x00413000",
+      "0x00413000",
+      "0x0040FBD0",
+      "0x0041D920",
+      "0x00413000"
+    ],
+    "custom_method": "0x0041D920",
+    "custom_method_direct_setter_calls": [],
+    "PASS": true
+  },
+  "destructor": {
+    "va": "0x0041D720",
+    "child_array_offset": "+0x598",
+    "child_count": 14,
+    "direct_setter_calls": [],
+    "PASS": true
+  },
+  "selector15_asset_existence": {
+    "来源": "/mnt/data/work50/幽城幻剑录Godot兼容引擎_研究固化包_v0.7D阶段中_固化50_Battle状态资源选择器十五静态无生产者边界闭合版/数据/固化46/Battle十四路状态表现与ITF0052路由调查.json",
+    "固化46结果": "PASS",
+    "ITF0052原始SHA256": "ed43a3f863127417e5d08e8ab6e4355f141f40214b44fca2bde22aa363ea3d33",
+    "Section计数": [
+      23,
+      23,
+      23,
+      0
+    ],
+    "合法selector范围": [
+      0,
+      22
+    ],
+    "Section0_1_2一一对应": true,
+    "selector15存在于Section0": true,
+    "selector15存在于Section1": true,
+    "selector15存在于Section2": true,
+    "PASS": true
+  },
+  "frozen_boundary": {
+    "selector15_is_valid_itf0052_asset_entry": true,
+    "canonical_battle_status_container_direct_producer_count_for_selector15": 0,
+    "constructor_produces": "1..14",
+    "normal_update_produces": "0或1..14/16..22",
+    "custom_status_vmethod_direct_selector_setter_calls": 0,
+    "destructor_direct_selector_setter_calls": 0,
+    "implementation_rule": "当前同版canonical Battle状态容器不得主动把14个状态child切到selector15；但资源解析器必须保留selector15这个合法入口。"
+  },
+  "forbidden_overreach": [
+    "不得把selector15命名为unused/dead/reserved/padding。",
+    "不得因为canonical状态容器无直接producer就删除ITF0052的selector15资源条目。",
+    "不得把本结论扩大成全程序、所有版本、所有间接/别名路径绝对不可达。",
+    "不得根据selector15图标外观猜作者业务状态名。"
+  ]
+}

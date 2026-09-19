@@ -1,0 +1,22 @@
+{
+  "版本": "v0.7D阶段中-固化6",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "本轮新增已闭合": [
+    "DataCenter+0xA4 = Public\\API.ENC runtime role table；255×0x350；与FightRole+0x84C整记录同步",
+    "0x43AEC0 为实际非战斗物品应用writer；effect ID54..60→持久RoleDefinition字段映射及Ail2+0xD0增量闭合",
+    "Ail2+0x28>0 世界特殊动作通道闭合；0x170/171/172→code12/13/14",
+    "code13/14的1500-duration encounter threshold模式：约2×/约1/3，分别与降低/提高遇敌官方说明闭环"
+  ],
+  "本轮重要否定/修正": [
+    "不能再笼统写“ID>27 consumer未知”：normal Battle 28槽仍排除>27，但非战斗0x43AEC0已消费43..60；world items又使用+0x28而非大ID作selector。",
+    "不能把effect ID43命名为复苏opcode；复苏item-ID 0x10F/110/111存在独立Battle专用分支。",
+    "不能把0x170/171/172的大ID61/63/64当世界动作码；真正action code是Ail2+0x28=12/13/14。"
+  ],
+  "当前恢复入口": [
+    "追0x40CE97(code12)的场景/流程迁移最终目标与状态变量。",
+    "通过状态UI/MEN/其他consumer恢复RoleDefinition+0x3C/+0x40/+0x44/+0x48/+0x4C作者术语；先不猜。",
+    "独立研究effect ID43的RoleDefinition+0x9C与+0x3C语义，保持与复苏item-ID路径分离。",
+    "继续D7 Battle Result/Victory/Reward；D8 RNG draw order/BattleTrace。"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "版本": "v0.7D阶段中-固化10",
+  "日期": "2026-08-14",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "直接前代": "v0.7D阶段中-固化9",
+  "本轮闭合": [
+    "0x409580上层对象收窄为selected Map SCI runtime entry更新",
+    "Map SCI runtime container与source record绑定",
+    "MapSCI+0x384 code12 fallback scene gate",
+    "MapSCI+0x380 direct consumer与DataCenter+0x108结构链",
+    "旧SCI unknown_tail从+0x380缩小为+0x388..+0x472"
+  ],
+  "本轮纠错": [
+    "固化9的“backing object+0x384 predicate”改为“selected Map SCI source record+0x384 u32 gate”",
+    "不得把0x433xxx其他对象+0x384 writer混入Map SCI字段writer",
+    "旧“+0x380..+0x472全部未消费”撤销"
+  ],
+  "当前样本边界": {
+    "MapSCI样本": 2,
+    "+0x380": [
+      0,
+      0
+    ],
+    "+0x384": [
+      0,
+      0
+    ],
+    "+0x384==1正例": 0
+  },
+  "下一恢复入口": [
+    "继续追DataCenter+0x108全部writer/consumer，尝试给MapSCI+0x380建立业务语义；在证据不足时保持structural",
+    "若获得更多Map SCI，优先找+0x384==1正例并联动对应EVE slot2",
+    "继续保留更多EVE 0x96 keyA/keyB/slot2语料缺口",
+    "随后回Battle D6后11槽/D7/D8"
+  ],
+  "禁止猜测": [
+    "MapSCI+0x380作者名",
+    "MapSCI+0x384作者名或全局“逃脱允许”泛化",
+    "当前EVE slot2统一业务意义"
+  ]
+}

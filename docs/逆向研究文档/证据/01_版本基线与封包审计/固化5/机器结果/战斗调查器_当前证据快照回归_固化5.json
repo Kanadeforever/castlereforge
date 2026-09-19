@@ -1,0 +1,33 @@
+{
+  "工具版本": "0.7D-固化5",
+  "快照性质": "固化5导航索引；若要验证当前 EXE，请使用“验证RPG”。",
+  "固定结构证据": {
+    "BattleManager槽步长": "0xDE4",
+    "FightRole真实对象": "FightRole(slot) = BattleManager + 0x3E4 + slot*0xDE4",
+    "API内嵌块": "FightRole+0x84C，大小0x350；同一数值字段在已观测路径还作为 Enemy_AI record index 与 fallback FIRTTECH ID 使用，作者业务名未定",
+    "AI候选区": "raw-slot +0xCD8/+0xCDC = FightRole+0x8F4/+0x8F8：candidate count / DWORD IDs",
+    "选中动作": "FightRole+0x7A8 = selected FIRTTECH ID；+0x848 = selected FIRTTECH record*",
+    "目标": "FightRole+0x7A0 = target seed/primary index；+0x88 target list；+0xC8 target count",
+    "动作模式": "FightRole+0xCF0；mode 7 已直接闭合为 Article/Ail2；mode 1/4 仍只保留结构名",
+    "Article": "FightRole+0xCF4 = Ail2 record*；0x42A7D0 为 Article/Ail2 processor",
+    "FIRTTECH处理": "0x42A7A0 5参数包装器 → 0x42C680 FIRTTECH Action/Damage Processor",
+    "DamageInfo": "每目标 base=FightRole+0x170，stride=0x50；0x42B0D0 固定处理5槽：ID +0x10、residual/value +0x24；RoleDefinition+0x1E8 会复制到 +0x44，但 0x421518 实际读取的是 +0x48，固化3旧直接串联已撤销",
+    "D6状态管线": "五槽 residual→目标 pending +0xCC+rawID*4；mode2 将39槽 pending 一对一提交到 runtime +0xA34；0x420440 每次调用对正 runtime 值一般减10并夹0；normal producer 对 signed raw ID<=27，因此前28槽对应 raw effect-like ID 0..27。后11槽属于generic 39槽 envelope，但当前用途未知，不能擅称辅助/保留；0x421690/0x421A00/0x4231D0 提供直接清除路径",
+    "RoleDefinition双资源": "RoleDefinition+0x2C/+0x30 = FightRole+0x878/+0x87C 主生存资源 max/current；+0x34/+0x38 = FightRole+0x880/+0x884 次资源 max/current；Battle与EVE双 consumer 交叉证明，作者资源名未知",
+    "动作资源消耗": "FIRTTECH+0x34/+0x38 分别为主/次动作资源消耗量，AI前检与动作后扣除闭环；Article/Ail2+0x118/+0x11C分别扣主/次资源",
+    "公式分派": "FIRTTECH+0x30：2/3/4/5/6 → 0x42B630/6C0/750/7D0/840，其他 → 0x42B5F0；精确整数公式已固化到阶段D数据",
+    "RNG": "state@0x46E29C；0x45155B seed；0x451565: state=state*0x343FD+0x269EC3(mod 2^32), return (state>>16)&0x7FFF；Battle init 0x442076/0x44207C 用系统时间 helper 0x451583 重新播种"
+  },
+  "坐标换算示例": {
+    "raw+0xC30": "FightRole+0x84C",
+    "raw+0xCD8": "FightRole+0x8F4",
+    "raw+0xCDC": "FightRole+0x8F8",
+    "raw+0x10D4": "FightRole+0xCF0"
+  },
+  "当前继续入口": [
+    "D5：精确公式与 RoleDefinition 双资源 runtime 结构、FIRTTECH+0x34/+0x38 动作消耗已闭合；继续证明作者资源名、selector/FIRTTECH+0x40 业务语义与其他后处理",
+    "D6：normal residual→pending→runtime 已闭合，positive ID>27 被 signed<=27 gate 排除；Ail2+0x20 已证明为唯一记录/物品ID字段，复苏0x10F/110/111有独立专用路径，0x12D..133也被菜单代码识别为特殊范围。继续追永久能力/探索物品实际writer、DamageInfo大ID是否另有consumer、后11槽用途、真实时间单位与动态时序。",
+    "D7：Battle Result / Victory / Reward 边界",
+    "D8：RNG 算法/state/时间播种已闭合；继续恢复每条 action 的 draw 顺序与 deterministic BattleTrace"
+  ]
+}

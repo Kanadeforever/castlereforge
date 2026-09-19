@@ -1,0 +1,13 @@
+﻿地址,当前定义,证据/备注
+0x0041F140,Battle Unit 构造/初始化区域,Battle Unit 内部字段清零；+0x84C 起 0xD4 DWORD=0x350 bytes 初始化
+0x0041F643,API RoleDefinition → Battle Unit +0x84C,按 role index 计算 API record 地址，并 rep movsd 0xD4 DWORD
+0x00444240,Enemy AI 决策入口,Battle Unit stride 0xDE4；+0xC30 当前 AI index；Enemy_AI stride 56；rand()%100
+0x00444330,Enemy AI 候选选择子程序,读取单位候选列表并进入条件过滤；当前业务细节继续恢复
+0x0042A7D0,Article/Item Effect Damage Processor,第四数据指针访问至 +0x37A；与 Ail2 926-byte record 匹配；不是 FIRTTECH 560-byte record
+0x004284D0,ENC 通用 period-255 XOR,decoded[i]=encoded[i] XOR (i mod 255)
+0x0043B360,TSF Save writer,固定 Core + World + Shop
+0x0043B510,TSF Load reader,Legacy TSF 导入 Oracle
+0x004073D0,SF2 Action wrapper,"start,length,position,loop"
+0x00407400,SF2 Action player,Section0 duration_legacy_ticks 驱动
+0x0040B2D0,Event VM 执行循环,EVE Command 主循环
+0x0040B3B0,Event Command Factory,88 legal / 67 invalid

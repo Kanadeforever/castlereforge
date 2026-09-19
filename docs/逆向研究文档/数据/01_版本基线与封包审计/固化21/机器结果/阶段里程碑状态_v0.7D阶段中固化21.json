@@ -1,0 +1,33 @@
+{
+  "版本": "v0.7D阶段中-固化21",
+  "日期": "2026-08-14",
+  "主题": "D8剩余RNG直接调用分类静态闭合",
+  "封包修订": "封包同步修正版1",
+  "封包修订说明": "不改变固化21研究结论；仅修复活动回归、工具/文档版本指针、快照与完整性元数据同步。",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "核心回归": {
+    "SCI": "67/67 PASS",
+    "EVE": "65/65 PASS",
+    "Battle": "383/383 PASS",
+    "RNG直接E8调用点": 56
+  },
+  "本轮结论": [
+    "固化20后机器差集为21个直接RNG调用点。",
+    "其中10个已闭合为Battle-core或Battle直接关联；11个为非Battle-core直接点。",
+    "FightRole成功初始化路径固定2个直接draw；特殊召唤实际创建FightRole时会间接消费这些draw。",
+    "0x421A00两个条件随机点、0x4232D0概率候选注入、0x43D300首次表现初始化、0x44674B最多100次随机槽重试已分类。",
+    "FIRTTECH 0x161/0x169由原ENC证明为「呼叫增援」/「屍魔召喚」。",
+    "全局RNG state共享；非Battle-core直接点仍可能在战斗期间执行，BattleTrace必须全局hook 0x451565。"
+  ],
+  "仍未闭合": [
+    "11个非Battle-core点的全部业务名称与是否会在战斗期间实际并发推进RNG，需要动态trace。",
+    "BattleTrace尚未实际实现/运行，静态分类不能代替动态global_draw_index验证。",
+    "0x421A00若干字段和0x4232D0派生阈值的作者业务名仍未证明。"
+  ],
+  "下一步": [
+    "设计全局RNG BattleTrace事件格式并实现最小hook/Oracle日志方案",
+    "先动态验证战斗期间是否出现11个非Battle-core caller",
+    "随后补齐间接callee draw与phase/action/role/target关联"
+  ]
+}

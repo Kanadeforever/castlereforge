@@ -1,0 +1,93 @@
+{
+  "版本": "v0.7D阶段中-固化2",
+  "OracleEXE_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "证据原则": "只写本次相同Oracle可直接重建或由v0.7C冻结数据与当前代码交叉闭合的事实；未重建的恢复点线索继续保留为E2。",
+  "BattleUnit": {
+    "stride": {
+      "value": "0xDE4",
+      "level": "A",
+      "evidence": "0x44424D..0x444259: index地址算术最终为 index*3556"
+    },
+    "embedded_role_definition": {
+      "offset": "0x84C",
+      "size": "0x350",
+      "level": "A",
+      "evidence": "0x41F643..0x41F666: API base + role_index*0x350 → unit+0x84C, rep movsd 0xD4"
+    },
+    "enemy_ai_index_state": {
+      "offset": "0xC30",
+      "level": "A/结构",
+      "evidence": "0x444259 读取后作为 Enemy_AI 56-byte record index"
+    },
+    "candidate_count": {
+      "offset": "0xCD8",
+      "level": "A/结构",
+      "evidence": "0x444349 读取并作为 0x444330 枚举次数"
+    },
+    "candidate_ids": {
+      "offset": "0xCDC",
+      "level": "A/结构,B/业务名",
+      "evidence": "0x444371 起逐DWORD枚举；同一ID用于 FIRTTECH*560 与 MagicCon*64"
+    },
+    "ai_gate_fields": {
+      "offsets": [
+        "0xE20",
+        "0xE54"
+      ],
+      "level": "B/门控结构，作者业务名未知"
+    }
+  },
+  "EnemyAI": {
+    "loader": "0x4440D0..0x444184 读取 public\\Enemy_AI.ENC，period-255 XOR后保存至 BattleManager+0xE534",
+    "record_size": 56,
+    "decision_entry": "0x00444240",
+    "rng": "0x451565 后 idiv 100，使用余数",
+    "threshold_fields": [
+      "+0x1C",
+      "+0x20"
+    ],
+    "branch_structure": [
+      "rnd < +0x1C → -1 sentinel/change candidate（作者业务动作名未知）",
+      "+0x1C <= rnd < +0x1C + +0x20 → 0x444330 candidate selection",
+      "else → 保持旧 state/index"
+    ]
+  },
+  "CandidateJointFilter": {
+    "entry": "0x00444330",
+    "level": "A/结构,B/字段业务名",
+    "conclusion": "不是“MagicCon再进入FIRTTECH”的单向串行链；同一个候选ID先后索引 FIRTTECH 560-byte record 与 MagicCon 64-byte record，联合完成候选有效性/资源/条件/权重过滤。",
+    "firttech_evidence": "0x4443B1 取 DataCenter+0xB4；ID地址算术=560*id；读取 +0x18/+0x34/+0x38。v0.7C 已冻结 DataCenter+0xB4=FIRTTECH pointer。",
+    "magiccon_evidence": "0x4441C2 将 public\\MagicCon.ENC 解码基址写入 BattleManager+0xE538；0x444416 以 id<<6 索引；读取 +0x18/+0x1C/+0x20/+0x24/+0x28。"
+  },
+  "ArticleDamageProcessor": {
+    "entry": "0x0042A7D0",
+    "level": "A/分类与Ail2来源，B/具体字段业务名",
+    "source_path": "APManager\\FightMode\\Fight\\DamageProcessor.CPP",
+    "null_strings": [
+      "AttPerformer Pointer is NULL! file:",
+      "DesPerformer Pointer is NULL! file:",
+      "DamageInfo Pointer is NULL! file:",
+      "ArticleNO Pointer is NULL! file:"
+    ],
+    "argument_model": [
+      "AttPerformer*",
+      "DesPerformer*",
+      "DamageInfo*",
+      "Article/Ail2 record*",
+      "mode/flag"
+    ],
+    "direct_ail2_proof": "0x4201D1..0x4201EA 由 item/article index 计算 926(0x39E)*index，加全局0x8A01B0后写 BattleUnit+0xCF4；0x4321F1..0x4321F7 又证明0x8A01B0=DataCenter+0xAC，而v0.7C冻结 DataCenter+0xAC=Ail2 pointer。0x422BAC 把 unit+0xCF4 作为 0x42A7D0 第4参数。",
+    "max_observed_article_offset": "+0x37A @ 0x42B0B2",
+    "correction": "旧“通用FIRTTECH技能伤害函数”命名废止；该入口是 Article/Item effect DamageProcessor 的一条明确路径。不能据此声称它是全局唯一伤害函数。"
+  },
+  "仍为E2_未重新闭合": [
+    "0x42C680 generic FIRTTECH processor identity",
+    "0x42B0D0 five-slot status/effect pipeline",
+    "0x42B5F0..0x42Cxxx formula/status helpers最终语义",
+    "Role +0x2C/+0x30最终HP命名",
+    "Role +0x34/+0x38第二资源最终作者名",
+    "Role +0x1E8状态/计时布局",
+    "battle result 0x50布局",
+    "胜利/奖励函数边界"
+  ]
+}

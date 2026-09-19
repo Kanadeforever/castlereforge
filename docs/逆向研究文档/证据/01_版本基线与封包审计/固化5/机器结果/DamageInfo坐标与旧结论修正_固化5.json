@@ -1,0 +1,23 @@
+{
+  "版本": "v0.7D阶段中-固化5",
+  "Oracle_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "修正": [
+    {
+      "旧": "DamageInfo per target base 相关文档未统一明确",
+      "新": "0x422B27 lea ebx,[esi+0x170] 直接证明 base=FightRole+0x170；0x422C8D 每目标 +0x50。",
+      "级别": "A"
+    },
+    {
+      "旧": "mode1 读取 DamageInfo+0x30/+0x34",
+      "新": "mode1 EBX=FightRole+0x178=DamageInfo+0x08；[ebx+0x30/+0x34]=DamageInfo+0x38/+0x3C。",
+      "级别": "A"
+    },
+    {
+      "旧": "RoleDefinition+0x1E8→DamageInfo+0x44 后被 0x421518 读取并进入0x420E20",
+      "新": "RoleDef+0x1E8→DamageInfo+0x44 复制成立；但 mode2 EBX=DamageInfo+0x04，0x421518 [ebx+0x44] 实际为 DamageInfo+0x48，因此两者不是同一字段，旧直接链撤销。",
+      "级别": "A"
+    }
+  ],
+  "原则": "保留固化3/4历史包不篡改；固化5当前活动文档全部以修正后坐标为准。",
+  "固化5继承说明": "本文件内容来自固化4已验证直接证据，并在固化5重新纳入当前机器数据层；若涉及大ID/39槽后11槽边界，以固化5新增专项 JSON 为补充/当前结论。"
+}

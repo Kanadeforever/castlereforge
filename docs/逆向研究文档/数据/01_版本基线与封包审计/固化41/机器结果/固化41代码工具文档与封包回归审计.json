@@ -1,0 +1,270 @@
+{
+  "继承哈希": {
+    "总数": 729,
+    "PASS": true
+  },
+  "Markdown": {
+    "总数": 62,
+    "通过": 62,
+    "PASS": true
+  },
+  "Python工具": {
+    "总数": 17,
+    "通过": 17,
+    "PASS": true,
+    "明细": [
+      {
+        "文件": "organize_data_evidence.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 87,
+        "含中文注释行数": 86,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "package_file_indexer.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 37,
+        "含中文注释行数": 36,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_battle_core_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 1354,
+        "含中文注释行数": 1346,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_battle_runtime_clock_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 69,
+        "含中文注释行数": 67,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_compatibility_engine_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 65,
+        "含中文注释行数": 62,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_enc_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 219,
+        "含中文注释行数": 216,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_eve_sf2_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 956,
+        "含中文注释行数": 950,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_legacy_clock_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 97,
+        "含中文注释行数": 95,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_resource_container_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 411,
+        "含中文注释行数": 409,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_saf_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 154,
+        "含中文注释行数": 151,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_saf_runtime_surface_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 111,
+        "含中文注释行数": 95,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_sample_structure_validator.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 336,
+        "含中文注释行数": 334,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_sci_sf2_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 1296,
+        "含中文注释行数": 1291,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_sf2_audio_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 212,
+        "含中文注释行数": 210,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_sf2_layer_metadata_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 103,
+        "含中文注释行数": 101,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_tsf_gamestate_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 524,
+        "含中文注释行数": 521,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      },
+      {
+        "文件": "youcheng_world_encounter_duration_inspector.py",
+        "源码文件名ASCII": true,
+        "AST": true,
+        "内存compile": true,
+        "注释行数": 81,
+        "含中文注释行数": 79,
+        "存在中文行内注释": true,
+        "--help退出码": 0,
+        "--help_PASS": true,
+        "PASS": true
+      }
+    ]
+  },
+  "中文工具详细说明": {
+    "总数": 17,
+    "期望": 17,
+    "新工具说明存在": true,
+    "PASS": true
+  },
+  "JSON": {
+    "总数": 393,
+    "失败": [],
+    "PASS": true
+  },
+  "CSV": {
+    "总数": 38,
+    "失败": [],
+    "PASS": true
+  },
+  "核心回归": {
+    "固化41": {
+      "PASS": true,
+      "机器码": {
+        "通过": 13,
+        "总数": 13,
+        "PASS": true
+      }
+    },
+    "固化40": {
+      "PASS": true,
+      "机器码": "10/10"
+    },
+    "固化39": {
+      "PASS": true,
+      "SF2出现": 672,
+      "唯一SHA": 506,
+      "标准SF2": 505,
+      "Layer": 11184,
+      "机器码": "10/10"
+    },
+    "固化38": {
+      "PASS": true,
+      "机器码": "29/29"
+    },
+    "固化37": {
+      "PASS": true,
+      "机器码": "29/29"
+    }
+  },
+  "缓存残留": [],
+  "总体PASS": true
+}

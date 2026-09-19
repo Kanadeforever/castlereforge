@@ -1,0 +1,2262 @@
+{
+  "tool_version": "0.7D.62",
+  "status": "PASS",
+  "scope": "固化62：Battle戰場脫逃成功阈值与LayoutGR+0x9C canonical边界",
+  "inputs": {
+    "original_exe": "/mnt/data/solid62_inputs/RPG_original.exe",
+    "research_exe": "/mnt/data/solid62_inputs/RPG_research.exe",
+    "layoutgr_enc": "/mnt/data/solid62_inputs/Layoutgr.enc",
+    "firttech_enc": "/mnt/data/solid62_inputs/Firttech.enc"
+  },
+  "input_checks": {
+    "original_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "original_expected_sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+    "original_matches_expected": true,
+    "research_sha256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "research_expected_sha256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "research_matches_expected": true,
+    "layoutgr_raw_sha256": "00cb1508508644f20c5e94c7f1e721953d76da72a8266e05289ac461bb7e12dd",
+    "layoutgr_decoded_sha256": "71ab7931f5489d1bd053243d707089373636f43684f85ce802c54dfecd2bf392",
+    "firttech_raw_sha256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+    "original_image_base": "0x00400000",
+    "research_image_base": "0x00400000"
+  },
+  "escape_firttech": {
+    "physical_index": 490,
+    "raw_id": 490,
+    "name": "戰場脫逃",
+    "description": "",
+    "record_sha256": "82e1e338486e2c9f06eaf06ad4610f6a1e4ab5bc906789811c4b3f04cb2bbe81",
+    "class_0x18": 2,
+    "raw_field_0x20": 4,
+    "result_mode_0x44": 1
+  },
+  "escape_firttech_check": {
+    "raw_id_matches_index": true,
+    "author_name_is_escape": true,
+    "description_is_empty": true,
+    "pass": true
+  },
+  "machine_checks": [
+    {
+      "va": "0x00422281",
+      "meaning": "当前FIRTTECH raw ID必须等于0x1EA才进入戰場脫逃专用判定",
+      "expected_hex": "81 39 ea 01 00 00",
+      "actual_hex": "81 39 ea 01 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x00422289",
+      "meaning": "从0x8E1C48全局对象读取+0xD8当前LayoutGR索引并以+0xE8对象作为this",
+      "expected_hex": "a1 48 1c 8e 00 8b 88 d8 00 00 00 51 8b 88 e8 00 00 00",
+      "actual_hex": "a1 48 1c 8e 00 8b 88 d8 00 00 00 51 8b 88 e8 00 00 00",
+      "pass": true
+    },
+    {
+      "call_va": "0x0042229B",
+      "meaning": "调用0x424560取得当前LayoutGR+0x9C阈值",
+      "expected_target": "0x00424560",
+      "actual_target": "0x00424560",
+      "pass": true
+    },
+    {
+      "call_va": "0x004222A2",
+      "meaning": "戰場脫逃成功判定固定消费一次legacy rand15",
+      "expected_target": "0x00451565",
+      "actual_target": "0x00451565",
+      "pass": true
+    },
+    {
+      "va": "0x004222A7",
+      "meaning": "RNG结果做有符号idiv 100取EDX余数，并以 remainder>=threshold 跳到失败路径",
+      "expected_hex": "99 b9 64 00 00 00 f7 f9 3b d7 7d 14",
+      "actual_hex": "99 b9 64 00 00 00 f7 f9 3b d7 7d 14",
+      "pass": true
+    },
+    {
+      "va": "0x004222B3",
+      "meaning": "只有 remainder<threshold 才进入成功侧，写入两项Battle运行时标志",
+      "expected_hex": "8b 15 74 fd 89 00 c6 82 fc 05 00 00 01 c6 05 dc 96 46 00 00",
+      "actual_hex": "8b 15 74 fd 89 00 c6 82 fc 05 00 00 01 c6 05 dc 96 46 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x00424560",
+      "meaning": "0x424560用508-byte记录步长直接读取LayoutGR record+0x9C；默认EAX先置100",
+      "expected_hex": "8b 54 24 04 b8 64 00 00 00 85 d2 7f 08 56 8b 31 3b d6 5e 7d 11 8b 49 04 8b c2 c1 e0 07 2b c2 8b 84 81 9c 00 00 00 c2 04 00",
+      "actual_hex": "8b 54 24 04 b8 64 00 00 00 85 d2 7f 08 56 8b 31 3b d6 5e 7d 11 8b 49 04 8b c2 c1 e0 07 2b c2 8b 84 81 9c 00 00 00 c2 04 00",
+      "pass": true
+    },
+    {
+      "va": "0x00451565",
+      "meaning": "legacy rand15严格为state=state*0x343FD+0x269EC3，返回高15位",
+      "expected_hex": "a1 9c e2 46 00 69 c0 fd 43 03 00 05 c3 9e 26 00 a3 9c e2 46 00 c1 f8 10 25 ff 7f 00 00 c3",
+      "actual_hex": "a1 9c e2 46 00 69 c0 fd 43 03 00 05 c3 9e 26 00 a3 9c e2 46 00 c1 f8 10 25 ff 7f 00 00 c3",
+      "pass": true
+    }
+  ],
+  "escape_threshold_getter_direct_callers": {
+    "target": "0x00424560",
+    "direct_callers": [
+      "0x0042229B"
+    ],
+    "expected": [
+      "0x0042229B"
+    ],
+    "pass": true
+  },
+  "layoutgr_distribution": {
+    "all_value_counts": {
+      "0": 100,
+      "30": 74,
+      "50": 43,
+      "100": 33
+    },
+    "named_value_counts": {
+      "0": 85,
+      "30": 48,
+      "50": 43,
+      "100": 1
+    },
+    "unique_values": [
+      0,
+      30,
+      50,
+      100
+    ],
+    "named_record_count": 177,
+    "band_checks": [
+      {
+        "range": "0..0",
+        "expected_threshold": 100,
+        "all_names_nonempty": true,
+        "required_exact_name": "Test",
+        "exact_name_ok": true,
+        "thresholds_ok": true,
+        "pass": true
+      },
+      {
+        "range": "1..48",
+        "expected_threshold": 30,
+        "all_names_nonempty": true,
+        "required_exact_name": null,
+        "exact_name_ok": true,
+        "thresholds_ok": true,
+        "pass": true
+      },
+      {
+        "range": "101..185",
+        "expected_threshold": 0,
+        "all_names_nonempty": true,
+        "required_exact_name": null,
+        "exact_name_ok": true,
+        "thresholds_ok": true,
+        "pass": true
+      },
+      {
+        "range": "201..243",
+        "expected_threshold": 50,
+        "all_names_nonempty": true,
+        "required_exact_name": null,
+        "exact_name_ok": true,
+        "thresholds_ok": true,
+        "pass": true
+      }
+    ],
+    "canonical_distribution_pass": true
+  },
+  "layoutgr_records": [
+    {
+      "index": 0,
+      "name": "Test",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "测试记录",
+      "record_sha256": "53611bd73188748cd6cb7ff5b06b03f1c71c24580e89344620d36862c072a4e7"
+    },
+    {
+      "index": 1,
+      "name": "迦夏之窟洞外",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "7acaa34ab09664438b1e17f81502be7d9a711399b882c588ceb327abec1258f2"
+    },
+    {
+      "index": 2,
+      "name": "迦夏之窟洞內",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "05bac426b9bb27262e43a03fba76f5520590be49a45bc867fc62e05fc117c351"
+    },
+    {
+      "index": 3,
+      "name": "沙漠營地內",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "795df4ee51510539f9478d308b5c06a849288e2b4ded85dec82704975da1f275"
+    },
+    {
+      "index": 4,
+      "name": "磐沙堡內A",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "e0f157972768b21f5499413e44b670d6ba73e8b11f3994ee061711c8e590840c"
+    },
+    {
+      "index": 5,
+      "name": "磐沙堡內B",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "a6310c3020e5b1278241460c58468312a254cef02bdf67049fa7f26bd3b7465a"
+    },
+    {
+      "index": 6,
+      "name": "石塔A",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "baf4a7df907aff5e3d2eada6d154e86f1784702295fc05216b6e9bfcd3dacccf"
+    },
+    {
+      "index": 7,
+      "name": "石塔B",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "f2b522d719d03a631787b58b89516a1bc0ef82c9fbc9814a697a99a7803e7b18"
+    },
+    {
+      "index": 8,
+      "name": "高昌地上",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "a23154ea34d4a2b5badfc35ac77d85630b94a9bce4d98b16a8186bed2d07d26c"
+    },
+    {
+      "index": 9,
+      "name": "高昌地下A",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "21359b20b68495765d927e937d205e19da00bf20195ed338904f6201e854d6d4"
+    },
+    {
+      "index": 10,
+      "name": "高昌地下B",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "dea1b3f352f5c0c5dc332a3276231d64a1036b41d95e6b67c7190e9f7d7d02bc"
+    },
+    {
+      "index": 11,
+      "name": "拓渾古垣迴道A",
+      "team_choice_count_0x18": 6,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "8722797269ce38b550515f8032f8a640cd72515f5bb7f199d3eab762f343c3bd"
+    },
+    {
+      "index": 12,
+      "name": "拓渾古垣迴道B",
+      "team_choice_count_0x18": 6,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "86cb9cd7e9ceb270ce370dbb9d21ead5f9803074731e6e9afbb4cd74d195573a"
+    },
+    {
+      "index": 13,
+      "name": "拓渾古垣迴道C",
+      "team_choice_count_0x18": 6,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "f21bcc76ace12298ef9c9fc11979e7561bd7f697416f6fa65039b4ea4f52e4be"
+    },
+    {
+      "index": 14,
+      "name": "龍駒島",
+      "team_choice_count_0x18": 8,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "d77173d579a0b5e71981954983a343b27d8ce6626dc184660783db60fb1ccc94"
+    },
+    {
+      "index": 15,
+      "name": "月牙泉下冰窟A",
+      "team_choice_count_0x18": 4,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "bf3b32ba288e6e6ae9d0e8b9508c14ffbf775377a49ee7cfe2fda7abd255c504"
+    },
+    {
+      "index": 16,
+      "name": "月牙泉下冰窟B",
+      "team_choice_count_0x18": 4,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "ce46cc0139b203920840918a13f7484a9e6da42f949c9cad055a277eee89c456"
+    },
+    {
+      "index": 17,
+      "name": "甘陀寺五層塔A",
+      "team_choice_count_0x18": 4,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "f7024c84a110059f37e10113a73eed1ec03845a252022a705006577db4ed6b01"
+    },
+    {
+      "index": 18,
+      "name": "甘陀寺五層塔B",
+      "team_choice_count_0x18": 4,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "0fc997eded439f25587f2cecf284962629b35b6240f9217a6174a543591727af"
+    },
+    {
+      "index": 19,
+      "name": "甘陀寺五層塔C",
+      "team_choice_count_0x18": 4,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "5256161a379ae031fa36d92e443b8facc6c5bf1bba157417417c73af77c2faa5"
+    },
+    {
+      "index": 20,
+      "name": "甘陀寺五層塔D",
+      "team_choice_count_0x18": 4,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "40e000d3de2bbd881ccac58f316a7f7661a6cacefcccc3841b996f82f33dcc35"
+    },
+    {
+      "index": 21,
+      "name": "蘭州城內",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "befe026ed213c16d5b72dc6ee50f4a9bd6313193164e8cea2fa3874e8e1fbe2d"
+    },
+    {
+      "index": 22,
+      "name": "高昌沙漠迷陣",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "85547f8ea1055b2ecbe335a41ec0b5b3d2388c8530a3692907c6eabe5b239622"
+    },
+    {
+      "index": 23,
+      "name": "莫高窟A",
+      "team_choice_count_0x18": 4,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "75fa1be204dbba9fb357e3f176895746d8ed8977687ff078ddbbf64a6a6df8e8"
+    },
+    {
+      "index": 24,
+      "name": "莫高窟B",
+      "team_choice_count_0x18": 4,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "aed3e88e07a11a217f52f37711b948177d81239ee448115ac12669569f25d183"
+    },
+    {
+      "index": 25,
+      "name": "樓蘭城下半部A",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "f8801ec99c951e5e1ec498c85a2684e3bb80686a8e76843201b19401990cee1e"
+    },
+    {
+      "index": 26,
+      "name": "樓蘭城下半部C",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "59bbdfb133be56038df5a8004278bc8effba4eecfcc972b71e76d734c9825fb1"
+    },
+    {
+      "index": 27,
+      "name": "樓蘭城下半部B",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "2704d3396ce7b002c6c4803a9eb76f6ee9d9bf987942bae583b5d54ccc51c420"
+    },
+    {
+      "index": 28,
+      "name": "樓蘭城下半部D",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "86017413f513c56c26360a0be2545e492ae76af2fee97d7212dc07808d3d3757"
+    },
+    {
+      "index": 29,
+      "name": "天動儀區",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "7945c97be8f33f2b20774a7fb62ba4427fa8b6581637aa3fd1844509660afc1b"
+    },
+    {
+      "index": 30,
+      "name": "樓蘭城上半部A",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "34d64143162cc83f0feebfa9d8797ba9c122b0ad5fb2f25ba42e8e526b6af838"
+    },
+    {
+      "index": 31,
+      "name": "樓蘭城上半部B",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "5ba3ecda498072feb9078d77123a87655304ee945cebee861053e88e544f9238"
+    },
+    {
+      "index": 32,
+      "name": "樓蘭城上半部C",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "244c0e3a179bbd1ae70249ff1c2c9a068e8d09fe74c8a1dbee1f214d8742929d"
+    },
+    {
+      "index": 33,
+      "name": "樓蘭城上半部D",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "84dcff41bcc90790428a0710fb8a3fef27e154a946c61745264c947f41c6c3f5"
+    },
+    {
+      "index": 34,
+      "name": "千年前樓蘭漢軍部隊",
+      "team_choice_count_0x18": 4,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "f3714156f68763f30b8e2ff2f7e9c0a0320b3d49fb1592bff35f067a38171b9d"
+    },
+    {
+      "index": 35,
+      "name": "羅喉城A",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "7ade1423d0e25098cd1bd0f38167bee8b191f5c5f3c61c8cff42d9f674cb7eef"
+    },
+    {
+      "index": 36,
+      "name": "羅喉城B",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "be5d1fb224c9b9fd18b016b767891c6feb06bd8601a68199a8e5061d9bf22412"
+    },
+    {
+      "index": 37,
+      "name": "羅喉城C",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "903ea1996a1c92f944eecfab1a0f7401ee2117ea117428a3e1706e391308547f"
+    },
+    {
+      "index": 38,
+      "name": "羅喉城D",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "df4761ac1fa74697fe0fe908e820d481817f5795ff748ed89cdadc989a2c6734"
+    },
+    {
+      "index": 39,
+      "name": "羅喉城E",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "601a4a35361154077a2c4b88bd2b107f04664f1b3e438db500533ee0481c620e"
+    },
+    {
+      "index": 40,
+      "name": "天動儀座面",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "00595b39ffe1ab869f9f0f76779079b2d8cc424db7152b775d6e70376824eb58"
+    },
+    {
+      "index": 41,
+      "name": "羅喉城通道A",
+      "team_choice_count_0x18": 7,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "59c933843b2085d70079779ba39bbb6d63727bc220cba42eb9fe99c29afe9c4e"
+    },
+    {
+      "index": 42,
+      "name": "羅喉城通道B",
+      "team_choice_count_0x18": 7,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "1b4c75c15356db85850e8dc6e8ec6d7f972fea4fa993af626b3c306eb11442fe"
+    },
+    {
+      "index": 43,
+      "name": "天動儀周邊通道",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "5673df6985b15769758c27a0ea0b9c08dcac121e47cc3f9329cb9e11aa4b6046"
+    },
+    {
+      "index": 44,
+      "name": "宿曜之陣用",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "22b61a18dcb02afd9e37ddd759d73c4f4d6260fb8b4372f3745b10356608a065"
+    },
+    {
+      "index": 45,
+      "name": "天動儀通道天然地板",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "844e4d94a6e51042cc5829a43df6a7cb4b1394761448fbb558bfe45cdb5d45d7"
+    },
+    {
+      "index": 46,
+      "name": "烽火臺內",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "9ff97eedd157d0c01797d98cc5071ad55d824f82400e33c57c3257df44938c24"
+    },
+    {
+      "index": 47,
+      "name": "樓蘭城一樓",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "83e480523e63537180a891b1763ef5980d5efb25da2b38ac0426ddac2a6c7ca0"
+    },
+    {
+      "index": 48,
+      "name": "中央通道",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "有名普通区域/迷宫组",
+      "record_sha256": "583e3170e1b44dae61342974aeef09a44340d1bfc52ea204277aad4540544763"
+    },
+    {
+      "index": 49,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 50,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 51,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 52,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 53,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 54,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 55,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 56,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 57,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 58,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 59,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 60,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 61,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 62,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 63,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 64,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 65,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 66,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 67,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 68,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 69,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 70,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 71,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 72,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 73,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 74,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 30,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "a410bc14aa5cf2c0bd3f54f4afbb7f57d4575058df4f4818314e3ddc8ea63f42"
+    },
+    {
+      "index": 75,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 76,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 77,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 78,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 79,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 80,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 81,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 82,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 83,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 84,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 85,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 86,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 87,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 88,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 89,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 90,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 91,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 92,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 93,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 94,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 95,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 96,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 97,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 98,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 99,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 100,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 101,
+      "name": "拯救阿吉",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "0d7638b6c3f1ca860ae00137b7fe9437232c8c16c70e3f05ea9c0ca277a36eb0"
+    },
+    {
+      "index": 102,
+      "name": "離火神訣發動",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "ffc36ee63c2344a51448d5d29594e9a862cc86a6321ceb794c3e4e0bc24e8ef2"
+    },
+    {
+      "index": 103,
+      "name": "下車遭遇戰",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "d9ce319e27865c4ad83004026c59ba188a2182c990eade886d52a09d60005ef0"
+    },
+    {
+      "index": 104,
+      "name": "冰璃登場",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "202fb83cf727a8f6f1365db02b5cb441a5aa5b6eb9c2e4df2f62e88982f148d4"
+    },
+    {
+      "index": 105,
+      "name": "營救商人",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "34788bd279440aa291e22e801794bbcf7c7a01bde38b7e07e8948bdc8ce2cd09"
+    },
+    {
+      "index": 106,
+      "name": "營地守衛戰",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "86b0a7b0d0b8da49fad69ade2048ebf2c2690081e93c2e1fc5ae1376b35838d7"
+    },
+    {
+      "index": 107,
+      "name": "沙漠營地決戰",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "057708d8a218081d232dc1108bfb8e831aa7b633f8ceee877b794671407dea41"
+    },
+    {
+      "index": 108,
+      "name": "磐沙堡突入",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "6a33befb2a1ebeed067dfeaaf94693dae6615c4571ed7ec1a69cc61220f7f7d0"
+    },
+    {
+      "index": 109,
+      "name": "古倫德救出",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "c55273badd95f52c6b142e2f2dbec7c105a9fdc85319afc45606898792288004"
+    },
+    {
+      "index": 110,
+      "name": "突襲兵營",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "02c9b6f878d03d0189d0318f14170afefa3a57f634980b2dc54646ce1944ec73"
+    },
+    {
+      "index": 111,
+      "name": "古倫德暴走",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "4000511bb9519600edeab6d6614855d8429e31fa383df56b1248258810497d5a"
+    },
+    {
+      "index": 112,
+      "name": "50%戰鬥",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "81542364aaae9da70f4bcf2c35d4bcd1e8a20228ff56db0d2e697e292c0eeaef"
+    },
+    {
+      "index": 113,
+      "name": "磐沙堡決戰",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "defca50b759f84a21eba655b2c9d8086167fdd83a42a866ec538dc95f5b1a517"
+    },
+    {
+      "index": 114,
+      "name": "中原五派找碴A",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "3d6fa56424db440436046cab97a668ff77ad9aeaa2f145459d290dc15faa9348"
+    },
+    {
+      "index": 115,
+      "name": "中原五派找碴B",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "fc551caf923bb6ad82211b4cc780d1042119f9da5e54c9765887175dbf8b9c3f"
+    },
+    {
+      "index": 116,
+      "name": "惡人",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "a4710c547e4f3f8e378cd198051f0b3fe5ef381d976936b906b8e4532f453023"
+    },
+    {
+      "index": 117,
+      "name": "初闖肅州",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "274b27813989aa37834fa884dcda6ef758586796800581c634abb8f1ebd767b0"
+    },
+    {
+      "index": 118,
+      "name": "營救譚同",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "e585991efca658768f9ff090d303e0e28d76e4886b027b4b818cef351bc2ac85"
+    },
+    {
+      "index": 119,
+      "name": "鐵門封鎖戰",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "3c16ff9a9e1fac45912937247537564bab60e3c9c6bc623b6c73cc3d9b12613f"
+    },
+    {
+      "index": 120,
+      "name": "公主救援",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "3687f6cc311c3331e3b019942437e15cda192111a04f317b5474250ccdabb9a6"
+    },
+    {
+      "index": 121,
+      "name": "公主保衛",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "f4041b8fb433dccb616276855017ef845f847151cec609d902c08dc64423e580"
+    },
+    {
+      "index": 122,
+      "name": "受傷戰鬥",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "904461c14a7390e1a59a1604e0bf8e5241a8d5766106f7e6748f7552b9f6d2e5"
+    },
+    {
+      "index": 123,
+      "name": "連續戰鬥",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "acdd4863710bc85c466f99b5e2719c244e5e7fa70f0039030f25591a55a53e33"
+    },
+    {
+      "index": 124,
+      "name": "石塔決戰",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "9ddb2143c6ab10f94e1ad0c7a551e5a5220a951d9f066e352827e0c457bcc62d"
+    },
+    {
+      "index": 125,
+      "name": "相胤挑戰",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "baccef71a75c5829b26c0071bd7b97bfa643976d987c45c5bf777a5d8e6c2017"
+    },
+    {
+      "index": 126,
+      "name": "拯救高皇君",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "c7a514b67b41fbd2e7bcb29109359cb5eba3f864052b4f4ec2ee0ca70e398bdf"
+    },
+    {
+      "index": 127,
+      "name": "高昌決戰",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "5a72cf3e96ce2556fcfeba6b7df673688f773fc6992c5ecdbb4ece41dc3e38e3"
+    },
+    {
+      "index": 128,
+      "name": "拯救李元昊",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "ddfba587fe7b754b6c82278e52b0940f5d74e83785279371b19ee1132f92f391"
+    },
+    {
+      "index": 129,
+      "name": "殺人實驗室",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "f6bc10575619bb281bf0490a14b0e01af684facf18ec07980046018a9be1538a"
+    },
+    {
+      "index": 130,
+      "name": "伏龍A",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "ef6f0a96f343a90ec6b41fae99036eb325859249fa72457a45d7c16d100f5bbd"
+    },
+    {
+      "index": 131,
+      "name": "伏龍B",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "4b501c8203a207801f67be68525a86de2ad924738d71ce5285053e16bc1d3507"
+    },
+    {
+      "index": 132,
+      "name": "拯救方老爹",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "dd9b0e55b28a8aa8d5d8929ea24f9262ca315002998f556a76f14f110a6ef570"
+    },
+    {
+      "index": 133,
+      "name": "收服冰獸",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "58a696886a44b5c87beda985cbe55d9dcc6dfe49e99de7f237fd78b2a19d6fcb"
+    },
+    {
+      "index": 134,
+      "name": "幻鏡變化A",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "0783b90a9d913df41c0b48391e40f364fd33a02e8820abb73384b95328c0de73"
+    },
+    {
+      "index": 135,
+      "name": "天堂之石事件",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "d9c41e822450da7ac2a9fa0a9bd10d11f663e141ed055bb02332f8e924a0d5d4"
+    },
+    {
+      "index": 136,
+      "name": "甘陀寺儀軌碎片",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "869b5c48d7cb47e866aa6813d26ed3db8ef9d59c57ce8cdd2cb27c0c099b3daf"
+    },
+    {
+      "index": 137,
+      "name": "幻鏡變化B",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "71acd2fd8ed8d1e79925a9342078c6406b521f7f045a586edcc21c1babb96ad4"
+    },
+    {
+      "index": 138,
+      "name": "幻鏡變化C",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "84ba3631d7a9421c74dbd0daefc508ac2873b9fb12823582e98dc15b6af790d7"
+    },
+    {
+      "index": 139,
+      "name": "拓渾碎片",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "9d4f3356b2a3724309073db9fba3b8a8dc7fc558a741e2980c42fba42c85da4c"
+    },
+    {
+      "index": 140,
+      "name": "再收冰獸",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "6fee53ff6c58a441852fe06bf72fe43e0fb3bcae991879373f55dec491823470"
+    },
+    {
+      "index": 141,
+      "name": "驅魔事件",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "87493ae1cb1b1ec1ce8854288d23eeff8f60e799b2879b1e6d53bccff0a87ba6"
+    },
+    {
+      "index": 142,
+      "name": "莫高窟儀軌碎片",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "1b01805bf8ebf8217c37eef89c46a0a0b0d67d3964363d223c01cada2ff260e0"
+    },
+    {
+      "index": 143,
+      "name": "河州鎮儀軌碎片",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "e6178d5365c0b70f0acd6a2ffd91d4b7357690b6dfc96f1011d5dc74017e0011"
+    },
+    {
+      "index": 144,
+      "name": "磐沙堡儀軌碎片",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "be827e0d55bf8840c3b2891bbf0d07484de6067fc394a65afd0e2c2bb86a8a36"
+    },
+    {
+      "index": 145,
+      "name": "呼延崇家儀軌碎片",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "488898893abdf3f6e52f47fb875c9ff30e3de0549b4a9d5d1f2f0084c0830edd"
+    },
+    {
+      "index": 146,
+      "name": "千年前除蟲",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "7743991569ee0fd1ee371ce3eb1b57146104f5d7eafb59bae16b2fa9a2a2ed73"
+    },
+    {
+      "index": 147,
+      "name": "天動儀除蟲",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "5e44bb1f13dfd6be1e4575c33830d40a49ce453fbd2de3f8a6c5833915eb22cd"
+    },
+    {
+      "index": 148,
+      "name": "聖槍事件",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "bd3cae91bffe1b2a5691de579a4a358ba127e5bec09300862a99f1824f28ac58"
+    },
+    {
+      "index": 149,
+      "name": "天界使者",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "7bdeb2bdf00643ae9f3c234e8e9ebbf207043e9e406502256435055183ab51d8"
+    },
+    {
+      "index": 150,
+      "name": "羅喉降臨",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "1530cd1c74c849aa0764016620abb9d601665f9acf2ae7619fb5ee957bde3fec"
+    },
+    {
+      "index": 151,
+      "name": "最強兵器",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "b77c9d19b61f29a7ab2e794ec552b7360ea62bfb9671fc7b4bc68a33a0b23434"
+    },
+    {
+      "index": 152,
+      "name": "陰陽人形",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "c9bc4870f32261c50635a59ce9ed8b5f68f3cdca48fefe91e91b7b445b2336ec"
+    },
+    {
+      "index": 153,
+      "name": "最終決戰A1",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "fa18f52a36008b09a9787c6644c67fc887ee58789698fbe89fdd6b350c49f028"
+    },
+    {
+      "index": 154,
+      "name": "最終決戰A2",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "879da8d2b0358cca02e2fcdbb0bc2fdd8ed70ebbb7a11b5bcdd445a9500ed6ce"
+    },
+    {
+      "index": 155,
+      "name": "最終決戰B1",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "686bff098baf6548bb8cc2cf782406803ccd85b40f8c9ad1ed758a2b77cd740d"
+    },
+    {
+      "index": 156,
+      "name": "最終決戰B2",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "e7b0cc7c1a61ae550b714ae5814ffafde0fd78d93643f05e2ed1996ce039ab2b"
+    },
+    {
+      "index": 157,
+      "name": "最終決戰C",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "7035fffa20c7ab73224109e28e5265028e6fcb05e86dd5c01d666c22e68031c6"
+    },
+    {
+      "index": 158,
+      "name": "坐騎脫逃",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "9cc11b72cc448f6437c7ab5d916da1c4f0839e7be8de45324cb9021e2c76ef66"
+    },
+    {
+      "index": 159,
+      "name": "巨蟲A",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "12515222ba7a08bc9e8c1ed3b897046b13feedfb6b2f60b0ab69c5b550552703"
+    },
+    {
+      "index": 160,
+      "name": "巨蟲B",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "1e7e7606f251374581a7912135fcb734dacbaad12c10b0751dde39b187038849"
+    },
+    {
+      "index": 161,
+      "name": "巨蟲C",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "78b8070eb1126b1282c187b07bbae06ac1dfbacd179ec6e4ec1698f7764f89c2"
+    },
+    {
+      "index": 162,
+      "name": "巨蟲D",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "4fd54d4ef083484dc8dac2880624ede1b81087877cba5bc53151fddecc346913"
+    },
+    {
+      "index": 163,
+      "name": "巨蟲E",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "e6b7342b996d3092022b9c08b636ab0940aec17ff08d1dc66bc78dc2c35e27cb"
+    },
+    {
+      "index": 164,
+      "name": "對周、朱",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "a8b0d569063eddaa2c7fc9fba80a7377906ea81243376cdb0960eed75b8356f6"
+    },
+    {
+      "index": 165,
+      "name": "封豨",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "f5a6db678e349a6cbeb7e3074108794e07a72c3940bf8c0e7b323d992d8b64ba"
+    },
+    {
+      "index": 166,
+      "name": "護送1",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "9327090edaf47489633e4391f36393a72efb8dd798e777f5d93bf2c7721cb5a9"
+    },
+    {
+      "index": 167,
+      "name": "護送2",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "5008b2456e94078594e4aa690f5629ba47f3431efb4914055b9e65c995a55a04"
+    },
+    {
+      "index": 168,
+      "name": "護送3",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "51f5dd05ae8e586a99ed41e0c81c5909f02bcd1bdc27c905d3b4adef8ff1d70a"
+    },
+    {
+      "index": 169,
+      "name": "隧道陷阱",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "16f294bf3d7a12f3b245e260163982508d415563d0b6f0793e71395117de5828"
+    },
+    {
+      "index": 170,
+      "name": "幻鏡變化0",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "de5b58fb1083f6ad788a7018be5b691983c747f4b76b30e375835b04dd07b36b"
+    },
+    {
+      "index": 171,
+      "name": "收服雷獸",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "31f3c551d5ed8339ef75760160dd094427658698a96e25e5a44196b50f679914"
+    },
+    {
+      "index": 172,
+      "name": "第二次皇甫申",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "b051b7ce66b01636fdbd14b172f18ba7a6764133c07b3cead4f17ebd6418d06d"
+    },
+    {
+      "index": 173,
+      "name": "聖槍契約",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "d8a7c8b87e3dfc84b7c408ba69b20298734ef5518de55d60e67f250509a53b72"
+    },
+    {
+      "index": 174,
+      "name": "漢軍突入1",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "8b560b0fd67662d2258c22a74c1ac8a4110bccf9c7e524761ff0c1de7ef7ec53"
+    },
+    {
+      "index": 175,
+      "name": "漢軍突入2",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "d4f62ac2b12b822b595bd54291c7c3fc7d033771b15f21182d1c379736cd36d6"
+    },
+    {
+      "index": 176,
+      "name": "天界使者2",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "55e82593d0f994ec272389f168b7392d151675b145ffdbb3fbb2f0334bddc530"
+    },
+    {
+      "index": 177,
+      "name": "金",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "7c1067a8896fc4f49a2c0cfda2054c4888eaaf451b096f10a94813675e3cb444"
+    },
+    {
+      "index": 178,
+      "name": "木",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "7dab4982dd79b054c306d97074ba15f4f5155630db09735fb8dd328a5ed01a9d"
+    },
+    {
+      "index": 179,
+      "name": "水",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "f60f0649fd6da612c94522c23e152d9e7535a48597f325acc73d2be5044ae7c0"
+    },
+    {
+      "index": 180,
+      "name": "火",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "a714920e6a2841787a4e4d0339a3490e3eed18a3cb2d6b1f2e2f1f4f910f00d9"
+    },
+    {
+      "index": 181,
+      "name": "土",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "972bd77185144d4d7aca5be53d9863fc72496bc72a9fd94e94f258345084becd"
+    },
+    {
+      "index": 182,
+      "name": "蛇妖",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "358e245b9b39e1fc1cf408d90ca1e18c88928a25b698289d5b2c8f575adbaa94"
+    },
+    {
+      "index": 183,
+      "name": "石塔連續戰鬥",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "fddc1ef09fc011329eb5889ef21d03fabf65961b030e328396be2693ee7dd1ba"
+    },
+    {
+      "index": 184,
+      "name": "兩百塊A",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "230aea278d4acd0693dd22feaccc4b60992e5995b413199175b5948c79762cb3"
+    },
+    {
+      "index": 185,
+      "name": "兩百塊B",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "有名剧情/脚本战斗组",
+      "record_sha256": "eb37b38ba5b26caf8bc4ad151f59183213a60438d4658ed32e6772f7c75395d7"
+    },
+    {
+      "index": 186,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 187,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 188,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 189,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 190,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 191,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 192,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 193,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 194,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 195,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 196,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 197,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 198,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 199,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 200,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 0,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "64d6c19683061d281bcee4c3cb3fa451f3724613dcc114467cebfd53ee182e31"
+    },
+    {
+      "index": 201,
+      "name": "大地圖第一區(未使用)第一期",
+      "team_choice_count_0x18": 1,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "f56eb895a50fe3fe35a48f2e62acbd33e17828110b4fe9e1856671cae1cfe8cd"
+    },
+    {
+      "index": 202,
+      "name": "大地圖第二區(草原地區)第一期",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "242ccddebfe003ec1dfd731bb25b9dc453b3152415827405eb926ef48f48f281"
+    },
+    {
+      "index": 203,
+      "name": "大地圖第三區(沙漠區前半)第一期",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "56e448aa41f2c2a453252b5c52f2c389a3e3ad818d2aee2f83bd092a6f6434b0"
+    },
+    {
+      "index": 204,
+      "name": "大地圖第四區(沙漠區後半)第一期",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "0ce1874e8d4ddb0b645d077a0d7b3a8a52c5a32c0b5b431435f1e58d7e5b4475"
+    },
+    {
+      "index": 205,
+      "name": "大地圖第五區(蘭州)第一期",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "9780ea93c44e7eaffbf3c1b3a31c878c799b052322200a82817561a0a205737c"
+    },
+    {
+      "index": 206,
+      "name": "大地圖第六區(涼州)第一期",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "56e0c761158a5c5a0417a3168081d68924492615f7fe5e4faa5de5bfe0bcc8c8"
+    },
+    {
+      "index": 207,
+      "name": "大地圖第七區(肅州)第一期",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "1a1d69e6cc41211fd7ec48767eaeb04eb789cb5fe441909437d03f38f266b7c3"
+    },
+    {
+      "index": 208,
+      "name": "大地圖第八區(甘州)第一期",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "2e332995456bbe2c9d224e9095fd0a6137d8dd6ae83ccf1b07111b677af952b5"
+    },
+    {
+      "index": 209,
+      "name": "大地圖第九區(沙州)第一期",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "55e7d4216417dbb71a9d69b59d6a170df6204f1b00b40726a74b330e3ef82632"
+    },
+    {
+      "index": 210,
+      "name": "大地圖第十區(尼雅)第一期",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "9751181b30599514558068b32f3f67336989804f4662072aa179e912842ac0e9"
+    },
+    {
+      "index": 211,
+      "name": "大地圖第十一區(拓渾)第一期",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "eef88f33179b0206ce178ef5b3eebf42e7d4cca6281d99a13c650c51fae116bc"
+    },
+    {
+      "index": 212,
+      "name": "大地圖第十二區(北方寒地)第一期",
+      "team_choice_count_0x18": 4,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "38ab5950268fbed444921afebcd4431166ca78936a2c4a2eda74fd6615813160"
+    },
+    {
+      "index": 213,
+      "name": "大地圖第十三區(往中原方向)第一期",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "cee6e6836f58e4233d657dd66d45bce48b7a2f6fa9055b9d35c59ff910ebc67e"
+    },
+    {
+      "index": 214,
+      "name": "磐沙堡-草原",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "9a39b8968b92773421296c57e693cb8cd271e99bdd85146ba7a15cf7e0bff67e"
+    },
+    {
+      "index": 215,
+      "name": "磐沙堡-沙漠前半",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "e3c1aea5993a9c85d0e6b21f10091ddb8ccd3ff92cf4d7c6511796b0ee292e67"
+    },
+    {
+      "index": 216,
+      "name": "磐沙堡-蘭州",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "a8840755de3486ce165dabf6c4e7d05eab268bff308b47e3df284e4da24c0aa1"
+    },
+    {
+      "index": 217,
+      "name": "磐沙堡-涼州",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "b4f7d070f3ee82bf6394f7158964c7b9e8f1130b8882fa0827482fdee0a7dc07"
+    },
+    {
+      "index": 218,
+      "name": "磐沙堡-肅州",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "8f0ec2dd44c940b0018856f28abcccbaa1a773f63bbf30c752d6ac31d6f0bcb4"
+    },
+    {
+      "index": 219,
+      "name": "磐沙堡-甘州",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "08166019d2911127e5bfb05295f7b1e7739151ec8bb83ccba548fd63357570e3"
+    },
+    {
+      "index": 220,
+      "name": "磐沙堡-中原",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "306829a7f29e4f5270c130dbc9ab43348038a0e98b0824a6cb8992a668714f3f"
+    },
+    {
+      "index": 221,
+      "name": "石塔-草原",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "bec496970577c44fe94293b63de7be8aa6f78002af6b1f9a6f49ff9921c87065"
+    },
+    {
+      "index": 222,
+      "name": "石塔-沙漠前半",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "784019c21aab7e85f307267c0068cbf16d53a5740a9f81f19d86042a28cb378c"
+    },
+    {
+      "index": 223,
+      "name": "石塔-蘭州",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "30841fa6b372318ede833782bce67bfa00109b7a0d003ab01df4cb38dcb4ebc1"
+    },
+    {
+      "index": 224,
+      "name": "石塔-涼州",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "c26b8ef2d9f8ddbbca1772dffacdda853ee536bb5e471e222bcf3f6120d95e27"
+    },
+    {
+      "index": 225,
+      "name": "石塔-肅州",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "4cd2d1fca02902f9459d380719cb1268431b3192c7b1a7f225bb34f224b320ce"
+    },
+    {
+      "index": 226,
+      "name": "石塔-甘州",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "75389403639ad4d9e45eca1b51b11b28acf614e323656770c2399c478ab70403"
+    },
+    {
+      "index": 227,
+      "name": "高昌-草原",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "1366706dcd830bc2404a58119b290bcc7e8484a370096e0d6788f379c59c7653"
+    },
+    {
+      "index": 228,
+      "name": "高昌-沙漠前半",
+      "team_choice_count_0x18": 10,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "0e5d31cb473a1bb77a9ac2ac50f1679bda495a59f15dc258e226bce5bf34501a"
+    },
+    {
+      "index": 229,
+      "name": "高昌-蘭州",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "0d0731de5a5ee46dfc0df2b10578ad88a3c31ed46a03a95fd81999f54c6e8c81"
+    },
+    {
+      "index": 230,
+      "name": "高昌-涼州",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "67663b24e05f1c8b1b1ca9b9abe4e356c151162ad36934111837d07fd3d6822a"
+    },
+    {
+      "index": 231,
+      "name": "高昌-肅州",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "f77110919f0bbb87e0aa83a67a9e902cb4f257ac56468db4e17dafd0882e36f1"
+    },
+    {
+      "index": 232,
+      "name": "高昌-甘州",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "7c395514343337cac03b3b51330afbeccb24acccb80f50e20606ce20eec9219c"
+    },
+    {
+      "index": 233,
+      "name": "高昌-中原",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "6f5b07ba1dd01efe8736de5848beb08fb8ef76fc43ea5dbbec86a53deb105b5f"
+    },
+    {
+      "index": 234,
+      "name": "千佛洞-蘭州",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "9e5f8e1483deb40d109a0b3137a56cd332c791e5c090ceec97a56d5e07147813"
+    },
+    {
+      "index": 235,
+      "name": "千佛洞-涼州",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "0daa6708a49390e7abbbf5c3da86a538ecb13b6e890aa36b81a476aa027c7cbb"
+    },
+    {
+      "index": 236,
+      "name": "千佛洞-肅州",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "57535584f520cf0dea46f63f46cbbf3198a2d202e648a83fd06e81c8428aef26"
+    },
+    {
+      "index": 237,
+      "name": "千佛洞-甘州",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "9b694e8441ddd938a472342cc99d219105fc570f21b34a878a10dd630a15b517"
+    },
+    {
+      "index": 238,
+      "name": "千佛洞-沙洲",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "3065958682d8b2676f525296289b5104326092055cdaba63e4d0bd51959706dc"
+    },
+    {
+      "index": 239,
+      "name": "拓渾-草原",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "f708d7cef0fc37f8ffae5618bcf4b025102cdda62add1ef7be77801f9d264d8f"
+    },
+    {
+      "index": 240,
+      "name": "拓渾-沙漠前半",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "150157c019590179f7e9eb31000b170f26cb4ba38ee952f5657939c825d3564c"
+    },
+    {
+      "index": 241,
+      "name": "拓渾-沙漠後半",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "9d5b31d7e18446cb8c6754570cdfde1d0e37bee06eefc89ed5b5e2e8451c606a"
+    },
+    {
+      "index": 242,
+      "name": "拓渾-尼雅",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "f4c73ef154e03b6f2266000add312c15be3a2ed7269264fc5478240ee6257c6d"
+    },
+    {
+      "index": 243,
+      "name": "拓渾-拓渾",
+      "team_choice_count_0x18": 5,
+      "field_0x9C": 50,
+      "observed_bucket_not_author_enum": "有名大地图/跨区域遭遇组",
+      "record_sha256": "b079d98030e231f6d9cdf8c6663e2dc4d817aff97dd75f1bbbef1dee498c3b93"
+    },
+    {
+      "index": 244,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 245,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 246,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 247,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 248,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    },
+    {
+      "index": 249,
+      "name": "",
+      "team_choice_count_0x18": 0,
+      "field_0x9C": 100,
+      "observed_bucket_not_author_enum": "空名称预留记录",
+      "record_sha256": "957782c284ccfcbd2ad645736e83327f791b968e8450fcd4be3e794f02e04bb4"
+    }
+  ],
+  "rand15_mod_100_arithmetic": [
+    {
+      "threshold": 0,
+      "success_outputs_in_0_32767": 0,
+      "total_outputs": 32768,
+      "ratio": 0.0,
+      "ratio_percent": 0.0,
+      "note": "这是对15-bit输出值域做枚举后的算术比例；原机仍必须按 rand15()%100 比较，不要改成浮点uniform百分比。"
+    },
+    {
+      "threshold": 30,
+      "success_outputs_in_0_32767": 9840,
+      "total_outputs": 32768,
+      "ratio": 0.30029296875,
+      "ratio_percent": 30.029296875,
+      "note": "这是对15-bit输出值域做枚举后的算术比例；原机仍必须按 rand15()%100 比较，不要改成浮点uniform百分比。"
+    },
+    {
+      "threshold": 50,
+      "success_outputs_in_0_32767": 16400,
+      "total_outputs": 32768,
+      "ratio": 0.50048828125,
+      "ratio_percent": 50.048828125,
+      "note": "这是对15-bit输出值域做枚举后的算术比例；原机仍必须按 rand15()%100 比较，不要改成浮点uniform百分比。"
+    },
+    {
+      "threshold": 100,
+      "success_outputs_in_0_32767": 32768,
+      "total_outputs": 32768,
+      "ratio": 1.0,
+      "ratio_percent": 100.0,
+      "note": "这是对15-bit输出值域做枚举后的算术比例；原机仍必须按 rand15()%100 比较，不要改成浮点uniform百分比。"
+    }
+  ],
+  "original_vs_research_key_ranges": [
+    {
+      "start_va": "0x0042227B",
+      "end_va_exclusive": "0x004222C7",
+      "meaning": "戰場脫逃专用判定链",
+      "size": 76,
+      "original_sha256": "de58dec4cfc6bdc06227a33db92681962ec452a43e9759e79828a165773c9b4f",
+      "research_sha256": "de58dec4cfc6bdc06227a33db92681962ec452a43e9759e79828a165773c9b4f",
+      "byte_identical": true
+    },
+    {
+      "start_va": "0x00424560",
+      "end_va_exclusive": "0x00424589",
+      "meaning": "LayoutGR +0x9C getter",
+      "size": 41,
+      "original_sha256": "5225ba4c349fc1178f184eb953362eeb834d4ccbe26cfb1be1f9c7584340d469",
+      "research_sha256": "5225ba4c349fc1178f184eb953362eeb834d4ccbe26cfb1be1f9c7584340d469",
+      "byte_identical": true
+    },
+    {
+      "start_va": "0x0045155B",
+      "end_va_exclusive": "0x00451583",
+      "meaning": "RNG播种入口与rand15本体前段",
+      "size": 40,
+      "original_sha256": "776a9c1f19f137718b1c959154b44dd2e70b33ddcdbe1db8e00ac7ac3627ff35",
+      "research_sha256": "776a9c1f19f137718b1c959154b44dd2e70b33ddcdbe1db8e00ac7ac3627ff35",
+      "byte_identical": true
+    }
+  ],
+  "compatibility_rule": {
+    "raw_formula": "success = (legacy_rand15() % 100) < LayoutGR[current_layoutgr_index].field_0x9C",
+    "canonical_field_values": [
+      0,
+      30,
+      50,
+      100
+    ],
+    "recommended_compatibility_name": "escape_success_threshold",
+    "author_column_name": "UNKNOWN",
+    "comparison_is_strict_less_than": true,
+    "one_rng_draw_per_escape_attempt": true,
+    "invalid_index_boundary": "0x424560自身的legacy guard并不是可靠的现代数组边界检查；本节点只冻结已经由Battle建立链保证的canonical有效LayoutGR index输入。"
+  },
+  "boundaries": [
+    "作者没有在当前资源或EXE中暴露LayoutGR+0x9C的正式列名；兼容层名称不是作者术语。",
+    "历史固化18～22已经闭合56个direct RNG caller的静态分类，本节点没有重复把D8重新做一遍。",
+    "本节点只证明0x424560的direct caller面；没有宣称所有可能的间接/数据驱动读取都不存在。",
+    "canonical阈值0/30/50/100对应机器比较阈值；由于原版先rand15()%100，30和50并非用浮点uniform实现。",
+    "0x424560的invalid-index legacy行为存在不安全边界，本节点不把异常输入行为提升为兼容API规范。"
+  ],
+  "implementation_contract": [
+    "Battle建立时保留当前LayoutGR物理索引。",
+    "执行FIRTTECH raw ID 0x1EA「戰場脫逃」时读取当前LayoutGR record+0x9C。",
+    "严格消费一次legacy rand15，随后做整数余数 `%100`。",
+    "余数严格小于阈值才成功；等于阈值必须失败。",
+    "canonical 0/30/50/100必须原样保存，不要按场景名称重新推导。",
+    "数据模型建议字段名escape_success_threshold，但序列化/证据层仍保留raw offset 0x9C和UNKNOWN作者列名。"
+  ]
+}

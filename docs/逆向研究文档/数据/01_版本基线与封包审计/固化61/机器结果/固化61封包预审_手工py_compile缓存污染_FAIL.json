@@ -1,0 +1,10 @@
+{
+  "status": "FAIL",
+  "stage": "正式封包审计前开发卫生检查",
+  "failure_type": "package_hygiene_error",
+  "symptom": "工具目录存在 __pycache__/youcheng_battle_firttech_result_mode_inspector.cpython-313.pyc。",
+  "root_cause": "开发阶段手工执行 python -m py_compile 产生 bytecode 缓存。",
+  "research_conclusion_affected": false,
+  "fix": "清除 __pycache__ 与 *.pyc；后续全部验证使用内存 compile() 或 PYTHONDONTWRITEBYTECODE=1。",
+  "preservation_note": "此文件故意永久保留 FAIL，不会被后续 PASS 覆盖。"
+}

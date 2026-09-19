@@ -1,0 +1,28 @@
+RPG.exe SHA256: b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf
+
+Getter:
+  0x42A1A0 = Section0Record[0x24 + slot*4]；无有效资源时返回0
+
+0x43F520 group:
+  0x43F53A slot0
+  0x43F558 slot4
+  0x43F567 slot5
+  0x43F584 slot6
+  0x43F595 slot7
+  0x43F5A4 slot2
+  0x43F5B5 slot8
+  0x43F5C2 slot4 compare 9；越界回退5
+  0x43F572 slot5 <=0 回退1
+  0x43F69A slot4/slot6组合门控
+  0x43F785 slot2 signed clamp/call 0x43F210
+  0x43F79B slot8 compare 1
+
+Other consumers retained:
+  0x42D96C slot3
+  0x42D9AF dynamic slot
+  0x444E10/0x444E2F/0x444E64 slot1 compare 12/13
+  0x420455 slot9 and 0x42046D slot8
+
+Machine replay:
+  python3 工具/youcheng_sci_sf2_inspector.py sf2属性槽语料 <资源根> --RPG RPG.exe --json 输出.json
+

@@ -1,0 +1,752 @@
+{
+  "工具版本": "0.1.0",
+  "输入": "/mnt/data/solid56_inputs/mm/multimedia/MenusDir.DAT",
+  "输出目录": "/mnt/data/solid57_probe_menus",
+  "允许覆盖": false,
+  "提取文件数": 106,
+  "全部字节与目录记录一致": true,
+  "逐文件": [
+    {
+      "容器内路径": "tdg/MENUS/MEN0000.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0000.SF2",
+      "字节数": 18832,
+      "SHA256": "3faf79de5d2bcac83c53c0b416edb159f52e7a6afdd8dc108fc3c7b2708d4f06",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0001.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0001.SF2",
+      "字节数": 296855,
+      "SHA256": "edf610e20a0d14a157103c35fd570db3dbf01b89ef579d4c807d243d06741ff9",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0002.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0002.SF2",
+      "字节数": 786174,
+      "SHA256": "47cdaf9c6aa0de42e060f1d06aaa10eb05162c49270d23ce33aff5f16672921b",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0002B.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0002B.SF2",
+      "字节数": 554515,
+      "SHA256": "63fb1b195b6846284255de1a92d620a855d0898b90001da69aa8a0a291f0f93b",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0003.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0003.SF2",
+      "字节数": 32008,
+      "SHA256": "e0f1a7703d604473333a7bb136fbee9446e2e0d6a110fbf7027c31018f0f8808",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0004.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0004.SF2",
+      "字节数": 40416,
+      "SHA256": "b59d9c20cfa538aeb1bc783f184b63e02a0971b184f98d8ab4ec1a73e76da0ea",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0005.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0005.SF2",
+      "字节数": 32095,
+      "SHA256": "6accdb8267c02cb4224416d219cbd9a47ec78867cdb991909131c3901438455c",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0006.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0006.SF2",
+      "字节数": 19319,
+      "SHA256": "eff260a22fb9f5acb8e270a91cb747aa448537b43935636ba43ceef259cb1101",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0007.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0007.SF2",
+      "字节数": 19513,
+      "SHA256": "57af71f0b876e621166164fd36e8739655eddedec3af61fdc7dcb72918a0be48",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0008.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0008.SF2",
+      "字节数": 18992,
+      "SHA256": "d8add57761b5d77e13139f93a051d5abba06c0bedcfd4fe1864f6894f7b96827",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0009.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0009.SF2",
+      "字节数": 45539,
+      "SHA256": "eaf2ee79bf9adbba58346178063b3a4822391148f40f4f1dabc5d6229ebfe260",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0010.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0010.SF2",
+      "字节数": 57087,
+      "SHA256": "4e75ee6a914d25f10918c7c025c95bcc507ccbde6b15c606d4594d5552c8e977",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0011.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0011.SF2",
+      "字节数": 18814,
+      "SHA256": "a2d16d04bbca033437dff4b28eaf06330d02d39a305a5d724595676f50610817",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0012.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0012.SF2",
+      "字节数": 18828,
+      "SHA256": "0c8bb45301ada51089a69542c69e3747e60042d497d6d8d9abbd67a76a632846",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0013.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0013.SF2",
+      "字节数": 39642,
+      "SHA256": "cd8fc274dc072f1350a8ebf7a73708793a548c11b7e0108d7925d7f8b492a22f",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0015.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0015.SF2",
+      "字节数": 261060,
+      "SHA256": "9997dff4b78ffa5d3577948c8e026a5396a7f93b4632f958eabda3b897d1ea0d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0016.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0016.SF2",
+      "字节数": 163334,
+      "SHA256": "c0758d1c9f3b079035c0d414fd46944d285af81d48ea3569275d5d974962465e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0017.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0017.SF2",
+      "字节数": 20899,
+      "SHA256": "46e0d49c7dc59eb55a0b3bc78856dfb0c315ceab761d136cfb8e39a6b30fed63",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0018.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0018.SF2",
+      "字节数": 21049,
+      "SHA256": "2a6f885dea4c5c579bd5360e4864fb6769e13c8c4a9fd8bf2b0f192ffec2c4b6",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0020.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0020.SF2",
+      "字节数": 35235,
+      "SHA256": "208114a5e31c58b0afdac500c2f93d8369b85e36fe77a999f01551673713277e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0021.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0021.SF2",
+      "字节数": 17518,
+      "SHA256": "93a755dab1b482e4169baf07fe3fc727d3e78710cee7373bb6870cafb5371df7",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0025.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0025.SF2",
+      "字节数": 21526,
+      "SHA256": "b2443f16cfb1372e7194e6a6852302ba4e54dfa703acc93ca53dab947a7b6de5",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0026.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0026.SF2",
+      "字节数": 21526,
+      "SHA256": "d081057ed42c8b0d651dcb09d037e3c63b67c5e5588bf800c068d3b824cae8bf",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0027.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0027.SF2",
+      "字节数": 17341,
+      "SHA256": "6dff07809178b07bf49689191732ccf5bbed4c7e5cf5c5a19864e5f1798a9795",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0028.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0028.SF2",
+      "字节数": 21948,
+      "SHA256": "e3133095f0a86de6f378dc4167a033967519d0fb403b89c754a1a807be2fb4e6",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN0029.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN0029.SF2",
+      "字节数": 21978,
+      "SHA256": "44bbbebe7458165864084a84dbbe31696a06415288036adc01d431b3b34fb567",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1001.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1001.SF2",
+      "字节数": 17590,
+      "SHA256": "56f29d3944207954281a86fc9cad4b9ad7a3d1054c3fb8c372523efe805bec5f",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1002.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1002.SF2",
+      "字节数": 18092,
+      "SHA256": "dcad6f8ab9b5cbeb365df2c4893d5b1d25d86dc0f84a002e15ef9466c788bc44",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1016.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1016.SF2",
+      "字节数": 18322,
+      "SHA256": "5aa19f0ab92e92c5e0089919f84c426a0ec3f839262d0866efd7e975db12f39e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1017.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1017.SF2",
+      "字节数": 18679,
+      "SHA256": "c7b11689800d9fb0813aa459084a378aecb1ffc40f13c99b435761b42013d704",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1018.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1018.SF2",
+      "字节数": 18786,
+      "SHA256": "2e8368c889762f391c3a7c5c977934d5e5b657e34ebc686ada377b07f7f038df",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1019.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1019.SF2",
+      "字节数": 18852,
+      "SHA256": "6dd788ac576e793e453e27925bc76ba2771dc86fad5ed7455cca6190d3f1c5f5",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1026.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1026.SF2",
+      "字节数": 18380,
+      "SHA256": "fdcf0e051026ff1dcda1c06e651f576e0307b1649d5a807df75cc85dc71f206a",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1027.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1027.SF2",
+      "字节数": 18727,
+      "SHA256": "93fd6c2f4a66e37e85c1935d2ecebdf920b6fdd1788a2fb68071bb265671738d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1028.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1028.SF2",
+      "字节数": 18609,
+      "SHA256": "1639bc6a54e13e13c07151cd7773e55f5ea92f1a1d43266943ece0c13669a284",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1029.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1029.SF2",
+      "字节数": 18838,
+      "SHA256": "d8f8d827eb30c8bce8a28e2d0a07bd2f9ff4387022d16eafd105f38de80cb171",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN1038.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN1038.SF2",
+      "字节数": 17730,
+      "SHA256": "e3675121c37b78a27313e97cc2f3f03bd59006b6e28aa4d74b940456be85f4c7",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN2001.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN2001.SF2",
+      "字节数": 23699,
+      "SHA256": "a7a6bdc7fb8202475acf3f3c20daa6e13f28ffd239035059ffa2c1661b7ea300",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN2002.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN2002.SF2",
+      "字节数": 25205,
+      "SHA256": "f95b4e43c15cf7042067af83e1089e344e693fdd8c774cd07b3e7f71ada8ef67",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN2003.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN2003.SF2",
+      "字节数": 25216,
+      "SHA256": "f7e227aa3fb9e8cfba1046f1ac5e7875d9206c4f0920a2c00549c98c10ce3444",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN2004.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN2004.SF2",
+      "字节数": 100346,
+      "SHA256": "87f44cca311972c1ad1ff22b3f3acc87c3e7e170ab50576d5de2c82c807f71cf",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN3001.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN3001.SF2",
+      "字节数": 26869,
+      "SHA256": "ee824b7f3a9b9ce04c9caa0278ae0f6f4cd15c618ca9954310c1f92d6731e624",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN3002.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN3002.SF2",
+      "字节数": 26647,
+      "SHA256": "0f0e3246044befb5d710a180b6e656cb8b376cdd7644789f808d372804a1b537",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN3003.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN3003.SF2",
+      "字节数": 27089,
+      "SHA256": "3262fac0cf0d39b9503c8b308b3d3d4fb1c2643e6d4f6d0d31786cd08963033e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN3004.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN3004.SF2",
+      "字节数": 100280,
+      "SHA256": "945a275320c53aa6cc24b37d697ee3f19129555eb1d5f3d30f604e2f3dd96ca5",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN3005.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN3005.SF2",
+      "字节数": 17952,
+      "SHA256": "571e0c47c91cc7751e76ac251bc307177264894dadb6d11457fe838717030c79",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN3006.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN3006.SF2",
+      "字节数": 17455,
+      "SHA256": "45d518089d7b3e5827558ae256e411e330866020fad347f017122870d1c1816e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN3007.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN3007.SF2",
+      "字节数": 17475,
+      "SHA256": "27c356b27029c5b1197519b6e24f4aa698f6a5e4a9dc0853405e6382229fe27d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4001.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4001.SF2",
+      "字节数": 28538,
+      "SHA256": "e68ff1603f7f246c7a66b82713764edc91a5a345f159bf619c20b9bfc1f5bdfa",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4002.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4002.SF2",
+      "字节数": 86570,
+      "SHA256": "313c4a3ca8be3fc9b415696d3f549022645d486c26f5ec318fc0b0e7cf2838c2",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4003.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4003.SF2",
+      "字节数": 17952,
+      "SHA256": "571e0c47c91cc7751e76ac251bc307177264894dadb6d11457fe838717030c79",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4004.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4004.SF2",
+      "字节数": 17455,
+      "SHA256": "45d518089d7b3e5827558ae256e411e330866020fad347f017122870d1c1816e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4005.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4005.SF2",
+      "字节数": 17475,
+      "SHA256": "27c356b27029c5b1197519b6e24f4aa698f6a5e4a9dc0853405e6382229fe27d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4006.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4006.SF2",
+      "字节数": 18790,
+      "SHA256": "02e55d555603c84396a10ae221f2942ad739e97890845057fd9f3611a31ef273",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4008.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4008.SF2",
+      "字节数": 18903,
+      "SHA256": "aa99e0f07ed1b3706dc5171a40d2c5355d5a3e19427dafdf3eb68579ea558375",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4010.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4010.SF2",
+      "字节数": 2215609,
+      "SHA256": "be2d69d93ebbad964aea14f3a90586468c2e6a5fa4527876723bdbb3376e97ea",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4011.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4011.SF2",
+      "字节数": 2537115,
+      "SHA256": "fe8b1ba10b7f836b97ac16ad3a3f85a5ec3c0588aacda2e52c1643ec706cc828",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4012.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4012.SF2",
+      "字节数": 1406030,
+      "SHA256": "6659ba599a2fa919d3692d4d9267327f5abb42571a209e9b250443544f64b066",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4013.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4013.SF2",
+      "字节数": 1123299,
+      "SHA256": "f0d34c1685a2c074ab2233b9f7436598b1901411ff3c01eade51369cfaf5b81d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN4014.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN4014.SF2",
+      "字节数": 1089795,
+      "SHA256": "772584003520e8703b5112987faac573214de59fc9418440a0e4afc4c4dba143",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN5001.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN5001.SF2",
+      "字节数": 87101,
+      "SHA256": "27bfdf716f664a5df46de37b5b060c79e3b7d0059432e168a4212467c099f81e",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN5002.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN5002.SF2",
+      "字节数": 17806,
+      "SHA256": "cca777de572f1c272c100b32dcafc2ece37b3597e873f3fed001d71d2d443d8a",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN5003.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN5003.SF2",
+      "字节数": 17457,
+      "SHA256": "c86745a421c1f07c57b43bbc4a6cc93c364780ead216b9550673de900eb2e8fe",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN5004.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN5004.SF2",
+      "字节数": 17475,
+      "SHA256": "27c356b27029c5b1197519b6e24f4aa698f6a5e4a9dc0853405e6382229fe27d",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN5005.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN5005.SF2",
+      "字节数": 21342,
+      "SHA256": "e025c8f9d9bb919f4a91e4958e172cf6f4b46aa57a0499dc1dc85637c04650f3",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN5006.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN5006.SF2",
+      "字节数": 17463,
+      "SHA256": "e7f0bfb51b163715d3ebc5df623262444cde684b31a07baa66b5ac64b76f239f",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN6001.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN6001.SF2",
+      "字节数": 93239,
+      "SHA256": "12c109e2ba0e3a88a3e48b894b3809de6031d8abfc17539009bd5f533d273357",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN6002.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN6002.SF2",
+      "字节数": 17530,
+      "SHA256": "cb87697e6014d6194f08f9f5e559138572c4d6cd8a79d8c120ef7ce712315e2f",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN6003.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN6003.SF2",
+      "字节数": 17536,
+      "SHA256": "2a451b44d5b316de2d0f3e998357cd25715dcfebe1e034ab4e66a88fbfa98c5a",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN6004.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN6004.SF2",
+      "字节数": 17593,
+      "SHA256": "0672b1875779b72e7b14584cbbffcfa64a3b0fd0f11ec590bca2c15e78f47065",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN6005.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN6005.SF2",
+      "字节数": 32688,
+      "SHA256": "46091e92d7ed389f5b382a94d7e825d9401a2506e045eea5bff7fa51996d7a58",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN7001.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN7001.SF2",
+      "字节数": 71185,
+      "SHA256": "ec8d9f4b23d9ff8f095329eeeb7e4df32d6ebaa48da18a481d2b4c2251fe6563",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN7002.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN7002.SF2",
+      "字节数": 29678,
+      "SHA256": "1fc0e4b4d82dbe6e3c3a951c77dea752bef3af244d007943de6ba4b4060b99b6",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN7003.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN7003.SF2",
+      "字节数": 44266,
+      "SHA256": "3ace7dfcb023b333bc5fa14c85af1c9016cad454929635b0217af1fea7d5adff",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN7004.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN7004.SF2",
+      "字节数": 29842,
+      "SHA256": "16a6f497af741b1013883963c2bb49565607498ca0c94399ad394224b898e1e4",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN8001.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN8001.SF2",
+      "字节数": 767031,
+      "SHA256": "f3971d074c848898ed94091670c896af3f04842719d676301756f18f5a602d6c",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN8002.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN8002.SF2",
+      "字节数": 42345,
+      "SHA256": "f4f4d945bc3ecc0f1fb909c57e79b054e9f0e8f938e5755e11c2d37ff204ef13",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN8003.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN8003.SF2",
+      "字节数": 30781,
+      "SHA256": "e90e9e623736bc24678421c1b0c3323b1707a1d8ead54c50788fdeab24680e76",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN8004.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN8004.SF2",
+      "字节数": 17718,
+      "SHA256": "9e1bd739e4a46b8bc7ddb8f478514a70930141f47ea086d47def4011ef9f78e8",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN8005.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN8005.SF2",
+      "字节数": 17738,
+      "SHA256": "f2f5e804abce509b206ad8df7dcd592e41f1a56797f8ec141d356f11227c1b05",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN8006.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN8006.SF2",
+      "字节数": 30781,
+      "SHA256": "e90e9e623736bc24678421c1b0c3323b1707a1d8ead54c50788fdeab24680e76",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN8007.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN8007.SF2",
+      "字节数": 48141,
+      "SHA256": "e9d4484c1e108b836b2bdbc1794cbb67a8e8086eb9c121159e5b8cb00a2e4ffc",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN8008.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN8008.SF2",
+      "字节数": 37915,
+      "SHA256": "0addb8c6456df52ea269cd20b1935d6135ed3d9b309a5592bb86589da0ae812c",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9001.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9001.SF2",
+      "字节数": 1611637,
+      "SHA256": "cb63c915098a4bdcea6793b3841a9cececaf836a1f1a131637211ed4b9bf7f84",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9002.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9002.SF2",
+      "字节数": 39772,
+      "SHA256": "e3ee31f14f4fccacbea086a660c68a9ababeebb6eda0763ba186601dcafca0f3",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9100.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9100.SF2",
+      "字节数": 308083,
+      "SHA256": "9140199829e6b1ffeba4bc33ddd4fa2dde534f71735e86c9a374ea33d113b221",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9101.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9101.SF2",
+      "字节数": 17791,
+      "SHA256": "6a07dae0421094bde1d92f99345f7fba7e57aa21dddc19d355c09fa1fe6dad22",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9102.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9102.SF2",
+      "字节数": 29840,
+      "SHA256": "6daad34d0a5417c577a2800616c95e2ed18eb2966626c16cc6f162248610c5c3",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9103.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9103.SF2",
+      "字节数": 38194,
+      "SHA256": "c088719ca7b7cf89a0d07b72d9869ba7da2dae956709fc917932a26752eefe51",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9200.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9200.SF2",
+      "字节数": 135841,
+      "SHA256": "8575628ad13d2fff6aa525df16f87e2a71f9d8c51c36fb22c74c87e92ded007f",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9201.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9201.SF2",
+      "字节数": 29522,
+      "SHA256": "3c33e86886b63f3b0d25933fe8242eb54e231faf0c46ff9acf4e0ba5f68aebb7",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9202.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9202.SF2",
+      "字节数": 47268,
+      "SHA256": "3b4c0468f93dbb0c6fca5a1827b75bfbf2ea7f76654e36bfbd7889672bcde5f4",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9203.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9203.SF2",
+      "字节数": 17799,
+      "SHA256": "8266cb96665aa65e98c5b49b0264302ebb9d655468e54e80bebd1dc56c0a3ee1",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9204.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9204.SF2",
+      "字节数": 48581,
+      "SHA256": "d2dd63182f0092b15a086fd07e5956fe8ba4f984d4327f500d7474fed54e7e4f",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9205.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9205.SF2",
+      "字节数": 17502,
+      "SHA256": "4c23741dd5b337e6f1ec220362a0d103c16d1839d49cdf144c0883d36f08fd29",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9206.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9206.SF2",
+      "字节数": 17502,
+      "SHA256": "4c23741dd5b337e6f1ec220362a0d103c16d1839d49cdf144c0883d36f08fd29",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9207.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9207.SF2",
+      "字节数": 17912,
+      "SHA256": "dbae41ee4f34c16d744f6b4bdbc014e8ea8f123b1ab6f6f915bd06ad43a0cd99",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9208.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9208.SF2",
+      "字节数": 17587,
+      "SHA256": "b8dc50858e88c7ccff93ed437a1183a49d57588b826340805d337e27686dd9c8",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9209.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9209.SF2",
+      "字节数": 19788,
+      "SHA256": "5ab362d77b835d0aee683312d91154aabe2e434cac4beba8ac115e0a50d3e987",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9210.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9210.SF2",
+      "字节数": 29406,
+      "SHA256": "ae154812aa9a5e11b465f6d1fc78e26dcfa2e34c903436a5cd701434b2f498a6",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9300.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9300.SF2",
+      "字节数": 601217,
+      "SHA256": "508794c0e9cc4e74a2f333473539b9736307173ec7c95aa7956fef9f4e90ac73",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9301.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9301.SF2",
+      "字节数": 27109,
+      "SHA256": "d2f98704a252a6d2ec3d6865aa55509cbedade33e1cdf09f0b4660b2ae1f06f8",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9302.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9302.SF2",
+      "字节数": 27254,
+      "SHA256": "59b982018f9e8fa70641afc91db9cbd40c0b0f0787cadd2219e3c86df7724868",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9303.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9303.SF2",
+      "字节数": 26929,
+      "SHA256": "ac98d25de5288096fffbc5e09a880919ea18fb7fa33735eeed5b96f418167d78",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9304.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9304.SF2",
+      "字节数": 769591,
+      "SHA256": "ab8a9b52172d9184ce328c334781bf259a08ea4b1afdab71272318ae5f1800c4",
+      "与目录记录一致": true
+    },
+    {
+      "容器内路径": "tdg/MENUS/MEN9400.SF2",
+      "输出": "/mnt/data/solid57_probe_menus/tdg/MENUS/MEN9400.SF2",
+      "字节数": 21727,
+      "SHA256": "42c79f1bb23896c67f93628f5af687e4c0b8e9e0aa28cec656d022163a814db8",
+      "与目录记录一致": true
+    }
+  ]
+}

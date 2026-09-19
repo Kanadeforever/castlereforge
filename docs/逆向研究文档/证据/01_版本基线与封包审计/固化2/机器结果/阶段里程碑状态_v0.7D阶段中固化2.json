@@ -1,0 +1,20 @@
+{
+  "版本": "v0.7D阶段中-固化2",
+  "日期": "2026-08-13",
+  "阶段": {
+    "v0.7A EVE+ENC": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7B SF2+SCI": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7C TSF+规范化游戏状态": "DONE_WITH_KNOWN_UNKNOWNS",
+    "v0.7D Battle Core": "ACTIVE_CHECKPOINT_NOT_FINAL"
+  },
+  "Oracle": {
+    "RPG.exe SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+    "multimedia.zip SHA256": "faa994d6e47b46ce610e75019e8a1da35822560781ba9e8e160814571e952f1f"
+  },
+  "合并来源": {
+    "v0.7C包SHA256": "b848c418d44d834489097cd4468694824402e83018d506088e073de224fa1a28",
+    "v0.7D固化1包SHA256": "36719f5caae88adc392ff08341555989d87d5f061e5210bc5738844eb285c977",
+    "v0.7D恢复点包SHA256": "dbf802f3e305e38f0494bbba26faabfb0c0497c916cdf75d46da61309f57738c"
+  },
+  "合并结论": "允许合并。v0.7C核心事实复现通过；v0.7D固化1关键ASM与同Oracle一致；恢复点与固化1是证据等级前后关系而非事实冲突。未重新闭合的恢复点E2线索继续保留，不升级。"
+}

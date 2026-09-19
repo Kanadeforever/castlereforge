@@ -1,0 +1,202 @@
+{
+  "status": "PASS",
+  "note": "文档命名规则检查文件主名stem；.md扩展名不属于文档命名正文。",
+  "counts": {
+    "markdown": 74,
+    "python_tools": 23,
+    "tool_docs": 23,
+    "json_before_rewrite": 417,
+    "csv": 44
+  },
+  "document_checks": {
+    "first_line_solid47": 74,
+    "filename_stem_no_latin": 74,
+    "fence_even": 74
+  },
+  "tool_checks": {
+    "ast_compile_pass": 23,
+    "help_pass": 23,
+    "missing_tool_docs": [],
+    "new_tool_comment_profile": {
+      "file": "youcheng_battle_effect_pair_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 56,
+      "chinese_comment_lines": 52
+    }
+  },
+  "data_checks": {
+    "json_pass": 417,
+    "json_bad": [],
+    "csv_pass": 44,
+    "csv_bad": []
+  },
+  "cache": {
+    "pyc_files": [],
+    "cache_dirs": []
+  },
+  "errors": [],
+  "tools": [
+    {
+      "file": "organize_data_evidence.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 87,
+      "chinese_comment_lines": 86
+    },
+    {
+      "file": "package_file_indexer.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 37,
+      "chinese_comment_lines": 36
+    },
+    {
+      "file": "youcheng_battle_big_effect_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 55,
+      "chinese_comment_lines": 53
+    },
+    {
+      "file": "youcheng_battle_core_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 1354,
+      "chinese_comment_lines": 1346
+    },
+    {
+      "file": "youcheng_battle_effect_lifecycle_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 168,
+      "chinese_comment_lines": 166
+    },
+    {
+      "file": "youcheng_battle_effect_pair_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 56,
+      "chinese_comment_lines": 52
+    },
+    {
+      "file": "youcheng_battle_result_dispatch_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 37,
+      "chinese_comment_lines": 35
+    },
+    {
+      "file": "youcheng_battle_runtime_clock_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 69,
+      "chinese_comment_lines": 67
+    },
+    {
+      "file": "youcheng_battle_status_presentation_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 70,
+      "chinese_comment_lines": 67
+    },
+    {
+      "file": "youcheng_battle_tail_slots_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 64,
+      "chinese_comment_lines": 62
+    },
+    {
+      "file": "youcheng_compatibility_engine_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 65,
+      "chinese_comment_lines": 62
+    },
+    {
+      "file": "youcheng_enc_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 219,
+      "chinese_comment_lines": 216
+    },
+    {
+      "file": "youcheng_eve_sf2_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 956,
+      "chinese_comment_lines": 950
+    },
+    {
+      "file": "youcheng_legacy_clock_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 97,
+      "chinese_comment_lines": 95
+    },
+    {
+      "file": "youcheng_resource_container_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 411,
+      "chinese_comment_lines": 409
+    },
+    {
+      "file": "youcheng_saf_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 154,
+      "chinese_comment_lines": 151
+    },
+    {
+      "file": "youcheng_saf_runtime_surface_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 111,
+      "chinese_comment_lines": 95
+    },
+    {
+      "file": "youcheng_sample_structure_validator.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 336,
+      "chinese_comment_lines": 334
+    },
+    {
+      "file": "youcheng_sci_sf2_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 1296,
+      "chinese_comment_lines": 1291
+    },
+    {
+      "file": "youcheng_sf2_audio_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 212,
+      "chinese_comment_lines": 210
+    },
+    {
+      "file": "youcheng_sf2_layer_metadata_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 103,
+      "chinese_comment_lines": 101
+    },
+    {
+      "file": "youcheng_tsf_gamestate_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 524,
+      "chinese_comment_lines": 521
+    },
+    {
+      "file": "youcheng_world_encounter_duration_inspector.py",
+      "ast_compile": true,
+      "help": true,
+      "comment_lines": 81,
+      "chinese_comment_lines": 79
+    }
+  ]
+}

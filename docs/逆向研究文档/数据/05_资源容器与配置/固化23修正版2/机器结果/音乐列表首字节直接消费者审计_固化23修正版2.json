@@ -1,0 +1,41 @@
+{
+  "版本": "固化23修正版2",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "global_object": "0x0046F604",
+  "direct_absolute_xrefs_count": 24,
+  "direct_absolute_xrefs": [
+    "40134f:\ta3 04 f6 46 00       \tmov    ds:0x46f604,eax",
+    "40141c:\t8b 35 04 f6 46 00    \tmov    esi,DWORD PTR ds:0x46f604",
+    "401436:\t89 3d 04 f6 46 00    \tmov    DWORD PTR ds:0x46f604,edi",
+    "403660:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40366c:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "403689:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "4036ad:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "409368:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "409375:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "409399:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40d241:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40d351:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40d35e:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40d386:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40d393:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40d459:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40d6bc:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40efdc:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40efea:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40f001:\t8b 15 04 f6 46 00    \tmov    edx,DWORD PTR ds:0x46f604",
+    "40f027:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40f039:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40f50c:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604",
+    "40f517:\t8b 0d 04 f6 46 00    \tmov    ecx,DWORD PTR ds:0x46f604"
+  ],
+  "record_consumers": {
+    "MP3": "0x004032C0 path: object+0x08 + index*51 + 1 -> %s.MP3",
+    "WAV": "0x00403380 path: object+0x10 + index*51 + 1 -> %s.WAV"
+  },
+  "静态判定": {
+    "+0x00": "当前两个列表全部84条记录存在该字节（MP3LIST全0、WAVLIST全1），但已知51-byte record消费者均从+1起取字符串；0x46F604直接可达路径未找到record+0直接读取。保持UNKNOWN。",
+    "边界": "当前证据支持“未找到直接consumer”，不支持把+0x00命名为类型/格式/播放策略，也不能绝对证明未使用。"
+  },
+  "证据": "证据/阶段D/固化23修正版2/音乐列表首字节直接消费者审计_00403220-004034B0.asm"
+}

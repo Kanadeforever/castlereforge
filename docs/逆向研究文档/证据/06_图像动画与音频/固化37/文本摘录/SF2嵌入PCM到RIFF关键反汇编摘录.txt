@@ -1,0 +1,149 @@
+《幽城幻剑录》固化37：SF2 Section3 嵌入PCM → RIFF/WAVE → BASS 关键反汇编摘录
+
+说明：
+- 本文件只摘录本专题真正承担语义证明的机器码，不把整段反汇编当成“证据越多越好”。
+- 地址均为当前32位RPG.exe映像虚拟地址（VA）。
+- 当前用户提供的 RPG.exe.org SHA-256：8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f。
+- 固化34已证明该文件与canonical Oracle整文件SHA不同，但已覆盖代码区机器语义等价；固化37另外用29条精确机器码断言重放本专题，29/29 PASS。
+
+============================================================
+一、第一套标准SF2播放对象：0x407380
+============================================================
+
+00407383  8B 46 48             mov eax,[esi+48h]
+00407386  0F BF 48 20          movsx ecx,word ptr [eax+20h]
+    中文解释：当前Section0动作记录指针在[esi+48h]；+0x20以“有符号16位”读取。
+    因此 -1 是合法哨兵值，非负值才是 Section3 音频索引。
+
+004073A2  8B 46 60             mov eax,[esi+60h]
+004073A9  66 8B 50 02          mov dx,word ptr [eax+02h]
+004073AD  8A 48 01             mov cl,byte ptr [eax+01h]
+004073B3  8A 10                mov dl,byte ptr [eax+00h]
+004073B5  8B 40 04             mov eax,dword ptr [eax+04h]
+    中文解释：同一条Section3记录被明确拆成四个独立字段：
+      +0x00 = u8 声道数
+      +0x01 = u8 每样本位数
+      +0x02 = u16 采样率
+      +0x04 = u32 PCM数据字节数
+    所以旧文档把前两个字节合读成0x1001/0x1002/0x0801只能视为兼容打包值，不能再叫“独立格式枚举”。
+
+004073BD  E8 9E FF FF FF       call 00407360
+004073C8  50                   push eax
+004073C9  E8 02 E4 FF FF       call 004057D0
+    中文解释：0x407360返回“Section3记录+0x10”，即裸PCM payload；随后调用共同RIFF构造器0x4057D0。
+
+============================================================
+二、第二套标准SF2播放对象：0x429020
+============================================================
+
+0042902D  8B 46 34             mov eax,[esi+34h]
+00429030  0F BF 40 20          movsx eax,word ptr [eax+20h]
+    中文解释：第二套对象再次独立证明Section0 +0x20是signed audio index。
+
+0042904A  8B 46 4C             mov eax,[esi+4Ch]
+00429051  66 8B 48 02          mov cx,word ptr [eax+02h]
+00429055  8A 50 01             mov dl,byte ptr [eax+01h]
+0042905B  8A 08                mov cl,byte ptr [eax+00h]
+0042905E  8B 50 04             mov edx,dword ptr [eax+04h]
+00429065  E8 86 FF FF FF       call 00428FF0
+00429070  50                   push eax
+00429071  E8 5A C7 FD FF       call 004057D0
+    中文解释：字段宽度、偏移和最终0x4057D0调用与第一套对象完全一致，是第二条独立交叉证据。
+
+============================================================
+三、0x4057D0：把裸PCM重建成标准44字节RIFF/WAVE PCM
+============================================================
+
+004057DA  8D 46 2C             lea eax,[esi+2Ch]
+    中文解释：总缓冲区需要“PCM data_size + 0x2C”；0x2C十进制就是44，即标准PCM WAV头长度。
+
+004057F3  8D 7B 2C             lea edi,[ebx+2Ch]
+004057F8  F3 A5                rep movsd
+00405801  F3 A4                rep movsb
+    中文解释：PCM复制目的地固定从临时缓冲区+44开始；先按4字节复制，再复制剩余0~3字节。
+    这里没有任何“8-bit加/减0x80”“符号翻转”“重采样”或“声道变换”。payload被逐字节原样复制。
+
+00405805  C7 43 10 10 00 00 00 mov dword ptr [ebx+10h],10h
+    中文解释：RIFF fmt chunk正文长度固定16字节。
+
+0040580C  89 43 28             mov [ebx+28h],eax
+    中文解释：WAV +0x28写data_size。
+
+0040581A  8B 0D E4 86 46 00    mov ecx,[004686E4]   ; "RIFF"
+00405822  8B 15 DC 86 46 00    mov edx,[004686DC]   ; "WAVE"
+0040582B  A1 D4 86 46 00       mov eax,[004686D4]   ; "fmt "
+00405833  8B 0D CC 86 46 00    mov ecx,[004686CC]   ; "data"
+    中文解释：四个标准RIFF/WAVE四字符标识都来自原版数据区常量。
+
+00405848  66 89 4B 16          mov [ebx+16h],cx
+    中文解释：WAV +0x16 = nChannels。
+
+0040584C  0F AF C8             imul ecx,eax
+0040584F  66 89 43 22          mov [ebx+22h],ax
+    中文解释：WAV +0x22 = wBitsPerSample；同时开始计算channels*bits。
+
+00405855  0F AF C2             imul eax,edx
+00405858  89 53 18             mov [ebx+18h],edx
+0040585B  66 C7 43 14 01 00    mov word ptr [ebx+14h],1
+    中文解释：WAV +0x18 = nSamplesPerSec；WAV +0x14 = 1，明确是WAVE_FORMAT_PCM。
+
+00405867  C1 F8 03             sar eax,3
+0040586A  89 43 1C             mov [ebx+1Ch],eax
+    中文解释：WAV +0x1C = nAvgBytesPerSec = channels*bits*sample_rate/8。
+
+00405877  C1 F8 03             sar eax,3
+0040587A  66 89 43 20          mov [ebx+20h],ax
+    中文解释：WAV +0x20 = nBlockAlign = channels*bits/8。
+
+0040587E  E8 3D FE FF FF       call 004056C0
+    中文解释：完成44字节WAV头和PCM复制后，进入内存SampleLoad/播放链。
+
+============================================================
+四、BASS内存文件加载链
+============================================================
+
+0040547F  68 00 00 02 00       push 00020000h
+00405484  6A 20                push 20h
+00405486  6A 00                push 0
+00405488  6A 00                push 0
+0040548A  52                   push edx
+0040548B  6A 01                push 1
+00405494  E8 A9 62 04 00       call 0044B742
+    中文解释：0x4053B0的内存样本分支把“完整临时WAV文件指针”作为数据源，并压入mem=1，再调用BASS_SampleLoad。
+
+0044B742  FF 25 18 00 46 00    jmp dword ptr [00460018]
+    中文解释：这是BASS_SampleLoad导入跳板。
+
+原版数据区还包含：
+    00468548  "BASS version 0.6 was not loaded."
+    中文解释：当前游戏针对的历史运行库版本明确为BASS 0.6。
+
+============================================================
+五、固化37最终语义
+============================================================
+
+Section3 record：
+    +0x00 u8  channels
+    +0x01 u8  bits_per_sample
+    +0x02 u16 sample_rate
+    +0x04 u32 data_size
+    +0x08 u32 reserved0（当前全语料=0）
+    +0x0C u32 reserved1（当前全语料=0）
+    +0x10 u8  pcm[data_size]
+
+原版等价WAV：
+    RIFF size = 44 + data_size - 8
+    fmt size  = 16
+    format    = 1 (PCM)
+    channels  = Section3 +0x00
+    rate      = Section3 +0x02
+    avg B/s   = channels * bits * rate / 8
+    align     = channels * bits / 8
+    bits      = Section3 +0x01
+    data size = Section3 +0x04
+    data      = Section3 +0x10 原样复制
+
+8-bit signedness：
+    机器码证明“原版把8-bit payload原样包装成WAVE_FORMAT_PCM”；
+    Windows PCM/WAVE规范中8-bit PCM样本是unsigned byte，中心值0x80；16-bit PCM是signed 16-bit，中心值0。
+    因此固化37将8-bit signedness从UNKNOWN提升为CONFIRMED UNSIGNED PCM。

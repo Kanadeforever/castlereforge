@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "round": "second",
+  "counts_before_report_write": {
+    "files": 873,
+    "markdown": 74,
+    "python_tools": 23,
+    "tool_docs": 23,
+    "json": 419,
+    "csv": 44
+  },
+  "documents": {
+    "solid47_first_line": 74,
+    "filename_stem_no_latin": 74,
+    "fence_even": 74
+  },
+  "tools": {
+    "ast_compile_help_pass": 23,
+    "tool_docs_mapped": 23,
+    "missing_tool_docs": []
+  },
+  "inheritance": {
+    "base_nonmarkdown": 787,
+    "byte_identical": 786,
+    "intentional_changed": [
+      "工具/youcheng_battle_status_presentation_inspector.py"
+    ],
+    "missing": [],
+    "pass": true
+  },
+  "core_replay": {
+    "47": true,
+    "46": true,
+    "45": true,
+    "44": true,
+    "43": true,
+    "42": true,
+    "41": true,
+    "40": true,
+    "39": true,
+    "38": true,
+    "37": true
+  },
+  "cache": [],
+  "errors": []
+}

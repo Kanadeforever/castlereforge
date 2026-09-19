@@ -1,0 +1,286 @@
+{
+  "版本": "v0.7A",
+  "说明": "阶段A新增/纠正的复杂命令簇，来源为Oracle Execute/helper/ctor/字符串和现有EVE交叉验证。",
+  "命令": [
+    {
+      "Opcode": 12,
+      "Opcode十六进制": "0x0C",
+      "合法": true,
+      "Canonical名称": "UNLOAD_NPC",
+      "中文": "卸载命名 NPC；可选固定16 Legacy Tick过渡后移除",
+      "证据": "已确认",
+      "Execute": "0x0040C220",
+      "FactoryExecute": "0x0040C220",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "静态最小访问字节": 28,
+      "大小证据类型": "lower_bound",
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "名称/固定区",
+          "名称": "npc_name"
+        },
+        {
+          "偏移": "+0x18",
+          "类型": "u32/枚举",
+          "名称": "transition_mode"
+        }
+      ],
+      "说明": "transition_mode 为1或2时设置全局倒计时0x89F828=16；每Tick调用实体过渡helper并yield，归零后由0x409ED0移除实体。具体视觉表现仍需动态Oracle。"
+    },
+    {
+      "Opcode": 30,
+      "Opcode十六进制": "0x1E",
+      "合法": true,
+      "Canonical名称": "PAN_CAMERA_PROXY_TO",
+      "中文": "把脚本相机代理实体线性移动到目标坐标",
+      "证据": "已确认",
+      "Execute": "0x0040C980",
+      "FactoryExecute": "0x0040C980",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "静态最小访问字节": 16,
+      "大小证据类型": "lower_bound",
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "i32",
+          "名称": "target_x"
+        },
+        {
+          "偏移": "+0x08",
+          "类型": "i32",
+          "名称": "target_y"
+        },
+        {
+          "偏移": "+0x0C",
+          "类型": "u32",
+          "名称": "duration_legacy_ticks"
+        }
+      ],
+      "说明": "查找CP950名称“隱形”的隐藏场景实体并设为camera target；按Legacy Tick线性移动并yield。Core应规范化为ScriptCameraProxy，不必复刻隐藏NPC实现。"
+    },
+    {
+      "Opcode": 52,
+      "Opcode十六进制": "0x34",
+      "合法": true,
+      "Canonical名称": "REQUEST_APPLICATION_EXIT",
+      "中文": "请求退出应用程序主循环",
+      "证据": "已确认",
+      "Execute": "0x0040CBC0",
+      "FactoryExecute": "0x0040CBC0",
+      "Execute与Factory一致": true,
+      "序列化大小": 4,
+      "静态最小访问字节": 4,
+      "大小证据类型": "exact",
+      "参数": [],
+      "说明": "调用0x434900切换app-running状态；主循环随后投递窗口消息并销毁窗口。Core应转成RuntimeExitRequest事件。"
+    },
+    {
+      "Opcode": 53,
+      "Opcode十六进制": "0x35",
+      "合法": true,
+      "Canonical名称": "RUN_INTERFACE_MENU_DISPATCHER",
+      "中文": "运行多阶段界面/菜单总调度器",
+      "证据": "已确认结构语义",
+      "Execute": "0x0040CBF0",
+      "FactoryExecute": "0x0040CBF0",
+      "Execute与Factory一致": true,
+      "序列化大小": 4,
+      "静态最小访问字节": 4,
+      "大小证据类型": "exact",
+      "参数": [],
+      "说明": "真实样本中0x35 record由下一条offset证明恰为4字节。内部为异步状态机，创建0x660界面对象并涉及MEN0001/MEN1018/MEN0008/MEN0002/MEN0004/MEN0009、VAR998与deferred continuation。不能缩窄为单一菜单。"
+    },
+    {
+      "Opcode": 54,
+      "Opcode十六进制": "0x36",
+      "合法": true,
+      "Canonical名称": "OPEN_INTERFACE_SCREEN_WITH_MODE",
+      "中文": "按模式打开大型界面屏幕并阻塞Event VM",
+      "证据": "已确认结构语义",
+      "Execute": "0x0040D120",
+      "FactoryExecute": "0x0040D120",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "静态最小访问字节": 8,
+      "大小证据类型": "lower_bound",
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "u32",
+          "名称": "interface_mode"
+        }
+      ],
+      "说明": "写manager+0xCC，清+0x144/+0x148，创建0x5F0对象（ctor 0x413FA0，全局0x89FCD4），随后block/yield。对象包含多子菜单含商店。"
+    },
+    {
+      "Opcode": 55,
+      "Opcode十六进制": "0x37",
+      "合法": true,
+      "Canonical名称": "RUN_SCENE_MODE_RETURN_CONTROLLER",
+      "中文": "运行场景模式返回/恢复的多阶段控制器",
+      "证据": "已确认结构语义",
+      "Execute": "0x0040D200",
+      "FactoryExecute": "0x0040D200",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "静态最小访问字节": 8,
+      "大小证据类型": "lower_bound",
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "u32",
+          "名称": "mode_or_result_selector"
+        }
+      ],
+      "说明": "三阶段状态机；可创建0x24C对象、暂停场景表现、恢复当前场景MP3/WAV状态，并在某些分支载入MP0000或恢复Event IP。确切作者业务名需要动态Oracle。"
+    },
+    {
+      "Opcode": 57,
+      "Opcode十六进制": "0x39",
+      "合法": true,
+      "Canonical名称": "RUN_SPECIAL_SELECTION_MENU_MODE",
+      "中文": "运行特殊选择菜单/模式的异步状态机",
+      "证据": "已确认结构语义",
+      "Execute": "0x0040D510",
+      "FactoryExecute": "0x0040D510",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "静态最小访问字节": 8,
+      "大小证据类型": "lower_bound",
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "u32",
+          "名称": "mode"
+        }
+      ],
+      "说明": "播放MP3 id 0x1F，保存Event ID，暂停场景，创建0x594对象（ctor 0x413570，MEN9001/MEN9002/WAV0002），后续可回到探索或恢复事件。最终业务名待Oracle。"
+    },
+    {
+      "Opcode": 58,
+      "Opcode十六进制": "0x3A",
+      "合法": true,
+      "Canonical名称": "LOAD_SCENE_WITH_WORLD_RESET",
+      "中文": "载入场景SCI并执行完整世界/相机/视觉状态重置",
+      "证据": "已确认",
+      "Execute": "0x0040D780",
+      "FactoryExecute": "0x0040D780",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "静态最小访问字节": 34,
+      "大小证据类型": "lower_bound",
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "NUL字符串区",
+          "名称": "scene_name"
+        },
+        {
+          "偏移": "+0x18",
+          "类型": "u8/bool-like",
+          "名称": "reset_option"
+        },
+        {
+          "偏移": "+0x19/+0x1D",
+          "类型": "u32",
+          "名称": "visual_params"
+        },
+        {
+          "偏移": "+0x21",
+          "类型": "u8",
+          "名称": "visual_option"
+        }
+      ],
+      "说明": "构造%s\\MP%s.SCI并加载，随后执行world/camera origin reset与视觉helper。与0x3B的轻量LOAD_SCENE必须区分。"
+    },
+    {
+      "Opcode": 60,
+      "Opcode十六进制": "0x3C",
+      "合法": true,
+      "Canonical名称": "CONFIGURE_SCENE_VISUAL_EFFECT",
+      "中文": "在不换图的情况下配置/重置场景视觉效果",
+      "证据": "已确认结构语义",
+      "Execute": "0x0040D9C0",
+      "FactoryExecute": "0x0040D9C0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "静态最小访问字节": 14,
+      "大小证据类型": "lower_bound",
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "u8/bool-like",
+          "名称": "reset_option"
+        },
+        {
+          "偏移": "+0x05/+0x09",
+          "类型": "u32",
+          "名称": "effect_params"
+        },
+        {
+          "偏移": "+0x0D",
+          "类型": "u8",
+          "名称": "effect_option"
+        }
+      ],
+      "说明": "不访问场景路径；调用同场景视觉/effect helper。具体画面效果名称需要动态Oracle。"
+    },
+    {
+      "Opcode": 61,
+      "Opcode十六进制": "0x3D",
+      "合法": true,
+      "Canonical名称": "SET_ACTIVE_SCENE_SUBSYSTEM_MODE_BYTE",
+      "中文": "设置当前场景子系统的模式字节",
+      "证据": "已确认结构语义",
+      "Execute": "0x0040DA50",
+      "FactoryExecute": "0x0040DA50",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "静态最小访问字节": 5,
+      "大小证据类型": "lower_bound",
+      "参数": [
+        {
+          "偏移": "+0x04",
+          "类型": "u8",
+          "名称": "mode"
+        }
+      ],
+      "说明": "取得当前scene container（runtime+0x280），将mode零扩展为DWORD写入scene_container+4。最终业务字段名未知。"
+    },
+    {
+      "Opcode": 62,
+      "Opcode十六进制": "0x3E",
+      "合法": true,
+      "Canonical名称": "RUN_SAVE_SLOT_INTERFACE",
+      "中文": "运行存档槽位界面的异步状态机",
+      "证据": "已确认",
+      "Execute": "0x0040DAA0",
+      "FactoryExecute": "0x0040DAA0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "静态最小访问字节": 4,
+      "大小证据类型": "lower_bound",
+      "参数": [],
+      "说明": "创建0x594对象（ctor 0x413B00，全局0x89FCD0），加载Menus\\MEN8001.SF2，界面含“地點/等級/日期/時間”；与VAR998/event re-entry联动。静态证据不足以限定为只保存或只读取。"
+    },
+    {
+      "Opcode": 141,
+      "Opcode十六进制": "0x8D",
+      "合法": true,
+      "Canonical名称": "RUN_START_MENU_DISPATCHER",
+      "中文": "运行标题/START菜单总调度器",
+      "证据": "已确认",
+      "Execute": "0x0040EDB0",
+      "FactoryExecute": "0x0040EDB0",
+      "Execute与Factory一致": true,
+      "序列化大小": null,
+      "静态最小访问字节": 4,
+      "大小证据类型": "lower_bound",
+      "参数": [],
+      "说明": "创建对象ctor 0x4473F0（全局0x8E241C），直接引用MEN9300..MEN9304、FanIn.SF2、Music000.mp3、字符串“play mp3 fail!(START Menu)”与“NewGame”；后续分派退出、存取档、恢复探索等。"
+    }
+  ]
+}

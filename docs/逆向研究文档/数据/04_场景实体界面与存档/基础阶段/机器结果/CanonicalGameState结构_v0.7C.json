@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.7C",
+  "principle": "Canonical GameState只包含游戏语义；Legacy TSF原始偏移/未初始化字节不穿过Runtime ABI。",
+  "GameState": {
+    "metadata": {
+      "import_provenance": ["source_format", "source_hash", "legacy_version", "warnings"],
+      "legacy_save_preview": "只用于导入诊断/旧存档槽显示，不作为权威玩法状态"
+    },
+    "world": {
+      "scene": "由LegacySceneLoadDescriptor规范化出的scene/map资源标识；同时Core内部可保留raw50用于兼容诊断",
+      "controlled_actor": ["x:int32", "y:int32", "orientation_or_state", "controlled_actor_index"],
+      "game_variables": "5000×int16 + Legacy accessor semantics（特别是GET(0)=0）"
+    },
+    "party": {
+      "count": "0..8",
+      "entries": "[{role_id 1..8, formation_slot}]"
+    },
+    "roles": {
+      "authoritative_role_ids": "0..7 TSF恢复区；role 1..8 的运行时身份最终由API数据库和party映射解释",
+      "current_v0.7C_strategy": "Core内部保存解析后的RoleState；在v0.7D字段语义完全恢复前可附带0x350 LegacyRolePayload作为内部兼容数据，但不得穿过公开ABI",
+      "legacy_saved_record_8": "TSF保存但原版Load忽略；导入时不作为权威mutable state"
+    },
+    "inventory": {
+      "banks": "2",
+      "each_bank": "6 categories × <=500 {item_id, quantity} + money",
+      "active_bank": "0 or 1"
+    },
+    "shop": {
+      "current_v0.7C_strategy": "57×648 mutable ShopState；字段未完全命名前仅Core内部保持typed-record/raw payload，不穿ABI"
+    },
+    "event_runtime": {
+      "legacy_tsf_import": "原TSF未完整持久化Event VM瞬态；导入后按Legacy map/load流程安全重建",
+      "remastered_save": ["event_id", "instruction_pointer", "wait/yield", "continuation", "deferred_result", "current_command_transient", "visual_transition", "rng_state"]
+    },
+    "battle": "v0.7D补齐；现代Save必须包含安全恢复所需Battle transient",
+    "legacy_time": "Legacy Clock/RNG/可恢复定时状态；原TSF缺失项由导入策略重建"
+  },
+  "separate_preferences": {
+    "mp3_music_volume_level": "0..9，原TSF内含，但新架构建议放Settings/Profile而非玩法GameState",
+    "wav_sfx_volume_level": "0..9，同上"
+  },
+  "explicitly_not_canonical": [
+    "Core未初始化/指针垃圾",
+    "Inventory Bank +5DDC/+5DE0/+5DE4运行时缓存",
+    "TSF save-only party mapping slot 8",
+    "TSF保存的role record #8副本",
+    "原EXE绝对地址/指针"
+  ]
+}

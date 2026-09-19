@@ -1,0 +1,21 @@
+# 0x4472C0 / 0x8E2418 / 0x8C40C8 静态引用摘录（trusted original）
+
+41144:  41fbf8:	8b 0d c8 40 8c 00    	mov    ecx,DWORD PTR ds:0x8c40c8
+41193:  41fc9f:	8b 0d 18 24 8e 00    	mov    ecx,DWORD PTR ds:0x8e2418
+41194:  41fca5:	e8 16 76 02 00       	call   0x4472c0
+41411:  41ff2c:	8b 0d c8 40 8c 00    	mov    ecx,DWORD PTR ds:0x8c40c8
+41415:  41ff3e:	8b 0d c8 40 8c 00    	mov    ecx,DWORD PTR ds:0x8c40c8
+41421:  41ff53:	8b 0d c8 40 8c 00    	mov    ecx,DWORD PTR ds:0x8c40c8
+41432:  41ff80:	8b 0d c8 40 8c 00    	mov    ecx,DWORD PTR ds:0x8c40c8
+41550:  4200ff:	8b 0d c8 40 8c 00    	mov    ecx,DWORD PTR ds:0x8c40c8
+41773:  420395:	8b 0d c8 40 8c 00    	mov    ecx,DWORD PTR ds:0x8c40c8
+66403:  432551:	a3 c8 40 8c 00       	mov    ds:0x8c40c8,eax
+66430:  4325b9:	8b 0d c8 40 8c 00    	mov    ecx,DWORD PTR ds:0x8c40c8
+66433:  4325c5:	8b 0d c8 40 8c 00    	mov    ecx,DWORD PTR ds:0x8c40c8
+66436:  4325d5:	8b 0d c8 40 8c 00    	mov    ecx,DWORD PTR ds:0x8c40c8
+66567:  432792:	8b 35 c8 40 8c 00    	mov    esi,DWORD PTR ds:0x8c40c8
+66578:  4327b1:	89 1d c8 40 8c 00    	mov    DWORD PTR ds:0x8c40c8,ebx
+86767:  441d97:	a3 18 24 8e 00       	mov    ds:0x8e2418,eax
+86825:  441e75:	8b 3d 18 24 8e 00    	mov    edi,DWORD PTR ds:0x8e2418
+86833:  441e8f:	89 1d 18 24 8e 00    	mov    DWORD PTR ds:0x8e2418,ebx
+93574:  4472c0:	56                   	push   esi

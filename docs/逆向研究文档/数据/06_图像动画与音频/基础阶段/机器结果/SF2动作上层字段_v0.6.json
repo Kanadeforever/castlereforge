@@ -1,0 +1,45 @@
+{
+  "版本": "v0.6",
+  "证据等级": "已确认/强证据混合，字段业务名保持保守",
+  "Section0播放器": {
+    "wrapper": "0x004073D0",
+    "controller": "0x00407400",
+    "字段": {
+      "+0x0C": "sequence_length",
+      "+0x10": "start_entry",
+      "+0x14": "current_entry",
+      "+0x18": "duration_countdown_legacy_ticks"
+    },
+    "行为": "按 start_entry 到 start_entry+sequence_length-1 顺序推进；每条 Section0 记录 +0x22 作为 Legacy Tick 持续时间；loop 决定结束后是否回起点。"
+  },
+  "上层来源": {
+    "调用点": "约 0x0040A4F3",
+    "记录字段对": [
+      {
+        "索引": 0,
+        "start_entry_offset": "0xE2",
+        "sequence_length_offset": "0xE3"
+      },
+      {
+        "索引": 1,
+        "start_entry_offset": "0xE4",
+        "sequence_length_offset": "0xE5"
+      },
+      {
+        "索引": 2,
+        "start_entry_offset": "0xE6",
+        "sequence_length_offset": "0xE7"
+      },
+      {
+        "索引": 3,
+        "start_entry_offset": "0xE8",
+        "sequence_length_offset": "0xE9"
+      }
+    ],
+    "字段类型": "BYTE/BYTE",
+    "安全命名": "四组动画入口/长度字段对",
+    "禁止过度命名": "当前不得直接命名为上下左右、攻击/待机等，需结合更多调用点/实体状态验证。"
+  },
+  "设计结论": "动作名称表只映射 Section0 start_entry；sequence_length 来自实体/角色状态记录的上层数据。Core 禁止用“下一个动作入口差值”猜序列长度。",
+  "新增交叉证据": "EVE opcode 0x1A / Execute 0x0040C7E0 直接写 source SCI +0xE2=start、+0xE3=end-start+1，证明第一组字段是 Section0 start_entry/sequence_length。"
+}

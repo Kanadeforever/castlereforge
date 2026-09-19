@@ -1,0 +1,35 @@
+﻿类别,地址,固化22当前静态语义
+RNG next,0x451565,全局LCG next；direct E8 caller=56
+窗口初始化RNG1,0x401109,窗口创建/启动初始化随机调用
+窗口初始化RNG2,0x40113D,窗口创建/启动初始化随机调用
+随机遭遇RNG1,0x40352E,随机遭遇阈值链
+随机遭遇RNG2,0x403718,随机遭遇阈值链
+Entity type3目标X,0x40AB72,RNG%(upperX-lowerX)+lowerX
+Entity type3目标Y,0x40AB86,RNG%(upperY-lowerY)+lowerY
+Entity type3状态,0x40AB9A,RNG%2
+Entity type3等待,0x40ABD3,RNG%30+30
+EVE var999随机,0x40F633,RANDOM_TO_VAR999
+相机抖动RNG1,0x44B52C,camera jitter分量
+相机抖动RNG2,0x44B54D,camera jitter分量
+Entity behavior manager,0x409690,仅type1/type3进入movement/collision manager
+Entity loader,0x40A160,缓存+76；载入+77..+7A并变换type3边界
+Entity type2 loop gate,0x40A4D4,record+0x76!=2 -> SF2 loop参数
+SF2 action update,0x407400,loop=0末帧停止；loop!=0回卷
+Entity type3 movement gate,0x40A7D0,viewport/timer/profile selector
+Entity type3 roam,0x40AAF0,随机目标/状态/等待生成
+EVE action range type2 writer,0x40C83F,opcode0x1A条件路径写behavior_type=2
+EVE proximity type2 writer,0x40F101,opcode0x8F写behavior_type=2
+Map background ctor,0x406660,接收Map+0x65/+0x6E到controller
+Map background update,0x4067A0,mode1/2/10/other位移与render分流
+Map +0x65 loader,0x408F3C,读取Map record+0x65
+Map +0x6E loader,0x408F47,读取signed byte Map record+0x6E
+FightRole构造draw1,0x41F33E,成功初始化路径0/1
+FightRole构造draw2,0x41F454,RNG%40000+80000
+动作内部随机1,0x421AB6,条件区间draw
+动作内部随机2,0x421B20,条件RNG%100
+候选注入概率,0x423395,BattleManager更新链RNG%100
+Battle表现首次随机,0x43D352,首次资源初始化0/1
+屍魔召喚类型,0x443DB3,4选1
+呼叫增援类型,0x443DDA,2选1
+特殊召唤数量,0x443E24,1或2
+随机FightRole槽,0x44674B,0..7，最多100次重试

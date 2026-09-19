@@ -1,0 +1,89 @@
+{
+  "固化版本": "v0.7D阶段中-固化5",
+  "Api来源": {
+    "路径": "multimedia/public/Api.enc",
+    "记录大小": 848,
+    "记录数": 255,
+    "解码SHA256": "b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d"
+  },
+  "RoleDefinition源记录39槽": {
+    "范围": "+0x1E8..+0x280",
+    "槽数": 39,
+    "255条记录非零项": [],
+    "结论": "当前 Api.enc 的255条源记录中，这39个 DWORD 初值全部为0。"
+  },
+  "FightRole_runtime_39槽": {
+    "范围": "+0xA34..+0xACC",
+    "前28槽": "+0xA34..+0xAA0，已有 raw effect-like ID 0..27 direct-index producer/clear 证据",
+    "后11槽": [
+      {
+        "runtime_index": 28,
+        "FightRole_offset": "0xAA4",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      },
+      {
+        "runtime_index": 29,
+        "FightRole_offset": "0xAA8",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      },
+      {
+        "runtime_index": 30,
+        "FightRole_offset": "0xAAC",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      },
+      {
+        "runtime_index": 31,
+        "FightRole_offset": "0xAB0",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      },
+      {
+        "runtime_index": 32,
+        "FightRole_offset": "0xAB4",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      },
+      {
+        "runtime_index": 33,
+        "FightRole_offset": "0xAB8",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      },
+      {
+        "runtime_index": 34,
+        "FightRole_offset": "0xABC",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      },
+      {
+        "runtime_index": 35,
+        "FightRole_offset": "0xAC0",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      },
+      {
+        "runtime_index": 36,
+        "FightRole_offset": "0xAC4",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      },
+      {
+        "runtime_index": 37,
+        "FightRole_offset": "0xAC8",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      },
+      {
+        "runtime_index": 38,
+        "FightRole_offset": "0xACC",
+        "disassembly_direct_operand_hits": [],
+        "hit_count": 0
+      }
+    ]
+  },
+  "负向证据方法": "对当前 Oracle 的完整 Intel 反汇编文本逐条搜索内存操作数中的 +0xAA4..+0xACC direct displacement；均为0命中。曾尝试原始字节搜索时 +0xAA8 出现1个假阳性，复核为 E8 rel32 的位移字节而非字段访问，因此废弃原始字节法。该结果仍不能排除基址+变量索引、指针别名、generic循环或其他间接路径。",
+  "安全结论": "39槽是 generic storage/update envelope；当前已知 effect producer 使用前28槽。后11槽在 Api 源记录全零，且当前 Oracle 无逐槽 disp32 literal 直接访问证据。它们可能是辅助/保留/间接使用槽，但业务含义未证明，禁止写成“无用/保留”事实。"
+}

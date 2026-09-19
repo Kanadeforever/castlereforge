@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "base_solid46_non_markdown_files": 787,
+  "byte_identical_count": 786,
+  "intentional_changed_files": [
+    {
+      "path": "工具/youcheng_battle_status_presentation_inspector.py",
+      "base_sha256": "27a2b6c8bd2dd7fb6adfd1f84e8cc108ba688cb8826bfdb0b4caa2e381e84d16",
+      "solid47_sha256": "e5bf554e426600ebca2e0102cacbc293189086c077a265c9590b0f18c23811ed"
+    }
+  ],
+  "missing_files": [],
+  "intentional_change_reason": "固化47纠正0x46A668语义标签和JSON键名；数值/机器/资源等价性由独立等价审计证明。",
+  "semantic_equivalence_audit": "数据/固化47/固化46状态表现调查器语义纠错等价审计.json"
+}

@@ -1,0 +1,38 @@
+RPG.exe.org PE导入表摘录：
+ 00066d04	00066f34 00000000 00000000 0006730e 00060190
+
+	DLL Name: USER32.dll
+	vma:     Ordinal  Hint  Member-Name  Bound-To
+	00060190  <none>  01de  PostMessageA
+	00060194  <none>  02ac  wsprintfA
+	00060198  <none>  02a5  WaitMessage
+	0006019c  <none>  0228  SetCursorPos
+	000601a0  <none>  0146  GetSystemMetrics
+	000601a4  <none>  00e3  GetAsyncKeyState
+	000601a8  <none>  0112  GetKeyState
+	000601ac  <none>  0282  TranslateMessage
+	000601b0  <none>  01be  MessageBoxA
+	000601b4  <none>  0095  DispatchMessageA
+	000601b8  <none>  01f3  RegisterClassExA
+	000601bc  <none>  012a  GetMessageA
+	000601c0  <none>  01dc  PeekMessageA
+	000601c4  <none>  0291  UpdateWindow
+	000601c8  <none>  019e  LoadIconA
+	000601cc  <none>  0266  ShowCursor
+	000601d0  <none>  008e  DestroyWindow
+	000601d4  <none>  026a  ShowWindow
+	000601d8  <none>  0059  CreateWindowExA
+	000601dc  <none>  01e0  PostQuitMessage
+	000601e0  <none>  0084  DefWindowProcA
+	000601e4  <none>  017a  InvalidateRect
+	000601e8  <none>  00f0  GetClientRect
+	000601ec  <none>  0156  GetWindowLongA
+	000601f0  <none>  003a  ClientToScreen
+	000601f4  <none>  0244  SetRect
+	000601f8  <none>  01c9  MoveWindow
+	000601fc  <none>  011c  GetMenu
+	00060200  <none>  0002  AdjustWindowRectEx
+	00060204  <none>  00fc  GetCursorPos
+
+
+结论：IAT VA 0x004601A8 对应 USER32.dll!GetKeyState。

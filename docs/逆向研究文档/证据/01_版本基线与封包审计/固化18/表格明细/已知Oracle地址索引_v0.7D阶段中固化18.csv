@@ -1,0 +1,17 @@
+﻿地址,结构语义,证据级,固化18备注
+0x45155B,RNG播种入口,A,写全局RNG state
+0x451565,RNG next,A,LCG next；全EXE 56个E8直接caller
+0x46E29C,RNG全局state,A,RNG state
+0x40D41B,伏龍A pre-reseed draw,A,RNG%400+800
+0x40D4D8,EVE战斗启动→0x4322C0,A,伏龍A draw之后
+0x4324EC,Battle容器初始化→0x442040,A,Battle核心初始化
+0x442076,取时间派生seed,A,call 0x451583
+0x44207C,Battle reseed,A,call 0x45155B
+0x442503,默认初始化fallback draw,A,RNG%6+1；条件发生
+0x4244EC,LayoutGR第一候选draw,A,RNG % LayoutGR+0x18
+0x42452F,LayoutGR第二候选draw,A,仅+0x6C>0
+0x443759,胜利銀兩draw,A,仅range>0
+0x443A1D,胜利掉落draw,A,仅threshold>0；RNG%100 <= threshold
+0x443BB4,升级主资源增长draw,A,成功升级
+0x443BF6,升级次资源增长draw,A,成功升级
+0x443D77,五项持久字段增长draw,A,RoleID 1..6且index0..4

@@ -1,0 +1,25 @@
+{
+  "版本": "v0.7D阶段中-固化11",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "状态": "STATIC_CODE12_FALLBACK_CONDITION_REVALIDATED",
+  "重要纠错": {
+    "错误口头结论": "封固化9前曾短暂误判为predicate==0启动Event ID3。",
+    "复核结果": "该误判撤销；固化8的predicate==1结论是正确的。",
+    "证据": [
+      "0x40CC5A: mov ebx,1",
+      "0x40CEEE: cmp eax,ebx",
+      "0x40CEF0: jne 0x40CF06",
+      "相等（EAX==1）才fall-through到0x40CEF2/0x40B340与0x40B230(3)"
+    ]
+  },
+  "流程": {
+    "resume命中": "saved Event>0 && resume_key_a==12 → 恢复saved Event",
+    "resume失败": "0x40CED7...0x40A0D0取得predicate；predicate==1 → 清active Event并激活Event ID3；predicate!=1 → 0x403B90/0x403C60提示/UI分支",
+    "EventID3结构语义": "当前EVE slot2"
+  },
+  "仍未闭合": [
+    "0x40A0D0 predicate的作者业务名",
+    "当前EVE slot2在每张地图/事件中的实际内容"
+  ],
+  "固化10继承说明": "该静态结论在固化10未被推翻；固化10重新定位0x409580/0x40A0D0对象来源为Map SCI runtime/source record。原始固化9机器快照保留于历史目录。"
+}

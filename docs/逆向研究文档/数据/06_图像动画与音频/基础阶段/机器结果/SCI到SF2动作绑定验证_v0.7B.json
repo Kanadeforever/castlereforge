@@ -1,0 +1,400 @@
+{
+  "工具版本": "0.7B.1",
+  "资源根": [
+    "/mnt/data/multimedia_extracted",
+    "/mnt/data/menus_all",
+    "/mnt/data/research_assets"
+  ],
+  "汇总": {
+    "缺样本": 17,
+    "PASS": 5
+  },
+  "结果": [
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 0,
+      "名称": "miran",
+      "SF2引用": "MP2506\\NP011.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 1,
+      "名称": "gu_down",
+      "SF2引用": "MP2506\\ED1-A1.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 2,
+      "名称": "mu_down",
+      "SF2引用": "MP2506\\ED1-A3.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 3,
+      "名称": "sha_ice",
+      "SF2引用": "MP2506\\ED1-A5.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 4,
+      "名称": "sha_jade",
+      "SF2引用": "MP2506\\ED1-A4.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 5,
+      "名称": "fire1",
+      "SF2引用": "MP2506\\ED1-B2.SF2",
+      "候选文件": [
+        "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Ed1-b2.sf2"
+      ],
+      "状态": "PASS",
+      "解析SF2": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Ed1-b2.sf2",
+      "Section0记录数": 34,
+      "动作范围": [
+        {
+          "组": 0,
+          "start": 1,
+          "length": 1,
+          "偏移": "+0xE2/+0xE3",
+          "Section0记录数": 34,
+          "通过": true,
+          "说明": "范围有效"
+        },
+        {
+          "组": 1,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE4/+0xE5",
+          "Section0记录数": 34,
+          "通过": true,
+          "说明": "未使用"
+        },
+        {
+          "组": 2,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE6/+0xE7",
+          "Section0记录数": 34,
+          "通过": true,
+          "说明": "未使用"
+        },
+        {
+          "组": 3,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE8/+0xE9",
+          "Section0记录数": 34,
+          "通过": true,
+          "说明": "未使用"
+        }
+      ]
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 6,
+      "名称": "fire2",
+      "SF2引用": "MP2506\\ED1-B.SF2",
+      "候选文件": [
+        "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Ed1-b.sf2"
+      ],
+      "状态": "PASS",
+      "解析SF2": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Ed1-b.sf2",
+      "Section0记录数": 34,
+      "动作范围": [
+        {
+          "组": 0,
+          "start": 1,
+          "length": 1,
+          "偏移": "+0xE2/+0xE3",
+          "Section0记录数": 34,
+          "通过": true,
+          "说明": "范围有效"
+        },
+        {
+          "组": 1,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE4/+0xE5",
+          "Section0记录数": 34,
+          "通过": true,
+          "说明": "未使用"
+        },
+        {
+          "组": 2,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE6/+0xE7",
+          "Section0记录数": 34,
+          "通过": true,
+          "说明": "未使用"
+        },
+        {
+          "组": 3,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE8/+0xE9",
+          "Section0记录数": 34,
+          "通过": true,
+          "说明": "未使用"
+        }
+      ]
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 7,
+      "名称": "sit",
+      "SF2引用": "MP2506\\ED1-A2A.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 8,
+      "名称": "lh",
+      "SF2引用": "MP2506\\npc001a.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 9,
+      "名称": "lh_raise",
+      "SF2引用": "MP2506\\手無寸鐵-a.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np0.sci",
+      "实体索引": 10,
+      "名称": "kagi2",
+      "SF2引用": "MP2506\\NP040.SF2",
+      "候选文件": [
+        "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np040.sf2"
+      ],
+      "状态": "PASS",
+      "解析SF2": "/mnt/data/multimedia_extracted/multimedia/Map/Mp2506/Np040.sf2",
+      "Section0记录数": 21,
+      "动作范围": [
+        {
+          "组": 0,
+          "start": 1,
+          "length": 1,
+          "偏移": "+0xE2/+0xE3",
+          "Section0记录数": 21,
+          "通过": true,
+          "说明": "范围有效"
+        },
+        {
+          "组": 1,
+          "start": 5,
+          "length": 4,
+          "偏移": "+0xE4/+0xE5",
+          "Section0记录数": 21,
+          "通过": true,
+          "说明": "范围有效"
+        },
+        {
+          "组": 2,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE6/+0xE7",
+          "Section0记录数": 21,
+          "通过": true,
+          "说明": "未使用"
+        },
+        {
+          "组": 3,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE8/+0xE9",
+          "Section0记录数": 21,
+          "通过": true,
+          "说明": "未使用"
+        }
+      ]
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 0,
+      "名称": "中央傳送",
+      "SF2引用": "mp2412a\\nd2412a.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 1,
+      "名称": "end1",
+      "SF2引用": "mp2412a\\Event36-1.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 2,
+      "名称": "end2",
+      "SF2引用": "mp2412a\\Event36-2.SF2",
+      "候选文件": [
+        "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/Event36-2.SF2"
+      ],
+      "状态": "PASS",
+      "解析SF2": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/Event36-2.SF2",
+      "Section0记录数": 276,
+      "动作范围": [
+        {
+          "组": 0,
+          "start": 1,
+          "length": 1,
+          "偏移": "+0xE2/+0xE3",
+          "Section0记录数": 276,
+          "通过": true,
+          "说明": "范围有效"
+        },
+        {
+          "组": 1,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE4/+0xE5",
+          "Section0记录数": 276,
+          "通过": true,
+          "说明": "未使用"
+        },
+        {
+          "组": 2,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE6/+0xE7",
+          "Section0记录数": 276,
+          "通过": true,
+          "说明": "未使用"
+        },
+        {
+          "组": 3,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE8/+0xE9",
+          "Section0记录数": 276,
+          "通过": true,
+          "说明": "未使用"
+        }
+      ]
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 3,
+      "名称": "sunwheel",
+      "SF2引用": "mp2412a\\EVENT31-1.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 4,
+      "名称": "ragou_1",
+      "SF2引用": "mp2412a\\EVENT31-1A.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 5,
+      "名称": "ragou_2",
+      "SF2引用": "mp2412a\\EVENT31-1B.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 6,
+      "名称": "羅喉石輪.SF2",
+      "SF2引用": "mp2412a\\羅喉石輪.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 7,
+      "名称": "light",
+      "SF2引用": "mp2412a\\羅喉底座.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 8,
+      "名称": "kou",
+      "SF2引用": "mp2412a\\皇甫申.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 9,
+      "名称": "damage",
+      "SF2引用": "mp2412a\\電.SF2",
+      "候选文件": [],
+      "状态": "当前资源根缺样本"
+    },
+    {
+      "SCI": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/NP穝瓜001.SCI",
+      "实体索引": 10,
+      "名称": "end3",
+      "SF2引用": "mp2412a\\Event36-3.SF2",
+      "候选文件": [
+        "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/Event36-3.SF2"
+      ],
+      "状态": "PASS",
+      "解析SF2": "/mnt/data/multimedia_extracted/multimedia/Map/mp2412a/Event36-3.SF2",
+      "Section0记录数": 15,
+      "动作范围": [
+        {
+          "组": 0,
+          "start": 1,
+          "length": 1,
+          "偏移": "+0xE2/+0xE3",
+          "Section0记录数": 15,
+          "通过": true,
+          "说明": "范围有效"
+        },
+        {
+          "组": 1,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE4/+0xE5",
+          "Section0记录数": 15,
+          "通过": true,
+          "说明": "未使用"
+        },
+        {
+          "组": 2,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE6/+0xE7",
+          "Section0记录数": 15,
+          "通过": true,
+          "说明": "未使用"
+        },
+        {
+          "组": 3,
+          "start": 0,
+          "length": 0,
+          "偏移": "+0xE8/+0xE9",
+          "Section0记录数": 15,
+          "通过": true,
+          "说明": "未使用"
+        }
+      ]
+    }
+  ]
+}

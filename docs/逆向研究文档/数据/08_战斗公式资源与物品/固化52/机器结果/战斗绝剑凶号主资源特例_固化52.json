@@ -1,0 +1,271 @@
+{
+  "tool": "youcheng_battle_12f_resource_cost_inspector.py",
+  "tool_version": "0.7D-solid52.0",
+  "status": "PASS",
+  "inputs": {
+    "rpg": {
+      "path": "/mnt/data/work52/input/RPG.exe",
+      "size": 462848,
+      "sha256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f"
+    },
+    "firttech_enc": {
+      "path": "/mnt/data/work52/input/multimedia/public/Firttech.enc",
+      "size": 280000,
+      "sha256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+      "decoded_sha256": "5469a9dd388972b53b5661e90d85c84f2d0150d06f46ddbae159409a5ac34b1a"
+    },
+    "api_enc": {
+      "path": "/mnt/data/work52/input/multimedia/public/Api.enc",
+      "size": 216240,
+      "sha256": "ff9de0da24113242f352e0cb7be3cd6e3032403399d547952f8c5ab10e94d907",
+      "decoded_sha256": "b56346ad8909000b84ac24f9ad91b44813d8267053dd7a8d30673197129e825d"
+    }
+  },
+  "special_firttech_record": {
+    "record_index": 303,
+    "id": 303,
+    "id_hex": "0x12F",
+    "name": "絕劍凶號",
+    "mode_0x18": 1,
+    "selector_0x30": 3,
+    "main_parameter_0x34": 20,
+    "second_cost_0x38": 0,
+    "formula_parameter_k_0x40": 60,
+    "description": "「絕劍」之一，以心中殺意引發劍魔「煌熇」凶號共鳴，其威力能一擊而令敵魂體半損。"
+  },
+  "machine_assertions": {
+    "pass_count": 18,
+    "total_count": 18,
+    "all_pass": true,
+    "byte_assertions": [
+      {
+        "名称": "动作落地先无条件读取FIRTTECH+0x38并从次资源current平坦相减",
+        "VA": "0x00421249",
+        "期望": "8b 48 38 8b 97 84 08 00 00 2b d1 89 97 84 08 00 00",
+        "实际": "8b 48 38 8b 97 84 08 00 00 2b d1 89 97 84 08 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "动作落地读取selected FIRTTECH ID并显式比较0x12F",
+        "VA": "0x0042125A",
+        "期望": "8b 08 81 f9 2f 01 00 00",
+        "实际": "8b 08 81 f9 2f 01 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "ID等于0x12F时直接跳过普通+0x34平坦主资源扣除",
+        "VA": "0x00421262",
+        "期望": "74 57",
+        "实际": "74 57",
+        "PASS": true
+      },
+      {
+        "名称": "非0x12F普通路径读取+0x34并从主资源current直接相减",
+        "VA": "0x00421264",
+        "期望": "8b 50 34 8b 87 7c 08 00 00 2b c2 6a 03 8b cf 89 87 7c 08 00 00",
+        "实际": "8b 50 34 8b 87 7c 08 00 00 2b c2 6a 03 8b cf 89 87 7c 08 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "普通动作落地路径以mode3调用特殊分派",
+        "VA": "0x00421279",
+        "期望": "e8 82 07 00 00",
+        "实际": "e8 82 07 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "0x12F跳过平坦扣除后同样以mode3调用特殊分派",
+        "VA": "0x004212BB",
+        "期望": "6a 03 8b cf e8 3c 07 00 00",
+        "实际": "6a 03 8b cf e8 3c 07 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "动作状态值2时把2作为mode参数调用特殊分派",
+        "VA": "0x004212CE",
+        "期望": "83 f8 02 0f 85 ab 03 00 00 50 8b cf 89 2d 84 fd 89 00 e8 1b 07 00 00",
+        "实际": "83 f8 02 0f 85 ab 03 00 00 50 8b cf 89 2d 84 fd 89 00 e8 1b 07 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "特殊分派只有mode2才进入selected FIRTTECH ID表",
+        "VA": "0x00421B98",
+        "期望": "83 f8 02 0f 85 96 04 00 00",
+        "实际": "83 f8 02 0f 85 96 04 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "mode2以selected ID-0x12F作为165项selector表索引",
+        "VA": "0x00421BA1",
+        "期望": "8b 87 48 08 00 00 8b 08 8d b1 d1 fe ff ff 81 fe a4 00 00 00",
+        "实际": "8b 87 48 08 00 00 8b 08 8d b1 d1 fe ff ff 81 fe a4 00 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "0x12F对应selector表第0项为0",
+        "VA": "0x00422074",
+        "期望": "00",
+        "实际": "00",
+        "PASS": true
+      },
+      {
+        "名称": "selector0 jump target精确指向0x421BCA",
+        "VA": "0x00422044",
+        "期望": "ca 1b 42 00",
+        "实际": "ca 1b 42 00",
+        "PASS": true
+      },
+      {
+        "名称": "0x12F特殊分支读取同一FIRTTECH+0x34并乘主资源max",
+        "VA": "0x00421BCA",
+        "期望": "8b 48 34 b8 e1 7a 14 ae 0f af 8f 78 08 00 00 f7 e9",
+        "实际": "8b 48 34 b8 e1 7a 14 ae 0f af 8f 78 08 00 00 f7 e9",
+        "PASS": true
+      },
+      {
+        "名称": "0xAE147AE1配合SAR5形成负的signed除100商",
+        "VA": "0x00421BD9",
+        "期望": "f7 e9 8b 8f 7c 08 00 00 c1 fa 05 8b c2 c1 e8 1f 03 d0",
+        "实际": "f7 e9 8b 8f 7c 08 00 00 c1 fa 05 8b c2 c1 e8 1f 03 d0",
+        "PASS": true
+      },
+      {
+        "名称": "百分比负delta加到主资源current并写回",
+        "VA": "0x00421BDB",
+        "期望": "8b 8f 7c 08 00 00 c1 fa 05 8b c2 c1 e8 1f 03 d0 03 ca 8b c1 89 8f 7c 08 00 00",
+        "实际": "8b 8f 7c 08 00 00 c1 fa 05 8b c2 c1 e8 1f 03 d0 03 ca 8b c1 89 8f 7c 08 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "扣除后current<=0时强制夹到1",
+        "VA": "0x00421BF5",
+        "期望": "3b c3 0f 8f 3a 04 00 00 c7 87 7c 08 00 00 01 00 00 00",
+        "实际": "3b c3 0f 8f 3a 04 00 00 c7 87 7c 08 00 00 01 00 00 00",
+        "PASS": true
+      },
+      {
+        "名称": "AI候选检查先按+0x38与次资源current做平坦可支付比较",
+        "VA": "0x004445D4",
+        "期望": "8b 77 38 8d 14 ca 8b 8c 93 68 0c 00 00 3b ce",
+        "实际": "8b 77 38 8d 14 ca 8b 8c 93 68 0c 00 00 3b ce",
+        "PASS": true
+      },
+      {
+        "名称": "AI候选检查随后仍把+0x34当平坦主资源门槛，无0x12F特判",
+        "VA": "0x004445EC",
+        "期望": "8b 92 60 0c 00 00 8b 4f 34 3b d1 0f 8c 24 02 00 00",
+        "实际": "8b 92 60 0c 00 00 8b 4f 34 3b d1 0f 8c 24 02 00 00",
+        "PASS": true
+      }
+    ],
+    "direct_caller_assertion": {
+      "名称": "0x421A00 direct E8 caller集合严格只有动作状态机三处",
+      "target": "0x00421A00",
+      "expected_callers": [
+        "0x00421279",
+        "0x004212BF",
+        "0x004212E0"
+      ],
+      "actual_callers": [
+        "0x00421279",
+        "0x004212BF",
+        "0x004212E0"
+      ],
+      "PASS": true
+    }
+  },
+  "formula_semantics": {
+    "normal_firttech_main_cost": "current_main -= FIRTTECH+0x34 (flat integer)",
+    "id_0x12f_main_cost": "current_main -= trunc(max_main * FIRTTECH+0x34 / 100); if result<=0 then current_main=1",
+    "id_0x12f_current_parameter": 20,
+    "id_0x12f_canonical_formula": "current_main -= trunc(max_main * 20 / 100); min result = 1",
+    "second_resource_rule": "仍走普通 flat +0x38 扣除；当前0x12F记录+0x38=0",
+    "machine_magic": {
+      "constant_hex": "0xAE147AE1",
+      "signed_value": -1374389535,
+      "positive_div100_reciprocal_hex": "0x51EB851F",
+      "relationship": "0xAE147AE1 == -0x51EB851F (mod 2^32); 配合IMUL/high32/SAR5/sign correction形成 -trunc(x/100)"
+    },
+    "ai_precheck_quirk": "AI candidate gate仍比较 current_main >= raw(FIRTTECH+0x34)，没有0x12F百分比特判"
+  },
+  "formula_examples": [
+    {
+      "current_before": 100,
+      "max_main": 100,
+      "parameter_0x34": 20,
+      "delta": -20,
+      "raw_after": 80,
+      "final_after_min1_clamp": 80
+    },
+    {
+      "current_before": 50,
+      "max_main": 100,
+      "parameter_0x34": 20,
+      "delta": -20,
+      "raw_after": 30,
+      "final_after_min1_clamp": 30
+    },
+    {
+      "current_before": 10,
+      "max_main": 100,
+      "parameter_0x34": 20,
+      "delta": -20,
+      "raw_after": -10,
+      "final_after_min1_clamp": 1
+    },
+    {
+      "current_before": 1,
+      "max_main": 100,
+      "parameter_0x34": 20,
+      "delta": -20,
+      "raw_after": -19,
+      "final_after_min1_clamp": 1
+    },
+    {
+      "current_before": 1000,
+      "max_main": 1000,
+      "parameter_0x34": 20,
+      "delta": -200,
+      "raw_after": 800,
+      "final_after_min1_clamp": 800
+    },
+    {
+      "current_before": 50,
+      "max_main": 1000,
+      "parameter_0x34": 20,
+      "delta": -200,
+      "raw_after": -150,
+      "final_after_min1_clamp": 1
+    }
+  ],
+  "api_canonical_main_resource": {
+    "named_record_count": 151,
+    "main_max_min": 150,
+    "main_max_max": 100000,
+    "product_min": 3000,
+    "product_max": 2000000,
+    "all_products_fit_signed32": true
+  },
+  "checks": {
+    "special_id_unique_is_0x12F": true,
+    "special_name_is_expected": true,
+    "special_main_parameter_is_20": true,
+    "special_second_cost_is_0": true,
+    "special_formula_selector_is_3": true,
+    "machine_assertions_all_pass": true,
+    "api_named_record_count_is_151": true,
+    "api_main_max_min_is_150": true,
+    "api_main_max_max_is_100000": true,
+    "api_all_special_products_fit_signed32": true,
+    "example_100_of_100_becomes_80": true,
+    "example_10_of_100_clamps_to_1": true
+  },
+  "evidence_boundary": [
+    "主资源/次资源是当前兼容引擎结构称呼；作者正式属性名仍UNKNOWN。",
+    "0x12F=绝剑凶号、+0x34=20、+0x38=0、selector3来自当前canonical Firttech.enc唯一真实记录。",
+    "20%解释来自机器整数公式，不来自UI猜测或说明文字。",
+    "最低1点夹取只证明0x12F特殊分支；不能推广成所有主资源扣除都保底1。",
+    "AI预检查与实际执行的差异是当前EXE静态行为；不推断作者是否故意，也不主动修正。",
+    "API max范围只证明当前canonical资产乘积安全，不代表损坏/MOD/其他版本输入永远不会32位溢出。"
+  ]
+}

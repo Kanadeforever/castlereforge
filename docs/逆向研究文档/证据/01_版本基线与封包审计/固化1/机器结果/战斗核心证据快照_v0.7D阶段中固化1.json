@@ -1,0 +1,64 @@
+{
+  "版本": "v0.7D阶段中-固化1",
+  "OracleEXE_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "BattleUnit": {
+    "stride": "0xDE4",
+    "evidence": "0x44424D..0x444259 arithmetic => index * 3556 (0xDE4)",
+    "embedded_role_definition": {
+      "offset": "0x84C",
+      "size": "0x350",
+      "evidence": "0x41F643..0x41F666 rep movsd 0xD4 DWORD from API record"
+    },
+    "current_enemy_ai_index_or_state": {
+      "offset": "0xC30",
+      "evidence": "0x444259"
+    },
+    "candidate_count_or_enable": {
+      "offset": "0xCD8",
+      "evidence": "0x444297/0x444349; exact author name pending"
+    },
+    "candidate_list_base": {
+      "offset": "0xCDC",
+      "evidence": "0x444371 onward; exact element semantics pending"
+    },
+    "ai_gate_fields": [
+      "0xE20",
+      "0xE54"
+    ]
+  },
+  "EnemyAI": {
+    "record_size": 56,
+    "decision_entry": "0x00444240",
+    "rng": "rand()%100 via 0x451565 then idiv 100",
+    "threshold_fields": [
+      "+0x1C",
+      "+0x20"
+    ],
+    "branch_semantics": {
+      "rnd < field_1C": "returns -1 sentinel/change result; final author business meaning pending",
+      "field_1C <= rnd < field_1C+field_20": "calls 0x444330 candidate-selection path",
+      "else": "keeps current AI state; wrapper returns 0 when unchanged"
+    },
+    "cross_table_chain": "Enemy_AI → candidate list / MagicCon condition filtering → FIRTTECH action/technique ID (B-grade current checkpoint; continue from 0x444330)"
+  },
+  "ArticleDamageProcessor": {
+    "entry": "0x0042A7D0",
+    "source_path_string": "\\APManager\\FightMode\\Fight\\DamageProcessor.CPP",
+    "error_string": "ArticleNO Pointer is NULL! file:",
+    "article_record_access_max_observed": "+0x37A",
+    "conclusion": "第四数据对象不可能是 FIRTTECH(0x230 bytes)，与 Ail2 Article record(0x39E bytes)相容；当前按 Article/Item Effect Damage Processor 处理",
+    "parameters_current_model": [
+      "attacker Performer*",
+      "target Performer*",
+      "DamageInfo*",
+      "Ail2 ArticleDefinition*",
+      "mode/flag"
+    ]
+  },
+  "DoNotOverclaim": [
+    "Enemy_AI 三个概率区间尚未全部命名成“攻击/移动/防御”等作者业务动作",
+    "0x42A7D0 不是全局唯一技能伤害函数",
+    "Battle Unit +0xCD8/+0xCDC 的最终业务名仍需恢复",
+    "0x350 RoleDefinition 的完整属性字段尚未完成"
+  ]
+}

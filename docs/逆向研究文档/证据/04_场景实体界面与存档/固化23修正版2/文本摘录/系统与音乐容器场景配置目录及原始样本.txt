@@ -1,0 +1,19 @@
+《幽城幻剑录》固化23修正版2：系统/音乐容器新增直接证据
+
+[Sys.dat]
+目录记录偏移 10；目录名 SYS；entry_count=145；file_table_offset=49；entry_size=39。
+内嵌 SCI：
+  127 CURSOR.SCI size=551 offset=59272169 sha256=40e0264793da8ed8aa8ecdf5cf40383c2120b5b0927c8928893bef5d27a18b06
+  129 DDDES.SCI size=70 offset=59418473 sha256=1c8e3a6e0dfc314bcdc34aeae57388539da95d6443ee0441032452a7d76b2972
+  140 MAINNPC.SCI size=2755 offset=62993020 sha256=f4204e90ac55198b1d19ae277002e418fa76d5e5923e737ae400068875d39438
+  144 SUBNPC.SCI size=5510 offset=65020303 sha256=0ca270733b2f38483080b3886cdb74555c9460491e3c730ee71c7795fa1db862
+
+DDDES.SCI完整70字节：
+01 40 00 00 00 30 00 00 00 80 02 00 00 e0 01 00 00 14 18 18 53 59 53 5c 66 6f 6e 74 32 34 2e 66 6e 74 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+[Music.DAT]
+目录记录偏移 10；目录名 Music；entry_count=59；file_table_offset=49；entry_size=39。
+   57 MP3LIST.SCI size=1683 offset=70716978 sha256=1ef69b9ef478cdc78d200d63c076a8d1865d40b06ccac24eebee1836ad17040a
+   58 WAVLIST.SCI size=2601 offset=70718661 sha256=23b82afdf4cdfd0919e7dfb460db440f48d9a01186fc889c8a3a6ccdafed4dc2
+
+RPG.exe music reader: 0x00403220；51-byte record；+1字符串consumer见0x004032FA/0x004033A1。

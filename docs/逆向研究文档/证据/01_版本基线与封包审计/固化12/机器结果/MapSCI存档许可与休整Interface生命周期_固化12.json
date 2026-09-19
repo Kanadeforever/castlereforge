@@ -1,0 +1,57 @@
+{
+  "版本": "v0.7D阶段中-固化12",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "证据级别": "A/直接静态证据链",
+  "状态": "STATIC_SAVE_PERMISSION_LIFECYCLE_CLOSED",
+  "结论": "MapSCI[first]+0x380是正常Interface调用的存档入口许可门控；EVE opcode0x35在构造Interface前重算DataCenter+0x108=1-value。EVE opcode0x39首次初始化强制DataCenter+0x108=0，其“調態”分支随后直接构造Interface而不经过opcode0x35重算，因此休整界面内嵌Interface强制开放存档入口。",
+  "正常Interface路径": [
+    {
+      "地址": "0x40CBF0",
+      "作用": "EVE opcode 0x35 Execute / Interface异步调度"
+    },
+    {
+      "地址": "0x40CCBB",
+      "作用": "取得Map SCI runtime entry数组首项"
+    },
+    {
+      "地址": "0x40CCC2",
+      "作用": "读取first source MapSCI+0x380"
+    },
+    {
+      "地址": "0x40CCCD..0x40CCD6",
+      "作用": "DataCenter+0x108 = 1 - MapSCI[first]+0x380"
+    },
+    {
+      "地址": "0x40CCF2",
+      "作用": "随后直接构造Interface 0x434920"
+    }
+  ],
+  "休整Interface路径": [
+    {
+      "地址": "0x40D510",
+      "作用": "EVE opcode 0x39 Execute"
+    },
+    {
+      "地址": "0x40D530/0x40D715",
+      "作用": "state0首次初始化固定写DataCenter+0x108=0"
+    },
+    {
+      "地址": "0x40D731",
+      "作用": "构造0x594休整界面对象0x413570"
+    },
+    {
+      "地址": "0x413940..0x413989",
+      "作用": "MEN9002第0项“調態”直接构造Interface 0x434920；未经过opcode0x35的MapSCI重算"
+    }
+  ],
+  "运行时语义": {
+    "MapSCI+0x380": "normal_interface_save_entry_allowed_raw；启用值1",
+    "DataCenter+0x108": "runtime_save_entry_disabled_state；0允许Save入口，非0阻止"
+  },
+  "边界": [
+    "MapSCI+0x380作者原字段名未证明",
+    "当前两个MapSCI样本+0x380均为0，缺少启用正例",
+    "opcode0x39命令+0x04 mode的精确业务含义未证明",
+    "不得把该清零泛化成所有场景/菜单生命周期；已证明范围仅为opcode0x39首次初始化及其内嵌Interface路径"
+  ]
+}

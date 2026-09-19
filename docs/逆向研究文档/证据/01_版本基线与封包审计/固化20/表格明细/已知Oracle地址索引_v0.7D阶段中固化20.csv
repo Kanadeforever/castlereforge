@@ -1,0 +1,23 @@
+﻿地址,结构语义,证据级,固化20备注
+0x444267,AI决策固定首draw,A,每次0x444240调用固定1 draw，RNG%100
+0x4444E1,AI逐候选评分draw,A,FightRole+0x8F4个候选，每个无条件1 draw
+0x444330,AI候选评分函数,A,使用+0x8F4/+0x8F8候选池；有效候选对MagicCon+0x24取模
+0x422DF2,target随机列表A,A,列表非空1 draw%count
+0x422E6C,target随机列表B,A,与A互斥；列表非空1 draw%count
+0x422F1F,action候选随机抽取,A,mode1且无显式ID时1 draw%+0x8F4
+0x4222A2,「戰場脫逃」概率draw,A,FIRTTECH ID0x1EA，RNG%100 vs 0x424560阈值
+0x451565,RNG next,A,56个E8直接caller，尚未全分类
+0x42CCB0,通用半开区间整数RNG helper,A,"相等边界0 draw；不等时1 draw，返回[min,max)"
+0x42CCD9,通用半开区间helper唯一内部RNG draw,A,RNG%(max-min)
+0x42A942,Article/Ail2前置概率门draw,A,仅前置状态不能直接决定时1 draw%100，对Ail2+0xCC阈值
+0x42AAD3/0x42AAEE/0x42AB14/0x42AB33,Ail2+0xC8==0四连draw,A,"模数9,19,9,19"
+0x42AC95/0x42ACB0/0x42ACCC/0x42ACEB,Ail2+0xC8==1四连draw,A,"模数9,19,99,19"
+0x42B32D,五槽effect第一概率draw,A,仅value>0且ID<=27；ID21..27必过但仍draw
+0x42B4DE,五槽effect第二范围draw,A,"仅派生range>=1；[low,high)"
+0x42C728/0x42C757,FIRTTECH +0x18==0双概率门,A,第一门失败仅1 draw；通过后第二门再draw
+0x42C8B7,FIRTTECH后处理条件概率门,A,前置状态能直接决定则0 draw，否则1 draw%100
+0x42BF90,FIRTTECH +0x44==0后处理helper,A,"调用时固定2 draw：%19+1, %9+1作为除数"
+0x42C260,FIRTTECH +0x44==1后处理helper,A,调用时固定2 draw：floor(raw/99)+1、floor(raw/19)+1，非取模
+0x42C460,FIRTTECH +0x44==2/3 helper,A/本体,函数本体无0x451565直接call；不外推未知间接路径
+0x42CD50,记录派生条件RNG helper,A,record+0x90>0且derived_modulus>0时1 draw，否则0 draw
+0x42CD93,记录派生helper内部draw,A,RNG%derived_modulus

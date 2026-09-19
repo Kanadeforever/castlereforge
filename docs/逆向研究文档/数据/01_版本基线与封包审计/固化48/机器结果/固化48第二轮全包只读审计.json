@@ -1,0 +1,149 @@
+{
+  "status": "PASS",
+  "audit_round": "second",
+  "counts": {
+    "files_before_second_audit_json": 890,
+    "markdown": 76,
+    "python_tools": 24,
+    "tool_docs": 24,
+    "json_before_second_audit_json": 426,
+    "csv": 45
+  },
+  "inheritance": {
+    "solid47_non_markdown_total": 802,
+    "byte_identical": 802,
+    "mismatch": []
+  },
+  "documents": {
+    "first_line_pass": 76,
+    "first_line_bad": [],
+    "filename_stem_no_latin_pass": 76,
+    "filename_bad": [],
+    "fence_even_pass": 76,
+    "fence_bad": []
+  },
+  "tools": {
+    "ast_compile_help_pass": 24,
+    "failures": [],
+    "tool_docs": 24,
+    "missing_tool_refs": []
+  },
+  "data": {
+    "json_pass": 426,
+    "json_bad": [],
+    "csv_pass": 45,
+    "csv_bad": []
+  },
+  "cache": [],
+  "solid48_formal_output_exact_match": {
+    "json": true,
+    "csv": true
+  },
+  "core_regression_nodes": [
+    {
+      "solidification": 48,
+      "pass": true,
+      "detail": {
+        "machine": "33/33",
+        "text": "12/12",
+        "cure": "3/3"
+      }
+    },
+    {
+      "solidification": 47,
+      "pass": true,
+      "detail": {
+        "machine": "31/31",
+        "pairs": 7,
+        "text": 16
+      }
+    },
+    {
+      "solidification": 46,
+      "pass": true,
+      "detail": {
+        "routes": 21,
+        "constructor_clamp": 11,
+        "itf": [
+          23,
+          23,
+          23,
+          0
+        ]
+      }
+    },
+    {
+      "solidification": 45,
+      "pass": true,
+      "detail": {
+        "machine": "23/23",
+        "callers": "6/6"
+      }
+    },
+    {
+      "solidification": 44,
+      "pass": true,
+      "detail": {
+        "machine": "20/20",
+        "zero39": "9945/9945"
+      }
+    },
+    {
+      "solidification": 43,
+      "pass": true,
+      "detail": {
+        "machine": "15/15"
+      }
+    },
+    {
+      "solidification": 42,
+      "pass": true,
+      "detail": {
+        "machine": "11/11",
+        "records": 19,
+        "slots": 29
+      }
+    },
+    {
+      "solidification": 41,
+      "pass": true,
+      "detail": {
+        "machine": "13/13"
+      }
+    },
+    {
+      "solidification": 40,
+      "pass": true,
+      "detail": {
+        "machine": "10/10"
+      }
+    },
+    {
+      "solidification": 39,
+      "pass": true,
+      "detail": {
+        "layers": 11184,
+        "machine": "10/10"
+      }
+    },
+    {
+      "solidification": 38,
+      "pass": true,
+      "detail": {
+        "machine": "29/29"
+      }
+    },
+    {
+      "solidification": 37,
+      "pass": true,
+      "detail": {
+        "machine": "29/29",
+        "occurrences": 672,
+        "unique": 506,
+        "standard": 505,
+        "audio_refs": "147/147"
+      }
+    }
+  ],
+  "core_regression_pass": true
+}

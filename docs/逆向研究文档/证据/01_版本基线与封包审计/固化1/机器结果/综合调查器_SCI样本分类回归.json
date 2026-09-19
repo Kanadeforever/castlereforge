@@ -1,0 +1,11 @@
+{
+  "文件": "/mnt/data/ucheng_freeze_test/assets/样本.SCI",
+  "大小": 1139,
+  "候选分类": [
+    {
+      "类型": "Map SCI",
+      "记录数": 1,
+      "stride": 1139
+    }
+  ]
+}

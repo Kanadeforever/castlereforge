@@ -1,0 +1,79 @@
+{
+  "审计名称": "固化57双轮独立原始输入重放审计",
+  "日期": "2026-08-20",
+  "节点": 57,
+  "目的": "只重放固化57已冻结的class1/2/4共享招式名显示与战斗地板表现结论；不展开固化58或新的逆向地址。",
+  "原始输入来源": {
+    "完全未修改原版压缩包": "/mnt/data/RPG.exe.org.zip",
+    "资源总包压缩包": "/mnt/data/multimedia.zip",
+    "历史研究版RPG.exe": "/mnt/data/RPG.exe"
+  },
+  "独立重放轮次": [
+    {
+      "轮次": 1,
+      "工作目录": "/mnt/data/solid57_replay_round1",
+      "原版RPG_SHA256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+      "Firttech_SHA256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+      "MenusDir_SHA256": "8e1974dc818b47ce84eb5659ae58053914a26cf57f07507385d812ecc406c525",
+      "MEN0018_SHA256": "2a6f885dea4c5c579bd5360e4864fb6769e13c8c4a9fd8bf2b0f192ffec2c4b6",
+      "MEN0018大小": 21049,
+      "class124_JSON_SHA256": "80f0398d66f110a049f3b53ad65ee3133d218f89df17d9ee1b13770659601bde",
+      "class124_CSV_SHA256": "f95a09a148cc91703ddb20b03b9f0779bfde910b020395bb5c4ea47a1a29d78d",
+      "MEN0018_SF2解析JSON_SHA256": "27bbcc5a148bb954885f146f76b0d73933b0a73e807c3cc62ccc6033fe3f804e",
+      "MenusDir提取JSON_SHA256": "1197cff67bb32b199f63c72c6233335171232e6e946584f53662778af2968c8e",
+      "class124总体PASS": true
+    },
+    {
+      "轮次": 2,
+      "工作目录": "/mnt/data/solid57_replay_round2",
+      "原版RPG_SHA256": "8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f",
+      "Firttech_SHA256": "32b98193c037c8cd75a11534520e189c89c856c367bc1d6ac607e43d9cf52a5d",
+      "MenusDir_SHA256": "8e1974dc818b47ce84eb5659ae58053914a26cf57f07507385d812ecc406c525",
+      "MEN0018_SHA256": "2a6f885dea4c5c579bd5360e4864fb6769e13c8c4a9fd8bf2b0f192ffec2c4b6",
+      "MEN0018大小": 21049,
+      "class124_JSON_SHA256": "24d8c9e7eadb15e2fc135348e1386da682b85011b3e52a0b7fcae753cb68950f",
+      "class124_CSV_SHA256": "f95a09a148cc91703ddb20b03b9f0779bfde910b020395bb5c4ea47a1a29d78d",
+      "MEN0018_SF2解析JSON_SHA256": "d493cee5ccd08a641856b15fcd2d2a2e35d860b744d21be4c59db07c00dd1c3d",
+      "MenusDir提取JSON_SHA256": "06ac99d5e9d194bcb580a4fc510bac6e63ef0e9397148ce241319598de9ab2ac",
+      "class124总体PASS": true
+    }
+  ],
+  "轮间一致性": {
+    "class124_JSON_归一化临时路径后完全一致": true,
+    "class124_CSV_逐字节一致": true,
+    "MEN0018_SF2解析JSON_归一化临时路径后完全一致": true,
+    "MenusDir提取JSON_归一化临时路径后完全一致": true
+  },
+  "与正式包首轮结果一致性": {
+    "机器与资源及静态闭合核心字段完全一致": true,
+    "正式首轮总体PASS": true,
+    "重放轮1总体PASS": true,
+    "重放轮2总体PASS": true
+  },
+  "核心事实复读": {
+    "FIRTTECH_class分布": {
+      "0": 330,
+      "1": 94,
+      "2": 67,
+      "4": 7,
+      "5": 1,
+      "6": 1
+    },
+    "共享表现class": [
+      1,
+      2,
+      4
+    ],
+    "共享表现记录数": 168,
+    "canonical_class3缺席": true,
+    "MEN0018大小": 21049,
+    "MEN0018_SHA256": "2a6f885dea4c5c579bd5360e4864fb6769e13c8c4a9fd8bf2b0f192ffec2c4b6",
+    "class124工具总体PASS": true
+  },
+  "历史继承边界": {
+    "说明": "固化37～56的既有机器/资源记录本轮没有谎称重新研究或重新重放；它们通过固化56最终ZIP基线的923/923个继承非Markdown文件SHA-256不变来继承。固化57本轮只独立重放本节点。",
+    "固化56最终ZIP_SHA256": "4a9f8d620326f5a7e11fdbb67e79c1beff535079b6974544045aac10eaa09200",
+    "继承非Markdown文件数": 923
+  },
+  "总体PASS": true
+}

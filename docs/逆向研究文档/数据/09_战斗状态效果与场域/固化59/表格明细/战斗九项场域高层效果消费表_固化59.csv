@@ -1,0 +1,12 @@
+﻿slot,record_id,名称,consumer,机器效果,证据地址,边界
+2,0x1C2,反咒禁制,Battle菜单class2条目状态表现,任一九槽实例slot2有效 -> 对象+0x78C=0；遍历FIRTTECH class2条目时据此改写条目+0x38属性。,0x41A6D0..0x41A781; 0x41A3A8..0x41A3CC,已证明是class2条目状态表现门；+0x38的作者UI属性名仍UNKNOWN，不把它擅自命名成‘灰色/禁用颜色’。
+2,0x1C2,反咒禁制,Enemy AI候选过滤,任一九槽实例slot2有效 -> 传给0x444330的布尔=0；候选FIRTTECH machine class2被拒绝。,0x4442C2..0x4442E7; 0x4443AD..0x4443D2,只冻结machine class2过滤；class2作者源码枚举名仍UNKNOWN。
+2,0x1C2,反咒禁制,DamageInfo结果保护门,选定manager的slot2有效且当前FIRTTECH machine class2 -> local+0x20/local+0x14以及DamageInfo+0x04/+0x08清0。,0x42CA07..0x42CA32 via 0x42BF40,字段作者名仍UNKNOWN；可冻结为class2结果归零，不扩大为所有class2副作用都被取消。
+3,0x1C9,閾迦封界,Battle result phase2拦截,目标所属manager的slot3有效 -> 把结果结构两个DWORD累加进0x89FD84，然后把这两个DWORD清0。,0x4212CE..0x421374 via 0x423070,这两DWORD对应result结构的两个数值通道；作者字段正式名仍UNKNOWN。
+3,0x1C9,閾迦封界,被拦截结果转为owner次资源代价,若0x89FD84>0且能找到对向manager的slot3 owner -> owner FightRole+0x884 减 floor(0x89FD84/15)；若降到<=0则夹0并清该owner在两个manager的全部九槽效果。,0x4211C5..0x421236 via 0x4230B0/0x43DC40,FightRole+0x884已冻结为次资源current；次资源作者正式属性名仍UNKNOWN。
+3,0x1C9,閾迦封界,公式局部布尔门,slot3有效可直接把两个不同公式路径里的局部判定门设为1/true，绕过各自后续随机/状态判定。,0x42A902..0x42A957; 0x42C884..0x42C8CB,只冻结局部布尔结果；未给这两个局部变量猜作者业务名。
+4,0x1CA,鬼唳天幕,多条公式结果抑制,slot4有效会在多条公式路径把局部计算量或两个结果DWORD清0；部分路径还要求局部mode/subtype==4。,0x42A9F1..0x42AA11; 0x42AE46..0x42AE63; 0x42AF27..0x42AF44; 0x42C0C4..0x42C0E6; 0x42C48B..0x42C4B4,作者说明支持‘神光/治愈失效’业务族，但内部mode/subtype正式字段名仍UNKNOWN。
+6,0x1CE,六甲神儀,DamageInfo结果保护门,选定manager的slot6有效且当前FIRTTECH machine class0或class1 -> local+0x14以及DamageInfo+0x04/+0x08清0。,0x42CA32..0x42CA61 via 0x42BF40,只冻结machine class0/1结果归零；class1作者源码枚举名仍UNKNOWN。
+7,0x1CF,時輪返陣,角色行动计时百分比,默认100；角色所属manager的slot7有效时直接改为200，并写入计时结构mode1/mode2的+0x2C/+0x30百分比。,0x4204C6..0x42050A; 0x4205FE..0x420614; 0x424090; 0x423EEC/0x423F1A,机器只证明这两个计时通道按200%推进；不要仅凭作者‘三倍’文字把底层参数改写成300。
+8,0x1D1,鬼縛之陣,角色行动计时百分比,角色所属manager的slot8有效时把当前百分比整数除2；故仅slot8=50，仅slot7=200，两者同时=100。,0x420505..0x420553; 0x4205FE..0x420614; 0x424090; 0x423EEC/0x423F1A,冻结的是计时结构两个百分比通道的机器参数，不把它直接等同为墙钟速度。
+-1,ALL,九槽共有owner门,Battle角色状态转换,当角色状态满足该分支前置条件时，若任一manager的0x43DC10(owner)返回非-1，则跳过0x7D6 -> 0x7D1转换；只有两个manager都无该owner active slot才转换。,0x442D01..0x442D5D,0x7D6/0x7D1作者状态枚举名未闭合，因此只冻结数值状态转换门。

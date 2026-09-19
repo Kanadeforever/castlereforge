@@ -1,0 +1,32 @@
+﻿地址,固化6语义,证据等级
+0x439D70,DataCenter/Public ENC 初始化总入口,A
+0x439E52,打开 Public\API.ENC,A
+0x439E9A,DataCenter+0xA0 API record count,A
+0x439EAA,DataCenter+0xA4 API table pointer,A
+0x439F2B,DataCenter+0xAC Ail2 table pointer,A
+0x437E40,实际物品使用调用链，调用0x43AEC0,A
+0x43AEC0,非战斗物品应用/特殊动作准备,A
+0x43AF05,读取 Ail2+0x28 special action code,A
+0x43AFE3,读取 DataCenter+0xA4 API table,A
+0x43B000,effect ID43..60 writer dispatch,A
+0x43B019,ID43: +0x9C=1; fallthrough +0x3C += D0,A
+0x43B028,ID55: +0x40 += D0,A
+0x43B02D,ID56: +0x48 += D0,A
+0x43B032,ID57: +0x4C += D0,A
+0x43B037,ID58: +0x44 += D0,A
+0x43B03C,ID59: +0x2C += D0,A
+0x43B041,ID60: +0x34 += D0,A
+0x441FD0,Battle RoleDefinition→API主表同步,A
+0x441FEA,rep movsd 0xD4 DWORD = 0x350 bytes,A
+0x40CE23,world special item action dispatcher,A
+0x40CE97,action code12 handler（场景/流程迁移，精确目标待证）,B
+0x40CF5B,"action code13 handler：duration1500, mode=1",A
+0x40CF28,"action code14 handler：duration1500, mode=0",A
+0x4034C0,duration elapsed updater,A
+0x403510,encounter threshold generator/scale,A
+0x4036DE,encounter trigger threshold consumer,A
+0x0040F3E0,EVE opcode 0x96：保存 deferred event continuation 三元组,A/直接,event id→0x89F7F8；cmd+4→0x89F7FC；cmd+8→0x89F800；随后清当前事件并yield
+0x0040CE97,world-action code12：优先恢复 param1=12 的 deferred event,A/直接,gate: 0x89F7F8>0 && 0x89F7FC==12；match时0x40B340→0x40B230(saved event)
+0x0089F7F8,deferred saved Event ID,A/直接,writer 0x40F3E0；consumer 0x40CE97
+0x0089F7FC,deferred continuation param1,A/直接,writer command+4；code12比较==12
+0x0089F800,deferred continuation param2,A/直接,writer command+8；业务语义未闭合

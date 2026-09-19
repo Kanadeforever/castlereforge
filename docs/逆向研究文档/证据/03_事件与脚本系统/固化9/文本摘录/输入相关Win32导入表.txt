@@ -1,0 +1,4 @@
+	0006019c  <none>  0228  SetCursorPos
+	000601a4  <none>  00e3  GetAsyncKeyState
+	000601a8  <none>  0112  GetKeyState
+	00060204  <none>  00fc  GetCursorPos

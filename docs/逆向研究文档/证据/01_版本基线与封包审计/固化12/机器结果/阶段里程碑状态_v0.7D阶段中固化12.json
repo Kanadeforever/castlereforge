@@ -1,0 +1,36 @@
+{
+  "版本": "v0.7D阶段中-固化12",
+  "日期": "2026-08-14",
+  "状态": "ACTIVE_CHECKPOINT_NOT_FINAL",
+  "Oracle_RPG_SHA256": "b10c65f56051e5a625b6c34857bcb73bd002efe3c158b6bd0cc2bb17fa871dcf",
+  "直接前代": "v0.7D阶段中-固化11",
+  "本轮闭合": [
+    "0x40D510精确识别为EVE opcode0x39 Execute；+0x108清零发生在其state0首次初始化",
+    "opcode0x35正常Interface构造前按MapSCI[first]+0x380重算DataCenter+0x108=1-value",
+    "opcode0x39强制+0x108=0后，“調態”分支直接构造Interface，绕过opcode0x35重算，形成存档许可生命周期闭环",
+    "MEN9002原资源实图确认三项“調態/煉化/歇息”；三项实际分派分别闭合为Interface/炼化/全队双资源回满",
+    "MEN0009实图确认为Interface标签内容而非存档禁止提示"
+  ],
+  "本轮纠错": [
+    "固化11“0x40D510清零生命周期未知”已关闭为opcode0x39首次初始化",
+    "固化11把MapSCI+0x380写入泛称为“场景建立路径”不够准确；修正为opcode0x35正常Interface初始化时重算",
+    "固化11“MEN0009具体视觉意义未知”升级为可见标签内容已确认；但其精确覆盖/合成职责仍未知"
+  ],
+  "当前样本边界": {
+    "MapSCI样本": 2,
+    "+0x380==1正例": 0,
+    "+0x384==1正例": 0
+  },
+  "下一恢复入口": [
+    "追opcode0x39 record+0x04 mode → DataCenter+0xD0 → 0x413570子对象的精确作用",
+    "继续拆MEN0009在Interface中的精确合成/控件绑定，避免仅凭实图猜功能",
+    "若取得更多MapSCI，优先找+0x380==1/+0x384==1正例",
+    "侧线闭合后返回Battle D7/D8及RNG draw order"
+  ],
+  "禁止猜测": [
+    "opcode0x39 +0x04 mode作者语义",
+    "MEN0009精确覆盖层行为",
+    "MapSCI+0x380作者原字段名",
+    "当前EVE slot2统一业务意义"
+  ]
+}

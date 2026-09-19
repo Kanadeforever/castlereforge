@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "original_vs_research_key_ranges": [
+    {
+      "start_va": "0x0042227B",
+      "end_va_exclusive": "0x004222C7",
+      "meaning": "戰場脫逃专用判定链",
+      "size": 76,
+      "original_sha256": "de58dec4cfc6bdc06227a33db92681962ec452a43e9759e79828a165773c9b4f",
+      "research_sha256": "de58dec4cfc6bdc06227a33db92681962ec452a43e9759e79828a165773c9b4f",
+      "byte_identical": true
+    },
+    {
+      "start_va": "0x00424560",
+      "end_va_exclusive": "0x00424589",
+      "meaning": "LayoutGR +0x9C getter",
+      "size": 41,
+      "original_sha256": "5225ba4c349fc1178f184eb953362eeb834d4ccbe26cfb1be1f9c7584340d469",
+      "research_sha256": "5225ba4c349fc1178f184eb953362eeb834d4ccbe26cfb1be1f9c7584340d469",
+      "byte_identical": true
+    },
+    {
+      "start_va": "0x0045155B",
+      "end_va_exclusive": "0x00451583",
+      "meaning": "RNG播种入口与rand15本体前段",
+      "size": 40,
+      "original_sha256": "776a9c1f19f137718b1c959154b44dd2e70b33ddcdbe1db8e00ac7ac3627ff35",
+      "research_sha256": "776a9c1f19f137718b1c959154b44dd2e70b33ddcdbe1db8e00ac7ac3627ff35",
+      "byte_identical": true
+    }
+  ],
+  "escape_threshold_getter_direct_callers": {
+    "target": "0x00424560",
+    "direct_callers": [
+      "0x0042229B"
+    ],
+    "expected": [
+      "0x0042229B"
+    ],
+    "pass": true
+  },
+  "machine_checks": [
+    {
+      "va": "0x00422281",
+      "meaning": "当前FIRTTECH raw ID必须等于0x1EA才进入戰場脫逃专用判定",
+      "expected_hex": "81 39 ea 01 00 00",
+      "actual_hex": "81 39 ea 01 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x00422289",
+      "meaning": "从0x8E1C48全局对象读取+0xD8当前LayoutGR索引并以+0xE8对象作为this",
+      "expected_hex": "a1 48 1c 8e 00 8b 88 d8 00 00 00 51 8b 88 e8 00 00 00",
+      "actual_hex": "a1 48 1c 8e 00 8b 88 d8 00 00 00 51 8b 88 e8 00 00 00",
+      "pass": true
+    },
+    {
+      "call_va": "0x0042229B",
+      "meaning": "调用0x424560取得当前LayoutGR+0x9C阈值",
+      "expected_target": "0x00424560",
+      "actual_target": "0x00424560",
+      "pass": true
+    },
+    {
+      "call_va": "0x004222A2",
+      "meaning": "戰場脫逃成功判定固定消费一次legacy rand15",
+      "expected_target": "0x00451565",
+      "actual_target": "0x00451565",
+      "pass": true
+    },
+    {
+      "va": "0x004222A7",
+      "meaning": "RNG结果做有符号idiv 100取EDX余数，并以 remainder>=threshold 跳到失败路径",
+      "expected_hex": "99 b9 64 00 00 00 f7 f9 3b d7 7d 14",
+      "actual_hex": "99 b9 64 00 00 00 f7 f9 3b d7 7d 14",
+      "pass": true
+    },
+    {
+      "va": "0x004222B3",
+      "meaning": "只有 remainder<threshold 才进入成功侧，写入两项Battle运行时标志",
+      "expected_hex": "8b 15 74 fd 89 00 c6 82 fc 05 00 00 01 c6 05 dc 96 46 00 00",
+      "actual_hex": "8b 15 74 fd 89 00 c6 82 fc 05 00 00 01 c6 05 dc 96 46 00 00",
+      "pass": true
+    },
+    {
+      "va": "0x00424560",
+      "meaning": "0x424560用508-byte记录步长直接读取LayoutGR record+0x9C；默认EAX先置100",
+      "expected_hex": "8b 54 24 04 b8 64 00 00 00 85 d2 7f 08 56 8b 31 3b d6 5e 7d 11 8b 49 04 8b c2 c1 e0 07 2b c2 8b 84 81 9c 00 00 00 c2 04 00",
+      "actual_hex": "8b 54 24 04 b8 64 00 00 00 85 d2 7f 08 56 8b 31 3b d6 5e 7d 11 8b 49 04 8b c2 c1 e0 07 2b c2 8b 84 81 9c 00 00 00 c2 04 00",
+      "pass": true
+    },
+    {
+      "va": "0x00451565",
+      "meaning": "legacy rand15严格为state=state*0x343FD+0x269EC3，返回高15位",
+      "expected_hex": "a1 9c e2 46 00 69 c0 fd 43 03 00 05 c3 9e 26 00 a3 9c e2 46 00 c1 f8 10 25 ff 7f 00 00 c3",
+      "actual_hex": "a1 9c e2 46 00 69 c0 fd 43 03 00 05 c3 9e 26 00 a3 9c e2 46 00 c1 f8 10 25 ff 7f 00 00 c3",
+      "pass": true
+    }
+  ]
+}
