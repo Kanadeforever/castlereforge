@@ -38,6 +38,16 @@
 #define CASTLE_HOOK_REL32_CALL     1u
 #define CASTLE_HOOK_IAT_POINTER    2u
 #define CASTLE_HOOK_VTABLE_POINTER 3u
+/*
+ * 可选能力：保护调用指令而非IAT槽。兼容层重建IAT时，插件调用链继续存在。
+ * 两种指令都长6字节，仍由AddRelativeCallHook提交；expected_original_target填写IAT槽地址。
+ * IAT_CALL接受FF 15 [slot]；IAT_LOAD接受8B /r [slot]的绝对地址装载（不接受ESP）。
+ * next_slot最后一层是Runtime生成的JMP [slot]，每次调用跟随兼容层当前目标。
+ * 所有结构大小与旧字段偏移不变；使用前要求此能力，旧Runtime会明确拒绝。
+ */
+#define CASTLE_HOOK_IAT_CALL 4u
+#define CASTLE_HOOK_IAT_LOAD 5u
+#define CASTLE_HOOK_CAP_IMPORT_SITE (1ul << 0)
 
 /* 链阶段。FOUNDATION/FINAL 只给经过项目级评审的基础设施使用。 */
 #define CASTLE_HOOK_PHASE_FOUNDATION 0u

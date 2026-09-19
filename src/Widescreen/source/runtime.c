@@ -28,9 +28,9 @@ static CastleModule g_sdk_game_module;
 static CastleTransactionHandle g_sdk_transaction;
 
 /*
- * Widescreen 现在有两条函数指针链：BinkCopyToBuffer 与 RPG.exe GetCursorPos。
- * 每条声明提交后都必须从 Runtime 取得自己稳定的 next 槽，不能再用一个全局变量让后声明
- * 覆盖前声明的回调地址。
+ * Bink仍使用IAT指针链；四种鼠标API使用游戏内固定CALL/装载点链。
+ * 每个站点保存稳定next槽，链尾动态读取兼容层当前IAT。相同API所有站点具有相同节点顺序，
+ * 因此回调可按API选择该组第一个next；对话的两种Controller回调位于宽屏节点之前。
  */
 typedef struct RuntimePointerBinding {
     CastleClaimHandle claim;
@@ -39,7 +39,7 @@ typedef struct RuntimePointerBinding {
     void* volatile* next_slot;
 } RuntimePointerBinding;
 
-static RuntimePointerBinding g_sdk_pointer_bindings[4];
+static RuntimePointerBinding g_sdk_pointer_bindings[24];
 static u32 g_sdk_pointer_binding_count;
 static int g_sdk_transaction_building;
 static const CastleLogApiV1* g_runtime_log_api;
@@ -501,16 +501,64 @@ int Runtime_PatchPointer(u32 slot_address, const void* replacement, void** old_v
             "org.castlereforge.signature.get-cursor-pos.v1";
         static const char key_signature[] = "org.castlereforge.signature.get-key-state.v1";
         static const char async_signature[] = "org.castlereforge.signature.get-async-key-state.v1";
+        static const char set_signature[] = "org.castlereforge.signature.set-cursor-pos.v1";
+        static const u32 cursor_sites[] = {0x004044F9u,0x00404608u,0x00408835u,0x00430D9Bu,0x0043DF5Bu};
+        static const u32 key_sites[] = {0x004018F9u,0x0040458Eu,0x00404672u,0x00408953u,
+            0x00408A72u,0x0041B029u,0x0041D936u,0x00430DE2u,0x00435186u,0x0043E005u};
+        static const u32 async_sites[] = {0x004041D7u,0x0040447Eu};
+        static const u32 set_sites[] = {0x0043DF3Au};
         CastleChainHookClaimV1 claim = {0};
         CastleClaimHandle claim_handle = 0u;
         void* original;
         if (!g_sdk_transaction_building || !g_sdk_hook_api || !replacement ||
-            !old_value || g_sdk_pointer_binding_count >= 4u) return 0;
-        original = *(void**)slot_address;
-        if (slot_address == IAT_GETKEYSTATE) {
-            /* Controller可能已先登记同签名链；原始目标必须是USER32函数，不能把Controller链头当根。 */
-            original = (void*)g_GetProcAddress(g_GetModuleHandleA("USER32.dll"), "GetKeyState");
+            !old_value || g_sdk_pointer_binding_count >= 24u) return 0;
+        if (slot_address != IAT_BINK_COPYTOBUFFER) {
+            const u32* sites;
+            const char* signature;
+            u32 count, index;
+            if (!(g_sdk_hook_api->capability_flags & CASTLE_HOOK_CAP_IMPORT_SITE)) {
+                Runtime_Log("[致命] Runtime缺少导入调用点链能力，请同步更新Castle_Runtime.dll。");
+                return 0;
+            }
+            if (slot_address == IAT_GETCURSORPOS) {
+                sites=cursor_sites; count=5u; signature=cursor_signature;
+            } else if (slot_address == IAT_GETKEYSTATE) {
+                sites=key_sites; count=10u; signature=key_signature;
+            } else if (slot_address == IAT_GETASYNCKEYSTATE) {
+                sites=async_sites; count=2u; signature=async_signature;
+            } else if (slot_address == IAT_SETCURSORPOS) {
+                sites=set_sites; count=1u; signature=set_signature;
+            } else return 0;
+            if (g_sdk_pointer_binding_count + count > 24u) return 0;
+            for (index=0u; index<count; ++index) {
+                /*
+                 * 保护RPG自己的读取指令。最终next跳板每次读取当前IAT，所以兼容层重建后
+                 * 仍走当前cnc-ddraw坐标换算，同时不会覆盖Controller的可靠点击和定位观察。
+                 */
+                Runtime_MemZero(&claim,sizeof(claim));
+                claim.magic=CASTLE_CHAIN_HOOK_MAGIC;
+                claim.struct_size=CASTLE_SIZEOF_CHAIN_HOOK_V1;
+                claim.version=CASTLE_HOOK_STRUCTURE_VERSION_1;
+                claim.hook_kind=(slot_address==IAT_GETASYNCKEYSTATE ||
+                    (slot_address==IAT_GETKEYSTATE && index>=3u)) ? CASTLE_HOOK_IAT_LOAD : CASTLE_HOOK_IAT_CALL;
+                claim.target.module=g_sdk_game_module;
+                claim.target.rva=sites[index]-(u32)g_sdk_game_module;
+                claim.target.size=6u;
+                claim.expected_original_target=slot_address;
+                claim.replacement_hook=(CastleAddress)(SIZE_T)replacement;
+                claim.signature_id=sdk_view_(signature,(CastleU32)text_len(signature));
+                claim.phase=CASTLE_HOOK_PHASE_NORMAL;
+                claim.priority=CASTLE_HOOK_PRIORITY_DEFAULT;
+                claim.label=label ? sdk_view_(label,(CastleU32)text_len(label)) : claim.signature_id;
+                if (g_sdk_hook_api->AddRelativeCallHook(g_sdk_transaction,&claim,&claim_handle)<0) return 0;
+                g_sdk_pointer_bindings[g_sdk_pointer_binding_count].claim=claim_handle;
+                g_sdk_pointer_bindings[g_sdk_pointer_binding_count].output=old_value;
+                g_sdk_pointer_bindings[g_sdk_pointer_binding_count].address=slot_address;
+                ++g_sdk_pointer_binding_count;
+            }
+            return 1;
         }
+        original = *(void**)slot_address;
         if (!original) return 0;
         claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
         claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
@@ -639,7 +687,7 @@ int Runtime_Initialize(HMODULE self_module) {
     g_GetTickCount = (PFN_GetTickCount)g_GetProcAddress(kernel32, "GetTickCount");
     if (!g_GetTickCount) return 0;
 
-    Runtime_Log("[启动] Castle_Widescreen v0.12.2 RuntimeSDK：电影式侧区 + MouseManager合成焦点坐标桥。");
+    Runtime_Log("[启动] Castle_Widescreen v0.12.3 RuntimeSDK：电影式侧区 + 鼠标固定调用链，兼容层重建IAT后仍有效。");
     Runtime_Log("[启动] by Luminous with ChatGPT。");
     Runtime_Log("[规格] 所有对话框/提示/选择消息统一保持中央640；左右面板按 BlurredSides 选择强模糊或纯黑，触发与动画规则完全一致。");
     Runtime_Log("[规格] Battle继续使用同一侧区样式；普通探索无消息时由 TOML 选择 854×480 或 1120×480。");

@@ -58,7 +58,11 @@ int Runtime_RestoreCall(u32 a,u32 b,u32 c) { (void)a;(void)b;(void)c;return 0; }
 int Runtime_DeclarePatch(u32 a,const u8* b,const u8* c,u32 d) { (void)a;(void)b;(void)c;(void)d;return 0; }
 static BOOL WINAPI fake_cursor(Point32* p) { *p=test_output; return TRUE; }
 static BOOL WINAPI fake_set_cursor(i32 x,i32 y) { test_set_x=x;test_set_y=y;return TRUE; }
-void* Runtime_GetPointerNext(u32 slot) { return slot == IAT_GETCURSORPOS ? (void*)fake_cursor : NULL; }
+void* Runtime_GetPointerNext(u32 slot) {
+    if (slot == IAT_GETCURSORPOS) return (void*)fake_cursor;
+    if (slot == IAT_SETCURSORPOS) return (void*)fake_set_cursor;
+    return NULL;
+}
 static CastleResult CASTLE_RUNTIME_CALL fake_state(CastleGameStateSnapshotV1* state) {
     state->flags=test_flags;state->map_input_gate=1;state->map_key_mode=1;return CASTLE_OK;
 }

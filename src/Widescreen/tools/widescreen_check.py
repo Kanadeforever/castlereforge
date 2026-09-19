@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Castle_Widescreen v0.12.2 RuntimeSDK 宽屏与鼠标静态协议检查器
+Castle_Widescreen v0.12.3 RuntimeSDK 宽屏与鼠标静态协议检查器
 ==========================================
 
 这个脚本用于“发布前机械复核”，它不能代替用户实机验收，但能自动阻止几类最危险的回归：
@@ -121,7 +121,7 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="strict")
     if hasattr(sys.stderr, "reconfigure"):
         sys.stderr.reconfigure(encoding="utf-8", errors="strict")
-    parser = argparse.ArgumentParser(description="检查 Castle_Widescreen v0.12.2 16:9 / 21:9、侧区样式和合成指针协议")
+    parser = argparse.ArgumentParser(description="检查 Castle_Widescreen v0.12.3 16:9 / 21:9、侧区样式和鼠标固定调用链")
     parser.add_argument("--root", type=Path, required=True, help="交付包根目录")
     parser.add_argument("--exe", type=Path, required=True, help="目标 RPG.exe")
     args = parser.parse_args()
@@ -294,11 +294,11 @@ def main() -> int:
            ("MouseManager合成焦点 + 全输出移动；真实世界侧区可命中；装饰侧区拒绝" if synthetic_cursor_source_ok else "最终绘制仍绕过MouseManager合成焦点"))
 
     result(
-        "g_sdk_pointer_bindings[4]" in runtime
+        "g_sdk_pointer_bindings[24]" in runtime
         and "g_sdk_pointer_binding_count" in runtime
         and "org.castlereforge.signature.get-cursor-pos.v1" in runtime
         and runtime.count("GetHookBinding(g_sdk_pointer_bindings[index].claim") == 1,
-        "Bink与三条鼠标函数指针链分别保存稳定 next",
+        "Bink与鼠标固定调用点链分别保存稳定next，动态跟随当前IAT",
     )
 
     result(

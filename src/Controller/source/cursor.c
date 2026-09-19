@@ -10,7 +10,7 @@
  *
  * 当前 Cursor 只拥有三种低层职责：显式鼠标会话、调查指针、既有菜单视觉。
  * Back/RT/LT/A/B 的业务解释全部由 ControlModes 完成；这里不再读取任何模式键。
- * refactor43 删除了“任意活动都夺权”的旧通用路径；v0.4.2 只恢复可证明用户意图的回切：
+ * refactor43删除了“任意活动都夺权”的旧通用路径；当前只接受能证明用户意图的回切：
  * 数字键新按沿或左摇杆从死区内推到死区外。普通右摇杆噪声仍不能取得所有权。
  * 键鼠一旦产生真实移动，显隐与点击都交回原版；插件不替键鼠维持会话。
  * RT/LT 结束时必须释放仍在计时的模拟按键，避免把 DOWN 带回普通菜单。
@@ -22,6 +22,8 @@
 typedef struct CursorState {
     PFN_GetKeyState game_get_key_state;
     PFN_SetCursorPos game_set_cursor_pos;
+    void* volatile* key_state_next;
+    void* volatile* set_cursor_next;
 
     int controller_owner;
     int target_indicator_active;
@@ -66,8 +68,10 @@ static int cursor_abs(int value) { return value < 0 ? -value : value; }
 /* 只在鼠标两键上叠加插件脉冲；真实键鼠与其它虚拟键一律原样返回。 */
 static SHORT WINAPI Cursor_HookGameGetKeyState(int virtual_key) {
     SHORT original_state = 0;
+    PFN_GetKeyState next = g_cursor.key_state_next ? (PFN_GetKeyState)*g_cursor.key_state_next :
+        g_cursor.game_get_key_state;
 
-    if (g_cursor.game_get_key_state) original_state = g_cursor.game_get_key_state(virtual_key);
+    if (next) original_state = next(virtual_key);
     if (virtual_key == (int)VK_LBUTTON_ && g_cursor.mouse_left_sent) {
         return (SHORT)((u16)original_state | 0x8000u);
     }
@@ -91,12 +95,14 @@ static BOOL WINAPI Cursor_HookGameSetCursorPos(i32 x, i32 y) {
     const RuntimeApi* api = Runtime_Api();
     Point32 actual;
     BOOL moved;
+    PFN_SetCursorPos next = g_cursor.set_cursor_next ? (PFN_SetCursorPos)*g_cursor.set_cursor_next :
+        g_cursor.game_set_cursor_pos;
 
     g_cursor.game_warp_tick = Runtime_Tick();
     g_cursor.game_warp_x = x;
     g_cursor.game_warp_y = y;
 
-    moved = g_cursor.game_set_cursor_pos ? g_cursor.game_set_cursor_pos(x, y) : FALSE;
+    moved = next ? next(x, y) : FALSE;
     if (!moved) return FALSE;
 
     actual.x = x;
@@ -438,15 +444,27 @@ static void FASTCALL Cursor_HookExploreCursorDraw(void* cursor, void* unused_edx
 
 int Cursor_InstallHooks(void) {
     static const u8 mouse_draw_expected[6] = {0x8A,0x81,0x48,0x02,0x00,0x00};
+    /* 原版所有GetKeyState读取点，前三项为FF15直接调用，其余为8B绝对装载函数地址。 */
+    static const u32 key_sites[] = {0x004018F9u,0x0040458Eu,0x00404672u,0x00408953u,
+        0x00408A72u,0x0041B029u,0x0041D936u,0x00430DE2u,0x00435186u,0x0043E005u};
+    u32 index;
 
-    if (!Runtime_PatchIatPointer(IAT_GETKEYSTATE, (void*)Cursor_HookGameGetKeyState,
-                                 (void**)&g_cursor.game_get_key_state)) {
-        Runtime_Log("[致命] GetKeyState IAT 鼠标按键可靠桥 Hook 安装失败。");
-        return 0;
+    g_cursor.game_get_key_state = *(PFN_GetKeyState*)IAT_GETKEYSTATE;
+    g_cursor.game_set_cursor_pos = Runtime_Api()->set_cursor_pos;
+    g_cursor.key_state_next = NULL;
+    g_cursor.set_cursor_next = NULL;
+    for (index=0u; index < sizeof(key_sites)/sizeof(key_sites[0]); ++index) {
+        if (!Runtime_PatchImportedSite(key_sites[index], IAT_GETKEYSTATE,
+                index < 3u ? CASTLE_HOOK_IAT_CALL : CASTLE_HOOK_IAT_LOAD,
+                (void*)Cursor_HookGameGetKeyState, index == 0u ? &g_cursor.key_state_next : NULL)) {
+            Runtime_Log("[致命] GetKeyState固定读取点可靠桥安装失败。");
+            return 0;
+        }
     }
-    if (!Runtime_PatchIatPointer(IAT_SETCURSORPOS, (void*)Cursor_HookGameSetCursorPos,
-                                 (void**)&g_cursor.game_set_cursor_pos)) {
-        Runtime_Log("[致命] SetCursorPos IAT 所有权 Hook 安装失败。");
+    /* 与Widescreen共用同一指令链：宽屏先加中央偏移，Controller再记录主动定位。 */
+    if (!Runtime_PatchImportedSite(0x0043DF3Au, IAT_SETCURSORPOS, CASTLE_HOOK_IAT_CALL,
+                                  (void*)Cursor_HookGameSetCursorPos, &g_cursor.set_cursor_next)) {
+        Runtime_Log("[致命] SetCursorPos固定调用点所有权Hook安装失败。");
         return 0;
     }
     if (!Runtime_PatchJmp6(FN_MOUSE_DRAW, (void*)Cursor_HookMouseDraw, mouse_draw_expected)) {

@@ -172,7 +172,7 @@ static int plugin_install_all_hooks(void) {
      * 用来拒绝“源码已经是R41，但编译内容仍误放R40旧二进制”的打包错误。
      * 两种模式的数字含义也写进成品，现场只拿到日志时仍能判断用户到底应按 A 还是 LT。
      */
-    Runtime_Log("[启动] v0.4.2 + Public API v1：持续RB快捷层保持；宽屏合成指针与技能首次确认修复已启用。");
+    Runtime_Log("[启动] v0.4.3 + Public API v1：持续RB快捷层保持；鼠标固定调用链已启用，动态跟随兼容层IAT。");
     return 1;
 }
 
@@ -471,7 +471,7 @@ static void CASTLE_RUNTIME_CALL Controller_ProcessExit(void* user_context) {
 
 static const char g_plugin_id[] = "org.castlereforge.controller";
 static const char g_display_name[] = "Castle Controller";
-static const char g_version_text[] = "0.4.2";
+static const char g_version_text[] = "0.4.3";
 static const char g_build_id[] = "runtimesdk-v1";
 static const CastlePluginDescriptorV1 g_plugin_descriptor = {
     CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,

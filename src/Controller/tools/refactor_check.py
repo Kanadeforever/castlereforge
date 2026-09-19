@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》手柄操控模组 v0.4.2 综合静态检查工具。
+《幽城幻剑录》手柄操控模组 v0.4.3 综合静态检查工具。
 
 这个工具只使用 Python 标准库，不修改 RPG.exe，也不修改源码。
 它把这次重构最容易发生的“大回归”变成可以重复执行的机械检查：
@@ -18,7 +18,7 @@
 10. 检查地图十字键只提供八方向步行，且松开后保留左摇杆既有全向走跑阈值；
 11. 检查统一 Shop Adapter 保留 refactor36 已实机通过的连续翻页、Y 信息窗与列标记；
 12. 检查 R44 的SaveAction原生disabled三位mask、最近可用焦点、上下跳过、确认双检、鼠标清理及零插件耦合；
-13. 检查 v0.4.2 默认手柄所有权、RB持续快捷层、合成指针坐标与技能首次确认；
+13. 检查 v0.4.3 默认所有权、RB持续层、鼠标固定调用链与兼容层动态坐标API；
 14. 检查 build.bat 逐个编译 30 个独立 .c（含Public API、ControlModes与Investigation），并保留 x86、/W4 /WX、UTF-8、无 CRT 约束；
 15. 检查编译产物确实是 PE32 / i386 DLL；
 16. 检查源码文件名均为英文/ASCII，并给出注释覆盖率，帮助持续遵守“项目圣经”；
@@ -1141,7 +1141,7 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
         "dialogue_text_is_still_revealing", "DIALOGUE_VK_CONTROL",
         "if (!dialogue_text_is_still_revealing()) return real_value",
         "if (dialogue_text_is_still_revealing()) return real_value",
-        "g_confirm_pending = 0", "g_original_get_async_key_state",
+        "g_confirm_pending = 0", "g_typewriter_next", "g_advance_next", "Runtime_PatchImportedSite",
         "ConfirmDialog_IsActive", "InputRouter_Consume(INPUT_CONFIRM)",
     ]
     dialogue_missing = [token for token in dialogue_required if token not in (dialogue_text + addresses_text + read_utf8(src / "runtime.c") + read_utf8(src / "runtime.h"))]
@@ -2009,10 +2009,10 @@ def check_source_architecture(root: Path, result: CheckResult) -> None:
     # 供 RT 的 A/B 与 LT 的 A 共同复用。
     cursor_bridge_required = [
         "IAT_GETKEYSTATE", "Cursor_HookGameGetKeyState", "PFN_GetKeyState",
-        "VK_LBUTTON_", "VK_RBUTTON_", "g_cursor.game_get_key_state(virtual_key)",
+        "VK_LBUTTON_", "VK_RBUTTON_", "g_cursor.key_state_next", "next(virtual_key)",
         "g_cursor.mouse_left_sent", "g_cursor.mouse_right_sent",
         "CURSOR_CLICK_PULSE_MS 48u", "Runtime_MsToTicks(CURSOR_CLICK_PULSE_MS)",
-        "Runtime_PatchIatPointer(IAT_GETKEYSTATE", "api->mouse_event",
+        "Runtime_PatchImportedSite(key_sites[index], IAT_GETKEYSTATE", "api->mouse_event",
         "void Cursor_PulseLeftClick(void)", "void Cursor_PulseRightClick(void)",
         "cursor_update_click_pulses", "left_release_tick", "right_release_tick",
     ]
@@ -3436,14 +3436,14 @@ def check_artifact(root: Path, result: CheckResult) -> None:
         is_pe32 = magic == 0x010B
         is_dll = bool(characteristics & 0x2000)
         compiled_markers = [
-            b"0.4.2",
+            b"0.4.3",
             "持续RB快捷层保持".encode("utf-8"),
-            "宽屏合成指针".encode("utf-8"),
-            "技能首次确认修复".encode("utf-8"),
+            "鼠标固定调用链".encode("utf-8"),
+            "动态跟随兼容层IAT".encode("utf-8"),
         ]
         missing_markers = [marker.decode("utf-8") for marker in compiled_markers if marker not in data]
         if is_i386 and is_pe32 and is_dll and not missing_markers:
-            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + v0.4.2 所有权/RB组合/指针修复标记，SHA-256={sha256(asi)}")
+            result.ok("ASI PE 结构/本轮编译标记", f"PE32/i386 DLL + v0.4.3 固定调用链标记，SHA-256={sha256(asi)}")
         else:
             result.fail("ASI PE 结构/本轮编译标记", f"machine=0x{machine:04X}, magic=0x{magic:04X}, DLL={is_dll}，缺编译标记={missing_markers}")
     except Exception as exc:
@@ -3598,7 +3598,7 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="strict")
     if hasattr(sys.stderr, "reconfigure"):
         sys.stderr.reconfigure(encoding="utf-8", errors="strict")
-    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 v0.4.2：校验R44基线、默认所有权、RB持续层、合成指针、技能首次确认与目标RPG.exe")
+    parser = argparse.ArgumentParser(description="检查幽城手柄操控模组 v0.4.3：校验默认所有权、RB持续层、鼠标固定调用链与目标RPG.exe")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent, help="包根目录；默认自动取工具目录的上一层")
     parser.add_argument("--exe", type=Path, help="可选：待验证的 RPG.exe。提供后先检查双样本 SHA 白名单，再执行既有冻结协议以及主 Interface state2～state8 页面协议；state3 治疗目标的 +0x768 短锚点与两处新 Event CALL、以及既有 state7/state8 协议也必须通过")
     parser.add_argument("--source-only", action="store_true", help="仓库开发模式：检查src/Controller/source、templete、build.bat、仓库根build产物、docs/Controller和可选RPG.exe Oracle")

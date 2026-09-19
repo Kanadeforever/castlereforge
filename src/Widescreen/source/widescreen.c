@@ -204,6 +204,7 @@ static PFN_BinkCopyToBuffer g_original_bink_copy;
 static PFN_GetCursorPos g_original_get_cursor_pos;
 static PFN_KeyState g_original_key_state;
 static PFN_KeyState g_original_async_key_state;
+static PFN_SetCursorPos g_original_set_cursor_pos;
 
 /*
  * GetCursorPos Hook 会先保存“宽屏输出坐标”，再把返回给原版游戏的坐标换算成中央 UI 或
@@ -1069,7 +1070,7 @@ static BOOL WINAPI Hook_GetCursorPos(Point32* point) {
  * 只包装游戏自己的 SetCursorPos CALL，Controller 手动摇杆移动仍走下层完整输出坐标。
  */
 static BOOL WINAPI Hook_UiSetCursorPos(i32 x, i32 y) {
-    PFN_SetCursorPos next = *(PFN_SetCursorPos*)IAT_SETCURSORPOS;
+    PFN_SetCursorPos next = (PFN_SetCursorPos)Runtime_GetPointerNext(IAT_SETCURSORPOS);
     if (!next) return FALSE;
     return next(x + (i32)SIDE_WIDTH, y);
 }
@@ -2463,8 +2464,8 @@ int Widescreen_Install(void) {
     patched_rebuild_lost = 1;
 
     /*
-     * GetCursorPos 是 RPG.exe 的 IAT 函数指针槽。Hook 先保留宽屏输出坐标，再把交给原版
-     * UI/世界命中的副本按 Display geometry 换算；这条链由 Runtime 管理，不覆盖其它兼容层。
+     * GetCursorPos在游戏五处固定CALL上接链，IAT继续归兼容层重建。先保留输出坐标，
+     * 再把UI/世界副本按Display换算；Runtime的链尾每次读取当前IAT，兼容层重挂不丢处理。
      */
     if (!Runtime_PatchPointer(IAT_GETCURSORPOS, Hook_GetCursorPos,
                               (void**)&g_original_get_cursor_pos,
@@ -2473,16 +2474,13 @@ int Widescreen_Install(void) {
                               "内容区域鼠标键状态门") ||
         !Runtime_PatchPointer(IAT_GETASYNCKEYSTATE, Hook_GetAsyncKeyState, (void**)&g_original_async_key_state,
                               "内容区域异步鼠标键状态门")) { ok = 0; goto rollback; }
+    if (!Runtime_PatchPointer(IAT_SETCURSORPOS, Hook_UiSetCursorPos,
+            (void**)&g_original_set_cursor_pos, "原版定位坐标与Controller观察链")) { ok = 0; goto rollback; }
     {
         /* 精确替换两个已反汇编点；声明只复制字节，真正写入由整批Commit完成。 */
         static const u8 original_clamp[2] = {0x7Eu,0x08u};
         static const u8 wide_clamp[2] = {0xEBu,0x08u};
-        static const u8 original_warp[6] = {0xFFu,0x15u,0x9Cu,0x01u,0x46u,0x00u};
-        u8 warp[6] = {0xE8u,0u,0u,0u,0u,0x90u};
-        u32 relative = (u32)(SIZE_T)Hook_UiSetCursorPos - (CALL_UI_SET_CURSOR + 5u);
-        Runtime_MemCopy(warp+1u, &relative, 4u);
-        if (!Runtime_DeclarePatch(ADDR_WORLD_MOUSE_X_CLAMP, original_clamp, wide_clamp, 2u) ||
-            !Runtime_DeclarePatch(CALL_UI_SET_CURSOR, original_warp, warp, 6u)) { ok = 0; goto rollback; }
+        if (!Runtime_DeclarePatch(ADDR_WORLD_MOUSE_X_CLAMP, original_clamp, wide_clamp, 2u)) { ok = 0; goto rollback; }
     }
 
     /*

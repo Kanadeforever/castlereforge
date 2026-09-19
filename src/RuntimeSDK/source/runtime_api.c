@@ -23,7 +23,7 @@ static const CastleRuntimeApiV1 g_runtime_api_v1 = {
     CASTLE_RUNTIME_API_MAGIC,
     CASTLE_SIZEOF_RUNTIME_API_V1,
     CASTLE_RUNTIME_ABI_V1,
-    0u, 1u, 0u,
+    0u, 1u, 1u,
     CASTLE_RUNTIME_CAP_PLUGIN_REGISTRY |
         CASTLE_RUNTIME_CAP_QUERY_INTERFACE |
         CASTLE_RUNTIME_CAP_DIAGNOSTICS |
@@ -135,7 +135,7 @@ static CastleResult CASTLE_RUNTIME_CALL runtime_query_interface_(
             return CASTLE_ERROR_INTERFACE_VERSION;
         }
         if (query->minimum_struct_size > hook_api->struct_size ||
-            query->required_capabilities_low != 0u ||
+            (query->required_capabilities_low & ~hook_api->capability_flags) != 0u ||
             query->required_capabilities_high != 0u) {
             return CASTLE_ERROR_INTERFACE_VERSION;
         }

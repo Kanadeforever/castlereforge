@@ -7,13 +7,15 @@
 #include "scene_choice.h"
 
 /*
- * 这里保存 RPG.exe 原本使用的 USER32!GetAsyncKeyState。
+ * 两个阶段各自保存Runtime提供的稳定next槽，真实鼠标读取始终跟随兼容层当前IAT。
  *
  * refactor11 继续沿用 refactor10 已经实机证明“能真正命中公共消息引擎”的局部桥方案：
  * 我们不修改全游戏 IAT，只改 0x4041D7 与 0x40447E 两处公共消息代码自己的
  * “mov esi,[GetAsyncKeyState]”。这样标题、战斗、地图和其它系统仍完全调用原版 API。
  */
-static PFN_GetAsyncKeyState g_original_get_async_key_state;
+/* 两个装载点分别保留稳定next槽，后装入的宽屏鼠标过滤可串在各自阶段之后。 */
+static void* volatile* g_typewriter_next;
+static void* volatile* g_advance_next;
 
 /*
  * 一颗 A 的“待消费纸条”。
@@ -80,10 +82,11 @@ static int dialogue_text_is_still_revealing(void) {
  */
 static SHORT WINAPI DialogueInput_TypewriterGetAsyncKeyState(int virtual_key) {
     SHORT real_value;
+    PFN_GetAsyncKeyState next = g_typewriter_next ? (PFN_GetAsyncKeyState)*g_typewriter_next : NULL;
 
-    if (!g_original_get_async_key_state) return 0;
+    if (!next) return 0;
 
-    real_value = g_original_get_async_key_state(virtual_key);
+    real_value = next(virtual_key);
 
     /* 这条原版路径真正关心的是左键。其它键查询全部原样透传。 */
     if (virtual_key != (int)VK_LBUTTON_) return real_value;
@@ -134,10 +137,11 @@ static SHORT WINAPI DialogueInput_TypewriterGetAsyncKeyState(int virtual_key) {
  */
 static SHORT WINAPI DialogueInput_AdvanceGetAsyncKeyState(int virtual_key) {
     SHORT real_value;
+    PFN_GetAsyncKeyState next = g_advance_next ? (PFN_GetAsyncKeyState)*g_advance_next : NULL;
 
-    if (!g_original_get_async_key_state) return 0;
+    if (!next) return 0;
 
-    real_value = g_original_get_async_key_state(virtual_key);
+    real_value = next(virtual_key);
 
     if (!g_confirm_pending) return real_value;
 
@@ -177,7 +181,6 @@ static SHORT WINAPI DialogueInput_AdvanceGetAsyncKeyState(int virtual_key) {
 }
 
 int DialogueInput_InstallHook(void) {
-    static const u8 expected_load[] = {0x8B,0x35,0xA4,0x01,0x46,0x00};
 
     if (!Runtime_DialogueProtocolOk()) {
         Runtime_Log("[对话] 公共消息引擎协议未通过；A 推进对话已单独禁用。");
@@ -186,12 +189,11 @@ int DialogueInput_InstallHook(void) {
     }
 
     /*
-     * 这里只读取原 IAT 指针，不改 IAT 本身。
+     * 这里只确认当前IAT可用；运行时通过稳定next链动态调用它，不缓存当前函数。
      * 两个消息阶段会分别装载不同的包装函数，因此 refactor11 能明确区分：
      * “这一颗 A 是补全文字，还是推进下一句”。
      */
-    g_original_get_async_key_state = *(PFN_GetAsyncKeyState*)IAT_GETASYNCKEYSTATE;
-    if (!g_original_get_async_key_state) {
+    if (!*(PFN_GetAsyncKeyState*)IAT_GETASYNCKEYSTATE) {
         Runtime_Log("[对话] 原版 GetAsyncKeyState 指针无效；A 推进对话已单独禁用。");
         g_dialogue_enabled = 0;
         return 1;
@@ -199,7 +201,7 @@ int DialogueInput_InstallHook(void) {
 
     /*
      * 两个地址原本都是 6 字节：8B 35 A4 01 46 00，即 mov esi,[0x4601A4]。
-     * Runtime_PatchMovEsiFunction 会严格核对原机器码，再改成 mov esi,imm32 + nop。
+     * Runtime的导入装载点链会严格核对原机器码，再改成mov esi,链头 + nop。
      *
      * 关键区别：
      * - 0x4041D7 -> DialogueInput_TypewriterGetAsyncKeyState
@@ -207,12 +209,10 @@ int DialogueInput_InstallHook(void) {
      *
      * 后面的 call esi 不改，栈布局和 RPG.exe 原控制流也不改。
      */
-    if (!Runtime_PatchMovEsiFunction(PATCH_DIALOGUE_GETASYNC_A,
-                                     (void*)DialogueInput_TypewriterGetAsyncKeyState,
-                                     expected_load) ||
-        !Runtime_PatchMovEsiFunction(PATCH_DIALOGUE_GETASYNC_B,
-                                     (void*)DialogueInput_AdvanceGetAsyncKeyState,
-                                     expected_load)) {
+    if (!Runtime_PatchImportedSite(PATCH_DIALOGUE_GETASYNC_A, IAT_GETASYNCKEYSTATE,
+            CASTLE_HOOK_IAT_LOAD, (void*)DialogueInput_TypewriterGetAsyncKeyState, &g_typewriter_next) ||
+        !Runtime_PatchImportedSite(PATCH_DIALOGUE_GETASYNC_B, IAT_GETASYNCKEYSTATE,
+            CASTLE_HOOK_IAT_LOAD, (void*)DialogueInput_AdvanceGetAsyncKeyState, &g_advance_next)) {
         Runtime_Log("[对话] 两阶段局部输入桥安装失败；A 推进对话已单独禁用。");
         g_dialogue_enabled = 0;
         return 1;

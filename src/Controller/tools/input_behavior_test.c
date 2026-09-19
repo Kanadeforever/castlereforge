@@ -36,6 +36,9 @@ int Runtime_CopyDisplayGeometry(CastleDisplayGeometryV1* out) {
 int Runtime_PatchCall(u32 a, void* b, u32 c) { (void)a;(void)b;(void)c;return 0; }
 int Runtime_PatchJmp6(u32 a, void* b, const u8 c[6]) { (void)a;(void)b;(void)c;return 0; }
 int Runtime_PatchIatPointer(u32 a, void* b, void** c) { (void)a;(void)b;(void)c;return 0; }
+int Runtime_PatchImportedSite(u32 a,u32 b,u32 c,void* d,void* volatile** e) {
+    (void)a;(void)b;(void)c;(void)d;(void)e;return 0;
+}
 int PadInput_Down(PadButton b) { return (test_buttons & (1u << b)) != 0; }
 int PadInput_Pressed(PadButton b) { return ((test_buttons & ~test_previous) & (1u << b)) != 0; }
 int PadInput_Released(PadButton b) { return ((test_previous & ~test_buttons) & (1u << b)) != 0; }

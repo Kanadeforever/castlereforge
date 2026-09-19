@@ -7,6 +7,11 @@
 #include "CastleModule_API.h"
 #include "CastleToml_API.h"
 #include "CastleDisplay_API.h"
+#include "CastleHook_API.h"
+
+/* 固定调用指令的Runtime链；next槽始终由Runtime持有，兼容层重建IAT不会删掉该链。 */
+int Runtime_PatchImportedSite(u32 address, u32 slot, u32 kind, void* replacement,
+                              void* volatile** next_slot_out);
 
 /* 本帧输出几何来自Runtime Display；菜单不再自行猜107/240偏移。 */
 int Runtime_CopyDisplayGeometry(CastleDisplayGeometryV1* output);

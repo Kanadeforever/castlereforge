@@ -366,6 +366,8 @@ static CastleTargetAddressV1 target_from_address_(HMODULE module, void* address,
     return target;
 }
 
+#include "import_site_test.h"
+
 __declspec(noreturn) void __stdcall TestEntry(void) {
     WCHAR runtime_path[1024];
     WCHAR bootstrap_plugin_a_path[1024];
@@ -1596,6 +1598,8 @@ __declspec(noreturn) void __stdcall TestEntry(void) {
     if (g_pointer_slot != &test_hook_one_ ||
         *g_hook_one_next != (void*)&test_hook_two_ ||
         g_pointer_slot(5) != 116) ExitProcess(53u);
+
+    import_site_test(hook_api,self_module,handle,second_handle);
 
     byte_zero_(&diagnostics, (CastleU32)sizeof(diagnostics));
     diagnostics.magic = CASTLE_DIAGNOSTIC_BUFFER_MAGIC;

@@ -68,6 +68,9 @@ typedef struct RuntimeHookChain {
     CastleTargetAddressV1 target;
     void* site;
     CastleAddress original_target;
+    /* 导入调用链保存原始6字节和IAT地址；original_target则指向动态转发跳板。 */
+    CastleAddress import_slot;
+    CastleU8 saved_instruction[6];
     char signature[HOOK_MAX_SIGNATURE];
     CastleU32 signature_length;
     CastleClaimHandle nodes[HOOK_MAX_CHAIN_NODES];
@@ -115,7 +118,7 @@ static const CastleHookApiV1 g_hook_api = {
     CASTLE_HOOK_API_MAGIC,
     CASTLE_SIZEOF_HOOK_API_V1,
     CASTLE_HOOK_API_VERSION_1,
-    0u,
+    CASTLE_HOOK_CAP_IMPORT_SITE,
     hook_begin_transaction_,
     hook_add_exclusive_,
     hook_add_state_,
@@ -233,7 +236,29 @@ static RuntimeHookChain* hook_find_chain_(const RuntimeHookClaim* claim) {
     return NULL;
 }
 
+static int hook_is_import_site_(CastleU32 kind) {
+    return kind == CASTLE_HOOK_IAT_CALL || kind == CASTLE_HOOK_IAT_LOAD;
+}
+
 static CastleAddress hook_current_target_(RuntimeHookClaim* claim, void* site) {
+    if (hook_is_import_site_(claim->hook_kind)) {
+        const CastleU8* bytes = (const CastleU8*)site;
+        CastleTargetAddressV1 slot_target;
+        CastleAddress slot;
+        /* 拒绝相似但调用方式不同的指令，也禁止把ESP装载成函数地址。 */
+        if (claim->hook_kind == CASTLE_HOOK_IAT_CALL) {
+            if (bytes[0] != 0xFFu || bytes[1] != 0x15u) return 0u;
+        } else if (bytes[0] != 0x8Bu || (bytes[1] & 0xC7u) != 0x05u ||
+                   ((bytes[1] >> 3) & 7u) == 4u) return 0u;
+        slot = (CastleAddress)bytes[2] | ((CastleAddress)bytes[3] << 8) |
+               ((CastleAddress)bytes[4] << 16) | ((CastleAddress)bytes[5] << 24);
+        /* 槽必须位于同一目标映像内的可读范围，不能接受任意未映射地址。 */
+        if (slot < claim->target.module) return 0u;
+        slot_target.module = claim->target.module;
+        slot_target.rva = (CastleU32)(slot - claim->target.module);
+        slot_target.size = 4u;
+        return Runtime_ResolveTarget(&slot_target) ? slot : 0u;
+    }
     if (claim->hook_kind == CASTLE_HOOK_REL32_CALL) {
         volatile CastleU8* bytes = (volatile CastleU8*)site;
         CastleS32 relative;
@@ -249,6 +274,23 @@ static CastleAddress hook_current_target_(RuntimeHookClaim* claim, void* site) {
 
 static CastleResult hook_write_chain_target_(RuntimeHookChain* chain,
                                              CastleAddress target) {
+    if (hook_is_import_site_(chain->hook_kind)) {
+        CastleU8 bytes[6];
+        CastleU32 value;
+        /* 空链恢复精确原指令；活动链保留原调用约定和寄存器，末尾补一字节NOP。 */
+        if (chain->node_count == 0u)
+            return Runtime_WriteMemory(chain->site, chain->saved_instruction, 6u, 1);
+        if (chain->hook_kind == CASTLE_HOOK_IAT_CALL) {
+            bytes[0] = 0xE8u;
+            value = (CastleU32)(target - ((CastleAddress)(ULONG_PTR)chain->site + 5u));
+        } else {
+            bytes[0] = (CastleU8)(0xB8u + ((chain->saved_instruction[1] >> 3) & 7u));
+            value = (CastleU32)target;
+        }
+        Runtime_ByteCopy(bytes + 1u, &value, 4u);
+        bytes[5] = 0x90u;
+        return Runtime_WriteMemory(chain->site, bytes, 6u, 1);
+    }
     if (chain->hook_kind == CASTLE_HOOK_REL32_CALL) {
         CastleU8 bytes[5];
         CastleS32 relative = (CastleS32)(target -
@@ -434,7 +476,8 @@ static CastleResult hook_preflight_claim_(RuntimeHookClaim* claim) {
         if (chain) {
             if (!Runtime_StringEquals(chain->signature, chain->signature_length,
                                       claim->signature, claim->signature_length) ||
-                chain->original_target != claim->expected_original_target) {
+                (chain->import_slot ? chain->import_slot : chain->original_target) !=
+                    claim->expected_original_target) {
                 return CASTLE_ERROR_SIGNATURE_MISMATCH;
             }
             return CASTLE_OK;
@@ -459,6 +502,27 @@ static CastleResult hook_activate_chain_(RuntimeHookClaim* claim) {
                 chain->target = claim->target;
                 chain->site = Runtime_ResolveTarget(&claim->target);
                 chain->original_target = claim->expected_original_target;
+                if (hook_is_import_site_(claim->hook_kind)) {
+                    CastleU8* gateway;
+                    DWORD previous;
+                    /*
+                     * 只创建一次六字节JMP [IAT]。先写RW页再改RX，后续无需反复改IAT或跳板。
+                     * 跳板随进程驻留：退订后可能仍有先前调用正在使用next，不能立即释放。
+                     */
+                    gateway = (CastleU8*)VirtualAlloc(NULL, 6u, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+                    if (!gateway) { Runtime_ByteZero(chain, (CastleU32)sizeof(*chain)); return CASTLE_ERROR_RUNTIME_FAULT; }
+                    gateway[0] = 0xFFu; gateway[1] = 0x25u;
+                    Runtime_ByteCopy(gateway + 2u, &claim->expected_original_target, 4u);
+                    if (!VirtualProtect(gateway, 6u, PAGE_EXECUTE_READ, &previous) ||
+                        !FlushInstructionCache(GetCurrentProcess(), gateway, 6u)) {
+                        VirtualFree(gateway, 0u, MEM_RELEASE);
+                        Runtime_ByteZero(chain, (CastleU32)sizeof(*chain));
+                        return CASTLE_ERROR_RUNTIME_FAULT;
+                    }
+                    chain->import_slot = claim->expected_original_target;
+                    chain->original_target = (CastleAddress)(ULONG_PTR)gateway;
+                    Runtime_ByteCopy(chain->saved_instruction, chain->site, 6u);
+                }
                 Runtime_ByteCopy(chain->signature, claim->signature,
                                  claim->signature_length + 1u);
                 chain->signature_length = claim->signature_length;
@@ -641,7 +705,7 @@ static CastleResult hook_add_chain_common_(CastleTransactionHandle transaction_h
                                           int require_call) {
     RuntimeHookTransaction* transaction;
     RuntimeHookClaim* claim;
-    CastleU32 expected_size = require_call ? 5u : 4u;
+    CastleU32 expected_size = input && hook_is_import_site_(input->hook_kind) ? 6u : (require_call ? 5u : 4u);
     if (!input || input->magic != CASTLE_CHAIN_HOOK_MAGIC ||
         input->struct_size < CASTLE_SIZEOF_CHAIN_HOOK_V1 ||
         input->version != CASTLE_HOOK_STRUCTURE_VERSION_1 ||
@@ -650,7 +714,8 @@ static CastleResult hook_add_chain_common_(CastleTransactionHandle transaction_h
         input->signature_id.length == 0u || input->signature_id.length >= HOOK_MAX_SIGNATURE ||
         input->phase > CASTLE_HOOK_PHASE_FINAL ||
         input->priority > CASTLE_HOOK_PRIORITY_LATE) return CASTLE_ERROR_INVALID_ARGUMENT;
-    if (require_call && input->hook_kind != CASTLE_HOOK_REL32_CALL) return CASTLE_ERROR_INVALID_ARGUMENT;
+    if (require_call && input->hook_kind != CASTLE_HOOK_REL32_CALL &&
+        !hook_is_import_site_(input->hook_kind)) return CASTLE_ERROR_INVALID_ARGUMENT;
     if (!require_call && input->hook_kind != CASTLE_HOOK_IAT_POINTER &&
         input->hook_kind != CASTLE_HOOK_VTABLE_POINTER) return CASTLE_ERROR_INVALID_ARGUMENT;
 

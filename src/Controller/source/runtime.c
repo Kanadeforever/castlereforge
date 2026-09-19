@@ -18,6 +18,7 @@ static RuntimeConfig g_cfg;
 typedef struct RuntimeSdkBindingRequest {
     CastleClaimHandle claim;
     void** original_out;
+    void* volatile** next_slot_out;
 } RuntimeSdkBindingRequest;
 
 static const CastleHookApiV1* g_sdk_hook_api;
@@ -145,6 +146,27 @@ static void rt_append_hex32(char* dst, SIZE_T cap, SIZE_T* pos, u32 value) {
 
 /* ------------------------- API 解析 ------------------------- */
 
+/*
+ * cnc-ddraw会在建窗/加载DLL时重写游戏IAT。这里保存的是自己的薄包装函数，调用时再读IAT；
+ * 不缓存启动时的USER32/兼容层地址，因而坐标读取、客户区和主动定位始终来自同一套当前代理。
+ */
+static BOOL WINAPI runtime_current_get_cursor(Point32* point) {
+    PFN_GetCursorPos next = *(PFN_GetCursorPos*)IAT_GETCURSORPOS;
+    return next ? next(point) : FALSE;
+}
+static BOOL WINAPI runtime_current_set_cursor(i32 x, i32 y) {
+    PFN_SetCursorPos next = *(PFN_SetCursorPos*)IAT_SETCURSORPOS;
+    return next ? next(x,y) : FALSE;
+}
+static BOOL WINAPI runtime_current_client_rect(HWND window, Rect32* rect) {
+    PFN_GetClientRect next = *(PFN_GetClientRect*)0x004601E8u;
+    return next ? next(window,rect) : FALSE;
+}
+static BOOL WINAPI runtime_current_client_to_screen(HWND window, Point32* point) {
+    PFN_ClientToScreen next = *(PFN_ClientToScreen*)0x004601F0u;
+    return next ? next(window,point) : FALSE;
+}
+
 void Runtime_BindEarlyApi(void) {
     /*
      * 这些 IAT 槽在目标 RPG.exe 中是固定的，因此 DllMain 尚处于 loader lock 时
@@ -152,7 +174,7 @@ void Runtime_BindEarlyApi(void) {
      */
     g_api.get_module_handle_a = *(PFN_GetModuleHandleA*)IAT_GETMODULEHANDLEA;
     g_api.get_proc_address = *(PFN_GetProcAddress*)IAT_GETPROCADDRESS;
-    g_api.get_cursor_pos = *(PFN_GetCursorPos*)IAT_GETCURSORPOS;
+    g_api.get_cursor_pos = runtime_current_get_cursor;
 
     if (g_api.get_module_handle_a && g_api.get_proc_address) {
         HMODULE k32 = g_api.get_module_handle_a("KERNEL32.dll");
@@ -167,9 +189,9 @@ void Runtime_BindEarlyApi(void) {
             if (u32m) {
                 g_api.get_foreground_window = (PFN_GetForegroundWindow)g_api.get_proc_address(u32m, "GetForegroundWindow");
                 /* 与游戏GetCursorPos使用同一虚拟坐标系；cnc-ddraw可能按输出像素代理这些IAT函数。 */
-                g_api.get_client_rect = *(PFN_GetClientRect*)0x004601E8u;
-                g_api.client_to_screen = *(PFN_ClientToScreen*)0x004601F0u;
-                g_api.set_cursor_pos = (PFN_SetCursorPos)g_api.get_proc_address(u32m, "SetCursorPos");
+                g_api.get_client_rect = runtime_current_client_rect;
+                g_api.client_to_screen = runtime_current_client_to_screen;
+                g_api.set_cursor_pos = runtime_current_set_cursor;
                 g_api.get_window_thread_process_id = (PFN_GetWindowThreadProcessId)g_api.get_proc_address(u32m, "GetWindowThreadProcessId");
                 g_api.mouse_event = (PFN_mouse_event)g_api.get_proc_address(u32m, "mouse_event");
                 g_api.post_message_a = (PFN_PostMessageA)g_api.get_proc_address(u32m, "PostMessageA");
@@ -1507,8 +1529,8 @@ int Runtime_CommitSdkHookBatch(void) {
         return 0;
     }
     /*
-     * vtable/IAT wrapper 需要知道“下一层是谁”。提交后 Runtime 才能给出稳定 next 槽，
-     * 所以这里再把槽内当前目标写回旧业务层的 original 指针。
+     * 提交后才取得每项绑定。旧vtable保留原接口；新的导入调用点保存稳定next槽本身，
+     * 后加入节点时自动跟随，不把“安装时的下游地址”误当永久根。
      */
     for (index = 0u; index < g_sdk_binding_count; ++index) {
         CastleHookBindingV1 binding = {0};
@@ -1523,6 +1545,8 @@ int Runtime_CommitSdkHookBatch(void) {
         if (g_sdk_bindings[index].original_out) {
             *g_sdk_bindings[index].original_out = *binding.next_slot;
         }
+        if (g_sdk_bindings[index].next_slot_out)
+            *g_sdk_bindings[index].next_slot_out = binding.next_slot;
     }
     g_sdk_batch_building = 0;
     Runtime_Log("[RuntimeSDK] Controller 全部 Hook 已作为一个事务提交。");
@@ -1550,6 +1574,41 @@ static CastleStringView sdk_call_signature_(u32 expected_target) {
         return sdk_view_(button_hit, (CastleU32)(sizeof(button_hit) - 1u));
     }
     return sdk_view_(generic_call, (CastleU32)(sizeof(generic_call) - 1u));
+}
+
+int Runtime_PatchImportedSite(u32 address, u32 slot, u32 kind, void* replacement,
+                              void* volatile** next_slot_out) {
+    CastleChainHookClaimV1 claim = {0};
+    CastleClaimHandle handle = 0u;
+    const char* signature;
+    if (!g_sdk_batch_building || !g_sdk_hook_api || g_sdk_binding_count >= 64u ||
+        !(g_sdk_hook_api->capability_flags & CASTLE_HOOK_CAP_IMPORT_SITE)) {
+        Runtime_Log("[致命] Runtime缺少导入调用点链能力，请同步更新Castle_Runtime.dll。");
+        return 0;
+    }
+    signature = slot == IAT_GETKEYSTATE ? "org.castlereforge.signature.get-key-state.v1" :
+        (slot == IAT_SETCURSORPOS ? "org.castlereforge.signature.set-cursor-pos.v1" :
+         "org.castlereforge.signature.get-async-key-state.v1");
+    claim.magic = CASTLE_CHAIN_HOOK_MAGIC;
+    claim.struct_size = CASTLE_SIZEOF_CHAIN_HOOK_V1;
+    claim.version = CASTLE_HOOK_STRUCTURE_VERSION_1;
+    claim.hook_kind = kind;
+    claim.target.module = g_sdk_game_module;
+    claim.target.rva = address - (u32)g_sdk_game_module;
+    claim.target.size = 6u;
+    claim.expected_original_target = slot;
+    claim.replacement_hook = (CastleAddress)(SIZE_T)replacement;
+    claim.signature_id = sdk_view_(signature, (CastleU32)rt_strlen(signature));
+    /* 对话两阶段合成A在真实鼠标过滤之后叠加，不能因隐藏指针落在侧区而丢掉手柄推进。 */
+    claim.phase = slot == IAT_GETASYNCKEYSTATE ? CASTLE_HOOK_PHASE_PRE : CASTLE_HOOK_PHASE_POST;
+    claim.priority = CASTLE_HOOK_PRIORITY_DEFAULT;
+    claim.label = claim.signature_id;
+    if (g_sdk_hook_api->AddRelativeCallHook(g_sdk_transaction, &claim, &handle) < 0) return 0;
+    g_sdk_bindings[g_sdk_binding_count].claim = handle;
+    g_sdk_bindings[g_sdk_binding_count].original_out = NULL;
+    g_sdk_bindings[g_sdk_binding_count].next_slot_out = next_slot_out;
+    ++g_sdk_binding_count;
+    return 1;
 }
 
 int Runtime_PatchIatPointer(u32 slot, void* replacement, void** original_out) {
@@ -1592,6 +1651,7 @@ int Runtime_PatchIatPointer(u32 slot, void* replacement, void** original_out) {
         if (result < 0) return 0;
         g_sdk_bindings[g_sdk_binding_count].claim = claim_handle;
         g_sdk_bindings[g_sdk_binding_count].original_out = original_out;
+        g_sdk_bindings[g_sdk_binding_count].next_slot_out = NULL;
         ++g_sdk_binding_count;
         return 1;
     }
