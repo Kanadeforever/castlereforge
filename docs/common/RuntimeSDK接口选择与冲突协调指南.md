@@ -45,6 +45,11 @@ Runtime 是官方 ASI 的底层协调引擎，不是万能业务插件。只有�
 目标必须是 E8 CALL。声明原版目标、wrapper、签名 ID、phase、priority 和可选约束。Runtime
 返回稳定 `next_slot`；wrapper 每次调用时读取槽内容，不只在初始化时抄一份地址。
 
+Runtime 0.1.1可选能力`CASTLE_HOOK_CAP_IMPORT_SITE`扩展同一提交入口，支持六字节FF15 CALL
+和8B绝对函数装载（不接受ESP）。分别声明`CASTLE_HOOK_IAT_CALL`/`CASTLE_HOOK_IAT_LOAD`，
+`expected_original_target`在这两种类型中填写IAT槽地址。Runtime链尾生成动态JMP [IAT]，适用于
+cnc-ddraw等会重建IAT的兼容层；禁止继续用启动期缓存地址或反复抢写IAT来维持鼠标链。
+
 ### PointerHook
 
 用于 IAT/vtable 函数指针槽。普通数据指针不能冒充函数链；不同调用约定不能共用签名。
@@ -113,7 +118,7 @@ Controller 发布 Runtime Input；其它插件读取快照。Backlog 打开时�
 ### Controller / Widescreen 鼠标
 
 Controller 决定手柄/键鼠所有权与哪些业务场景允许显示原版手形；Widescreen 决定最终输出坐标、
-实际内容区域和世界投影。Widescreen 的 GetCursorPos 使用 Runtime PointerHook 链，不能覆盖
+实际内容区域和世界投影。Widescreen的鼠标API使用Runtime固定调用/装载点链，Bink仍用PointerHook，不能覆盖
 Controller 或第三方兼容层；MouseManager统一保存中央局部坐标，最终绘制必须以它为权威，
 不得重新读取实体点覆盖Target、技能对象、阵形等合成焦点。鼠标在原版768 backing中绘制一次，
 再合回宽屏staging。自由探索真实侧区可命中；普通UI侧区保持连续坐标但不点击，MouseWorld缺口

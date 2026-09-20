@@ -2,6 +2,10 @@
 
 ## 当前定位
 
+2026-09-20当前实现为0.1.1。Hook v1新增可查询的`CASTLE_HOOK_CAP_IMPORT_SITE`能力，保持
+结构大小和既有字段偏移；Controller 0.4.3/Widescreen 0.12.3必须配套本轮DLL。新增固定导入
+CALL/装载点链允许cnc-ddraw更新IAT，插件处理仍保留。构建会执行真实机器码串联、换底层及回滚测试。
+
 `Castle_Runtime.dll` 是 CastleReforge 官方 ASI 必需的基础引擎。官方插件仍可脱离 Castle Mod
 Loader和其它业务插件运行，但必须与 Runtime DLL 位于同一 ASI 目录。Runtime 不由 Loader 直接
 扫描，而由 SDK Client 在 Loader Lock 外加载。
