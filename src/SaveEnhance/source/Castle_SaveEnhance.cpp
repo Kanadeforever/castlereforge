@@ -8,9 +8,10 @@
 #include "CastleToml_API.h"
 #include "CastleFile_API.h"
 #include "CastleClock_API.h"
+#include "SaveVisual.h"
 
 // ============================================================================
-// Castle_SaveEnhance.cpp  v0.2.0 RuntimeSDK
+// Castle_SaveEnhance.cpp  v0.3.0-test4 RuntimeSDK
 // ----------------------------------------------------------------------------
 // 《幽城幻剑录》存档增强插件第一版完整实机候选。
 //
@@ -100,6 +101,9 @@ const DWORD kOriginalMapTickFunctionRva = 0x0000ADE0u;    // 0x40ADE0
 const DWORD kOriginalSaveWriterFunctionRva = 0x0003B360u;// 0x43B360
 const DWORD kOriginalSaveSlotFunctionRva = 0x0003B320u;  // 0x43B320
 const DWORD kOriginalLoadSlotFunctionRva = 0x0003B4D0u;  // 0x43B4D0
+// 三种GUI入口最终都经过这条原版读档CALL；这里只通知可视层隐藏，不改变读档参数/结果。
+const DWORD kMenuLoadCallRva = 0x00024D98u;
+const BYTE kMenuLoadCallBytes[5] = {0xE8, 0x33, 0x67, 0x01, 0x00};
 const DWORD kOriginalSavePrepareFunctionRva = 0x0004B150u;// 0x44B150
 const DWORD kOriginalPostLoadFunctionRva = 0x0004B1F0u;  // 0x44B1F0
 
@@ -254,6 +258,7 @@ OriginalMapTickFunction gOriginalMapTick = nullptr;
 OriginalSaveWriterFunction gOriginalSaveWriter = nullptr;
 OriginalSaveSlotFunction gOriginalSaveSlot = nullptr;
 OriginalLoadSlotFunction gOriginalLoadSlot = nullptr;
+void* volatile* gVisualLoadNextSlot = nullptr;
 OriginalNoArgFunction gOriginalSavePrepare = nullptr;
 OriginalNoArgFunction gOriginalPostLoad = nullptr;
 GameFileCtorFunction gGameFileCtor = nullptr;
@@ -261,9 +266,8 @@ GameFileDtorFunction gGameFileDtor = nullptr;
 GameFileOpenFunction gGameFileOpen = nullptr;
 
 // 91~99 全部已存在后，NextAutoSlot 指示“下一次应该覆盖哪一个物理槽”。
-// 这个值只写入真实存档目录 ..\multimedia\save\.NEXTAUTOSLOT，不再污染玩家可能复制、
-// 重装或替换的 TOML 配置。
-// 文件只保存 091~099 三个 ASCII 字节，不含任何游戏进度；丢失或损坏时安全回到 91。
+// 这个值保存在真实存档目录.SAVESTATUS的N字段，与最新手动/自动槽一起原子写入。
+// 不写回玩家可能替换的TOML；缺失或损坏时先迁移旧文件，否则安全回到91。
 // 如果用户删掉任一自动档，游戏文件层扫描仍优先填空槽，游标不会强行覆盖其它档。
 DWORD gNextAutoSlot = kAutoSlotFirst;
 
@@ -401,43 +405,6 @@ bool AppendW(wchar_t* path, SIZE_T capacity, const wchar_t* suffix) {
     return true;
 }
 
-bool BuildAutoRingStatePath(wchar_t* out, SIZE_T capacity) {
-    // 和日志共用同一条“模块路径 -> 所在目录 -> 追加目标名”路线。
-    // RPG.exe 实际位于 exe 子目录，游戏存档位于它的 ../multimedia/save，所以不能再写 exe/Save。
-    return ycrlog::BuildModuleFilePath(
-        nullptr, L"..\\multimedia\\save\\.NEXTAUTOSLOT", out, capacity);
-}
-
-bool BuildLegacyAutoRingStatePath(wchar_t* out, SIZE_T capacity) {
-    // test6 曾把状态误写到 RPG.exe 旁的 Save。这里只为一次性兼容读取/清理旧文件，
-    // 新状态绝不能再写回这个路径。
-    return ycrlog::BuildModuleFilePath(nullptr, L"Save\\.NEXTAUTOSLOT", out, capacity);
-}
-
-bool EnsureAutoRingStateDirectory() {
-    // CreateFileW 不会自动创建父目录。RPG.exe 在 exe 下，而真实存档目录是
-    // ../multimedia/save；multimedia 已随游戏存在，这里只确保最后一级 save 存在。
-    wchar_t directory[520];
-    if (!ycrlog::BuildModuleFilePath(nullptr, L"..\\multimedia\\save", directory, 520u)) {
-        ycrlog::Line("[自动槽状态] 无法构造 multimedia\\save 目录路径。");
-        return false;
-    }
-
-    if (CreateDirectoryW(directory, nullptr) != FALSE) {
-        // 返回非零表示本次刚刚成功创建目录，可以继续创建状态文件。
-        return true;
-    }
-
-    // 目录原本就存在时 CreateDirectoryW 也返回失败，但错误码 183 表示这是正常情况。
-    const DWORD error = GetLastError();
-    if (error == ERROR_ALREADY_EXISTS) {
-        return true;
-    }
-    ycrlog::Text("[自动槽状态] 无法准备 multimedia\\save 目录，Win32错误码=");
-    ycrlog::Unsigned(error);
-    ycrlog::Line("。");
-    return false;
-}
 
 bool IsValidWavFilename(const wchar_t* name) {
     // 只接受“单个文件名”，不允许用户通过 ..\ 或绝对路径把播放范围跳出插件资源目录。
@@ -589,136 +556,6 @@ DWORD ClampAutoRingSlot(DWORD value) {
     return (value >= kAutoSlotFirst && value <= kAutoSlotLast) ? value : kAutoSlotFirst;
 }
 
-enum AutoRingStateReadResult {
-    kAutoRingStateMissing = 0,
-    kAutoRingStateInvalid = 1,
-    kAutoRingStateValid = 2
-};
-
-AutoRingStateReadResult ReadAutoRingStateFile(const wchar_t* path, DWORD* slotOut) {
-    // 这个读取器只判断“指定完整路径里是否有合法三字节游标”，不决定它是新路径还是旧路径。
-    // 因此新旧两个位置可以复用完全相同的长度、数字和 91~99 范围验证。
-    if (path == nullptr || slotOut == nullptr) return kAutoRingStateInvalid;
-
-    HANDLE file = CreateFileW(
-        path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (file == INVALID_HANDLE_VALUE) return kAutoRingStateMissing;
-
-    BYTE raw[4] = {};
-    DWORD bytesRead = 0u;
-    const BOOL readOk = ReadFile(file, raw, 4u, &bytesRead, nullptr);
-    CloseHandle(file);
-    if (readOk == FALSE || bytesRead != 3u ||
-        raw[0] < static_cast<BYTE>('0') || raw[0] > static_cast<BYTE>('9') ||
-        raw[1] < static_cast<BYTE>('0') || raw[1] > static_cast<BYTE>('9') ||
-        raw[2] < static_cast<BYTE>('0') || raw[2] > static_cast<BYTE>('9')) {
-        return kAutoRingStateInvalid;
-    }
-
-    const DWORD parsed = static_cast<DWORD>(raw[0] - static_cast<BYTE>('0')) * 100u +
-                         static_cast<DWORD>(raw[1] - static_cast<BYTE>('0')) * 10u +
-                         static_cast<DWORD>(raw[2] - static_cast<BYTE>('0'));
-    if (parsed < kAutoSlotFirst || parsed > kAutoSlotLast) return kAutoRingStateInvalid;
-    *slotOut = parsed;
-    return kAutoRingStateValid;
-}
-
-void LoadAutoRingState() {
-    // 主路径固定为 ../multimedia/save。若它还没有合法状态，再兼容读取 test6 错写到
-    // exe/Save 的旧文件，避免升级以后明明已有 092 游标却重新从 91 开始。
-    gNextAutoSlot = kAutoSlotFirst;
-
-    wchar_t path[520];
-    if (!BuildAutoRingStatePath(path, 520u)) {
-        ycrlog::Line("[自动槽状态] 无法构造 multimedia\\save 状态路径；本轮从91开始。");
-        return;
-    }
-
-    DWORD parsed = kAutoSlotFirst;
-    const AutoRingStateReadResult current = ReadAutoRingStateFile(path, &parsed);
-    if (current == kAutoRingStateValid) {
-        gNextAutoSlot = parsed;
-        ycrlog::Line("[自动槽状态] 已从 multimedia\\save 读取环形游标。");
-        return;
-    }
-
-    wchar_t legacyPath[520];
-    if (BuildLegacyAutoRingStatePath(legacyPath, 520u) &&
-        ReadAutoRingStateFile(legacyPath, &parsed) == kAutoRingStateValid) {
-        gNextAutoSlot = parsed;
-        ycrlog::Line("[自动槽状态] 已读取 test6 旧 exe\\Save 游标；下次成功写入后迁移到 multimedia\\save。");
-        return;
-    }
-
-    ycrlog::Line(current == kAutoRingStateInvalid
-        ? "[自动槽状态] multimedia\\save 中的状态内容无效；本轮从91开始。"
-        : "[自动槽状态] multimedia\\save 中不存在状态文件；本轮从91开始。");
-}
-
-void CleanupLegacyAutoRingStateFile() {
-    // 只有正确位置已经成功写入后才删旧错误文件。旧 exe/Save 目录本身绝不删除，
-    // 因为目录内可能还有用户自己放入的其它文件。
-    wchar_t legacyPath[520];
-    if (!BuildLegacyAutoRingStatePath(legacyPath, 520u)) return;
-    if (DeleteFileW(legacyPath) != FALSE) {
-        ycrlog::Line("[自动槽状态] 已删除 test6 旧 exe\\Save 状态文件。");
-        return;
-    }
-    const DWORD error = GetLastError();
-    if (error != ERROR_FILE_NOT_FOUND && error != ERROR_PATH_NOT_FOUND) {
-        ycrlog::Text("[自动槽状态] 正确状态已写入，但旧 exe\\Save 文件清理失败，Win32错误码=");
-        ycrlog::Unsigned(error);
-        ycrlog::Line("。");
-    }
-}
-
-void SaveAutoRingState(DWORD nextSlot) {
-    gNextAutoSlot = ClampAutoRingSlot(nextSlot);
-
-    if (!EnsureAutoRingStateDirectory()) {
-        ycrlog::Line("[自动槽状态] 本次存档仍有效；multimedia\\save 不可用，重启后从91开始。");
-        return;
-    }
-
-    wchar_t path[520];
-    if (!BuildAutoRingStatePath(path, 520u)) {
-        ycrlog::Line("[自动槽状态] 无法构造 multimedia\\save 状态路径；本次存档仍有效，重启后从91开始。");
-        return;
-    }
-
-    HANDLE file = CreateFileW(
-        path, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (file == INVALID_HANDLE_VALUE) {
-        const DWORD error = GetLastError();
-        ycrlog::Text("[自动槽状态] 无法创建 multimedia\\save\\.NEXTAUTOSLOT，Win32错误码=");
-        ycrlog::Unsigned(error);
-        ycrlog::Line("；本次存档仍有效，重启后从91开始。");
-        return;
-    }
-
-    // 文件固定只有三个 ASCII 字节，例如 92 写成“092”。不用 sprintf，可以继续维持无 CRT。
-    const BYTE raw[3] = {
-        static_cast<BYTE>('0' + ((gNextAutoSlot / 100u) % 10u)),
-        static_cast<BYTE>('0' + ((gNextAutoSlot / 10u) % 10u)),
-        static_cast<BYTE>('0' + (gNextAutoSlot % 10u))};
-    DWORD bytesWritten = 0u;
-    const BOOL writeOk = WriteFile(file, raw, 3u, &bytesWritten, nullptr);
-    const DWORD writeError = writeOk == FALSE ? GetLastError() : 0u;
-    CloseHandle(file);
-    if (writeOk == FALSE || bytesWritten != 3u) {
-        // 状态写失败不会把刚完成的游戏存档判成失败；当前进程仍继续使用内存里的正确游标。
-        ycrlog::Text("[自动槽状态] 写入 multimedia\\save\\.NEXTAUTOSLOT 失败，Win32错误码=");
-        ycrlog::Unsigned(writeError);
-        ycrlog::Text("，实际字节数=");
-        ycrlog::Unsigned(bytesWritten);
-        ycrlog::Line("；本次存档仍有效，重启后可能从91开始。");
-        return;
-    }
-    CleanupLegacyAutoRingStateFile();
-    ycrlog::Text("[自动槽状态] 已写入 multimedia\\save\\.NEXTAUTOSLOT，下一候选=");
-    ycrlog::Unsigned(gNextAutoSlot);
-    ycrlog::Line("。");
-}
 
 DWORD NextAutoRingSlot(DWORD slot) {
     return (slot >= kAutoSlotLast) ? kAutoSlotFirst : (slot + 1u);
@@ -1492,6 +1329,7 @@ bool PerformQuickSave() {
     MapState map;
     if (!gConfig.quickEnable || !ReadMapState(&map) || !IsStrictFreeRoamCore(map)) {
         ycrlog::Line("[快速存档] 当前不是严格自由行动状态；本次拒绝，不排队、不使用入口 fallback。");
+        savevisual::FinishSave(false, false);
         PlayConfiguredSound(gConfig.sound.quickSaveFailed);
         return false;
     }
@@ -1500,6 +1338,7 @@ bool PerformQuickSave() {
     ActorState actor;
     if (!ReadControlledActorState(&actor) || gOriginalSavePrepare == nullptr ||
         gOriginalSaveGate == nullptr || gOriginalSaveSlot == nullptr) {
+        savevisual::FinishSave(false, false);
         PlayConfiguredSound(gConfig.sound.quickSaveFailed);
         return false;
     }
@@ -1514,6 +1353,7 @@ bool PerformQuickSave() {
         // 因此只在当前地图确实拥有冻结锚点时授权 Writer fallback；没有锚点仍然立即失败。
         if (!ArmExtendedSaveForMap(map)) {
             ycrlog::Line("[快速存档] 原版 save gate 拒绝，且当前地图没有冻结安全锚点；本次失败。");
+            savevisual::FinishSave(false, false);
             PlayConfiguredSound(gConfig.sound.quickSaveFailed);
             return false;
         }
@@ -1522,10 +1362,14 @@ bool PerformQuickSave() {
 
     void* manager = nullptr;
     if (!GetRuntimeManager(&manager)) {
+        savevisual::FinishSave(false, false);
         PlayConfiguredSound(gConfig.sound.quickSaveFailed);
         return false;
     }
+    savevisual::BeginSave(false);
     const BOOL saved = gOriginalSaveSlot(manager, nullptr, kQuickSaveSlot);
+    // 只观察原版返回值；可视反馈不改Quick的安全门或执行时序。
+    savevisual::FinishSave(false, saved != FALSE);
     if (saved != FALSE) {
         ycrlog::Line("[快速存档] Save000.TSF 写入成功。");
         PlayConfiguredSound(gConfig.sound.quickSaveSuccess);
@@ -1574,7 +1418,9 @@ bool PerformQuickLoad() {
     // +0x13C = 0x27D8，+0x140 = 当前 World，然后 LoadSlot(slot)，最后 0x44B1F0 收尾。
     *reinterpret_cast<volatile DWORD*>(manager + kRuntimeManagerWorldLengthOffset) = kExpectedWorldLength;
     *reinterpret_cast<volatile DWORD*>(manager + kRuntimeManagerWorldPointerOffset) = worldAddress;
+    savevisual::BeginLoad();
     const BOOL loaded = gOriginalLoadSlot(managerVoid, nullptr, kQuickSaveSlot);
+    savevisual::EndLoad();
     gOriginalPostLoad();
 
     if (loaded != FALSE) {
@@ -1620,11 +1466,14 @@ bool PerformAutoSave(const char* reason) {
     if (!ChooseAutoSaveSlot(&slot, &usedEmptySlot)) {
         ClearArm();
         ycrlog::Line("[自动存档] 无法通过游戏文件层选择 91~99 自动槽；本次不覆盖任何自动档。");
+        savevisual::FinishSave(true, false);
         PlayConfiguredSound(gConfig.sound.autoSaveFailed);
         return false;
     }
+    savevisual::BeginSave(true);
     const BOOL saved = gOriginalSaveSlot(manager, nullptr, slot);
     if (saved == FALSE) {
+        savevisual::FinishSave(true, false);
         ClearArm();
         ycrlog::Text("[自动存档] 原版 SaveSlot 失败，原因=");
         ycrlog::Text(reason);
@@ -1643,13 +1492,17 @@ bool PerformAutoSave(const char* reason) {
 
     // 保存成功后立刻用“游戏自己的 File::Open(read)”回读验证。
     // 这是 test5 的关键验收：如果槽91刚保存成功，这里就必须看到91存在；下一次扫描才会走92。
-    if (!GameSaveFileExists(slot)) {
+    const bool readable = GameSaveFileExists(slot);
+    if (!readable) {
         ycrlog::Text("[自动存档诊断] SaveSlot 返回成功，但游戏文件层仍无法回读刚写入的槽；槽=");
         ycrlog::Unsigned(slot);
         ycrlog::Line("。本次不推进环形游标，请保留此行。");
     } else {
+        // 自动分类独立更新，只在原版保存成功且游戏文件层能回读后记录“新”。
+        savevisual::SavedSlot(static_cast<unsigned int>(slot), true);
         const DWORD nextSlot = NextAutoRingSlot(slot);
-        SaveAutoRingState(nextSlot);
+        // SavedSlot已把最新自动槽和下一候选合并原子写入.SAVESTATUS，这里只同步本轮选择缓存。
+        gNextAutoSlot = static_cast<DWORD>(savevisual::NextAutoSlot());
         ycrlog::Text("[自动槽] 游戏文件层已确认槽 ");
         ycrlog::Unsigned(slot);
         ycrlog::Text(" 可读取；下一个环形覆盖候选=");
@@ -1661,6 +1514,7 @@ bool PerformAutoSave(const char* reason) {
     gLastAutoSaveTick = now;
     gLastAutoAttemptTick = now;
     gSceneAutoPending = false;
+    savevisual::FinishSave(true, readable);
     PlayConfiguredSound(gConfig.sound.autoSaveSuccess);
     return true;
 }
@@ -1912,7 +1766,7 @@ bool PrecheckAllHookSites() {
         }
     }
 
-    // 这里只保留 test2 真正会覆写的 5 个 CALL。test1 的三个 SaveSlot constructor CALL
+    // 保留原5个存档CALL，test4另加一处菜单读档通知。test1的三个SaveSlot constructor CALL
     // 已删除，因为父 SaveSlot 现在从三个已闭合 owner 路径只读定位，不再需要修改构造链。
     if (!CheckOriginalSite("正常菜单保存许可CALL", kNormalMenuSaveGateCallRva,
                            kNormalMenuSaveGateCallBytes, 5u, true)) ok = false;
@@ -1924,6 +1778,8 @@ bool PrecheckAllHookSites() {
                            kMenuSaveCallBytes, 5u, true)) ok = false;
     if (!CheckOriginalSite("隐藏命令SaveSlot CALL", kCommandSaveCallRva,
                            kCommandSaveCallBytes, 5u, true)) ok = false;
+    if (!CheckOriginalSite("菜单LoadSlot可视隐藏CALL", kMenuLoadCallRva,
+                           kMenuLoadCallBytes, 5u, true)) ok = false;
 
     if (!CheckOriginalSite("上一页循环page-base读取", kPrevPageBaseReadRva,
                            kPrevPageBaseReadBytes, 6u, true)) ok = false;
@@ -1944,6 +1800,7 @@ extern "C" DWORD __fastcall SafeSaveGateHook(void* runtimeEntry);
 extern "C" void __fastcall SafeMapTickHook(void* sceneContainer, void* unusedEdx);
 extern "C" BOOL __fastcall SafeSaveWriterHook(void* runtimeManager, void* unusedEdx, const char* path);
 extern "C" BOOL __fastcall ProtectedManualSaveHook(void* runtimeManager, void* unusedEdx, DWORD slot);
+extern "C" BOOL __fastcall VisualLoadSlotHook(void* runtimeManager, void* unusedEdx, DWORD slot);
 // MSVC 只允许把 naked 属性写在“函数定义”上，不能写在这种前置声明上。
 // 这里先告诉编译器函数名称和参数即可；文件后面的真正定义仍然保留
 // __declspec(naked)，所以生成的裸汇编入口不会发生任何行为变化。
@@ -1954,7 +1811,7 @@ extern "C" void NextPageBaseLoopHelper();
  * RuntimeHost 安装层
  *
  * 下方只替换“谁拥有内存写入”，不复制安全存档业务。固定菜单字节、分页 helper、
- * 五条存档 CALL 与菜单扩展补丁进入同一个 Runtime 事务；SaveAction vtable 和按钮状态
+ * 五条存档CALL、菜单读档通知与菜单扩展补丁进入同一个Runtime事务；SaveAction vtable和按钮状态
  * 已交给 Runtime Save v1，不再属于本插件事务。
  * 事务提交后，原来的 SafeSaveGateHook/ProtectedManualSaveHook 等业务函数照常工作。
  */
@@ -2168,11 +2025,22 @@ bool InstallAllHooksIntegrated(const CastleRuntimeApiV1* runtimeApi,
         reinterpret_cast<const void*>(&ProtectedManualSaveHook), genericSignature, &temporaryClaim);
     if (result < 0) goto fail_runtime_install;
 
+    // 保存规则不变；唯一新增CALL只让标签在真正进入菜单读档前停止叠加。
+    result = AddRuntimeCall(hookApi, transaction, info.game_module,
+        kMenuLoadCallRva,
+        static_cast<CastleAddress>(reinterpret_cast<SIZE_T>(gExeBase + kOriginalLoadSlotFunctionRva)),
+        reinterpret_cast<const void*>(&VisualLoadSlotHook), genericSignature, &temporaryClaim);
+    if (result < 0) goto fail_runtime_install;
+
     result = hookApi->PreflightTransaction(transaction);
     // 预检失败时仍是未提交事务，显式撤销声明；提交失败则由 Runtime 自己逆序回滚。
     if (result < 0) goto fail_runtime_install;
     result = hookApi->CommitTransaction(transaction);
     if (result < 0) return false;
+    // 最后声明的claim就是菜单LoadSlot通知。取得Runtime稳定next槽，后续其它插件加入链时也自然续接。
+    if (!GetRuntimeBinding(hookApi, temporaryClaim, &gVisualLoadNextSlot)) {
+        ycrlog::Line("[可视反馈] 无法取得菜单读档链next槽，保持原版调用作为退路。");
+    }
     ycrlog::Line("[RuntimeSDK] SaveEnhance 存档事务已提交；SaveAction 策略由 Runtime Save v1 统一执行。");
     return true;
 
@@ -2265,7 +2133,26 @@ extern "C" BOOL __fastcall ProtectedManualSaveHook(
         ClearArm();
         return FALSE;
     }
-    return gOriginalSaveSlot(runtimeManager, unusedEdx, slot);
+    const BOOL saved = gOriginalSaveSlot(runtimeManager, unusedEdx, slot);
+    // 普通菜单与隐藏命令都经过此处；加载/翻页不经过这里，所以浏览不会清除“新”。
+    // 回读只确认槽存在，不声称额外验证了TSF完整性；保存失败绝不移动标记。
+    if (saved != FALSE) {
+        savevisual::SavedSlot(static_cast<unsigned int>(slot), GameSaveFileExists(slot));
+    }
+    return saved;
+}
+
+extern "C" BOOL __fastcall VisualLoadSlotHook(
+    void* runtimeManager, void* unusedEdx, DWORD slot) {
+    // 仅在实际LoadSlot调用期间隐藏，不把打开确认框当成开始读档。
+    // 返回后原版+0x5B9/+0x580接续隐藏到UI关闭；元数据与“新”的归属完全不变。
+    const auto next = gVisualLoadNextSlot && *gVisualLoadNextSlot
+        ? reinterpret_cast<OriginalLoadSlotFunction>(*gVisualLoadNextSlot) : gOriginalLoadSlot;
+    if (next == nullptr) return FALSE;
+    savevisual::BeginLoad();
+    const BOOL loaded = next(runtimeManager, unusedEdx, slot);
+    savevisual::EndLoad();
+    return loaded;
 }
 
 // ============================================================================
@@ -2419,6 +2306,31 @@ static bool BindRuntimeServices(const CastleRuntimeApiV1* runtimeApi,
     return true;
 }
 
+static bool BuildVisualPath(const wchar_t* relative, wchar_t* out, unsigned int capacity) {
+    // 与已验收的.NEXTAUTOSLOT沿同一路径构造路线，资源和状态都以RPG.exe为基准。
+    return ycrlog::BuildModuleFilePath(nullptr, relative, out, capacity);
+}
+
+static void InitializeVisuals(const CastleRuntimeApiV1* runtimeApi, CastlePluginHandle plugin) {
+    const auto* overlay = static_cast<const CastleOverlayApiV1*>(QueryRuntimeInterface(
+        runtimeApi, CASTLE_OVERLAY_INTERFACE_ID, sizeof(CASTLE_OVERLAY_INTERFACE_ID) - 1u,
+        CASTLE_OVERLAY_API_VERSION_1, CASTLE_SIZEOF_OVERLAY_API_V1,
+        CASTLE_OVERLAY_CAP_BEFORE_RENDERER_PRESENT));
+    const auto* display = static_cast<const CastleDisplayApiV1*>(QueryRuntimeInterface(
+        runtimeApi, CASTLE_DISPLAY_INTERFACE_ID, sizeof(CASTLE_DISPLAY_INTERFACE_ID) - 1u,
+        CASTLE_DISPLAY_API_VERSION_1, CASTLE_SIZEOF_DISPLAY_API_V1, 0u));
+    savevisual::Options options = {};
+    options.notification = ReadTomlS32("Visual", "Notification", 1, 0, 1) != 0;
+    options.slotLabels = ReadTomlS32("Visual", "SlotLabels", 1, 0, 1) != 0;
+    options.latestMark = ReadTomlS32("Visual", "LatestMark", 1, 0, 1) != 0;
+    options.pulse = ReadTomlS32("Visual", "NewPulse", 1, 0, 1) != 0;
+    options.bottom = ReadTomlS32("Visual", "BottomRight", 1, 0, 1) != 0;
+    options.slotTextWeight = static_cast<unsigned int>(ReadTomlS32("Visual", "SlotTextWeight", 0, 0, 200));
+    options.slotTextOffsetY = static_cast<int>(ReadTomlS32("Visual", "SlotTextOffsetY", -2, -12, 12));
+    savevisual::Initialize(overlay, display, gRuntimeClockApi, plugin, gExeBase,
+        options, BuildVisualPath, ycrlog::Line);
+}
+
 static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
                                           CastlePluginHandle pluginHandle) {
     const auto* logApi = static_cast<const CastleLogApiV1*>(QueryRuntimeInterface(
@@ -2428,7 +2340,7 @@ static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
     if (logApi == nullptr) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     ycrlog::BindRuntime(logApi, pluginHandle);
     ycrlog::Open(gSelfModule, L"Castle_SaveEnhance.log");
-    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.2.0 RuntimeSDK 启动。");
+    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.3.0-test4 RuntimeSDK 启动。");
     ycrlog::Line("By Luminous with ChatGPT");
     ycrlog::Line("[装载] RuntimeHost：Hook/Input/Save/Clock/Path/File/Module/TOML 统一协调。");
     ycrlog::Line("[槽位] 0=Quick，1~90=Manual，91~99=Rolling Auto；普通菜单保留槽只读。");
@@ -2449,7 +2361,7 @@ static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
     }
 
     LoadConfig();
-    LoadAutoRingState();
+    gNextAutoSlot = static_cast<DWORD>(savevisual::LoadStatus(BuildVisualPath, ycrlog::Line));
     ycrlog::Text("[配置] QuickLoadPresses=");
     ycrlog::Unsigned(gConfig.quickLoadPresses);
     ycrlog::Text(" WindowMs=");
@@ -2472,6 +2384,8 @@ static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
         return CASTLE_ERROR_EXPECTED_BYTES;
     }
 
+    // 可视层属于可选反馈。资源/Overlay不可用时只记录降级，不拆掉已成功安装的存档核心。
+    InitializeVisuals(runtimeApi, pluginHandle);
     ycrlog::Line("[状态] SaveEnhance 已完整安装，可以开始实机功能测试。");
     return CASTLE_OK;
 }
@@ -2497,6 +2411,7 @@ static void CASTLE_RUNTIME_CALL SaveEnhance_RuntimeFault(CastleResult failure,
 
 static void CASTLE_RUNTIME_CALL SaveEnhance_ProcessExit(void* userContext) {
     (void)userContext;
+    savevisual::Shutdown();
     if (gRuntimeSaveApi != nullptr && gAutoSlotPolicy != 0u) {
         gRuntimeSaveApi->UnregisterManualSavePolicy(gAutoSlotPolicy);
     }
@@ -2515,8 +2430,8 @@ static void CASTLE_RUNTIME_CALL SaveEnhance_ProcessExit(void* userContext) {
 
 static const char gSdkPluginId[] = "org.castlereforge.saveenhance";
 static const char gSdkDisplayName[] = "Castle SaveEnhance";
-static const char gSdkVersion[] = "0.2.0";
-static const char gSdkBuild[] = "runtimesdk-v1";
+static const char gSdkVersion[] = "0.3.0-test4";
+static const char gSdkBuild[] = "runtimesdk-visual-v1";
 static const CastlePluginDescriptorV1 gSdkDescriptor = {
     CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,
     CASTLE_PLUGIN_DESCRIPTOR_V1,

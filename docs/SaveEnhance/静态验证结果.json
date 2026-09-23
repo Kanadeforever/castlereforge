@@ -1,6 +1,6 @@
 {
   "tool": "verify_saveenhance_candidate.py",
-  "version": "v0.1.0-test7",
+  "version": "v0.3.0-test4",
   "all_passed": true,
   "results": [
     {
@@ -125,6 +125,12 @@
     },
     {
       "group": "原版 RPG.exe",
+      "name": "CALL Hook：菜单实际读档前隐藏标签",
+      "ok": true,
+      "detail": "VA=0x00424D98 预期=E8 33 67 01 00 实际=E8 33 67 01 00"
+    },
+    {
+      "group": "原版 RPG.exe",
       "name": "SaveAction vtable Update 指针",
       "ok": true,
       "detail": "VA=0x00460BA8 预期=C0 62 42 00 实际=C0 62 42 00"
@@ -184,6 +190,36 @@
       "detail": "VA=0x0046A43C 预期=2E 54 53 46 00 实际=2E 54 53 46 00"
     },
     {
+      "group": "原版 RPG.exe",
+      "name": "可视层只读证据：SaveSlot对象vtable",
+      "ok": true,
+      "detail": "VA=0x004245E4 预期=C7 06 50 0B 46 00 实际=C7 06 50 0B 46 00"
+    },
+    {
+      "group": "原版 RPG.exe",
+      "name": "可视层只读证据：存档行对象vtable",
+      "ok": true,
+      "detail": "VA=0x004258D6 预期=C7 06 70 0B 46 00 实际=C7 06 70 0B 46 00"
+    },
+    {
+      "group": "原版 RPG.exe",
+      "name": "可视层只读证据：原槽号相对坐标540/10",
+      "ok": true,
+      "detail": "VA=0x00425C50 预期=6A 0A 68 1C 02 00 00 实际=6A 0A 68 1C 02 00 00"
+    },
+    {
+      "group": "原版 RPG.exe",
+      "name": "可视层只读证据：控件父坐标与相对坐标",
+      "ok": true,
+      "detail": "VA=0x004316AD 预期=8B 45 14 8B 55 20 8B 7D 24 实际=8B 45 14 8B 55 20 8B 7D 24"
+    },
+    {
+      "group": "原版 RPG.exe",
+      "name": "可视层只读证据：选中行高亮计数并非翻页锁",
+      "ok": true,
+      "detail": "VA=0x00424CB9 预期=C7 86 BC 05 00 00 04 00 00 00 实际=C7 86 BC 05 00 00 04 00 00 00"
+    },
+    {
       "group": "MiscInfo.ENC",
       "name": "MiscInfo.ENC 文件大小",
       "ok": true,
@@ -217,13 +253,13 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI 入口点非零",
       "ok": true,
-      "detail": "AddressOfEntryPoint=0x7990"
+      "detail": "AddressOfEntryPoint=0x6740"
     },
     {
       "group": "Castle_SaveEnhance.asi",
-      "name": "ASI 导出 Castle Mod Loader 正式入口 InitializeASI",
+      "name": "ASI 导出 Runtime Client 查询、初始化及 Loader-ready 入口",
       "ok": true,
-      "detail": "导出=InitializeASI"
+      "detail": "导出=CastlePlugin_Query, CastleRuntimeClient_NotifyLoaderReady, InitializeASI"
     },
     {
       "group": "Castle_SaveEnhance.asi",
@@ -235,13 +271,13 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI 必需 KERNEL32 导入齐全且未被装饰",
       "ok": true,
-      "detail": "缺少=无; 实际=CloseHandle, CreateDirectoryW, CreateFileW, DeleteFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetLastError, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile"
+      "detail": "缺少=无; 实际=CloseHandle, CreateDirectoryW, CreateFileW, CreateToolhelp32Snapshot, DeleteFileW, DisableThreadLibraryCalls, FlushFileBuffers, FlushInstructionCache, FreeLibrary, GetCurrentProcess, GetCurrentProcessId, GetFileAttributesW, GetFileSizeEx, GetLastError, GetModuleFileNameW, GetModuleHandleW, GetProcAddress, GetProcessHeap, HeapAlloc, HeapFree, LoadLibraryW, Module32FirstW, Module32NextW, MoveFileExW, MultiByteToWideChar, ReadFile, SetErrorMode, SetFilePointerEx, SetLastError, Sleep, VirtualProtect, VirtualQuery, WideCharToMultiByte, WriteFile"
     },
     {
       "group": "Castle_SaveEnhance.asi",
-      "name": "NextAutoSlot 不再通过 INI 写回",
+      "name": "官方配置和 NextAutoSlot 不再读写旧 INI",
       "ok": true,
-      "detail": "WritePrivateProfileStringW=不存在"
+      "detail": "PrivateProfile 导入=无"
     },
     {
       "group": "Castle_SaveEnhance.asi",
@@ -263,13 +299,43 @@
     },
     {
       "group": "Castle_SaveEnhance.asi",
-      "name": "ASI 含正确自动槽路径 ..\\multimedia\\save\\.NEXTAUTOSLOT",
+      "name": "ASI 含旧自动槽迁移路径 ..\\multimedia\\save\\.NEXTAUTOSLOT",
       "ok": true,
       "detail": "存在"
     },
     {
       "group": "Castle_SaveEnhance.asi",
-      "name": "ASI 含独立保留槽手柄焦点实现",
+      "name": "ASI 使用 Runtime Save 保留槽策略且没有旧私有手柄接管",
+      "ok": true,
+      "detail": "存在"
+    },
+    {
+      "group": "Castle_SaveEnhance.asi",
+      "name": "合并存档状态路径",
+      "ok": true,
+      "detail": "存在"
+    },
+    {
+      "group": "Castle_SaveEnhance.asi",
+      "name": "旧最新槽迁移路径",
+      "ok": true,
+      "detail": "存在"
+    },
+    {
+      "group": "Castle_SaveEnhance.asi",
+      "name": "Runtime Overlay接口",
+      "ok": true,
+      "detail": "存在"
+    },
+    {
+      "group": "Castle_SaveEnhance.asi",
+      "name": "Runtime Display接口",
+      "ok": true,
+      "detail": "存在"
+    },
+    {
+      "group": "Castle_SaveEnhance.asi",
+      "name": "当前候选版本",
       "ok": true,
       "detail": "存在"
     },
@@ -277,7 +343,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI SHA-256（记录）",
       "ok": true,
-      "detail": "db9ccdb1b3a2cfac6bd0d6f32b9a8f69d78a212bc3246f0ec43a935407ea5bed"
+      "detail": "10c9ffdc91ab48dca035910228aad084e7b1903d19a7b25038c4c99eace504f3"
     }
   ]
 }

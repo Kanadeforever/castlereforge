@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》Castle_SaveEnhance v0.1.0-test7 静态验证工具。
+《幽城幻剑录》Castle_SaveEnhance v0.3.0-test4 静态验证工具。
 
 这个工具只读取文件，不会修改 RPG.exe、MiscInfo.ENC 或 Castle_SaveEnhance.asi。
 它的目标是让任何接手者都能重复确认：当前候选是不是针对我们锁定的台湾第三版原版，
@@ -72,7 +72,7 @@ GAME_FILE_PREFIXES: Sequence[Tuple[str, int, bytes]] = (
 )
 
 # ============================================================================
-# 三、5 个 5-byte CALL Hook
+# 三、6个5字节CALL（原5个存档入口加菜单读档可视通知）
 # ============================================================================
 CALL_HOOK_SITES: Sequence[Tuple[str, int, bytes]] = (
     ("正常菜单保存许可", 0x0040CCC2, bytes.fromhex("E8 F9 D3 FF FF")),
@@ -80,11 +80,11 @@ CALL_HOOK_SITES: Sequence[Tuple[str, int, bytes]] = (
     ("SaveSlot 内部 Writer", 0x0043B34C, bytes.fromhex("E8 0F 00 00 00")),
     ("存档菜单手动 SaveSlot", 0x00424DF2, bytes.fromhex("E8 29 65 01 00")),
     ("隐藏命令手动 SaveSlot", 0x0044A82D, bytes.fromhex("E8 EE 0A FF FF")),
+    ("菜单实际读档前隐藏标签", 0x00424D98, bytes.fromhex("E8 33 67 01 00")),
 )
 
-# SaveAction vtable +0x18 原本指向 0x4262C0，SaveEnhance 固定替换这个 Update 虚函数。
-# test7 在 PadSupport Public API v1 就绪后，还会动态链住 Update 内部 Hit/Event 当前目标；
-# 目标 EXE 的静态基线仍必须是下面的原版 vtable 指针。
+# SaveAction vtable +0x18 原本指向0x4262C0，当前只有Runtime Save协调该虚函数。
+# SaveEnhance不再拥有旧test7的私有手柄链；这里只核对共享桥需要的原版静态基线。
 SAVE_ACTION_VTABLE_SITE = (
     "SaveAction vtable Update 指针",
     0x00460BA8,
@@ -416,6 +416,15 @@ def verify_rpg(path: Path) -> List[CheckResult]:
         add_va_check(results, pe, name, va, expected)
     for name, va, expected in STRING_SITES:
         add_va_check(results, pe, f"存档命名证据：{name}", va, expected)
+    # 可视层只读这些对象和字段，不在下面任何地址安装补丁。
+    for name, va, code in (
+        ("SaveSlot对象vtable", 0x4245E4, "C7 06 50 0B 46 00"),
+        ("存档行对象vtable", 0x4258D6, "C7 06 70 0B 46 00"),
+        ("原槽号相对坐标540/10", 0x425C50, "6A 0A 68 1C 02 00 00"),
+        ("控件父坐标与相对坐标", 0x4316AD, "8B 45 14 8B 55 20 8B 7D 24"),
+        ("选中行高亮计数并非翻页锁", 0x424CB9, "C7 86 BC 05 00 00 04 00 00 00"),
+    ):
+        add_va_check(results, pe, "可视层只读证据：" + name, va, bytes.fromhex(code))
     return results
 
 
@@ -554,7 +563,7 @@ def verify_asi(path: Path) -> List[CheckResult]:
             )
         )
 
-        # 用户已经明确要求 NextAutoSlot 只能写进 Save\.NEXTAUTOSLOT，不能再回写 INI。
+        # 用户要求状态不回写INI；test4已统一到真实存档目录.SAVESTATUS，旧游标仅迁移。
         # 如果以后有人误把 WritePrivateProfileStringW 加回源码，这条导入表硬检查会立刻失败，
         # 不会只靠人工阅读文档才发现轮换状态又跟着 INI 走了。
         profile_names = {name for name in kernel_names if "PrivateProfile" in name}
@@ -602,7 +611,7 @@ def verify_asi(path: Path) -> List[CheckResult]:
     state_path_marker = "..\\multimedia\\save\\.NEXTAUTOSLOT".encode("utf-16le")
     results.append(
         CheckResult(
-            "ASI 含正确自动槽路径 ..\\multimedia\\save\\.NEXTAUTOSLOT",
+            "ASI 含旧自动槽迁移路径 ..\\multimedia\\save\\.NEXTAUTOSLOT",
             state_path_marker in pe.data,
             "存在" if state_path_marker in pe.data else "未找到",
         )
@@ -619,6 +628,14 @@ def verify_asi(path: Path) -> List[CheckResult]:
             "存在" if reserved_ui_marker in pe.data else "未找到",
         )
     )
+    for name, marker in (
+        ("合并存档状态路径", "..\\multimedia\\save\\.SAVESTATUS".encode("utf-16le")),
+        ("旧最新槽迁移路径", "..\\multimedia\\save\\.LATESTSLOTS".encode("utf-16le")),
+        ("Runtime Overlay接口", b"org.castlereforge.game.overlay"),
+        ("Runtime Display接口", b"org.castlereforge.game.display"),
+        ("当前候选版本", b"0.3.0-test4"),
+    ):
+        results.append(CheckResult(name, marker in pe.data, "存在" if marker in pe.data else "缺失"))
     results.append(CheckResult("ASI SHA-256（记录）", True, sha256_bytes(pe.data)))
     return results
 
@@ -668,7 +685,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.json_output is not None:
         payload = {
             "tool": "verify_saveenhance_candidate.py",
-            "version": "v0.1.0-test7",
+            "version": "v0.3.0-test4",
             "all_passed": all_ok,
             "results": [
                 {

@@ -1,4 +1,3 @@
-
 === 原版 RPG.exe ===
 [PASS] RPG.exe SHA-256
        预期=8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f 实际=8294839343b1a7845ddae31ed16216b05850efd39a742e5ca7701aadca97287f
@@ -40,6 +39,8 @@
        VA=0x00424DF2 预期=E8 29 65 01 00 实际=E8 29 65 01 00
 [PASS] CALL Hook：隐藏命令手动 SaveSlot
        VA=0x0044A82D 预期=E8 EE 0A FF FF 实际=E8 EE 0A FF FF
+[PASS] CALL Hook：菜单实际读档前隐藏标签
+       VA=0x00424D98 预期=E8 33 67 01 00 实际=E8 33 67 01 00
 [PASS] SaveAction vtable Update 指针
        VA=0x00460BA8 预期=C0 62 42 00 实际=C0 62 42 00
 [PASS] 原版 save gate 0x40A0C0
@@ -60,6 +61,16 @@
        VA=0x0046BB0C 预期=53 61 76 65 00 实际=53 61 76 65 00
 [PASS] 存档命名证据：TSF 扩展名
        VA=0x0046A43C 预期=2E 54 53 46 00 实际=2E 54 53 46 00
+[PASS] 可视层只读证据：SaveSlot对象vtable
+       VA=0x004245E4 预期=C7 06 50 0B 46 00 实际=C7 06 50 0B 46 00
+[PASS] 可视层只读证据：存档行对象vtable
+       VA=0x004258D6 预期=C7 06 70 0B 46 00 实际=C7 06 70 0B 46 00
+[PASS] 可视层只读证据：原槽号相对坐标540/10
+       VA=0x00425C50 预期=6A 0A 68 1C 02 00 00 实际=6A 0A 68 1C 02 00 00
+[PASS] 可视层只读证据：控件父坐标与相对坐标
+       VA=0x004316AD 预期=8B 45 14 8B 55 20 8B 7D 24 实际=8B 45 14 8B 55 20 8B 7D 24
+[PASS] 可视层只读证据：选中行高亮计数并非翻页锁
+       VA=0x00424CB9 预期=C7 86 BC 05 00 00 04 00 00 00 实际=C7 86 BC 05 00 00 04 00 00 00
 
 === MiscInfo.ENC ===
 [PASS] MiscInfo.ENC 文件大小
@@ -75,27 +86,37 @@
 [PASS] ASI 带 DLL 标志
        Characteristics=0x2102
 [PASS] ASI 入口点非零
-       AddressOfEntryPoint=0x7990
-[PASS] ASI 导出 Castle Mod Loader 正式入口 InitializeASI
-       导出=InitializeASI
+       AddressOfEntryPoint=0x6740
+[PASS] ASI 导出 Runtime Client 查询、初始化及 Loader-ready 入口
+       导出=CastlePlugin_Query, CastleRuntimeClient_NotifyLoaderReady, InitializeASI
 [PASS] ASI 静态只导入 KERNEL32.dll
        DLL=KERNEL32.dll
 [PASS] ASI 必需 KERNEL32 导入齐全且未被装饰
-       缺少=无; 实际=CloseHandle, CreateDirectoryW, CreateFileW, DeleteFileW, DisableThreadLibraryCalls, FlushInstructionCache, GetCurrentProcess, GetCurrentProcessId, GetFileSize, GetLastError, GetModuleFileNameW, GetModuleHandleA, GetModuleHandleW, GetPrivateProfileIntW, GetPrivateProfileStringW, GetProcAddress, GetProcessHeap, GetTickCount, HeapAlloc, HeapFree, LoadLibraryW, ReadFile, VirtualProtect, VirtualQuery, WriteFile
-[PASS] NextAutoSlot 不再通过 INI 写回
-       WritePrivateProfileStringW=不存在
+       缺少=无; 实际=CloseHandle, CreateDirectoryW, CreateFileW, CreateToolhelp32Snapshot, DeleteFileW, DisableThreadLibraryCalls, FlushFileBuffers, FlushInstructionCache, FreeLibrary, GetCurrentProcess, GetCurrentProcessId, GetFileAttributesW, GetFileSizeEx, GetLastError, GetModuleFileNameW, GetModuleHandleW, GetProcAddress, GetProcessHeap, HeapAlloc, HeapFree, LoadLibraryW, Module32FirstW, Module32NextW, MoveFileExW, MultiByteToWideChar, ReadFile, SetErrorMode, SetFilePointerEx, SetLastError, Sleep, VirtualProtect, VirtualQuery, WideCharToMultiByte, WriteFile
+[PASS] 官方配置和 NextAutoSlot 不再读写旧 INI
+       PrivateProfile 导入=无
 [PASS] ASI 无 CRT/UCRT/VCRUNTIME 静态依赖
        发现=无
 [PASS] user32/winmm 保持动态可选依赖
        Import Table 中没有 user32/winmm；运行时需要时才 LoadLibrary
 [PASS] ASI 含 Castle_SaveEnhance 身份字符串
        存在
-[PASS] ASI 含正确自动槽路径 ..\multimedia\save\.NEXTAUTOSLOT
+[PASS] ASI 含旧自动槽迁移路径 ..\multimedia\save\.NEXTAUTOSLOT
        存在
-[PASS] ASI 含独立保留槽手柄焦点实现
+[PASS] ASI 使用 Runtime Save 保留槽策略且没有旧私有手柄接管
+       存在
+[PASS] 合并存档状态路径
+       存在
+[PASS] 旧最新槽迁移路径
+       存在
+[PASS] Runtime Overlay接口
+       存在
+[PASS] Runtime Display接口
+       存在
+[PASS] 当前候选版本
        存在
 [PASS] ASI SHA-256（记录）
-       db9ccdb1b3a2cfac6bd0d6f32b9a8f69d78a212bc3246f0ec43a935407ea5bed
+       10c9ffdc91ab48dca035910228aad084e7b1903d19a7b25038c4c99eace504f3
 
 [INFO] JSON 报告已写入：docs\SaveEnhance\静态验证结果.json
 

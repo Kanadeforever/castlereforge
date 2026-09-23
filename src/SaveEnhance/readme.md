@@ -1,6 +1,6 @@
 # 存档增强构建说明
 
-本目录构建 `Castle_SaveEnhance.asi`。官方版必须与 `Castle_Runtime.dll` 同目录运行；可以脱离
+本目录构建 `Castle_SaveEnhance.asi`，当前候选为v0.3.0-test4。官方版必须与 `Castle_Runtime.dll` 同目录运行；可以脱离
 Castle Mod Loader 和其它业务插件，手柄联动在没有 PadSupport 时自动不可用，键盘功能保留。
 
 ## 编译环境
@@ -13,7 +13,7 @@ Windows、Visual Studio C++ x86 工具链及 Windows SDK。脚本通过 vswhere 
 
 ## 构建过程与产物
 
-脚本编译业务 C++ 与 RuntimeSDK Client C 单元，链接 PE32/i386、无 CRT 的 ASI，再验证 DLL 标志、
+脚本编译存档核心、SaveVisual.cpp与RuntimeSDK Client C单元，链接PE32/i386、无CRT的ASI，再验证DLL标志、
 非零入口和 `InitializeASI` 导出。任一编译、链接或验证失败都返回非零退出码。
 
 单项目产物位于仓库 `build/`：
@@ -32,4 +32,21 @@ Windows、Visual Studio C++ x86 工具链及 Windows SDK。脚本通过 vswhere 
 真实存读档、0/91～99 保留槽与手柄导航。原始光盘 EXE 的测试组合必须带 Runtime 与 NoCD。
 
 SaveAction 由 Runtime Save 协调；配置、日志、WAV 文件、依赖和毫秒时间分别通过 TOML、Log、
-File/Path、Module、Clock。`.NEXTAUTOSLOT` 保留既有三字节存档游标，它不是共享增强 `.state`。
+File/Path、Module、Clock。`.SAVESTATUS`合并最新手动槽、最新自动槽及轮换游标，不是共享增强`.state`。
+
+## 可视反馈与测试
+
+可视层只注册Runtime Overlay/Display回调，不新增Present Hook，不改其它插件。书卷和Font24字形在运行时
+只读加载，无需提取资源随ASI分发；Visual参数见模板。真实存档目录的`.SAVESTATUS`从旧`.LATESTSLOTS`和
+`.NEXTAUTOSLOT`安全迁移；写入成功才清理旧文件。快速槽不占“新”标记，不写回配置。
+槽位字重0～200细调、垂直偏移默认-2；读档时隐藏标识；原版光标不透明像素保持在文字之上。
+批处理不含注释、不复制Markdown，echo原有尾随空格保留。
+
+从仓库根运行宿主测试（需要MSVC x86，不启动游戏）：
+
+```text
+python -B -X utf8 src/SaveEnhance/tools/test_savevisual.py --game-directory "参考资料/Castle"
+```
+
+参考资源只读，测试状态和编译物在本模块`_build`下隔离并清理。test4有1033项宿主检查、0失败。
+用户已验收书卷、提示描边、无宽屏提示及自动“新”；test4细调/对齐、loading隐藏、合并迁移与图层仍需实机复测。

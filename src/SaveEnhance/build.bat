@@ -1,12 +1,8 @@
-﻿@echo off
+@echo off
 chcp 65001 >nul
 setlocal EnableExtensions DisableDelayedExpansion
 
 cd /d "%~dp0"
-
-rem ============================================================  
-rem 目录  
-rem ============================================================  
 
 set "ROOT=%~dp0"
 set "SRC=%ROOT%source"
@@ -17,10 +13,6 @@ set "TOOLS_CACHE=%ROOT%tools\__pycache__"
 set "TEMPLATE_TOML=%ROOT%templete\Castle_SaveEnhance.toml"
 
 set "POWERSHELL_EXE=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
-
-rem ============================================================  
-rem 自动定位 Visual Studio / MSVC x86 工具链  
-rem ============================================================  
 
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 set "VSINSTALL="
@@ -48,10 +40,6 @@ if defined VSINSTALL (
 if not defined VSINSTALL (
     echo [提示] 未通过 vswhere 定位到 Visual Studio，将尝试使用当前 PATH 中的工具链。  
 )
-
-rem ============================================================  
-rem 检查构建工具  
-rem ============================================================  
 
 where cl.exe >nul 2>nul
 if errorlevel 1 (
@@ -91,10 +79,6 @@ if not exist "%SRC%\Castle_SaveEnhance.cpp" (
     goto :fail
 )
 
-rem ============================================================ 
-rem 准备构建目录  
-rem ============================================================ 
-
 if not exist "%OUT%" mkdir "%OUT%"
 if errorlevel 1 (
     echo [错误] 无法创建输出目录：  
@@ -115,10 +99,6 @@ if errorlevel 1 (
 del /q "%OUT%\Castle_SaveEnhance.asi" 2>nul
 del /q "%OUT%\Castle_SaveEnhance.toml" 2>nul
 
-rem ============================================================ 
-rem 编译  
-rem ============================================================ 
-
 echo [1/4] 编译 Castle_SaveEnhance.cpp...  
 
 cl.exe /nologo /c /TP /std:c++17 /utf-8 ^
@@ -134,6 +114,10 @@ cl.exe /nologo /c /TP /std:c++17 /utf-8 ^
 
 if errorlevel 1 goto :fail
 
+cl.exe /nologo /c /TP /std:c++17 /utf-8 /O2 /Oi- /W4 /WX /GR- /GS- /Gs999999999 /Zl ^
+    /I"%SDK%\include" /Fo"%OBJ%\SaveVisual.obj" "%SRC%\SaveVisual.cpp"
+if errorlevel 1 goto :fail
+
 cl.exe /nologo /c /TC /utf-8 /O2 /Oi- /W4 /WX /GS- /Gs999999999 /Zl ^
     /I"%SDK%\include" /I"%SDK%\client" ^
     /Fo"%OBJ%\runtime_client.obj" "%SDK%\client\runtime_client.c"
@@ -142,10 +126,6 @@ cl.exe /nologo /c /TC /utf-8 /O2 /Oi- /W4 /WX /GS- /Gs999999999 /Zl ^
     /I"%SDK%\include" /I"%SDK%\client" ^
     /Fo"%OBJ%\runtime_entry_gate.obj" "%SDK%\client\runtime_entry_gate.c"
 if errorlevel 1 goto :fail
-
-rem ============================================================ 
-rem 链接  
-rem ============================================================ 
 
 echo [2/4] 链接 PE32 Castle_SaveEnhance.asi...  
 
@@ -160,15 +140,12 @@ link.exe /nologo ^
     /DEF:"%SRC%\Castle_SaveEnhance.def" ^
     /OUT:"%OUT%\Castle_SaveEnhance.asi" ^
     "%OBJ%\Castle_SaveEnhance.obj" ^
+    "%OBJ%\SaveVisual.obj" ^
     "%OBJ%\runtime_client.obj" ^
     "%OBJ%\runtime_entry_gate.obj" ^
     kernel32.lib
 
 if errorlevel 1 goto :fail
-
-rem ============================================================ 
-rem PE 基础验证  
-rem ============================================================ 
 
 echo [3/4] 验证 PE32、DLL、入口点与 InitializeASI 导出...  
 
@@ -209,10 +186,6 @@ if errorlevel 1 (
     goto :fail
 )
 
-rem ============================================================ 
-rem 复制配置  
-rem ============================================================ 
-
 echo [4/4] 复制 Castle_SaveEnhance.toml...  
 
 copy /y "%TEMPLATE_TOML%" "%OUT%\Castle_SaveEnhance.toml" >nul
@@ -220,10 +193,6 @@ if errorlevel 1 (
     echo [错误] 复制 TOML 失败。  
     goto :fail
 )
-
-rem ============================================================ 
-rem 清理  
-rem ============================================================ 
 
 if exist "%OBJ%" rmdir /s /q "%OBJ%"
 if exist "%TOOLS_CACHE%" rmdir /s /q "%TOOLS_CACHE%"

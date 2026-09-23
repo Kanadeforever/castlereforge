@@ -67,8 +67,8 @@ typedef DWORD* LPDWORD;
 #define PAGE_EXECUTE_WRITECOPY 0x00000080u
 #define PAGE_GUARD 0x00000100u
 
-// CreateFileW / ReadFile / WriteFile 只服务兼容的三字节 .NEXTAUTOSLOT 游标。
-// WAV 已由 Runtime File 读取，日志已由 Runtime Log 写入。
+// 本头文件保留已有Win32最小声明；合并状态.SAVESTATUS及旧游标迁移在SaveVisual编译单元处理。
+// WAV由Runtime File读取，日志由Runtime Log写入，不恢复游戏内部File::Read/Write试验。
 #define GENERIC_READ 0x80000000u
 #define GENERIC_WRITE 0x40000000u
 #define FILE_SHARE_READ 0x00000001u
