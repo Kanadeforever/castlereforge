@@ -86,7 +86,7 @@
 [PASS] ASI 带 DLL 标志
        Characteristics=0x2102
 [PASS] ASI 入口点非零
-       AddressOfEntryPoint=0x6740
+       AddressOfEntryPoint=0x67B0
 [PASS] ASI 导出 Runtime Client 查询、初始化及 Loader-ready 入口
        导出=CastlePlugin_Query, CastleRuntimeClient_NotifyLoaderReady, InitializeASI
 [PASS] ASI 静态只导入 KERNEL32.dll
@@ -113,10 +113,12 @@
        存在
 [PASS] Runtime Display接口
        存在
+[PASS] 槽位描边配置入口
+       存在
 [PASS] 当前候选版本
        存在
 [PASS] ASI SHA-256（记录）
-       10c9ffdc91ab48dca035910228aad084e7b1903d19a7b25038c4c99eace504f3
+       68e0eeb25e24758174b65664083a5e9516456ee62c3081a3d0a388eb09ef1ba0
 
 [INFO] JSON 报告已写入：docs\SaveEnhance\静态验证结果.json
 

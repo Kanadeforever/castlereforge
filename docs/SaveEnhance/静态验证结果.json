@@ -1,6 +1,6 @@
 {
   "tool": "verify_saveenhance_candidate.py",
-  "version": "v0.3.0-test4",
+  "version": "v0.3.0-test5",
   "all_passed": true,
   "results": [
     {
@@ -253,7 +253,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI 入口点非零",
       "ok": true,
-      "detail": "AddressOfEntryPoint=0x6740"
+      "detail": "AddressOfEntryPoint=0x67B0"
     },
     {
       "group": "Castle_SaveEnhance.asi",
@@ -335,6 +335,12 @@
     },
     {
       "group": "Castle_SaveEnhance.asi",
+      "name": "槽位描边配置入口",
+      "ok": true,
+      "detail": "存在"
+    },
+    {
+      "group": "Castle_SaveEnhance.asi",
       "name": "当前候选版本",
       "ok": true,
       "detail": "存在"
@@ -343,7 +349,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI SHA-256（记录）",
       "ok": true,
-      "detail": "10c9ffdc91ab48dca035910228aad084e7b1903d19a7b25038c4c99eace504f3"
+      "detail": "68e0eeb25e24758174b65664083a5e9516456ee62c3081a3d0a388eb09ef1ba0"
     }
   ]
 }

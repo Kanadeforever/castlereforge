@@ -434,10 +434,10 @@ void DrawRows(Canvas& canvas, const Row* rows, U32 count, const CastleDisplayGeo
         int left = right;
         if (gOptions.slotLabels && (row.slot == 0 || AutoSlot(row.slot))) {
             left -= 40;
-            DrawWord(canvas, left, y, row.slot == 0 ? quick : automatic, 2, 20, 0x682D16, false, gOptions.slotTextWeight);
+            DrawWord(canvas, left, y, row.slot == 0 ? quick : automatic, 2, 20, 0x682D16, gOptions.slotTextOutline, gOptions.slotTextWeight);
         }
         if (gOptions.latestMark && IsLatest(gLatest, row.slot, row.hasData)) {
-            DrawWord(canvas, left - 28, y, fresh, 1, 20, NewRed(now, gOptions.pulse), false, gOptions.slotTextWeight);
+            DrawWord(canvas, left - 28, y, fresh, 1, 20, NewRed(now, gOptions.pulse), gOptions.slotTextOutline, gOptions.slotTextWeight);
         }
     }
 }

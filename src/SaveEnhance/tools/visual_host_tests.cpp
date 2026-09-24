@@ -354,7 +354,7 @@ static void RenderingTests() {
     desc.lpSurface = gPixels; desc.dwWidth = 640; desc.dwHeight = 480; desc.lPitch = 640 * 4;
     Check(CanvasFormat(desc, canvas), "最新标记测试画布");
     CastleDisplayGeometryV1 rowGeometry = {};
-    gOptions = {false, true, true, false, true, 0, 0};
+    gOptions = {false, true, true, false, true, 0, 0, false};
     gLatest = {2, 95};
     const Row latestRows[2] = {{580, 40, 2, true}, {580, 100, 95, true}};
     memset(gPixels, 0, sizeof(gPixels));
@@ -404,7 +404,7 @@ static void RenderingTests() {
     static CastleDisplayApiV1 display = {}; display.GetGeometry = FakeGeometry;
     gClock = &clock; gDisplay = &display;
     gExe = renderer; // 本段关闭槽位读取，因此不会把模拟renderer当作真正EXE读。
-    gOptions = {true, false, false, true, true, 0, 0};
+    gOptions = {true, false, false, true, true, 0, 0, false};
     gBookReady = gFontReady = true;
     gGeometry.output_width = 640; gGeometry.output_height = 480;
     gGeometry.center_width = 640; gGeometry.center_height = 480;
@@ -445,6 +445,50 @@ static void RenderingTests() {
     gGeometryResult = CASTLE_ERROR_NOT_READY;
     Draw(&context, nullptr);
     Check(gLocks == before, "负值才是几何查询失败");
+}
+
+static void SlotOutlineTests() {
+    DDSURFACEDESC desc = {};
+    desc.lpSurface = gPixels; desc.dwWidth = 640; desc.dwHeight = 480; desc.lPitch = 640 * 4;
+    desc.ddpfPixelFormat.dwRGBBitCount = 32;
+    desc.ddpfPixelFormat.dwRBitMask = 0xFF0000; desc.ddpfPixelFormat.dwGBitMask = 0xFF00;
+    desc.ddpfPixelFormat.dwBBitMask = 0xFF;
+    Canvas canvas = {}; Check(CanvasFormat(desc, canvas), "槽位描边独立测试画布");
+    CastleDisplayGeometryV1 geometry = {};
+    const U32 slots[] = {2, 95, 0}; // 分别单独测“新”“自动”“快速”，避免只测到组合里的某一项。
+    const U32 weights[] = {0, 50, 100};
+    gLatest = {2, 95}; gFontReady = true; gProtectCursor = false;
+    U32 before[32][128];
+    for (U32 item = 0; item < 3; ++item) for (U32 weight : weights) {
+        const Row row = {580, 40, slots[item], true};
+        gOptions = {false, item != 0, item == 0, false, true, weight, 0, false};
+        memset(gPixels, 0, sizeof(gPixels));
+        DrawRows(canvas, &row, 1, geometry, 0);
+        U32 withoutOutline = 0;
+        for (int y = 0; y < 32; ++y) for (int x = 0; x < 128; ++x) {
+            before[y][x] = Read32(gPixels + ((y + 30) * 640 + x + 480) * 4) & 0xFFFFFF;
+            if (before[y][x] == 0x160D06) ++withoutOutline;
+        }
+        Check(withoutOutline == 0, "关闭开关不增加描边像素");
+        gOptions.slotTextOutline = true;
+        memset(gPixels, 0, sizeof(gPixels));
+        DrawRows(canvas, &row, 1, geometry, 0);
+        U32 dark = 0; bool nearStroke = true, inkKept = true;
+        const U32 ink = item == 0 ? 0xF01818u : 0x682D16u;
+        for (int y = 1; y < 31; ++y) for (int x = 1; x < 127; ++x) {
+            const U32 color = Read32(gPixels + ((y + 30) * 640 + x + 480) * 4) & 0xFFFFFF;
+            if (before[y][x] == ink && color != ink) inkKept = false;
+            if (color != 0x160D06) continue;
+            ++dark;
+            bool adjacent = false;
+            for (int dy = -1; dy <= 1; ++dy) for (int dx = -1; dx <= 1; ++dx)
+                adjacent |= before[y + dy][x + dx] != 0;
+            nearStroke &= adjacent;
+        }
+        Check(dark != 0, "三种槽位文字分别开启深色描边");
+        Check(nearStroke, "描边始终在现有笔画一像素邻域内");
+        Check(inkKept, "开启描边保留原实心笔画颜色");
+    }
 }
 
 static void CursorTests() {
@@ -517,7 +561,7 @@ int wmain(int argc, wchar_t** argv) {
     if (argc != 3) return 2;
     SetConsoleOutputCP(CP_UTF8);
     gGameDirectory = argv[1]; gTemporaryDirectory = argv[2];
-    StateTests(); MigrationTests(); ResourceTests(); RowTests(); RenderingTests(); CursorTests();
+    StateTests(); MigrationTests(); ResourceTests(); RowTests(); RenderingTests(); SlotOutlineTests(); CursorTests();
     printf("[汇总] 检查=%d 失败=%d\n", gChecks, gFailures);
     return gFailures ? 1 : 0;
 }

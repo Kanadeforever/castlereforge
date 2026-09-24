@@ -11,7 +11,7 @@
 #include "SaveVisual.h"
 
 // ============================================================================
-// Castle_SaveEnhance.cpp  v0.3.0-test4 RuntimeSDK
+// Castle_SaveEnhance.cpp  v0.3.0-test5 RuntimeSDK
 // ----------------------------------------------------------------------------
 // 《幽城幻剑录》存档增强插件第一版完整实机候选。
 //
@@ -2327,6 +2327,8 @@ static void InitializeVisuals(const CastleRuntimeApiV1* runtimeApi, CastlePlugin
     options.bottom = ReadTomlS32("Visual", "BottomRight", 1, 0, 1) != 0;
     options.slotTextWeight = static_cast<unsigned int>(ReadTomlS32("Visual", "SlotTextWeight", 0, 0, 200));
     options.slotTextOffsetY = static_cast<int>(ReadTomlS32("Visual", "SlotTextOffsetY", -2, -12, 12));
+    // 描边只需开关，复用现有八方向一像素描边；不能让字重参数同时改变描边半径。
+    options.slotTextOutline = ReadTomlS32("Visual", "SlotTextOutline", 1, 0, 1) != 0;
     savevisual::Initialize(overlay, display, gRuntimeClockApi, plugin, gExeBase,
         options, BuildVisualPath, ycrlog::Line);
 }
@@ -2340,7 +2342,7 @@ static CastleResult InitializeSaveEnhance(const CastleRuntimeApiV1* runtimeApi,
     if (logApi == nullptr) return CASTLE_ERROR_INTERFACE_NOT_FOUND;
     ycrlog::BindRuntime(logApi, pluginHandle);
     ycrlog::Open(gSelfModule, L"Castle_SaveEnhance.log");
-    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.3.0-test4 RuntimeSDK 启动。");
+    ycrlog::Line("《幽城幻剑录》Castle_SaveEnhance v0.3.0-test5 RuntimeSDK 启动。");
     ycrlog::Line("By Luminous with ChatGPT");
     ycrlog::Line("[装载] RuntimeHost：Hook/Input/Save/Clock/Path/File/Module/TOML 统一协调。");
     ycrlog::Line("[槽位] 0=Quick，1~90=Manual，91~99=Rolling Auto；普通菜单保留槽只读。");
@@ -2430,7 +2432,7 @@ static void CASTLE_RUNTIME_CALL SaveEnhance_ProcessExit(void* userContext) {
 
 static const char gSdkPluginId[] = "org.castlereforge.saveenhance";
 static const char gSdkDisplayName[] = "Castle SaveEnhance";
-static const char gSdkVersion[] = "0.3.0-test4";
+static const char gSdkVersion[] = "0.3.0-test5";
 static const char gSdkBuild[] = "runtimesdk-visual-v1";
 static const CastlePluginDescriptorV1 gSdkDescriptor = {
     CASTLE_PLUGIN_DESC_MAGIC, CASTLE_SIZEOF_PLUGIN_DESCRIPTOR_V1,

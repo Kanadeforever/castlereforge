@@ -1,4 +1,4 @@
-# Castle_SaveEnhance v0.3.0-test4
+# Castle_SaveEnhance v0.3.0-test5
 # 本文件是标准 UTF-8 TOML，由同目录 Castle_Runtime.dll 的 TOML v1 服务统一读取。
 
 [Quick]
@@ -51,6 +51,9 @@ SlotTextWeight = 0
 # 槽位新增文字相对原槽号的垂直偏移，单位为游戏逻辑像素；负数上移，正数下移。
 # 默认-2，范围-12～12；“新”和“自动/快速”共用基线，不改变原版槽号坐标。
 SlotTextOffsetY = -2
+# 槽位“新/自动/快速”统一增加深褐近黑描边：1开启（默认），0关闭；重启游戏后生效。
+# 描边半径固定1个游戏逻辑像素，与SlotTextWeight独立，不影响书卷存档提示的描边。
+SlotTextOutline = 1
 # 手动与自动分别保留一个红色“新”；快速槽不参与。读取/浏览不清除。
 LatestMark = 1
 # 1让红字缓慢明暗变化，0保持亮红；不增加线程或独立计时器。

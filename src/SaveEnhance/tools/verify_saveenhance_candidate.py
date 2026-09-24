@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》Castle_SaveEnhance v0.3.0-test4 静态验证工具。
+《幽城幻剑录》Castle_SaveEnhance v0.3.0-test5 静态验证工具。
 
 这个工具只读取文件，不会修改 RPG.exe、MiscInfo.ENC 或 Castle_SaveEnhance.asi。
 它的目标是让任何接手者都能重复确认：当前候选是不是针对我们锁定的台湾第三版原版，
@@ -633,7 +633,8 @@ def verify_asi(path: Path) -> List[CheckResult]:
         ("旧最新槽迁移路径", "..\\multimedia\\save\\.LATESTSLOTS".encode("utf-16le")),
         ("Runtime Overlay接口", b"org.castlereforge.game.overlay"),
         ("Runtime Display接口", b"org.castlereforge.game.display"),
-        ("当前候选版本", b"0.3.0-test4"),
+        ("槽位描边配置入口", b"SlotTextOutline"),
+        ("当前候选版本", b"0.3.0-test5"),
     ):
         results.append(CheckResult(name, marker in pe.data, "存在" if marker in pe.data else "缺失"))
     results.append(CheckResult("ASI SHA-256（记录）", True, sha256_bytes(pe.data)))
@@ -685,7 +686,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.json_output is not None:
         payload = {
             "tool": "verify_saveenhance_candidate.py",
-            "version": "v0.3.0-test4",
+            "version": "v0.3.0-test5",
             "all_passed": all_ok,
             "results": [
                 {
