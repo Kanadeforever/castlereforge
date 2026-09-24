@@ -1,6 +1,6 @@
 # 存档增强构建说明
 
-本目录构建 `Castle_SaveEnhance.asi`，当前候选为v0.3.0-test5。官方版必须与 `Castle_Runtime.dll` 同目录运行；可以脱离
+本目录构建 `Castle_SaveEnhance.asi`，当前候选为v0.3.0-test7。官方版必须与 `Castle_Runtime.dll` 同目录运行；可以脱离
 Castle Mod Loader 和其它业务插件，手柄联动在没有 PadSupport 时自动不可用，键盘功能保留。
 
 ## 编译环境
@@ -39,8 +39,8 @@ File/Path、Module、Clock。`.SAVESTATUS`合并最新手动槽、最新自动�
 可视层只注册Runtime Overlay/Display回调，不新增Present Hook，不改其它插件。书卷和Font24字形在运行时
 只读加载，无需提取资源随ASI分发；Visual参数见模板。真实存档目录的`.SAVESTATUS`从旧`.LATESTSLOTS`和
 `.NEXTAUTOSLOT`安全迁移；写入成功才清理旧文件。快速槽不占“新”标记，不写回配置。
-槽位字重0～200细调、垂直偏移默认-2；test5增加`SlotTextOutline`一像素描边开关，默认开启。
-标题右键退回后重进导致标识隐藏、运行时565光标遮挡失效是已知未修复问题，见完整接档，不能把模拟测试当实机验收。
+槽位字重-100～200细调（负数减轻边缘、正数额外加粗）、垂直偏移默认-2；SlotTextOutline为独立一像素描边开关。
+保留test6标题阶段2复用修复，test7增加565运行时光标解码；负字重、标题重进和光标遮挡均获用户实机验收，未改Controller或书卷提示。
 批处理不含注释、不复制Markdown，echo原有尾随空格保留。
 
 从仓库根运行宿主测试（需要MSVC x86，不启动游戏）：
@@ -49,5 +49,6 @@ File/Path、Module、Clock。`.SAVESTATUS`合并最新手动槽、最新自动�
 python -B -X utf8 src/SaveEnhance/tools/test_savevisual.py --game-directory "参考资料/Castle"
 ```
 
-参考资源只读，测试状态和编译物在本模块`_build`下隔离并清理。test5有1070项宿主检查、0失败。
-用户已验收书卷、提示描边、无宽屏提示及自动“新”；test5新增槽位描边仍待实机确认，未修复上述已知问题。
+参考资源只读，测试状态和编译物在本模块`_build`下隔离并清理。test7有1359项宿主检查、0失败。
+新增重进回归在旧代码复现4项失败，修复后通过。用户已验收书卷、提示描边、无宽屏提示及自动“新”，本轮不改这些效果。
+运行时565回归在旧解码方式复现13项失败，修复后通过；用户随后独立确认光标覆盖、负字重和标题重进实机通过。

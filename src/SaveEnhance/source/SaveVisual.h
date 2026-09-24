@@ -14,7 +14,7 @@ struct Options {
     bool latestMark;
     bool pulse;
     bool bottom;
-    unsigned int slotTextWeight; // 0～200表示额外0.00～2.00像素；小数部分做边缘颜色混合。
+    int slotTextWeight; // -100～-1按覆盖率减轻边缘；0原基线；1～200维持额外加粗的既有含义。
     int slotTextOffsetY; // 相对原槽号的垂直微调，默认-2；类型与“新”共用基线。
     bool slotTextOutline; // 槽位文字统一一像素深色描边；独立于笔画粗细和书卷提示。
 };

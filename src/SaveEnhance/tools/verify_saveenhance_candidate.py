@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-《幽城幻剑录》Castle_SaveEnhance v0.3.0-test5 静态验证工具。
+《幽城幻剑录》Castle_SaveEnhance v0.3.0-test7 静态验证工具。
 
 这个工具只读取文件，不会修改 RPG.exe、MiscInfo.ENC 或 Castle_SaveEnhance.asi。
 它的目标是让任何接手者都能重复确认：当前候选是不是针对我们锁定的台湾第三版原版，
@@ -423,6 +423,10 @@ def verify_rpg(path: Path) -> List[CheckResult]:
         ("原槽号相对坐标540/10", 0x425C50, "6A 0A 68 1C 02 00 00"),
         ("控件父坐标与相对坐标", 0x4316AD, "8B 45 14 8B 55 20 8B 7D 24"),
         ("选中行高亮计数并非翻页锁", 0x424CB9, "C7 86 BC 05 00 00 04 00 00 00"),
+        ("退出过渡完成后阶段为2", 0x424C6A, "C7 86 80 05 00 00 02 00 00 00"),
+        ("标题复用存档对象并开启active", 0x44811F, "8B 81 B4 05 00 00 88 90 79 05 00 00"),
+        ("运行时SF2标记转换完成", 0x428E5D, "C7 80 7C 42 00 00 41 00 00 00"),
+        ("原版RLE颜色555转565", 0x44CDAB, "25 E0 7F 00 00 D1 E0 83 E3 1F 0B C3 66 89 06"),
     ):
         add_va_check(results, pe, "可视层只读证据：" + name, va, bytes.fromhex(code))
     return results
@@ -634,7 +638,7 @@ def verify_asi(path: Path) -> List[CheckResult]:
         ("Runtime Overlay接口", b"org.castlereforge.game.overlay"),
         ("Runtime Display接口", b"org.castlereforge.game.display"),
         ("槽位描边配置入口", b"SlotTextOutline"),
-        ("当前候选版本", b"0.3.0-test5"),
+        ("当前候选版本", b"0.3.0-test7"),
     ):
         results.append(CheckResult(name, marker in pe.data, "存在" if marker in pe.data else "缺失"))
     results.append(CheckResult("ASI SHA-256（记录）", True, sha256_bytes(pe.data)))
@@ -686,7 +690,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.json_output is not None:
         payload = {
             "tool": "verify_saveenhance_candidate.py",
-            "version": "v0.3.0-test5",
+            "version": "v0.3.0-test7",
             "all_passed": all_ok,
             "results": [
                 {

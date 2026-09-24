@@ -289,6 +289,31 @@ static void RowTests() {
         Put32(save + 0x580, 0);
         Check(ReadRows(rows) == 1, "重新进入正常列表恢复显示而不清除最新状态");
         popup[0x579] = 0;
+        if (i == 2) {
+            // 实机标题窗口复用同一SaveSlot，右键退出完成后保留阶段2，而不是重置到0。
+            // 重复同一路径，避免只验证新建对象/首次进入就误报已修复。
+            const LatestSlots recorded = gLatest;
+            for (U32 reopening = 0; reopening < 3; ++reopening) {
+                Put32(save + 0x580, 1);
+                Check(ReadRows(rows) == 0, "右键退出过渡阶段仍隐藏");
+                Put32(save + 0x580, 2); save[0x579] = 0;
+                Check(ReadRows(rows) == 0, "退回标题未打开列表时仍隐藏");
+                save[0x579] = 1;
+                memcpy(before, save, sizeof(save));
+                Check(ReadRows(rows) == 1 && rows[0].slot == 88, "标题复用阶段2再次进入时恢复标识");
+                Check(memcmp(before, save, sizeof(save)) == 0, "恢复显示不清零原版阶段字段");
+            }
+            BeginLoad();
+            Check(ReadRows(rows) == 0, "阶段2列表真正读档时仍立即隐藏");
+            EndLoad(); save[0x5B9] = 1;
+            Check(ReadRows(rows) == 0, "阶段2带读档交接标志时仍隐藏");
+            save[0x5B9] = 0;
+            Check(ReadRows(rows) == 1 && gLatest.manual == recorded.manual && gLatest.automatic == recorded.automatic,
+                "多次开关列表不改变任何最新槽记录");
+            Put32(save + 0x580, 3);
+            Check(ReadRows(rows) == 0, "未知阶段不猜测为正常活动列表");
+            Put32(save + 0x580, 0);
+        }
         row[0x57C] = 0;
         Check(ReadRows(rows) == 1 && !rows[0].hasData, "空槽仍保留类型但不标新");
         row[0x57C] = 1;
@@ -456,10 +481,10 @@ static void SlotOutlineTests() {
     Canvas canvas = {}; Check(CanvasFormat(desc, canvas), "槽位描边独立测试画布");
     CastleDisplayGeometryV1 geometry = {};
     const U32 slots[] = {2, 95, 0}; // 分别单独测“新”“自动”“快速”，避免只测到组合里的某一项。
-    const U32 weights[] = {0, 50, 100};
+    const int weights[] = {-100, -50, 0, 50, 100};
     gLatest = {2, 95}; gFontReady = true; gProtectCursor = false;
     U32 before[32][128];
-    for (U32 item = 0; item < 3; ++item) for (U32 weight : weights) {
+    for (U32 item = 0; item < 3; ++item) for (int weight : weights) {
         const Row row = {580, 40, slots[item], true};
         gOptions = {false, item != 0, item == 0, false, true, weight, 0, false};
         memset(gPixels, 0, sizeof(gPixels));
@@ -491,7 +516,76 @@ static void SlotOutlineTests() {
     }
 }
 
+static void NegativeWeightTests() {
+    U8 edge[72] = {}, solid[72]; edge[0] = 0x80; memset(solid, 255, sizeof(solid));
+    Check(GlyphCoverage(edge, 0, 0, 20) == 69, "覆盖率按真实面积计算而非一律实心");
+    Check(GlyphAlpha(edge, 0, 0, 20, 0) == 100 && GlyphAlpha(edge, 0, 0, 20, 50) == 100,
+        "非负字重保留旧笔画基线");
+    U32 previous = 100;
+    for (int strength = 0; strength <= 100; ++strength) {
+        const U32 alpha = GlyphAlpha(edge, 0, 0, 20, -strength);
+        Check(alpha <= previous && alpha >= 69 && GlyphAlpha(solid, 0, 0, 20, -strength) == 100,
+            "101档减轻单调变化且实心内部不变淡");
+        previous = alpha;
+    }
+    Check(GlyphAlpha(edge, 0, 0, 20, -999) == 69 && GlyphAlpha(edge, -1, 0, 20, -100) == 0,
+        "负字重下限夹紧且字格外透明");
+    Check(GlyphCoverage(edge, 0, 0, 0) == 0 && GlyphCoverage(edge, 24, 0, 24) == 0 &&
+        GlyphCoverage(nullptr, 0, 0, 20) == 0, "覆盖率非法尺寸和空指针拒绝");
+    DDSURFACEDESC desc = {}; desc.lpSurface = gPixels;
+    desc.dwWidth = 640; desc.dwHeight = 480; desc.lPitch = 640 * 4;
+    desc.ddpfPixelFormat.dwRGBBitCount = 32;
+    desc.ddpfPixelFormat.dwRBitMask = 0xFF0000; desc.ddpfPixelFormat.dwGBitMask = 0xFF00;
+    desc.ddpfPixelFormat.dwBBitMask = 0xFF;
+    Canvas canvas = {}; Check(CanvasFormat(desc, canvas), "负字重测试画布");
+    U8 original[72]; memcpy(original, gGlyphs[Xin], 72); memcpy(gGlyphs[Xin], edge, 72);
+    gProtectCursor = false; gFontReady = true;
+    for (int strength = 0; strength <= 100; ++strength) {
+        memset(gPixels, 0, 32 * 640 * 4);
+        DrawGlyph(canvas, 2, 2, Xin, 20, 0xC86432, -strength);
+        const U32 red = Read32(gPixels + (2 * 640 + 2) * 4) >> 16 & 255;
+        Check(red == (200 * GlyphAlpha(edge, 0, 0, 20, -strength) + 50) / 100,
+            "负值真正进入绘制分支且未转成无符号加粗");
+    }
+    const Glyph word[] = {Xin};
+    DrawWord(canvas, 2, 2, word, 1, 20, 0xC86432, true, -100);
+    Check((Read32(gPixels + (2 * 640 + 1) * 4) & 0xFFFFFF) != 0, "减轻字重仍支持独立一像素描边");
+    memcpy(gGlyphs[Xin], original, 72);
+}
+
+static bool ConvertRuntimeCursor565(U8* raw, U32 size) {
+    // 只转换测试私有内存副本，精确模拟原版0x44CD7B，不修改参考文件。
+    // 公式直接来自机器码，不调用将要验证的正式颜色解码函数，避免自证循环。
+    for (U32 tile = 0; tile < Read16(raw + 0x28); ++tile) {
+        const U8* record = nullptr; U32 bytes = 0;
+        if (!Record(raw, size, 2, tile, record, bytes)) return false;
+        U8* data = raw + (record - raw);
+        U32 offset = 0;
+        while (offset < bytes) {
+            const U8 code = data[offset++];
+            const U32 words = !(code & 64) ? (code & 63) + 1 : ((code & 128) ? 1u : 0u);
+            if (!Span(offset, words * 2, bytes)) return false;
+            for (U32 i = 0; i < words; ++i) {
+                const U16 old = Read16(data + offset);
+                const U16 converted = static_cast<U16>(((old & 0x7FE0u) << 1) | (old & 31));
+                data[offset++] = static_cast<U8>(converted);
+                data[offset++] = static_cast<U8>(converted >> 8);
+            }
+        }
+    }
+    Put32(raw + 0x427C, 0x41);
+    return true;
+}
+
 static void CursorTests() {
+    const U8 red565[] = {0, 0, 0xF8};
+    const U8 repeat565[] = {0xC1, 0xE0, 0x07};
+    U32 colors[2] = {};
+    Check(DecodeTile(red565, 3, colors, 1, true) && colors[0] == 0xFFFF0000,
+        "565逐像素指令正确读取红色");
+    Check(DecodeTile(repeat565, 3, colors, 2, true) && colors[0] == 0xFF00FF00 && colors[1] == 0xFF00FF00,
+        "565重复指令正确读取六位绿色");
+    Check(!DecodeTile(repeat565, 2, colors, 2, true), "565截断记录仍拒绝");
     U32 size = 0;
     HANDLE file = OpenResource(L"..\\multimedia\\fight\\mouse\\mousedefault.sf2", size);
     U8* raw = static_cast<U8*>(HeapAlloc(GetProcessHeap(), 0, size));
@@ -500,6 +594,7 @@ static void CursorTests() {
     if (file != INVALID_HANDLE_VALUE) CloseHandle(file);
     if (!loaded) { if (raw) HeapFree(GetProcessHeap(), 0, raw); return; }
     Check(DecodeCursorFrame(raw, size, 0, gCursorFrame), "原版当前光标帧透明像素解码");
+    CursorFrame reference = gCursorFrame;
     Check(!DecodeCursorFrame(raw, size, 99999, gCursorFrame), "越界光标帧拒绝");
     U8* exe = static_cast<U8*>(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 0x4E1C50));
     Check(exe != nullptr, "模拟光标对象分配");
@@ -513,6 +608,19 @@ static void CursorTests() {
     U8 savedMouse[sizeof(mouse)]; memcpy(savedMouse, mouse, sizeof(mouse));
     const int sides[] = {0, 107, 240};
     const U32 depths[] = {16, 32};
+    for (U32 runtimeFormat = 0; runtimeFormat < 2; ++runtimeFormat) {
+    if (runtimeFormat == 1) {
+        Check(ConvertRuntimeCursor565(raw, size), "模拟原版555转565并设置运行时标记");
+        // 原版转换后的绿色低位固定0；预期画面由转换前的参考颜色独立计算。
+        for (U32 i = 0; i < 96 * 96; ++i) {
+            const U32 old = reference.pixels[i];
+            const U32 green5 = (((old >> 8) & 255) * 31 + 127) / 255;
+            reference.pixels[i] = (old & 0xFFFF00FFu) | ((green5 * 2 * 255 / 63) << 8);
+        }
+        Check(DecodeCursorFrame(raw, size, 0, gCursorFrame) &&
+            memcmp(reference.pixels, gCursorFrame.pixels, sizeof(reference.pixels)) == 0,
+            "运行时565光标颜色与独立转换参考完全一致");
+    }
     for (U32 depth : depths) for (int side : sides) {
         DDSURFACEDESC desc = {};
         desc.lpSurface = gPixels; desc.dwWidth = static_cast<DWORD>(640 + 2 * side);
@@ -529,7 +637,7 @@ static void CursorTests() {
         const int left = side + 200 - 319 + gCursorFrame.anchorX;
         const int top = 150 - 260 + gCursorFrame.anchorY;
         for (U32 y = 0; y < gCursorFrame.height; ++y) for (U32 x = 0; x < gCursorFrame.width; ++x) {
-            const U32 color = gCursorFrame.pixels[y * 96 + x];
+            const U32 color = reference.pixels[y * 96 + x];
             if (color >> 24) Pixel(canvas, left + static_cast<int>(x), top + static_cast<int>(y), color);
         }
         ProtectNativeCursor(canvas, geometry);
@@ -551,6 +659,7 @@ static void CursorTests() {
         Check(!gProtectCursor, "原版不画光标时不强制遮挡");
         mouse[0x248] = 1;
     }
+    }
     Check(memcmp(savedMouse, mouse, sizeof(mouse)) == 0 && Read32(parser + 0x38) == 0,
         "光标保护不写位置显隐或动画状态");
     gProtectCursor = false; gExe = nullptr;
@@ -561,7 +670,7 @@ int wmain(int argc, wchar_t** argv) {
     if (argc != 3) return 2;
     SetConsoleOutputCP(CP_UTF8);
     gGameDirectory = argv[1]; gTemporaryDirectory = argv[2];
-    StateTests(); MigrationTests(); ResourceTests(); RowTests(); RenderingTests(); SlotOutlineTests(); CursorTests();
+    StateTests(); MigrationTests(); ResourceTests(); RowTests(); RenderingTests(); SlotOutlineTests(); NegativeWeightTests(); CursorTests();
     printf("[汇总] 检查=%d 失败=%d\n", gChecks, gFailures);
     return gFailures ? 1 : 0;
 }

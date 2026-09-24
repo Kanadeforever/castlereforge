@@ -1,6 +1,6 @@
 {
   "tool": "verify_saveenhance_candidate.py",
-  "version": "v0.3.0-test5",
+  "version": "v0.3.0-test7",
   "all_passed": true,
   "results": [
     {
@@ -220,6 +220,30 @@
       "detail": "VA=0x00424CB9 预期=C7 86 BC 05 00 00 04 00 00 00 实际=C7 86 BC 05 00 00 04 00 00 00"
     },
     {
+      "group": "原版 RPG.exe",
+      "name": "可视层只读证据：退出过渡完成后阶段为2",
+      "ok": true,
+      "detail": "VA=0x00424C6A 预期=C7 86 80 05 00 00 02 00 00 00 实际=C7 86 80 05 00 00 02 00 00 00"
+    },
+    {
+      "group": "原版 RPG.exe",
+      "name": "可视层只读证据：标题复用存档对象并开启active",
+      "ok": true,
+      "detail": "VA=0x0044811F 预期=8B 81 B4 05 00 00 88 90 79 05 00 00 实际=8B 81 B4 05 00 00 88 90 79 05 00 00"
+    },
+    {
+      "group": "原版 RPG.exe",
+      "name": "可视层只读证据：运行时SF2标记转换完成",
+      "ok": true,
+      "detail": "VA=0x00428E5D 预期=C7 80 7C 42 00 00 41 00 00 00 实际=C7 80 7C 42 00 00 41 00 00 00"
+    },
+    {
+      "group": "原版 RPG.exe",
+      "name": "可视层只读证据：原版RLE颜色555转565",
+      "ok": true,
+      "detail": "VA=0x0044CDAB 预期=25 E0 7F 00 00 D1 E0 83 E3 1F 0B C3 66 89 06 实际=25 E0 7F 00 00 D1 E0 83 E3 1F 0B C3 66 89 06"
+    },
+    {
       "group": "MiscInfo.ENC",
       "name": "MiscInfo.ENC 文件大小",
       "ok": true,
@@ -349,7 +373,7 @@
       "group": "Castle_SaveEnhance.asi",
       "name": "ASI SHA-256（记录）",
       "ok": true,
-      "detail": "68e0eeb25e24758174b65664083a5e9516456ee62c3081a3d0a388eb09ef1ba0"
+      "detail": "efd1652735550b620ebab17f1b8c1c44d345d06e00bcb0af57e4b10504d726ee"
     }
   ]
 }

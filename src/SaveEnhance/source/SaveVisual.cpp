@@ -223,9 +223,11 @@ U8* VisibleSave() {
         U8* save = Pointer(owner + slots[i]);
         if (!Readable(save, 0x5C4) || save[0x579] == 0 ||
             Pointer(save) != gExe + 0x60B50) continue;
-        // 原版在LoadSlot返回后置+0x5B9，接着转入+0x580=1的关闭/过渡状态。
-        // 对象此时可能仍在内存里，甚至仍标active；不能仅凭指针还存在就继续覆盖loading画面。
-        if (save[0x5B9] != 0 || Read32(save + 0x580) != 0) continue;
+        // +0x580的0是初始状态、1是正在过渡、2是过渡已完成。标题会复用阶段2的对象，
+        // 只重新开启active，不把阶段清零。因此不能把所有非0都当成“仍在退出”。
+        // 真正读档另由gLoading和+0x5B9约束；这里只允许已确认的0/2，不写游戏对象。
+        const U32 phase = Read32(save + 0x580);
+        if (save[0x5B9] != 0 || (phase != 0 && phase != 2)) continue;
         // +0x5BC是选中行的高亮动画倒数，每次上下移动也会设为4，不是翻页事务标记。
         // 不能因它非零停画整页标签，否则每次手柄/鼠标切换都会闪一下。
         // 本回调与原版更新在同一线程；再逐行核对显示槽号即可避免贴错行。
@@ -268,7 +270,9 @@ U32 ReadRows(Row rows[4]) {
         rows[count++] = {static_cast<int>(x), static_cast<int>(y),
             slot, row[0x57C] != 0};
     }
-    if (!count) LogOnce(512, "[可视诊断] 已找到活动SaveSlot，但当前没有通过坐标/槽号检查的行。");
+    if (!count) LogOnce(512, "[可视诊断] 活动SaveSlot暂未取得有效行（入场动画期间可能出现；仅记录一次）。");
+    else if (Read32(save + 0x580) == 2)
+        LogOnce(8192, "[可视反馈] 已识别复用完成态的活动存档列表，不再因阶段2隐藏槽位标识。");
     return count;
 }
 
@@ -367,6 +371,8 @@ void ProtectNativeCursor(const Canvas& canvas, const CastleDisplayGeometryV1& ge
         if (offset + length > size) size = offset + length;
     }
     if (!Readable(raw, size) || !DecodeCursorFrame(raw, size, Read32(parser + 0x38), gCursorFrame)) return;
+    if (Read32(raw + 0x427C) == 0x41)
+        LogOnce(16384, "[可视诊断] 已按RGB565读取原版转换后的运行时光标资源。");
     // 原MouseDraw的319/260是图形锚点，Display的center才是宽屏偏移。
     const int mx = static_cast<int>(Read32(mouse + 0x238)), my = static_cast<int>(Read32(mouse + 0x23C));
     if (mx < -8192 || mx > 8192 || my < -8192 || my > 8192) return;
@@ -387,13 +393,18 @@ void BlendPixel(Canvas& canvas, int x, int y, U32 rgb, U32 percent) {
     }
     Pixel(canvas, x, y, blended);
 }
-void DrawGlyph(Canvas& canvas, int x, int y, Glyph glyph, int size, U32 color, U32 weight) {
+void DrawGlyph(Canvas& canvas, int x, int y, Glyph glyph, int size, U32 color, int weight) {
     for (int dy = 0; dy < size; ++dy) {
         for (int dx = 0; dx < size; ++dx) {
             if (!GlyphInk(gGlyphs[glyph], dx, dy, size)) continue;
+            if (weight < 0) {
+                // 负值不向外扩展，只把边缘从原来的全覆盖逐渐还原为面积覆盖率。
+                BlendPixel(canvas, x + dx, y + dy, color, GlyphAlpha(gGlyphs[glyph], dx, dy, size, weight));
+                continue;
+            }
             Pixel(canvas, x + dx, y + dy, color);
             // 由TOML决定是否补笔画；限制在本字格内，不侵占字间距。0仍保留覆盖采样，不丢细线。
-            const U32 limited = weight > 200 ? 200 : weight;
+            const U32 limited = static_cast<U32>(weight > 200 ? 200 : weight);
             for (U32 added = 1; added <= limited / 100; ++added)
                 if (dx + static_cast<int>(added) < size) Pixel(canvas, x + dx + static_cast<int>(added), y + dy, color);
             const int edge = dx + static_cast<int>(limited / 100) + 1;
@@ -402,7 +413,7 @@ void DrawGlyph(Canvas& canvas, int x, int y, Glyph glyph, int size, U32 color, U
         }
     }
 }
-void DrawWord(Canvas& canvas, int x, int y, const Glyph* word, U32 count, int size, U32 color, bool outline, U32 weight = 0) {
+void DrawWord(Canvas& canvas, int x, int y, const Glyph* word, U32 count, int size, U32 color, bool outline, int weight = 0) {
     if (!gFontReady) return;
     // 提示叠在世界画面上，单方向阴影无法隔开土黄背景和浅金笔画。
     // 先在八个相邻位置画一圈深色字形，再统一画文字本体，得到一像素完整描边。
@@ -410,6 +421,20 @@ void DrawWord(Canvas& canvas, int x, int y, const Glyph* word, U32 count, int si
     if (outline) {
         for (U32 i = 0; i < count; ++i) {
             const int at = x + static_cast<int>(i) * size;
+            if (weight < 0) {
+                // 负字重的描边取一像素邻域最大覆盖减去字心覆盖，只画外轮廓。
+                // 每点只混合一次，避免八次半透明叠加把减轻后的边缘又涂回全黑。
+                for (int y2 = -1; y2 <= size; ++y2) for (int x2 = -1; x2 <= size; ++x2) {
+                    const U32 inside = GlyphAlpha(gGlyphs[word[i]], x2, y2, size, weight);
+                    U32 around = inside;
+                    for (int dy = -1; dy <= 1; ++dy) for (int dx = -1; dx <= 1; ++dx) {
+                        const U32 alpha = GlyphAlpha(gGlyphs[word[i]], x2 + dx, y2 + dy, size, weight);
+                        if (alpha > around) around = alpha;
+                    }
+                    BlendPixel(canvas, at + x2, y + y2, 0x160D06, around - inside);
+                }
+                continue;
+            }
             for (int dy = -1; dy <= 1; ++dy)
                 for (int dx = -1; dx <= 1; ++dx)
                     if (dx != 0 || dy != 0) DrawGlyph(canvas, at + dx, y + dy, word[i], size, 0x160D06, weight);

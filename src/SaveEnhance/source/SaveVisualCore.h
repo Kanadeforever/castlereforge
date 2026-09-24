@@ -149,6 +149,32 @@ inline bool GlyphInk(const U8* glyph, int x, int y, int size) {
 }
 
 constexpr U32 kBookFrames = 25;
+inline U32 GlyphCoverage(const U8* glyph, int x, int y, int size) {
+    if (!glyph || size < 1 || size > 24 || x < 0 || y < 0 || x >= size || y >= size) return 0;
+    // 用整数公共坐标计算真正覆盖面积：目标像素边长24，源像素边长size。
+    // 不再把“碰到一点笔画”都扩成全实心；完整覆盖仍为100%，只减轻边缘，不侵蚀细线。
+    const int left = x * 24, top = y * 24;
+    U32 area = 0;
+    for (int sy = top / size; sy < (top + 24 + size - 1) / size; ++sy)
+        for (int sx = left / size; sx < (left + 24 + size - 1) / size; ++sx) {
+            if (!(glyph[sy * 3 + sx / 8] & (0x80 >> (sx % 8)))) continue;
+            const int l = left > sx * size ? left : sx * size;
+            const int r = left + 24 < (sx + 1) * size ? left + 24 : (sx + 1) * size;
+            const int t = top > sy * size ? top : sy * size;
+            const int b = top + 24 < (sy + 1) * size ? top + 24 : (sy + 1) * size;
+            area += static_cast<U32>((r - l) * (b - t));
+        }
+    const U32 percent = (area * 100 + 288) / 576;
+    return area && !percent ? 1 : percent;
+}
+inline U32 GlyphAlpha(const U8* glyph, int x, int y, int size, int weight) {
+    if (!GlyphInk(glyph, x, y, size)) return 0;
+    if (weight >= 0) return 100;
+    const U32 strength = static_cast<U32>(weight < -100 ? 100 : -weight);
+    const U32 coverage = GlyphCoverage(glyph, x, y, size);
+    return 100 - ((100 - coverage) * strength + 50) / 100;
+}
+
 constexpr U32 kBookWidth = 38;
 constexpr U32 kBookHeight = 30;
 struct BookFrame {
@@ -176,7 +202,11 @@ inline U32 Color555(U16 value) {
     return 0xFF000000u | (((value >> 10) & 31) * 255 / 31 << 16) |
         (((value >> 5) & 31) * 255 / 31 << 8) | ((value & 31) * 255 / 31);
 }
-inline bool DecodeTile(const U8* data, U32 size, U32* pixels, U32 count) {
+inline U32 Color565(U16 value) {
+    return 0xFF000000u | (((value >> 11) & 31) * 255 / 31 << 16) |
+        (((value >> 5) & 63) * 255 / 63 << 8) | ((value & 31) * 255 / 31);
+}
+inline bool DecodeTile(const U8* data, U32 size, U32* pixels, U32 count, bool rgb565 = false) {
     // SF2压缩块只有三种指令：原样颜色、透明、重复颜色。
     // 每读一次都检查输入长度和输出容量，未知/截断资源仅让图标不可用。
     U32 input = 0, output = 0;
@@ -188,14 +218,16 @@ inline bool DecodeTile(const U8* data, U32 size, U32* pixels, U32 count) {
         if ((code & 64) == 0) {
             if (!Span(input, run * 2, size)) return false;
             for (U32 i = 0; i < run; ++i) {
-                pixels[output++] = Color555(Read16(data + input));
+                const U16 value = Read16(data + input);
+                pixels[output++] = rgb565 ? Color565(value) : Color555(value);
                 input += 2;
             }
         } else {
             U32 color = 0;
             if ((code & 128) != 0) {
                 if (!Span(input, 2, size)) return false;
-                color = Color555(Read16(data + input));
+                const U16 value = Read16(data + input);
+                color = rgb565 ? Color565(value) : Color555(value);
                 input += 2;
             }
             for (U32 i = 0; i < run; ++i) pixels[output++] = color;
@@ -258,6 +290,9 @@ struct CursorFrame {
 inline bool DecodeCursorFrame(const U8* data, U32 size, U32 frameIndex, CursorFrame& out) {
     if (!data || size < 0x42BC || Read32(data) != 0x05324653u || data[11] != 0 ||
         Read16(data + 7) != 64 || Read16(data + 9) != 48) return false;
+    // 原版在16位模式把内存tile原地转换成565，并将+0x427C标为0x41。
+    // 这是资源自身的格式，不能按当前DirectDraw输出位深猜；磁盘书卷仍走默认555。
+    const bool rgb565 = Read32(data + 0x427C) == 0x41;
     const U8* frame = nullptr; U32 length = 0;
     if (!Record(data, size, 0, frameIndex, frame, length) || length != 123 || Read16(frame + 84) != 1) return false;
     out.anchorX = static_cast<short>(Read16(frame + 96));
@@ -274,7 +309,7 @@ inline bool DecodeCursorFrame(const U8* data, U32 size, U32 frameIndex, CursorFr
     for (U32 ty = 0; ty < rows; ++ty) for (U32 tx = 0; tx < columns; ++tx) {
         const U8* encoded = nullptr;
         if (!Record(data, size, 2, Read16(image + 24 + (ty * columns + tx) * 2), encoded, length) ||
-            !DecodeTile(encoded, length, tile, 64 * 48)) return false;
+            !DecodeTile(encoded, length, tile, 64 * 48, rgb565)) return false;
         for (U32 y = 0; y < 48 && ty * 48 + y < out.height; ++y)
             for (U32 x = 0; x < 64 && tx * 64 + x < out.width; ++x)
                 out.pixels[(ty * 48 + y) * 96 + tx * 64 + x] = tile[y * 64 + x];
